@@ -1,0 +1,1 @@
+tensorboard --logdir=C:\Users\Dano\Documents\ZHAW\projektarbeit-zhaw\projektarbeit-2019\projektarbeit-2019
