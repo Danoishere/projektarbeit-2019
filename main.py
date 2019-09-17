@@ -51,7 +51,7 @@ STATE_SIZE = (26,100,1)
 
 simplicity_start = 0.5
 
-rail_generator= complex_rail_generator( nr_start_goal=2,
+rail_generator= complex_rail_generator( nr_start_goal=3,
                                         nr_extra=2,
                                         min_dist=5,
                                         max_dist=99999,
@@ -61,15 +61,12 @@ def create_env():
     global simplicity_start
     simplicity_start += 0.001
     current_difficulty = int(np.ceil(simplicity_start))
-    print('before rail')
-
     env = RailEnv(
                 width=10,
                 height=10,
                 rail_generator = rail_generator,
                 number_of_agents=NUMBER_OF_AGENTS,
                 obs_builder_object=GlobalObsForRailEnv())
-    print('after')
     return env
 
 def convert_global_obs(global_obs):
@@ -87,7 +84,6 @@ def convert_global_obs(global_obs):
 def create_model():
     batch_size=10
     input = Input(shape=(26,100,1),batch_size=batch_size)
-
 
     c = Conv2D(20, kernel_size=5)(input)
     c = MaxPooling2D()(c)
@@ -116,7 +112,6 @@ def create_model():
     policy = Dense(ACTION_SIZE)(p)
 
     model = Model(inputs=input, outputs=[policy,value])
-    print(model.summary())
     return model
 
 def record(episode,
@@ -245,30 +240,35 @@ class MasterAgent():
         plt.show()
 
     def play(self):
-        env = create_env()
-        state = env.reset()
-        model = self.global_model
-        model_path = os.path.join(self.save_dir, 'model_{}.h5'.format(self.game_name))
-        print('Loading model from: {}'.format(model_path))
-        model.load_weights(model_path)
-        done = False
-        step_counter = 0
+        self.local_model = self.global_model
+        self.local_model.load_weights('model.h5')
+        env_done = False
+        ep_steps = 0
         reward_sum = 0
 
-        try:
-            while not done:
-                env.render(mode='rgb_array')
-                policy, value = model(tf.convert_to_tensor(state[None, :], dtype=tf.float32))
-                policy = tf.nn.softmax(policy)
-                action = np.argmax(policy)
-                state, reward, done, _ = env.step(action)
-                reward_sum += reward
-                print("{}. Reward: {}, action: {}".format(step_counter, reward_sum, action))
-                step_counter += 1
-        except KeyboardInterrupt:
-            print("Received Keyboard Interrupt. Shutting down.")
-        finally:
-            env.close()
+        self.env = create_env()
+        self.env.reset()
+        current_observations = convert_global_obs(self.env.reset())
+        env_renderer = RenderTool(self.env)
+
+        while not env_done and ep_steps < 200:
+            print(ep_steps)
+            actions = {}
+            for i in range(NUMBER_OF_AGENTS):
+                current_observation = current_observations[i]
+                obs_tensor = tf.convert_to_tensor(current_observation, dtype=tf.float32)
+                logits, _ = self.local_model(obs_tensor)
+                probs = tf.nn.softmax(logits).numpy()[0]
+                actions[i] = np.random.choice(ACTIONS, p=probs)
+                print('Agent', i ,'does action', actions[i] )
+
+            current_observations, rewards, done, _ = self.env.step(actions)
+            current_observations = convert_global_obs(current_observations)
+            env_done = done['__all__']
+            env_renderer.render_env(show=True, frames=False, show_observations=True)
+            ep_steps += 1
+
+
 
 
 class Memory:
@@ -325,13 +325,10 @@ class Worker(threading.Thread):
             env_renderer = RenderTool(self.env)
         
         while Worker.global_episode < args.max_eps:
-            print('Before create env')
-            self.env.reset()# = create_env()
+            self.env.reset()
             if SHOULD_RENDER:
                 env_renderer.set_new_rail()
-            print('Env created')
             current_observations = convert_global_obs(self.env.reset())
-            print('Env initialized')
 
             ep_reward = 0.
             ep_steps = 0
@@ -353,7 +350,7 @@ class Worker(threading.Thread):
 
                 next_observations, rewards, done, _ = self.env.step(actions)
 
-                env_done = True
+                env_done = done['__all__']
                 for i in range(NUMBER_OF_AGENTS):
                     if not done[i]:
                         env_done = False
@@ -376,23 +373,23 @@ class Worker(threading.Thread):
                     action = actions[i]
                     reward = rewards[i]
                     agent_done = done[i]
-                    mem = mems[i]
-                    mem.store(obs, action, reward)
+                    agent_memory = mems[i]
+                    agent_memory.store(obs, action, reward)
 
                 if update_counter == args.update_freq or env_done or ep_steps > 199:
                     # Calculate gradient wrt to local model. We do so by tracking the
                     # variables involved in computing the loss by using tf.GradientTape
                     for i in range(NUMBER_OF_AGENTS):
+                        next_observation = next_observations[i]
+                        agent_done = done[i]
+                        agent_memory = mems[i]
                         with tf.GradientTape() as tape:
-                            next_observation = next_observations[i]
-                            agent_done = done[i]
-                            mem = mems[i]
                             total_loss = self.compute_loss(agent_done,
                                                             next_observation,
-                                                            mem,
+                                                            agent_memory,
                                                             args.gamma)
                         self.ep_loss += total_loss
-                        print('Loss:',self.ep_loss)
+                        print('Loss:', self.ep_loss)
 
                         # Calculate local gradients
                         grads = tape.gradient(total_loss, self.local_model.trainable_weights)
@@ -401,7 +398,7 @@ class Worker(threading.Thread):
                         # Update local model with new weights
                         self.local_model.set_weights(self.global_model.get_weights())
 
-                        mem.clear()
+                        agent_memory.clear()
                         update_counter = 0
 
                     if env_done:    # done and print information
@@ -429,7 +426,9 @@ class Worker(threading.Thread):
         if done:
             reward_sum = 0.    # terminal
         else:
-            reward_sum = self.local_model(tf.convert_to_tensor(new_state, dtype=tf.float32))[-1].numpy()[0]
+            # Episode not done yet. Use Value-Function for approximated reward
+            _, value = self.local_model(tf.convert_to_tensor(new_state, dtype=tf.float32))
+            reward_sum = value[-1].numpy()[0]
 
         # Get discounted rewards
         discounted_rewards = []
@@ -438,9 +437,10 @@ class Worker(threading.Thread):
             discounted_rewards.append(reward_sum)
 
         discounted_rewards.reverse()
+        # For all visited states get policy/value
         logits, values = self.local_model(tf.convert_to_tensor(np.vstack(memory.states), dtype=tf.float32))
         
-        # Get our advantages
+        # Advantage = reward - value (expected reward)
         advantage = tf.convert_to_tensor(np.array(discounted_rewards), dtype=tf.float32) - values
         # Value loss
         value_loss = advantage ** 2
@@ -451,7 +451,7 @@ class Worker(threading.Thread):
 
         policy_loss = tf.nn.sparse_softmax_cross_entropy_with_logits(labels=memory.actions, logits=logits)
         policy_loss *= tf.stop_gradient(advantage)
-        policy_loss -= 0.01 * entropy
+        policy_loss -= 0.05 * entropy
         total_loss = tf.reduce_mean((0.5 * value_loss + policy_loss))
 
         return total_loss
