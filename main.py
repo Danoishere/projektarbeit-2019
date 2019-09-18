@@ -201,39 +201,36 @@ class MasterAgent():
             return
 
         res_queue = Queue()
-        """
-        w = Worker(STATE_SIZE,
-                            ACTION_SIZE,
-                            self.global_model,
-                            self.opt, res_queue,
-                            0,
-                            #save_dir=self.save_dir) for i in range(multiprocessing.cpu_count())]
-                           )
-        w.run()
+        if SHOULD_RENDER:
+            w = Worker(STATE_SIZE,
+                                ACTION_SIZE,
+                                self.global_model,
+                                self.opt, res_queue,
+                                0,
+                                #save_dir=self.save_dir) for i in range(multiprocessing.cpu_count())]
+                            )
+            w.run()
 
-    
-
-
-        """
-        workers = [Worker(STATE_SIZE,
-                            ACTION_SIZE,
-                            self.global_model,
-                            self.opt, res_queue,
-                            i) for i in range(multiprocessing.cpu_count())]
-                           #) for i in range(1)]
-        
-        for i, worker in enumerate(workers):
-            print("Starting worker {}".format(i))
-            worker.start()
-        
-        moving_average_rewards = []    # record episode reward to plot
-        while True:
-            reward = res_queue.get()
-            if reward is not None:
-                moving_average_rewards.append(reward)
-            else:
-                break
-        [w.join() for w in workers]
+        else:
+            workers = [Worker(STATE_SIZE,
+                                ACTION_SIZE,
+                                self.global_model,
+                                self.opt, res_queue,
+                                i) for i in range(multiprocessing.cpu_count())]
+                            #) for i in range(1)]
+            
+            for i, worker in enumerate(workers):
+                print("Starting worker {}".format(i))
+                worker.start()
+            
+            moving_average_rewards = []    # record episode reward to plot
+            while True:
+                reward = res_queue.get()
+                if reward is not None:
+                    moving_average_rewards.append(reward)
+                else:
+                    break
+            [w.join() for w in workers]
         
         #plt.plot(moving_average_rewards)
         plt.ylabel('Moving average ep reward')
@@ -243,7 +240,7 @@ class MasterAgent():
 
     def play(self):
         self.local_model = self.global_model
-        self.local_model.load_weights('model_prog.h5')
+        self.local_model.load_weights('model.h5')
         env_done = False
         ep_steps = 0
         reward_sum = 0
@@ -257,7 +254,7 @@ class MasterAgent():
         while True:
             current_observations = convert_global_obs(self.env.reset())
             env_renderer.set_new_rail()
-
+            pos = {}
             while not env_done and ep_steps < 200:
                 print(ep_steps)
                 actions = {}
@@ -269,10 +266,28 @@ class MasterAgent():
                     actions[i] = np.random.choice(ACTIONS, p=probs)
                     print('Agent', i ,'does action', actions[i] )
 
+                
+
                 current_observations, rewards, done, _ = self.env.step(actions)
                 current_observations = convert_global_obs(current_observations)
                 env_done = done['__all__']
                 env_renderer.render_env(show=True, frames=False, show_observations=True)
+
+                # End run if trains are stuck for more than 4 steps in same position
+                agents_state = tuple([i.position for i in self.env.agents])
+                if agents_state in pos.keys():
+                    pos[agents_state] += 1
+                else:
+                    pos[agents_state] = 1
+    
+                is_stuck = False
+                for state in pos:
+                    if pos[state] > 4:
+                        is_stuck = True
+                        env_done = True
+                        break
+
+
                 ep_steps += 1
 
             ep_steps = 0
@@ -331,21 +346,22 @@ class Worker(threading.Thread):
         mems = []
         for i in range(NUMBER_OF_AGENTS):
             mems.append(Memory())
+
         if SHOULD_RENDER:
             env_renderer = RenderTool(self.env)
         
         while Worker.global_episode < args.max_eps:
-            self.env.reset()
+            current_observations = convert_global_obs(self.env.reset())
             if SHOULD_RENDER:
                 env_renderer.set_new_rail()
-            current_observations = convert_global_obs(self.env.reset())
 
             ep_reward = 0.
             ep_steps = 0
-            self.ep_loss = 0
+            ep_loss = 0
 
             update_counter = 0
             env_done = False
+            pos = {}
 
             while not env_done and ep_steps < 200:
                 actions = {}
@@ -355,14 +371,25 @@ class Worker(threading.Thread):
                     logits, _ = self.local_model(obs_tensor)
                     probs = tf.nn.softmax(logits).numpy()[0]
                     actions[i] = np.random.choice(ACTIONS, p=probs)
-                    #print('Agent', i ,'does action', actions[i] )
 
                 next_observations, rewards, done, _ = self.env.step(actions)
+                next_observations = convert_global_obs(next_observations)
 
                 env_done = done['__all__']
-                for i in range(NUMBER_OF_AGENTS):
-                    if not done[i]:
-                        env_done = False
+                all_same = True
+
+                # End run if trains are stuck for more than 4 steps in same position
+                agents_state = tuple([i.position for i in self.env.agents])
+                if agents_state in pos.keys():
+                    pos[agents_state] += 1
+                else:
+                    pos[agents_state] = 1
+    
+                is_stuck = False
+                for state in pos:
+                    if pos[state] > 4:
+                        is_stuck = True
+                        env_done = True
                         break
 
                 for i in range(NUMBER_OF_AGENTS):
@@ -374,7 +401,6 @@ class Worker(threading.Thread):
                 if SHOULD_RENDER:
                     env_renderer.render_env(show=True, frames=False, show_observations=True)
 
-                next_observations = convert_global_obs(next_observations)
                 ep_reward += np.sum(np.fromiter(rewards.values(), dtype=float))
 
                 for i in range(NUMBER_OF_AGENTS):
@@ -397,8 +423,8 @@ class Worker(threading.Thread):
                                                             next_observation,
                                                             agent_memory,
                                                             args.gamma)
-                        self.ep_loss += total_loss
-                        print('Loss:', self.ep_loss)
+                        ep_loss += total_loss
+                        print('Loss:', ep_loss)
 
                         # Calculate local gradients
                         grads = tape.gradient(total_loss, self.local_model.trainable_weights)
@@ -410,11 +436,11 @@ class Worker(threading.Thread):
                         agent_memory.clear()
                         update_counter = 0
 
-                    if env_done:    # done and print information
+                    if env_done and not is_stuck:    # done and print information
                         Worker.global_moving_average_reward = \
                             record(Worker.global_episode, ep_reward, self.worker_idx,
                                         Worker.global_moving_average_reward, self.result_queue,
-                                        self.ep_loss, ep_steps)
+                                        ep_loss, ep_steps)
 
                         # We must use a lock to save our model and to print to prevent data races.
                         #if total_step % SAVE_INTERVAL_EPS == 0:
@@ -429,15 +455,17 @@ class Worker(threading.Thread):
                 update_counter += 1
                 current_observations = next_observations
                 total_step += 1
+            
                 
         self.result_queue.put(None)
 
-    def compute_loss(self,done,new_state,memory,gamma=0.99):
+    def compute_loss(self,done,last_state,memory,gamma=0.99):
         if done:
-            reward_sum = 0.    # terminal
+            # terminal
+            reward_sum = 0.    
         else:
-            # Episode not done yet. Use Value-Function for approximated reward
-            _, value = self.local_model(tf.convert_to_tensor(new_state, dtype=tf.float32))
+            # Episode not done yet. Use Value-Function for approximated remainding reward
+            _, value = self.local_model(tf.convert_to_tensor(last_state, dtype=tf.float32))
             reward_sum = value[-1].numpy()[0]
 
         # Get discounted rewards
