@@ -77,6 +77,7 @@ def create_env():
                                         seed=random.randint(0,100000)),
                 number_of_agents=NUMBER_OF_AGENTS,
                 obs_builder_object=RawObservation([20,20]))
+    env.invalid_action_penalty = -10
     return env
 
 def convert_global_obs(global_obs):
@@ -240,9 +241,9 @@ class RandomAgent:
 class MasterAgent():
     def __init__(self):
         env = create_env()
-        self.opt = tf.train.AdamOptimizer(0.0001, use_locking=True)
+        self.opt = tf.compat.v1.train.RMSPropOptimizer(0.0001, use_locking=True)
         self.global_model = create_model()
-        self.global_model.load_weights('model.h5')
+        #self.global_model.load_weights('model.h5')
 
         obs1 = tf.convert_to_tensor(np.random.random((1,5,20,20)), dtype=tf.float32)
         obs2 = tf.convert_to_tensor(np.random.random((1,6)), dtype=tf.float32)
@@ -416,6 +417,9 @@ class Worker(threading.Thread):
             env_done = False
             pos = {}
 
+            for i in range(NUMBER_OF_AGENTS):
+                dist[i] = 1000
+
             while not env_done and ep_steps < 200:
                 actions = {}
                 for i in range(NUMBER_OF_AGENTS):
@@ -451,7 +455,10 @@ class Worker(threading.Thread):
                     current_path_length = len(path_to_target)
                     last_path_length = dist[i]
                     if current_path_length < last_path_length:
-                        rewards[i] += 0.5
+                        rewards[i] += 0.2
+
+                    if actions[i] != 2:
+                        rewards[i] += 0.2
 
                     dist[i] = current_path_length
 
@@ -549,7 +556,7 @@ class Worker(threading.Thread):
 
         policy_loss = tf.nn.sparse_softmax_cross_entropy_with_logits(labels=memory.actions, logits=logits)
         policy_loss *= tf.stop_gradient(advantage)
-        policy_loss -= 0.03 * entropy
+        policy_loss -= 0.01 * entropy
         total_loss = tf.reduce_mean((0.5 * value_loss + policy_loss))
 
         return total_loss
