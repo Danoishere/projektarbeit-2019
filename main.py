@@ -51,22 +51,30 @@ SHOULD_RENDER = False
 SAVE_INTERVAL_EPS = 50
 STATE_SIZE = (5,10,10)
 MAX_EPISODES_PLAY = 20
-simplicity_start = 0.5
 
-rail_generator= complex_rail_generator( nr_start_goal=6,
-                                        nr_extra=4,
+
+simplicity_start = 2.5
+
+
+def update_rail_gen(env):
+    global simplicity_start
+    simplicity_start += 0.001
+    current_difficulty = int(np.ceil(simplicity_start))
+    env.rail_generator = complex_rail_generator( nr_start_goal=current_difficulty,
+                                        nr_extra=current_difficulty+1,
                                         min_dist=5,
                                         max_dist=99999,
                                         seed=random.randint(0,100000))
 
 def create_env():
-    global simplicity_start
-    simplicity_start += 0.001
-    current_difficulty = int(np.ceil(simplicity_start))
     env = RailEnv(
                 width=10,
                 height=10,
-                rail_generator = rail_generator,
+                rail_generator = complex_rail_generator( nr_start_goal=6,
+                                        nr_extra=4,
+                                        min_dist=5,
+                                        max_dist=99999,
+                                        seed=random.randint(0,100000)),
                 number_of_agents=NUMBER_OF_AGENTS,
                 obs_builder_object=RawObservation([20,20]))
     return env
@@ -125,6 +133,9 @@ def create_model():
     v = concatenate([v,res_i1,i2])
     v = Dense(300, activation='relu')(v)
     v = Dense(200, activation='relu')(v)
+    v = Dense(200, activation='relu')(v)
+    v = Dense(200, activation='relu')(v)
+    v = Dense(200, activation='relu')(v)
     v = Dense(100, activation='relu')(v)
     value = Dense(1)(v)
 
@@ -140,18 +151,19 @@ def create_model():
     i = concatenate([f1,r])
 
     # Policy network
-    v = Dense(300, activation='relu')(i)
-    v = Dense(300, activation='relu')(v)
-    v = Dense(300, activation='relu')(v)
-    v = concatenate([v,res_i1,i2])
-    v = Dense(300, activation='relu')(v)
-    v = Dense(200, activation='relu')(v)
-    v = Dense(100, activation='relu')(v)
-    value = Dense(1)(v)
-    policy = Dense(ACTION_SIZE)(v)
+    p = Dense(300, activation='relu')(i)
+    p = Dense(300, activation='relu')(p)
+    p = Dense(300, activation='relu')(p)
+    p = concatenate([p,res_i1,i2])
+    p = Dense(300, activation='relu')(p)
+    p = Dense(200, activation='relu')(p)
+    p = Dense(200, activation='relu')(p)
+    p = Dense(200, activation='relu')(p)
+    p = Dense(200, activation='relu')(p)
+    p = Dense(100, activation='relu')(p)
+    policy = Dense(ACTION_SIZE)(p)
 
     model = Model(inputs=[i1,i2], outputs=[policy,value])
-    print(model.summary())
     return model
 
 def record(episode,
@@ -230,7 +242,7 @@ class MasterAgent():
         env = create_env()
         self.opt = tf.train.AdamOptimizer(0.0001, use_locking=True)
         self.global_model = create_model()
-        #self.global_model.load_weights('model.h5')
+        self.global_model.load_weights('model.h5')
 
         obs1 = tf.convert_to_tensor(np.random.random((1,5,20,20)), dtype=tf.float32)
         obs2 = tf.convert_to_tensor(np.random.random((1,6)), dtype=tf.float32)
@@ -283,7 +295,7 @@ class MasterAgent():
 
     def play(self):
         self.local_model = self.global_model
-        #self.local_model.load_weights('model.h5')
+        self.local_model.load_weights('model.h5')
         env_done = False
         ep_steps = 0
         reward_sum = 0
@@ -303,7 +315,8 @@ class MasterAgent():
                 actions = {}
                 for i in range(NUMBER_OF_AGENTS):
                     current_observation = current_observations[i]
-                    logits, _ = self.local_model(current_observation)
+                    t_obs = single_obs_to_tensor(current_observation)
+                    logits, _ = self.local_model(t_obs)
                     probs = tf.nn.softmax(logits).numpy()[0]
                     actions[i] = np.random.choice(ACTIONS, p=probs)
                     print('Agent', i ,'does action', actions[i] )
@@ -381,13 +394,16 @@ class Worker(threading.Thread):
     def run(self):
         total_step = 1
         mems = []
+        dist = []
         for i in range(NUMBER_OF_AGENTS):
             mems.append(Memory())
+            dist.append(1000)
 
         if SHOULD_RENDER:
             env_renderer = RenderTool(self.env)
         
         while Worker.global_episode < args.max_eps:
+            update_rail_gen(self.env)
             current_observations = convert_global_obs(self.env.reset())
             if SHOULD_RENDER:
                 env_renderer.set_new_rail()
@@ -407,12 +423,12 @@ class Worker(threading.Thread):
                     logits, _ = self.local_model(single_obs_to_tensor(current_observation))
                     probs = tf.nn.softmax(logits).numpy()[0]
                     actions[i] = np.random.choice(ACTIONS, p=probs)
+                    # print('Agent', i ,'does action', actions[i] )
 
                 next_observations, rewards, done, _ = self.env.step(actions)
                 next_observations = convert_global_obs(next_observations)
 
                 env_done = done['__all__']
-                all_same = True
 
                 # End run if trains are stuck for more than 4 steps in same position
                 agents_state = tuple([i.position for i in self.env.agents])
@@ -432,7 +448,12 @@ class Worker(threading.Thread):
                     agent = self.env.agents[i]
                     grid = np.zeros((10,10),dtype=np.uint16)
                     path_to_target = a_star(self.env.rail.transitions, grid, agent.position, agent.target)
-                    rewards[i] += 1/(len(path_to_target)+3)
+                    current_path_length = len(path_to_target)
+                    last_path_length = dist[i]
+                    if current_path_length < last_path_length:
+                        rewards[i] += 0.75
+
+                    dist[i] = current_path_length
 
                 if SHOULD_RENDER:
                     env_renderer.render_env(show=True, frames=False, show_observations=True)
@@ -483,7 +504,7 @@ class Worker(threading.Thread):
                         with Worker.save_lock:
                             print(f'Saving model with: {ep_reward}')
                             current_time = datetime.now().strftime('%H_%M_%S')
-                            self.global_model.save_weights('model_'+ current_time +'_'+str(ep_reward)+'.h5')
+                            self.global_model.save_weights('model_'+ current_time +'_'+str(ep_reward)+'_'+str(simplicity_start)+'.h5')
                             Worker.best_score = ep_reward
                         Worker.global_episode += 1
                         
@@ -503,7 +524,7 @@ class Worker(threading.Thread):
             # Episode not done yet. Use Value-Function for approximated remainding reward
             last_state = single_obs_to_tensor(last_state)
             _, value = self.local_model(last_state)
-            reward_sum = value[-1].numpy()[0]
+            reward_sum = value.numpy()[0]
 
         # Get discounted rewards
         discounted_rewards = []
@@ -528,7 +549,7 @@ class Worker(threading.Thread):
 
         policy_loss = tf.nn.sparse_softmax_cross_entropy_with_logits(labels=memory.actions, logits=logits)
         policy_loss *= tf.stop_gradient(advantage)
-        policy_loss -= 0.01 * entropy
+        policy_loss -= 0.03 * entropy
         total_loss = tf.reduce_mean((0.5 * value_loss + policy_loss))
 
         return total_loss
