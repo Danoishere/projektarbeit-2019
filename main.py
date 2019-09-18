@@ -10,6 +10,7 @@ import matplotlib.pyplot as plt
 import time
 import tensorflow as tf
 
+from datetime import datetime
 from queue import Queue
 from tensorflow.python import keras
 from tensorflow.python.keras import layers
@@ -42,17 +43,17 @@ parser.add_argument('--save-dir', default='/tmp/', type=str,
                                         help='Directory in which you desire to save the model.')
 args = parser.parse_args()
 
-NUMBER_OF_AGENTS = 1
+NUMBER_OF_AGENTS = 3
 ACTIONS = [0,1,2,3,4]
 ACTION_SIZE = len(ACTIONS)
 SHOULD_RENDER = False
-
+SAVE_INTERVAL_EPS = 50
 STATE_SIZE = (26,100,1)
 
 simplicity_start = 0.5
 
-rail_generator= complex_rail_generator( nr_start_goal=3,
-                                        nr_extra=2,
+rail_generator= complex_rail_generator( nr_start_goal=6,
+                                        nr_extra=4,
                                         min_dist=5,
                                         max_dist=99999,
                                         seed=random.randint(0,100000))
@@ -87,7 +88,7 @@ def create_model():
 
     c = Conv2D(20, kernel_size=5)(input)
     c = MaxPooling2D()(c)
-    c = Conv2D(20, kernel_size=5)(c)
+    c = Conv2D(20, kernel_size=10)(c)
     c = MaxPooling2D()(c)
     f = Flatten()(c)
     
@@ -101,7 +102,7 @@ def create_model():
 
     c = Conv2D(20, kernel_size=5)(input)
     c = MaxPooling2D()(c)
-    c = Conv2D(20, kernel_size=5)(c)
+    c = Conv2D(20, kernel_size=10)(c)
     c = MaxPooling2D()(c)
     f = Flatten()(c)
 
@@ -190,6 +191,7 @@ class MasterAgent():
         env = create_env()
         self.opt = tf.train.AdamOptimizer(0.0001, use_locking=True)
         self.global_model = create_model()
+        self.global_model.load_weights('model.h5')
         self.global_model(tf.convert_to_tensor(np.random.random((1,26,100,1)), dtype=tf.float32))
 
     def train(self):
@@ -241,7 +243,7 @@ class MasterAgent():
 
     def play(self):
         self.local_model = self.global_model
-        self.local_model.load_weights('model.h5')
+        self.local_model.load_weights('model_22_36_01.h5')
         env_done = False
         ep_steps = 0
         reward_sum = 0
@@ -252,7 +254,6 @@ class MasterAgent():
         env_renderer = RenderTool(self.env)
 
         while not env_done and ep_steps < 200:
-            print(ep_steps)
             actions = {}
             for i in range(NUMBER_OF_AGENTS):
                 current_observation = current_observations[i]
@@ -260,7 +261,7 @@ class MasterAgent():
                 logits, _ = self.local_model(obs_tensor)
                 probs = tf.nn.softmax(logits).numpy()[0]
                 actions[i] = np.random.choice(ACTIONS, p=probs)
-                print('Agent', i ,'does action', actions[i] )
+                #print('Agent', i ,'does action', actions[i] )
 
             current_observations, rewards, done, _ = self.env.step(actions)
             current_observations = convert_global_obs(current_observations)
@@ -338,7 +339,6 @@ class Worker(threading.Thread):
             env_done = False
 
             while not env_done and ep_steps < 200:
-                print(ep_steps)
                 actions = {}
                 for i in range(NUMBER_OF_AGENTS):
                     current_observation = current_observations[i]
@@ -346,7 +346,7 @@ class Worker(threading.Thread):
                     logits, _ = self.local_model(obs_tensor)
                     probs = tf.nn.softmax(logits).numpy()[0]
                     actions[i] = np.random.choice(ACTIONS, p=probs)
-                    print('Agent', i ,'does action', actions[i] )
+                    #print('Agent', i ,'does action', actions[i] )
 
                 next_observations, rewards, done, _ = self.env.step(actions)
 
@@ -360,7 +360,7 @@ class Worker(threading.Thread):
                     agent = self.env.agents[i]
                     grid = np.zeros((10,10),dtype=np.uint16)
                     path_to_target = a_star(self.env.rail.transitions, grid, agent.position, agent.target)
-                    rewards[i] += 1/len(path_to_target)
+                    rewards[i] += 1/(len(path_to_target)+3)
 
                 if SHOULD_RENDER:
                     env_renderer.render_env(show=True, frames=False, show_observations=True)
@@ -408,11 +408,12 @@ class Worker(threading.Thread):
                                         self.ep_loss, ep_steps)
 
                         # We must use a lock to save our model and to print to prevent data races.
-                        if ep_reward > Worker.best_score:
-                            with Worker.save_lock:
-                                print(f'Saving model with: {ep_reward}')
-                                self.global_model.save_weights('model.h5')
-                                Worker.best_score = ep_reward
+                        #if total_step % SAVE_INTERVAL_EPS == 0:
+                        with Worker.save_lock:
+                            print(f'Saving model with: {ep_reward}')
+                            current_time = datetime.now().strftime('%H_%M_%S')
+                            self.global_model.save_weights('model_'+ current_time +'_'+str(ep_reward)+'.h5')
+                            Worker.best_score = ep_reward
                         Worker.global_episode += 1
                         
                 ep_steps += 1
@@ -451,7 +452,7 @@ class Worker(threading.Thread):
 
         policy_loss = tf.nn.sparse_softmax_cross_entropy_with_logits(labels=memory.actions, logits=logits)
         policy_loss *= tf.stop_gradient(advantage)
-        policy_loss -= 0.05 * entropy
+        policy_loss -= 0.01 * entropy
         total_loss = tf.reduce_mean((0.5 * value_loss + policy_loss))
 
         return total_loss
