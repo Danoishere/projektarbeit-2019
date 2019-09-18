@@ -49,7 +49,7 @@ ACTION_SIZE = len(ACTIONS)
 SHOULD_RENDER = False
 SAVE_INTERVAL_EPS = 50
 STATE_SIZE = (26,100,1)
-
+MAX_EPISODES_PLAY = 20
 simplicity_start = 0.5
 
 rail_generator= complex_rail_generator( nr_start_goal=6,
@@ -243,31 +243,40 @@ class MasterAgent():
 
     def play(self):
         self.local_model = self.global_model
-        self.local_model.load_weights('model_22_36_01.h5')
+        self.local_model.load_weights('model_prog.h5')
         env_done = False
         ep_steps = 0
         reward_sum = 0
+        ep_num = 0
 
         self.env = create_env()
         self.env.reset()
-        current_observations = convert_global_obs(self.env.reset())
+        
         env_renderer = RenderTool(self.env)
 
-        while not env_done and ep_steps < 200:
-            actions = {}
-            for i in range(NUMBER_OF_AGENTS):
-                current_observation = current_observations[i]
-                obs_tensor = tf.convert_to_tensor(current_observation, dtype=tf.float32)
-                logits, _ = self.local_model(obs_tensor)
-                probs = tf.nn.softmax(logits).numpy()[0]
-                actions[i] = np.random.choice(ACTIONS, p=probs)
-                #print('Agent', i ,'does action', actions[i] )
+        while True:
+            current_observations = convert_global_obs(self.env.reset())
+            env_renderer.set_new_rail()
 
-            current_observations, rewards, done, _ = self.env.step(actions)
-            current_observations = convert_global_obs(current_observations)
-            env_done = done['__all__']
-            env_renderer.render_env(show=True, frames=False, show_observations=True)
-            ep_steps += 1
+            while not env_done and ep_steps < 200:
+                print(ep_steps)
+                actions = {}
+                for i in range(NUMBER_OF_AGENTS):
+                    current_observation = current_observations[i]
+                    obs_tensor = tf.convert_to_tensor(current_observation, dtype=tf.float32)
+                    logits, _ = self.local_model(obs_tensor)
+                    probs = tf.nn.softmax(logits).numpy()[0]
+                    actions[i] = np.random.choice(ACTIONS, p=probs)
+                    print('Agent', i ,'does action', actions[i] )
+
+                current_observations, rewards, done, _ = self.env.step(actions)
+                current_observations = convert_global_obs(current_observations)
+                env_done = done['__all__']
+                env_renderer.render_env(show=True, frames=False, show_observations=True)
+                ep_steps += 1
+
+            ep_steps = 0
+            env_done = False
 
 
 
