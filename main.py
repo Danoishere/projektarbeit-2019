@@ -34,7 +34,7 @@ parser.add_argument('--train', dest='train', action='store_true',
                                         help='Train our model.')
 parser.add_argument('--lr', default=0.001,
                                         help='Learning rate for the shared optimizer.')
-parser.add_argument('--update-freq', default=20, type=int,
+parser.add_argument('--update-freq', default=200, type=int,
                                         help='How often to update the global model.')
 parser.add_argument('--max-eps', default=100000, type=int,
                                         help='Global maximum number of episodes to run.')
@@ -44,7 +44,7 @@ parser.add_argument('--save-dir', default='/tmp/', type=str,
                                         help='Directory in which you desire to save the model.')
 args = parser.parse_args()
 
-NUMBER_OF_AGENTS = 3
+NUMBER_OF_AGENTS = 1
 ACTIONS = [0,1,2,3,4]
 ACTION_SIZE = len(ACTIONS)
 SHOULD_RENDER = False
@@ -53,7 +53,7 @@ STATE_SIZE = (5,10,10)
 MAX_EPISODES_PLAY = 20
 
 
-simplicity_start = 2.5
+simplicity_start = 3.5
 
 
 def update_rail_gen(env):
@@ -61,10 +61,10 @@ def update_rail_gen(env):
     simplicity_start += 0.001
     current_difficulty = int(np.ceil(simplicity_start))
     env.rail_generator = complex_rail_generator( nr_start_goal=current_difficulty,
-                                        nr_extra=current_difficulty+1,
+                                        nr_extra=current_difficulty,
                                         min_dist=5,
                                         max_dist=99999,
-                                        seed=random.randint(0,100000))
+                                        seed=random.randint(0,100000))                                  
 
 def create_env():
     env = RailEnv(
@@ -423,7 +423,7 @@ class Worker(threading.Thread):
                     logits, _ = self.local_model(single_obs_to_tensor(current_observation))
                     probs = tf.nn.softmax(logits).numpy()[0]
                     actions[i] = np.random.choice(ACTIONS, p=probs)
-                    # print('Agent', i ,'does action', actions[i] )
+                    print('Agent', i ,'does action', actions[i] )
 
                 next_observations, rewards, done, _ = self.env.step(actions)
                 next_observations = convert_global_obs(next_observations)
@@ -451,7 +451,7 @@ class Worker(threading.Thread):
                     current_path_length = len(path_to_target)
                     last_path_length = dist[i]
                     if current_path_length < last_path_length:
-                        rewards[i] += 0.75
+                        rewards[i] += 0.5
 
                     dist[i] = current_path_length
 
@@ -481,7 +481,7 @@ class Worker(threading.Thread):
                                                             agent_memory,
                                                             args.gamma)
                         ep_loss += total_loss
-                        print('Loss:', ep_loss)
+                        #print('Loss:', ep_loss)
 
                         # Calculate local gradients
                         grads = tape.gradient(total_loss, self.local_model.trainable_weights)
