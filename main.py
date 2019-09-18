@@ -15,7 +15,7 @@ from queue import Queue
 from tensorflow.python import keras
 from tensorflow.python.keras import layers
 from tensorflow.python.keras.models import Model
-from tensorflow.python.keras.layers import Dense, Input, Flatten, Conv2D, MaxPooling2D
+from tensorflow.python.keras.layers import Dense, Input, Flatten, Conv2D, MaxPooling2D,concatenate
 
 from observation import RawObservation
 from flatland.envs.rail_env import RailEnv
@@ -49,7 +49,7 @@ ACTIONS = [0,1,2,3,4]
 ACTION_SIZE = len(ACTIONS)
 SHOULD_RENDER = False
 SAVE_INTERVAL_EPS = 50
-STATE_SIZE = (26,100,1)
+STATE_SIZE = (5,10,10)
 MAX_EPISODES_PLAY = 20
 simplicity_start = 0.5
 
@@ -68,44 +68,70 @@ def create_env():
                 height=10,
                 rail_generator = rail_generator,
                 number_of_agents=NUMBER_OF_AGENTS,
-                obs_builder_object=RawObservation())
+                obs_builder_object=RawObservation([20,20]))
     return env
 
 def convert_global_obs(global_obs):
 
-    new_obs = {}
-    for handle in global_obs:
-        agent_obs = global_obs[handle]
-        agent_obs = np.concatenate([agent_obs[0],agent_obs[1],agent_obs[2]],axis=2)
-        agent_obs = np.reshape(agent_obs,(1,26,100,1))
-        new_obs[handle] = agent_obs
+    observations = []
 
-    return new_obs
+    for i in range(NUMBER_OF_AGENTS):
+        agent_obs = global_obs[i]
+        state1 = np.array(agent_obs[0])
+        state2 = np.array(agent_obs[1])
+        observation1 = state1.astype(np.float).reshape((1,state1.shape[0],state1.shape[1],state1.shape[2]))
+        observation2 = state2.astype(np.float).reshape((1,state2.shape[0]))
+        observations.append([observation1, observation2])
+
+
+    return observations
+
+def single_obs_to_tensor(observation):
+    obs1 = tf.convert_to_tensor(observation[0])
+    obs2 = tf.convert_to_tensor(observation[1])
+    return [obs1,obs2]
+
+def obs_list_to_tensor(observations):
+    t_obs1 = []
+    t_obs2 = []
+    for i in range(len(observations)):
+        observation = observations[i]
+        t_obs1.append(observation[0][0])
+        t_obs2.append(observation[1][0])
+
+    t_obs1 = tf.convert_to_tensor(t_obs1)
+    t_obs2 = tf.convert_to_tensor(t_obs2)
+    return [t_obs1,t_obs2]
 
 
 def create_model():
-    batch_size=10
-    input = Input(shape=(26,100,1),batch_size=batch_size)
-
+    batch_size=21
+    i1 = Input(shape=(5,20,20),batch_size=batch_size)
+    f1 = Flatten()(i1)
+    i2 = Input(shape=(6,),batch_size=batch_size)
+    i = concatenate([f1,i2])
+    """
     c = Conv2D(20, kernel_size=5)(input)
     c = MaxPooling2D()(c)
     c = Conv2D(20, kernel_size=10)(c)
     c = MaxPooling2D()(c)
-    f = Flatten()(c)
+    """
+    
     
     # Value network
-    v = Dense(100, activation='relu')(f)
+    v = Dense(100, activation='relu')(i)
     v = Dense(100, activation='relu')(v)
     v = Dense(100, activation='relu')(v)
 
     v = Dense(100, activation='relu')(v)
     value = Dense(1)(v)
-
+    """
     c = Conv2D(20, kernel_size=5)(input)
     c = MaxPooling2D()(c)
     c = Conv2D(20, kernel_size=10)(c)
     c = MaxPooling2D()(c)
-    f = Flatten()(c)
+    """
+    f = Flatten()(i)
 
     # Policy network
     p = Dense(100, activation='relu')(f)
@@ -113,7 +139,7 @@ def create_model():
     p = Dense(100, activation='relu')(p)
     policy = Dense(ACTION_SIZE)(p)
 
-    model = Model(inputs=input, outputs=[policy,value])
+    model = Model(inputs=[i1,i2], outputs=[policy,value])
     return model
 
 def record(episode,
@@ -192,8 +218,12 @@ class MasterAgent():
         env = create_env()
         self.opt = tf.train.AdamOptimizer(0.0001, use_locking=True)
         self.global_model = create_model()
-        self.global_model.load_weights('model.h5')
-        self.global_model(tf.convert_to_tensor(np.random.random((1,26,100,1)), dtype=tf.float32))
+        #self.global_model.load_weights('model.h5')
+
+        obs1 = tf.convert_to_tensor(np.random.random((1,5,20,20)), dtype=tf.float32)
+        obs2 = tf.convert_to_tensor(np.random.random((1,6)), dtype=tf.float32)
+
+        self.global_model([obs1,obs2])
 
     def train(self):
         if args.algorithm == 'random':
@@ -241,7 +271,7 @@ class MasterAgent():
 
     def play(self):
         self.local_model = self.global_model
-        self.local_model.load_weights('model.h5')
+        #self.local_model.load_weights('model.h5')
         env_done = False
         ep_steps = 0
         reward_sum = 0
@@ -261,13 +291,10 @@ class MasterAgent():
                 actions = {}
                 for i in range(NUMBER_OF_AGENTS):
                     current_observation = current_observations[i]
-                    obs_tensor = tf.convert_to_tensor(current_observation, dtype=tf.float32)
-                    logits, _ = self.local_model(obs_tensor)
+                    logits, _ = self.local_model(current_observation)
                     probs = tf.nn.softmax(logits).numpy()[0]
                     actions[i] = np.random.choice(ACTIONS, p=probs)
                     print('Agent', i ,'does action', actions[i] )
-
-                
 
                 current_observations, rewards, done, _ = self.env.step(actions)
                 current_observations = convert_global_obs(current_observations)
@@ -365,8 +392,7 @@ class Worker(threading.Thread):
                 actions = {}
                 for i in range(NUMBER_OF_AGENTS):
                     current_observation = current_observations[i]
-                    obs_tensor = tf.convert_to_tensor(current_observation, dtype=tf.float32)
-                    logits, _ = self.local_model(obs_tensor)
+                    logits, _ = self.local_model(single_obs_to_tensor(current_observation))
                     probs = tf.nn.softmax(logits).numpy()[0]
                     actions[i] = np.random.choice(ACTIONS, p=probs)
 
@@ -463,7 +489,8 @@ class Worker(threading.Thread):
             reward_sum = 0.    
         else:
             # Episode not done yet. Use Value-Function for approximated remainding reward
-            _, value = self.local_model(tf.convert_to_tensor(last_state, dtype=tf.float32))
+            last_state = single_obs_to_tensor(last_state)
+            _, value = self.local_model(last_state)
             reward_sum = value[-1].numpy()[0]
 
         # Get discounted rewards
@@ -473,11 +500,13 @@ class Worker(threading.Thread):
             discounted_rewards.append(reward_sum)
 
         discounted_rewards.reverse()
+        #states = np.vstack(memory.states)
         # For all visited states get policy/value
-        logits, values = self.local_model(tf.convert_to_tensor(np.vstack(memory.states), dtype=tf.float32))
+        states = obs_list_to_tensor(memory.states)
+        logits, values = self.local_model(states)
         
         # Advantage = reward - value (expected reward)
-        advantage = tf.convert_to_tensor(np.array(discounted_rewards), dtype=tf.float32) - values
+        advantage = np.array(discounted_rewards) - values
         # Value loss
         value_loss = advantage ** 2
 

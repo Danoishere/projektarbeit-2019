@@ -164,12 +164,10 @@ class RawObservation(ObservationBuilder):
         my_target_ = np.zeros_like(smap)
         if target[0]>= x0 and target[0]< x0 + b0 \
                 and target[1]>= x1 and target[1]< x1 + b1:
-                    
                     my_target_[target[0]-x0][target[1]-x1] = 0.5
         
       
         self.observation_space = np.stack(( smap,agent_positions_,agent_targets_,my_position_,my_target_))
-  
         self.observation_space = [self.observation_space, self.get_target_vec(target,position,direction)]
         return self.observation_space
 

@@ -10,7 +10,7 @@
             "request": "launch",
             "program": "${workspaceFolder}/main.py",
             "justMyCode": true,
-            "args": [""],
+            "args": ["--train"],
             "console": "integratedTerminal"
         }
     ]
