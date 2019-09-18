@@ -72,9 +72,7 @@ def create_env():
     return env
 
 def convert_global_obs(global_obs):
-
     observations = []
-
     for i in range(NUMBER_OF_AGENTS):
         agent_obs = global_obs[i]
         state1 = np.array(agent_obs[0])
@@ -83,12 +81,11 @@ def convert_global_obs(global_obs):
         observation2 = state2.astype(np.float).reshape((1,state2.shape[0]))
         observations.append([observation1, observation2])
 
-
     return observations
 
 def single_obs_to_tensor(observation):
-    obs1 = tf.convert_to_tensor(observation[0])
-    obs2 = tf.convert_to_tensor(observation[1])
+    obs1 = tf.convert_to_tensor(observation[0], dtype=tf.float32)
+    obs2 = tf.convert_to_tensor(observation[1], dtype=tf.float32)
     return [obs1,obs2]
 
 def obs_list_to_tensor(observations):
@@ -99,47 +96,62 @@ def obs_list_to_tensor(observations):
         t_obs1.append(observation[0][0])
         t_obs2.append(observation[1][0])
 
-    t_obs1 = tf.convert_to_tensor(t_obs1)
-    t_obs2 = tf.convert_to_tensor(t_obs2)
+    t_obs1 = tf.convert_to_tensor(t_obs1, dtype=tf.float32)
+    t_obs2 = tf.convert_to_tensor(t_obs2, dtype=tf.float32)
     return [t_obs1,t_obs2]
 
 
 def create_model():
     batch_size=21
     i1 = Input(shape=(5,20,20),batch_size=batch_size)
-    f1 = Flatten()(i1)
+    c = Conv2D(20, kernel_size=(2,5))(i1)
+    c = MaxPooling2D()(c)
+    c = Conv2D(20, kernel_size=(1,5))(c)
+    c = MaxPooling2D()(c)
+    f1 = Flatten()(c)
+
+    res_i1 = Flatten()(i1)
+
     i2 = Input(shape=(6,),batch_size=batch_size)
-    i = concatenate([f1,i2])
-    """
-    c = Conv2D(20, kernel_size=5)(input)
-    c = MaxPooling2D()(c)
-    c = Conv2D(20, kernel_size=10)(c)
-    c = MaxPooling2D()(c)
-    """
-    
+    r = Dense(64)(i2)
+    r = Dense(64)(r)
+    r = Flatten()(r)
+    i = concatenate([f1,r])
     
     # Value network
-    v = Dense(100, activation='relu')(i)
-    v = Dense(100, activation='relu')(v)
-    v = Dense(100, activation='relu')(v)
-
+    v = Dense(300, activation='relu')(i)
+    v = Dense(300, activation='relu')(v)
+    v = Dense(300, activation='relu')(v)
+    v = concatenate([v,res_i1,i2])
+    v = Dense(300, activation='relu')(v)
+    v = Dense(200, activation='relu')(v)
     v = Dense(100, activation='relu')(v)
     value = Dense(1)(v)
-    """
-    c = Conv2D(20, kernel_size=5)(input)
+
+    c = Conv2D(20, kernel_size=(2,5))(i1)
     c = MaxPooling2D()(c)
-    c = Conv2D(20, kernel_size=10)(c)
+    c = Conv2D(20, kernel_size=(1,5))(c)
     c = MaxPooling2D()(c)
-    """
-    f = Flatten()(i)
+    f1 = Flatten()(c)
+
+    r = Dense(64)(i2)
+    r = Dense(64)(r)
+    r = Flatten()(r)
+    i = concatenate([f1,r])
 
     # Policy network
-    p = Dense(100, activation='relu')(f)
-    p = Dense(100, activation='relu')(p)
-    p = Dense(100, activation='relu')(p)
-    policy = Dense(ACTION_SIZE)(p)
+    v = Dense(300, activation='relu')(i)
+    v = Dense(300, activation='relu')(v)
+    v = Dense(300, activation='relu')(v)
+    v = concatenate([v,res_i1,i2])
+    v = Dense(300, activation='relu')(v)
+    v = Dense(200, activation='relu')(v)
+    v = Dense(100, activation='relu')(v)
+    value = Dense(1)(v)
+    policy = Dense(ACTION_SIZE)(v)
 
     model = Model(inputs=[i1,i2], outputs=[policy,value])
+    print(model.summary())
     return model
 
 def record(episode,
