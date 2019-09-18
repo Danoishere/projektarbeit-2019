@@ -17,6 +17,7 @@ from tensorflow.python.keras import layers
 from tensorflow.python.keras.models import Model
 from tensorflow.python.keras.layers import Dense, Input, Flatten, Conv2D, MaxPooling2D
 
+from observation import RawObservation
 from flatland.envs.rail_env import RailEnv
 from flatland.utils.rendertools import RenderTool
 from flatland.envs.observations import TreeObsForRailEnv, LocalObsForRailEnv, GlobalObsForRailEnv
@@ -67,7 +68,7 @@ def create_env():
                 height=10,
                 rail_generator = rail_generator,
                 number_of_agents=NUMBER_OF_AGENTS,
-                obs_builder_object=GlobalObsForRailEnv())
+                obs_builder_object=RawObservation())
     return env
 
 def convert_global_obs(global_obs):
@@ -292,9 +293,6 @@ class MasterAgent():
 
             ep_steps = 0
             env_done = False
-
-
-
 
 class Memory:
     def __init__(self):
