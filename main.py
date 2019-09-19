@@ -21,7 +21,7 @@ from observation import RawObservation
 from flatland.envs.rail_env import RailEnv
 from flatland.utils.rendertools import RenderTool
 from flatland.envs.observations import TreeObsForRailEnv, LocalObsForRailEnv, GlobalObsForRailEnv
-from flatland.envs.generators import complex_rail_generator
+from flatland.envs.generators import complex_rail_generator, 
 from flatland.core.grid.grid4_astar import a_star
 
 tf.enable_eager_execution()
