@@ -8,6 +8,8 @@ This code is not exhaustive and "is as it is"!
 
 from flatland.core.env_observation_builder import ObservationBuilder
 from flatland.core.transition_map import GridTransitionMap
+from flatland.core.grid.grid4_astar import a_star
+
 import numpy as np
 
 class RawObservation(ObservationBuilder):
@@ -122,8 +124,9 @@ class RawObservation(ObservationBuilder):
         map_ = self.convert_grid(self.env.rail.grid)
         
         agents = self.env.agents
-        target = agents[handle].target
-        position = agents[handle].position
+        agent = agents[handle]
+        target = agent.target
+        position = agent.position
         
         x0,x1,y0,y1,b0,b1 = self.slice_map(position)
 
@@ -132,6 +135,13 @@ class RawObservation(ObservationBuilder):
 
         agent_positions_ = np.zeros_like(smap)
         agent_targets_ = np.zeros_like(smap)
+        path_to_target_ = np.zeros_like(smap, dtype=np.uint16)
+
+        path = a_star(self.env.rail.transitions, path_to_target_,agent.position,agent.target)
+        for p in path:
+            path_to_target_[p[0]-x0][p[1]-x1] = 1
+        path_to_target_ = path_to_target_.astype(np.float32)
+
         size_half_0 = int(self.size_[0]/2)
         size_half_1 = int(self.size_[1]/2)
         for handle_, agent in enumerate(agents):
@@ -167,7 +177,7 @@ class RawObservation(ObservationBuilder):
                     my_target_[target[0]-x0][target[1]-x1] = 0.5
         
       
-        self.observation_space = np.stack(( smap,agent_positions_,agent_targets_,my_position_,my_target_))
+        self.observation_space = np.stack(( smap,agent_positions_,agent_targets_,my_position_,my_target_,path_to_target_))
         self.observation_space = [self.observation_space, self.get_target_vec(target,position,direction)]
         return self.observation_space
 

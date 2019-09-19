@@ -34,7 +34,7 @@ parser.add_argument('--train', dest='train', action='store_true',
                                         help='Train our model.')
 parser.add_argument('--lr', default=0.001,
                                         help='Learning rate for the shared optimizer.')
-parser.add_argument('--update-freq', default=200, type=int,
+parser.add_argument('--update-freq', default=20, type=int,
                                         help='How often to update the global model.')
 parser.add_argument('--max-eps', default=100000, type=int,
                                         help='Global maximum number of episodes to run.')
@@ -44,23 +44,23 @@ parser.add_argument('--save-dir', default='/tmp/', type=str,
                                         help='Directory in which you desire to save the model.')
 args = parser.parse_args()
 
-NUMBER_OF_AGENTS = 1
+NUMBER_OF_AGENTS = 3
 ACTIONS = [0,1,2,3,4]
 ACTION_SIZE = len(ACTIONS)
 SHOULD_RENDER = False
 SAVE_INTERVAL_EPS = 50
-STATE_SIZE = (5,10,10)
+STATE_SIZE = (6,20,20)
 MAX_EPISODES_PLAY = 20
 
 
-simplicity_start = 3.5
+simplicity_start = 0
 
 
 def update_rail_gen(env):
     global simplicity_start
     simplicity_start += 0.001
-    current_difficulty = int(np.ceil(simplicity_start))
-    env.rail_generator = complex_rail_generator( nr_start_goal=current_difficulty,
+    current_difficulty = int(np.round(simplicity_start))
+    env.rail_generator = complex_rail_generator( nr_start_goal=np.max([current_difficulty,NUMBER_OF_AGENTS]),
                                         nr_extra=current_difficulty,
                                         min_dist=5,
                                         max_dist=99999,
@@ -68,8 +68,8 @@ def update_rail_gen(env):
 
 def create_env():
     env = RailEnv(
-                width=10,
-                height=10,
+                width=20,
+                height=20,
                 rail_generator = complex_rail_generator( nr_start_goal=6,
                                         nr_extra=4,
                                         min_dist=5,
@@ -112,10 +112,10 @@ def obs_list_to_tensor(observations):
 
 def create_model():
     batch_size=21
-    i1 = Input(shape=(5,20,20),batch_size=batch_size)
-    c = Conv2D(20, kernel_size=(2,5))(i1)
+    i1 = Input(shape=(6,20,20),batch_size=batch_size)
+    c = Conv2D(20, kernel_size=(1,5))(i1)
     c = MaxPooling2D()(c)
-    c = Conv2D(20, kernel_size=(1,5))(c)
+    c = Conv2D(20, kernel_size=(1,2))(c)
     c = MaxPooling2D()(c)
     f1 = Flatten()(c)
 
@@ -140,9 +140,9 @@ def create_model():
     v = Dense(100, activation='relu')(v)
     value = Dense(1)(v)
 
-    c = Conv2D(20, kernel_size=(2,5))(i1)
+    c = Conv2D(20, kernel_size=(1,5))(i1)
     c = MaxPooling2D()(c)
-    c = Conv2D(20, kernel_size=(1,5))(c)
+    c = Conv2D(20, kernel_size=(1,2))(c)
     c = MaxPooling2D()(c)
     f1 = Flatten()(c)
 
@@ -241,11 +241,11 @@ class RandomAgent:
 class MasterAgent():
     def __init__(self):
         env = create_env()
-        self.opt = tf.compat.v1.train.RMSPropOptimizer(0.0001, use_locking=True)
+        self.opt = tf.compat.v1.train.RMSPropOptimizer(0.0001, use_locking=True, decay = 0.99, epsilon = 0.1)
         self.global_model = create_model()
-        #self.global_model.load_weights('model.h5')
+        self.global_model.load_weights('model12_04.h5')
 
-        obs1 = tf.convert_to_tensor(np.random.random((1,5,20,20)), dtype=tf.float32)
+        obs1 = tf.convert_to_tensor(np.random.random((1,6,20,20)), dtype=tf.float32)
         obs2 = tf.convert_to_tensor(np.random.random((1,6)), dtype=tf.float32)
 
         self.global_model([obs1,obs2])
@@ -296,7 +296,6 @@ class MasterAgent():
 
     def play(self):
         self.local_model = self.global_model
-        self.local_model.load_weights('model.h5')
         env_done = False
         ep_steps = 0
         reward_sum = 0
@@ -443,25 +442,22 @@ class Worker(threading.Thread):
     
                 is_stuck = False
                 for state in pos:
-                    if pos[state] > 4:
+                    if pos[state] > 7:
                         is_stuck = True
                         env_done = True
                         break
-
+                
                 for i in range(NUMBER_OF_AGENTS):
                     agent = self.env.agents[i]
-                    grid = np.zeros((10,10),dtype=np.uint16)
+                    grid = np.zeros((20,20),dtype=np.uint16)
                     path_to_target = a_star(self.env.rail.transitions, grid, agent.position, agent.target)
                     current_path_length = len(path_to_target)
                     last_path_length = dist[i]
                     if current_path_length < last_path_length:
                         rewards[i] += 0.2
 
-                    if actions[i] != 2:
-                        rewards[i] += 0.2
-
                     dist[i] = current_path_length
-
+                
                 if SHOULD_RENDER:
                     env_renderer.render_env(show=True, frames=False, show_observations=True)
 
@@ -474,7 +470,8 @@ class Worker(threading.Thread):
                     agent_done = done[i]
                     agent_memory = mems[i]
                     agent_memory.store(obs, action, reward)
-
+                    
+                # if env_done or ep_steps > 199:
                 if update_counter == args.update_freq or env_done or ep_steps > 199:
                     # Calculate gradient wrt to local model. We do so by tracking the
                     # variables involved in computing the loss by using tf.GradientTape
@@ -488,7 +485,7 @@ class Worker(threading.Thread):
                                                             agent_memory,
                                                             args.gamma)
                         ep_loss += total_loss
-                        #print('Loss:', ep_loss)
+                        print('Loss:', ep_loss)
 
                         # Calculate local gradients
                         grads = tape.gradient(total_loss, self.local_model.trainable_weights)
@@ -510,8 +507,9 @@ class Worker(threading.Thread):
                         #if total_step % SAVE_INTERVAL_EPS == 0:
                         with Worker.save_lock:
                             print(f'Saving model with: {ep_reward}')
-                            current_time = datetime.now().strftime('%H_%M_%S')
-                            self.global_model.save_weights('model_'+ current_time +'_'+str(ep_reward)+'_'+str(simplicity_start)+'.h5')
+                            current_time = datetime.now().strftime('%H_%M')
+                            #self.global_model.save_weights('model_'+ current_time +'_'+str(ep_reward)+'_'+str(simplicity_start)+'.h5')
+                            self.global_model.save_weights('model'+ current_time +'.h5')
                             Worker.best_score = ep_reward
                         Worker.global_episode += 1
                         
@@ -556,7 +554,7 @@ class Worker(threading.Thread):
 
         policy_loss = tf.nn.sparse_softmax_cross_entropy_with_logits(labels=memory.actions, logits=logits)
         policy_loss *= tf.stop_gradient(advantage)
-        policy_loss -= 0.01 * entropy
+        policy_loss -= 0.3 * entropy
         total_loss = tf.reduce_mean((0.5 * value_loss + policy_loss))
 
         return total_loss
