@@ -178,6 +178,7 @@ class RawObservation(ObservationBuilder):
         
       
         self.observation_space = np.stack(( smap,agent_positions_,agent_targets_,my_position_,my_target_,path_to_target_))
+        self.observation_space = np.swapaxes(self.observation_space,0,2)
         self.observation_space = [self.observation_space, self.get_target_vec(target,position,direction)]
         return self.observation_space
 

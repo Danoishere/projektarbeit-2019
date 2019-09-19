@@ -44,12 +44,12 @@ parser.add_argument('--save-dir', default='/tmp/', type=str,
                                         help='Directory in which you desire to save the model.')
 args = parser.parse_args()
 
-NUMBER_OF_AGENTS = 3
+NUMBER_OF_AGENTS = 2
 ACTIONS = [0,1,2,3,4]
 ACTION_SIZE = len(ACTIONS)
 SHOULD_RENDER = False
 SAVE_INTERVAL_EPS = 50
-STATE_SIZE = (6,20,20)
+STATE_SIZE = (20,20,6)
 MAX_EPISODES_PLAY = 20
 
 
@@ -61,8 +61,8 @@ def update_rail_gen(env):
     simplicity_start += 0.001
     current_difficulty = int(np.round(simplicity_start))
     env.rail_generator = complex_rail_generator( 
-                                        nr_start_goal=np.max([current_difficulty,NUMBER_OF_AGENTS,10]),
-                                        nr_extra=30,
+                                        nr_start_goal=np.max([current_difficulty,NUMBER_OF_AGENTS]),
+                                        nr_extra=10,
                                         min_dist=5,
                                         max_dist=99999,
                                         seed=random.randint(0,100000))                                  
@@ -78,8 +78,8 @@ def create_env():
                                         seed=random.randint(0,100000)),
                 number_of_agents=NUMBER_OF_AGENTS,
                 obs_builder_object=RawObservation([20,20]))
-                
-    env.invalid_action_penalty = -10
+
+    env.invalid_action_penalty = -1
     env.step_penalty = 0
     env.global_reward = 20
 
@@ -117,10 +117,10 @@ def obs_list_to_tensor(observations):
 
 def create_model():
     batch_size=21
-    i1 = Input(shape=(6,20,20),batch_size=batch_size)
-    c = Conv2D(20, kernel_size=(1,5))(i1)
+    i1 = Input(shape=(20,20,6),batch_size=batch_size)
+    c = Conv2D(32, kernel_size=(5,5))(i1)
     c = MaxPooling2D()(c)
-    c = Conv2D(20, kernel_size=(1,2))(c)
+    c = Conv2D(32, kernel_size=(4,4))(c)
     c = MaxPooling2D()(c)
     f1 = Flatten()(c)
 
@@ -135,19 +135,15 @@ def create_model():
     # Value network
     v = Dense(300, activation='relu')(i)
     v = Dense(300, activation='relu')(v)
-    v = Dense(300, activation='relu')(v)
     v = concatenate([v,res_i1,i2])
     v = Dense(300, activation='relu')(v)
-    v = Dense(200, activation='relu')(v)
-    v = Dense(200, activation='relu')(v)
-    v = Dense(200, activation='relu')(v)
     v = Dense(200, activation='relu')(v)
     v = Dense(100, activation='relu')(v)
     value = Dense(1)(v)
 
-    c = Conv2D(20, kernel_size=(1,5))(i1)
+    c = Conv2D(32, kernel_size=(5,5))(i1)
     c = MaxPooling2D()(c)
-    c = Conv2D(20, kernel_size=(1,2))(c)
+    c = Conv2D(32, kernel_size=(4,4))(c)
     c = MaxPooling2D()(c)
     f1 = Flatten()(c)
 
@@ -159,12 +155,8 @@ def create_model():
     # Policy network
     p = Dense(300, activation='relu')(i)
     p = Dense(300, activation='relu')(p)
-    p = Dense(300, activation='relu')(p)
     p = concatenate([p,res_i1,i2])
     p = Dense(300, activation='relu')(p)
-    p = Dense(200, activation='relu')(p)
-    p = Dense(200, activation='relu')(p)
-    p = Dense(200, activation='relu')(p)
     p = Dense(200, activation='relu')(p)
     p = Dense(100, activation='relu')(p)
     policy = Dense(ACTION_SIZE)(p)
@@ -248,9 +240,9 @@ class MasterAgent():
         env = create_env()
         self.opt = tf.compat.v1.train.RMSPropOptimizer(0.0001, use_locking=True, decay = 0.99, epsilon = 0.1)
         self.global_model = create_model()
-        self.global_model.load_weights('model15_35.h5')
+        self.global_model.load_weights('model16_28.h5')
 
-        obs1 = tf.convert_to_tensor(np.random.random((1,6,20,20)), dtype=tf.float32)
+        obs1 = tf.convert_to_tensor(np.random.random((1,20,20,6)), dtype=tf.float32)
         obs2 = tf.convert_to_tensor(np.random.random((1,6)), dtype=tf.float32)
 
         self.global_model([obs1,obs2])
@@ -494,8 +486,11 @@ class Worker(threading.Thread):
 
                         # Calculate local gradients
                         grads = tape.gradient(total_loss, self.local_model.trainable_weights)
-                        # Push local gradients to global model
-                        self.opt.apply_gradients(zip(grads, self.global_model.trainable_weights))
+
+                        with Worker.save_lock:
+                            # Push local gradients to global model
+                            self.opt.apply_gradients(zip(grads, self.global_model.trainable_weights))
+
                         # Update local model with new weights
                         self.local_model.set_weights(self.global_model.get_weights())
 
