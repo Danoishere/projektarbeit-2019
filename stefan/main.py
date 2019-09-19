@@ -46,7 +46,7 @@ if __name__ == '__main__':
     num_extra = int(flatconfig['num_extra'])
     min_dist_ = int(flatconfig['min_dist_'])
 
-    gpu_=-1
+    gpu_=0
 
     if config['GPU_SUPPORT'].getboolean('UseGpu'):
         gpu_ = int(config['GPU_SUPPORT']['GpuID'])

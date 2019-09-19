@@ -8,9 +8,9 @@
             "name": "Python: Aktuelle Datei",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceFolder}/stefan/main.py",
+            "program": "${workspaceFolder}/main.py",
             "justMyCode": true,
-            "args": ["generate"],
+            "args": ["--train"],
             "console": "integratedTerminal"
         }
     ]

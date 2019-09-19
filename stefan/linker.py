@@ -72,11 +72,10 @@ class FlatLink():
 
     def load_(self, file='model_a3c_i.pt'):
         self.model = torch.load(file)
-
         print(self.model)
 
     def load_weights(self, file = 'model_a3c_weight.tar'):
-        state_dict = torch.load(file)
+        #state_dict = torch.load(file)
         self.model.load_state_dict( state_dict)
 
 
@@ -278,7 +277,7 @@ class FlatConvert(FlatLink):
 
         node_dist = int(min(size_x/4,20))
         geny = sparse_rail_generator(num_cities=cities, num_intersections=intersect, num_trainstations=stations, min_node_dist=node_dist, node_radius=2,
-                          num_neighb=3, realistic_mode=True, enhance_intersection=False, seed= id_*this.number_of_levels)
+                          num_neighb=3, enhance_intersection=False, seed= id_*this.number_of_levels)
         env = RailEnv(size_x,size_y,rail_generator=geny, number_of_agents=num_agents, obs_builder_object=RawObservation([flatland.size_x,flatland.size_y]))
         total_games  = float(this.play_game_number*this.number_of_levels)
         best_reward = -9999999999.9
@@ -481,7 +480,7 @@ class FlatConvert(FlatLink):
         buffer_list=[]
         best_reward = -999999999
         best_solution = 0.0
-        #self.load_('model_a3c.pt')
+        self.load_()
         #buffer_list=list(np.load('bufferdump.npy'))
         print("start training...")
         number_of_agents = len(env.agents)

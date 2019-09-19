@@ -21,7 +21,7 @@ from observation import RawObservation
 from flatland.envs.rail_env import RailEnv
 from flatland.utils.rendertools import RenderTool
 from flatland.envs.observations import TreeObsForRailEnv, LocalObsForRailEnv, GlobalObsForRailEnv
-from flatland.envs.generators import complex_rail_generator, 
+from flatland.envs.rail_generators import complex_rail_generator
 from flatland.core.grid.grid4_astar import a_star
 
 tf.enable_eager_execution()
@@ -60,8 +60,9 @@ def update_rail_gen(env):
     global simplicity_start
     simplicity_start += 0.001
     current_difficulty = int(np.round(simplicity_start))
-    env.rail_generator = complex_rail_generator( nr_start_goal=np.max([current_difficulty,NUMBER_OF_AGENTS]),
-                                        nr_extra=current_difficulty,
+    env.rail_generator = complex_rail_generator( 
+                                        nr_start_goal=np.max([current_difficulty,NUMBER_OF_AGENTS,10]),
+                                        nr_extra=30,
                                         min_dist=5,
                                         max_dist=99999,
                                         seed=random.randint(0,100000))                                  
@@ -77,7 +78,11 @@ def create_env():
                                         seed=random.randint(0,100000)),
                 number_of_agents=NUMBER_OF_AGENTS,
                 obs_builder_object=RawObservation([20,20]))
+                
     env.invalid_action_penalty = -10
+    env.step_penalty = 0
+    env.global_reward = 20
+
     return env
 
 def convert_global_obs(global_obs):
@@ -243,7 +248,7 @@ class MasterAgent():
         env = create_env()
         self.opt = tf.compat.v1.train.RMSPropOptimizer(0.0001, use_locking=True, decay = 0.99, epsilon = 0.1)
         self.global_model = create_model()
-        self.global_model.load_weights('model12_04.h5')
+        self.global_model.load_weights('model15_35.h5')
 
         obs1 = tf.convert_to_tensor(np.random.random((1,6,20,20)), dtype=tf.float32)
         obs2 = tf.convert_to_tensor(np.random.random((1,6)), dtype=tf.float32)
@@ -303,6 +308,7 @@ class MasterAgent():
 
         self.env = create_env()
         self.env.reset()
+        update_rail_gen(self.env)
         
         env_renderer = RenderTool(self.env)
 
@@ -455,8 +461,7 @@ class Worker(threading.Thread):
                     last_path_length = dist[i]
                     if current_path_length < last_path_length:
                         rewards[i] += 0.2
-
-                    dist[i] = current_path_length
+                        dist[i] = current_path_length
                 
                 if SHOULD_RENDER:
                     env_renderer.render_env(show=True, frames=False, show_observations=True)
