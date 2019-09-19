@@ -1,0 +1,13 @@
+- What we did -
+Basic a3c learning environment
+TreeObservation ausprobiert keine grossen erfolge
+GlobalObservation + Conv-Network
+Early stopping eingeführt
+Reward für annäherung an Target eingeführt
+Residual Connection eingeführt
+Oftmals Problem: Nach einer Weile wählt Programm immer gleiche Aktion
+Besonders bei "Nicht-Debugging-Modus"
+
+Mass: Anz. agents die Ziel erreicht haben/min
+
+
