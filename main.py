@@ -58,7 +58,7 @@ def update_rail_gen(env):
     current_difficulty = int(np.round(simplicity_start))
     env.rail_generator = complex_rail_generator( 
                                         nr_start_goal=np.max([current_difficulty,const.NUMBER_OF_AGENTS]),
-                                        nr_extra=10,
+                                        nr_extra=5,
                                         min_dist=5,
                                         max_dist=99999,
                                         seed=random.randint(0,100000))                                  
@@ -155,9 +155,9 @@ class RandomAgent:
 class MasterAgent():
     def __init__(self):
         env = create_env()
-        self.opt = tf.compat.v1.train.RMSPropOptimizer(0.0001, use_locking=True, decay = 0.999, epsilon = 0.1)
+        self.opt = tf.compat.v1.train.RMSPropOptimizer(0.01, use_locking=True, decay = 0.999, epsilon = 0.1)
         self.global_model = create_model()
-        self.global_model.load_weights('model14_55.h5')
+        #self.global_model.load_weights('model22_44.h5')
 
         obs1 = tf.convert_to_tensor(np.random.random((1,21,21,6)), dtype=tf.float32)
         obs2 = tf.convert_to_tensor(np.random.random((1,6)), dtype=tf.float32)
@@ -252,8 +252,6 @@ class MasterAgent():
                         is_stuck = True
                         env_done = True
                         break
-
-
                 ep_steps += 1
 
             ep_steps = 0
@@ -325,10 +323,13 @@ class Worker(threading.Thread):
 
             update_counter = 0
             env_done = False
+            num_of_done_agents = 0
+            done_last_step = {}
             pos = {}
 
             for i in range(const.NUMBER_OF_AGENTS):
                 dist[i] = 1000
+                done_last_step[i] = False
 
             while not env_done and ep_steps < 200:
                 t_observations = obs_list_to_tensor(current_observations)
@@ -343,6 +344,19 @@ class Worker(threading.Thread):
                 next_observations = convert_global_obs(next_observations)
 
                 env_done = done['__all__']
+                if env_done:
+                    for i in range(const.NUMBER_OF_AGENTS):
+                        rewards[i] += 10
+
+                for i in range(const.NUMBER_OF_AGENTS):
+                    if not done_last_step[i] and done[i]:
+                        num_of_done_agents += 1
+                        # Hand out some reward to all the agents
+                        for j in range(const.NUMBER_OF_AGENTS):
+                            rewards[j] += 5  
+
+                        # Give some reward to our agent
+                        rewards[i] += 2**num_of_done_agents * 5
 
                 # End run if trains are stuck for more than 4 steps in same position
                 agents_state = tuple([i.position for i in self.env.agents])
@@ -364,8 +378,15 @@ class Worker(threading.Thread):
                     path_to_target = a_star(self.env.rail.transitions, grid, agent.position, agent.target)
                     current_path_length = len(path_to_target)
                     last_path_length = dist[i]
+
+                    # Adding reward for getting closer to goal
                     if current_path_length < last_path_length:
                         rewards[i] += 0.2
+                        dist[i] = current_path_length
+
+                    # Subtract reward for getting further away
+                    if current_path_length > last_path_length:
+                        rewards[i] -= 0.2
                         dist[i] = current_path_length
                 
                 if const.SHOULD_RENDER:
@@ -386,29 +407,32 @@ class Worker(threading.Thread):
                     # Calculate gradient wrt to local model. We do so by tracking the
                     # variables involved in computing the loss by using tf.GradientTape
                     for i in range(const.NUMBER_OF_AGENTS):
-                        next_observation = next_observations[i]
-                        agent_done = done[i]
-                        agent_memory = mems[i]
-                        with tf.GradientTape() as tape:
-                            total_loss = self.compute_loss(agent_done,
-                                                            next_observation,
-                                                            agent_memory,
-                                                            args.gamma)
-                        ep_loss += total_loss
-                        print('Loss:', ep_loss)
+                        # Agents that are done don't need to be considered anymore
 
-                        # Calculate local gradients
-                        grads = tape.gradient(total_loss, self.local_model.trainable_weights)
+                        if not done_last_step[i]:
+                            next_observation = next_observations[i]
+                            agent_done = done[i]
+                            agent_memory = mems[i]
+                            with tf.GradientTape() as tape:
+                                total_loss = self.compute_loss(agent_done,
+                                                                next_observation,
+                                                                agent_memory,
+                                                                args.gamma)
+                            ep_loss += tf.reduce_mean(total_loss)
+                            print('Loss:', ep_loss)
 
-                        with Worker.save_lock:
-                            # Push local gradients to global model
-                            self.opt.apply_gradients(zip(grads, self.global_model.trainable_weights))
+                            # Calculate local gradients
+                            grads = tape.gradient(total_loss, self.local_model.trainable_weights)
 
-                        # Update local model with new weights
-                        self.local_model.set_weights(self.global_model.get_weights())
+                            with Worker.save_lock:
+                                # Push local gradients to global model
+                                self.opt.apply_gradients(zip(grads, self.global_model.trainable_weights))
 
-                        agent_memory.clear()
-                        update_counter = 0
+                            # Update local model with new weights
+                            self.local_model.set_weights(self.global_model.get_weights())
+
+                            agent_memory.clear()
+                            update_counter = 0
 
                     if env_done and not is_stuck:    # done and print information
                         Worker.global_moving_average_reward = \
@@ -430,6 +454,7 @@ class Worker(threading.Thread):
                 update_counter += 1
                 current_observations = next_observations
                 total_step += 1
+                done_last_step = done
                 
         self.result_queue.put(None)
 
@@ -457,19 +482,22 @@ class Worker(threading.Thread):
         
         # Advantage = reward - value (expected reward)
         advantage = np.array(discounted_rewards) - values
-        # Value loss
-        value_loss = advantage ** 2
+        #advantage = np.array(memory.rewards) - values
 
         # Calculate our policy loss
         policy = tf.nn.softmax(logits)
-        entropy = tf.nn.softmax_cross_entropy_with_logits_v2(labels=policy, logits=logits)
+        entropy = - tf.reduce_sum(policy * tf.math.log(policy))
+ 
+        #actions_onehot  = tf.one_hot(policy, const.ACTION_SIZE, dtype=tf.float32)
+        #responsible_outputs = tf.reduce_sum(policy * actions_onehot, [1])
 
-        policy_loss = tf.nn.sparse_softmax_cross_entropy_with_logits(labels=memory.actions, logits=logits)
-        policy_loss *= tf.stop_gradient(advantage)
-        policy_loss -= 0.01 * entropy
-        total_loss = tf.reduce_mean((0.5 * value_loss + policy_loss))
+        value_loss = 0.5*tf.reduce_sum(tf.square(advantage))
+        entropy = - tf.reduce_sum(policy * tf.math.log(policy))
+        #policy_loss = -tf.reduce_sum(tf.math.log(responsible_outputs)*advantage)
+        policy_loss = tf.reduce_sum(tf.nn.sparse_softmax_cross_entropy_with_logits(labels=memory.actions, logits=logits))
+        loss = 0.5 * value_loss + policy_loss - entropy * 0.01
 
-        return total_loss
+        return loss
 
 
 if __name__ == '__main__':

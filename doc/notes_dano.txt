@@ -29,15 +29,16 @@ Mass: Anz. Agents die Ziel erreicht haben/min
     Negativ-Reward bei Blockade?
 
 
+Idee: Kommunikation zwischen Agenten
+-> Wie? bzw. wie trainieren
+-> Problem: Einfach sicht der anderen Agenten übergeben reicht wohl nicht.
+
+Vergleiche:
+https://pub.tik.ee.ethz.ch/students/2018-FS/BA-2018-04.pdf
 
 
-
-
-
-
-
-
-
+# OpenAI - A2C baseline
+https://github.com/openai/baselines/blob/master/baselines/a2c/a2c.py
 
 # Metriken:
 Reward pro Testparkour

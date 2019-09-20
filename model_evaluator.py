@@ -7,9 +7,9 @@ import numpy as np
 
 tf.enable_eager_execution()
 
-def start_model_evaluation(model_name = 'model12_03.h5'):
+def start_model_evaluation(model_name = 'model20_27'):
     model = create_model()
-    model.load_weights(model_name)
+    model.load_weights(model_name + '.h5')
     def model_function(observations,num_agents):
         current_observations = convert_global_obs(observations)
         current_observations = obs_list_to_tensor(current_observations)
@@ -24,12 +24,28 @@ def start_model_evaluation(model_name = 'model12_03.h5'):
 
     evaluator = Evaluator()
     evaluator.set_model(model_function)
-    evaluator.start_evaluation(model_name)
+    evaluator.start_evaluation()
     evaluator.analyze_stats(model_name)
 
     print(evaluator.stats)
 
+def start_random_evaluation(report_name = 'random'):
+    def model_function(observations,num_agents):
+        actions = {}
+        for i in range(num_agents):
+            actions[i] = np.random.choice(const.ACTIONS)
+
+        return actions
+
+    evaluator = Evaluator()
+    evaluator.set_model(model_function)
+    evaluator.start_evaluation()
+    evaluator.analyze_stats(report_name)
+
+    print(evaluator.stats)
+
 if __name__ == '__main__':
+    #start_random_evaluation()
     start_model_evaluation()
 
     

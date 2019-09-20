@@ -38,6 +38,15 @@
             "justMyCode": true,
             "args": [""],
             "console": "integratedTerminal"
+        },
+        {
+            "name": "Analysis",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/analysis.py",
+            "justMyCode": true,
+            "args": [""],
+            "console": "integratedTerminal"
         }
     ]
 }

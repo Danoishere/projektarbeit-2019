@@ -197,7 +197,7 @@ class Evaluator:
             num_agents_done, total_reward,steps_needed = self.run_to_end(obs, self.num_agents)
             self.save_stats(num_agents_done,total_reward,steps_needed,episode_no)
 
-    def start_evaluation(self,run_name):
+    def start_evaluation(self):
         self.env = self.create_env()
         
         print('Round 1 - simple environment with one agent')

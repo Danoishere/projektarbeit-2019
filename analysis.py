@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
-plot_reports = ['model12_03.h5_report.csv']
+plot_reports = ['random_report.csv', 'model17_09_report.csv','model20_27_report.csv']
 
 for report in plot_reports:
     df = pd.read_csv(report)
