@@ -9,9 +9,34 @@
             "name": "Python: Aktuelle Datei",
             "type": "python",
             "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Model-Evaluator",
+            "type": "python",
+            "request": "launch",
             "program": "${workspaceFolder}/model_evaluator.py",
             "justMyCode": true,
             "args": ["--train"],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Training",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/main.py",
+            "justMyCode": true,
+            "args": ["--train"],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Play",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/main.py",
+            "justMyCode": true,
+            "args": [""],
             "console": "integratedTerminal"
         }
     ]

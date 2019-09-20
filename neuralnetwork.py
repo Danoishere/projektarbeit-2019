@@ -25,21 +25,25 @@ def single_obs_to_tensor(observation):
     obs2 = tf.convert_to_tensor(observation[1], dtype=tf.float32)
     return [obs1,obs2]
 
-def obs_list_to_tensor(observations):
+def obs_list_to_tensor(observations, skip_index = False):
     t_obs1 = []
     t_obs2 = []
     for i in range(len(observations)):
         observation = observations[i]
-        t_obs1.append(observation[0][0])
-        t_obs2.append(observation[1][0])
+        if skip_index:
+            t_obs1.append(observation[0])
+            t_obs2.append(observation[1])
+        else:
+            t_obs1.append(observation[0][0])
+            t_obs2.append(observation[1][0])
 
     t_obs1 = tf.convert_to_tensor(t_obs1, dtype=tf.float32)
     t_obs2 = tf.convert_to_tensor(t_obs2, dtype=tf.float32)
     return [t_obs1,t_obs2]
 
 def create_model():
-    batch_size=21
-    i1 = Input(shape=(20,20,6),batch_size=batch_size)
+    batch_size=10
+    i1 = Input(shape=(21,21,6),batch_size=batch_size)
     c = Conv2D(32, kernel_size=(5,5))(i1)
     c = MaxPooling2D()(c)
     c = Conv2D(32, kernel_size=(4,4))(c)
@@ -81,7 +85,7 @@ def create_model():
     p = Dense(300, activation='relu')(p)
     p = Dense(200, activation='relu')(p)
     p = Dense(100, activation='relu')(p)
-    policy = Dense(const.ACTION_SIZE)(p)
+    policy = Dense(const.ACTION_SIZE,activation='softmax')(p)
 
     model = Model(inputs=[i1,i2], outputs=[policy,value])
     return model

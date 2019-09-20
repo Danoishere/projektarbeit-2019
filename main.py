@@ -73,7 +73,7 @@ def create_env():
                                         max_dist=99999,
                                         seed=random.randint(0,100000)),
                 number_of_agents=const.NUMBER_OF_AGENTS,
-                obs_builder_object=RawObservation([20,20]))
+                obs_builder_object=RawObservation([21,21]))
 
     env.invalid_action_penalty = -1
     env.step_penalty = 0
@@ -155,11 +155,11 @@ class RandomAgent:
 class MasterAgent():
     def __init__(self):
         env = create_env()
-        self.opt = tf.compat.v1.train.RMSPropOptimizer(0.0001, use_locking=True, decay = 0.99, epsilon = 0.1)
+        self.opt = tf.compat.v1.train.RMSPropOptimizer(0.0001, use_locking=True, decay = 0.999, epsilon = 0.1)
         self.global_model = create_model()
-        self.global_model.load_weights('model16.h5')
+        self.global_model.load_weights('model14_55.h5')
 
-        obs1 = tf.convert_to_tensor(np.random.random((1,20,20,6)), dtype=tf.float32)
+        obs1 = tf.convert_to_tensor(np.random.random((1,21,21,6)), dtype=tf.float32)
         obs2 = tf.convert_to_tensor(np.random.random((1,6)), dtype=tf.float32)
 
         self.global_model([obs1,obs2])
@@ -214,25 +214,25 @@ class MasterAgent():
         ep_num = 0
 
         self.env = create_env()
-        self.env.reset()
         update_rail_gen(self.env)
-        
         env_renderer = RenderTool(self.env)
 
-        while True:
-            current_observations = convert_global_obs(self.env.reset())
+        while True:  
+            current_observations = self.env.reset()
+            current_observations = convert_global_obs(current_observations)
             env_renderer.set_new_rail()
+
             pos = {}
             while not env_done and ep_steps < 200:
                 print(ep_steps)
+                current_observations = obs_list_to_tensor(current_observations)
+                logits, _ = self.local_model(current_observations)
+                probs = tf.nn.softmax(logits).numpy()
+
                 actions = {}
                 for i in range(const.NUMBER_OF_AGENTS):
-                    current_observation = current_observations[i]
-                    t_obs = single_obs_to_tensor(current_observation)
-                    logits, _ = self.local_model(t_obs)
-                    probs = tf.nn.softmax(logits).numpy()[0]
-                    actions[i] = np.random.choice(const.ACTIONS, p=probs)
-                    print('Agent', i ,'does action', actions[i] )
+                    actions[i] = np.random.choice(const.ACTIONS, p=probs[i])
+                    print('Agent', i ,'does action', actions[i] )                    
 
                 current_observations, rewards, done, _ = self.env.step(actions)
                 current_observations = convert_global_obs(current_observations)
@@ -331,13 +331,13 @@ class Worker(threading.Thread):
                 dist[i] = 1000
 
             while not env_done and ep_steps < 200:
+                t_observations = obs_list_to_tensor(current_observations)
+                logits, _ = self.local_model(t_observations)
+                probs = tf.nn.softmax(logits).numpy()
                 actions = {}
                 for i in range(const.NUMBER_OF_AGENTS):
-                    current_observation = current_observations[i]
-                    logits, _ = self.local_model(single_obs_to_tensor(current_observation))
-                    probs = tf.nn.softmax(logits).numpy()[0]
-                    actions[i] = np.random.choice(const.ACTIONS, p=probs)
-                    print('Agent', i ,'does action', actions[i] )
+                    actions[i] = np.random.choice(const.ACTIONS, p=probs[i])
+                    print('Agent', i ,'does action', actions[i] )   
 
                 next_observations, rewards, done, _ = self.env.step(actions)
                 next_observations = convert_global_obs(next_observations)
@@ -360,7 +360,7 @@ class Worker(threading.Thread):
                 
                 for i in range(const.NUMBER_OF_AGENTS):
                     agent = self.env.agents[i]
-                    grid = np.zeros((20,20),dtype=np.uint16)
+                    grid = np.zeros((21,21),dtype=np.uint16)
                     path_to_target = a_star(self.env.rail.transitions, grid, agent.position, agent.target)
                     current_path_length = len(path_to_target)
                     last_path_length = dist[i]
@@ -430,7 +430,6 @@ class Worker(threading.Thread):
                 update_counter += 1
                 current_observations = next_observations
                 total_step += 1
-            
                 
         self.result_queue.put(None)
 
@@ -467,7 +466,7 @@ class Worker(threading.Thread):
 
         policy_loss = tf.nn.sparse_softmax_cross_entropy_with_logits(labels=memory.actions, logits=logits)
         policy_loss *= tf.stop_gradient(advantage)
-        policy_loss -= 0.3 * entropy
+        policy_loss -= 0.01 * entropy
         total_loss = tf.reduce_mean((0.5 * value_loss + policy_loss))
 
         return total_loss

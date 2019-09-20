@@ -5,23 +5,27 @@ import constants as const
 import tensorflow as tf
 import numpy as np
 
-def start_model_evaluation(model_name = 'model_16_42'):
+tf.enable_eager_execution()
+
+def start_model_evaluation(model_name = 'model12_03.h5'):
     model = create_model()
-    model.load_weights('model16_42.h5')
+    model.load_weights(model_name)
     def model_function(observations,num_agents):
-        actions = {}
         current_observations = convert_global_obs(observations)
+        current_observations = obs_list_to_tensor(current_observations)
+        logits, _ = model(current_observations)
+        probs = tf.nn.softmax(logits).numpy()
+
+        actions = {}
         for i in range(num_agents):
-            current_observation = current_observations[i]
-            logits, _ = model(single_obs_to_tensor(current_observation))
-            probs = tf.nn.softmax(logits).numpy()[0]
-            actions[i] = np.random.choice(const.ACTIONS, p=probs)
+            actions[i] = np.random.choice(const.ACTIONS, p=probs[i])
 
         return actions
 
     evaluator = Evaluator()
     evaluator.set_model(model_function)
-    evaluator.start_evaluation()
+    evaluator.start_evaluation(model_name)
+    evaluator.analyze_stats(model_name)
 
     print(evaluator.stats)
 
