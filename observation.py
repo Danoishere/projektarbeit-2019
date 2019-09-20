@@ -133,6 +133,8 @@ class RawObservation(ObservationBuilder):
         smap =  np.zeros((self.size_[0],self.size_[1]),dtype = map_.dtype)
         smap[y0:y0+b0,y1:y1+b1] = map_[x0:x0+b0,x1:x1+b1]
 
+        test_map = np.zeros_like(smap)
+
         agent_positions_ = np.zeros_like(smap)
         agent_targets_ = np.zeros_like(smap)
         path_to_target_ = np.zeros_like(smap, dtype=np.uint16)
@@ -174,7 +176,7 @@ class RawObservation(ObservationBuilder):
         my_target_ = np.zeros_like(smap)
         if target[0]>= x0 and target[0]< x0 + b0 \
                 and target[1]>= x1 and target[1]< x1 + b1:
-                    my_target_[target[0]-x0][target[1]-x1] = 0.5
+                    my_target_[target[0]-x0][target[1]-x1] = 0.5                                                                    
         
       
         self.observation_space = np.stack(( smap,agent_positions_,agent_targets_,my_position_,my_target_,path_to_target_))

@@ -11,3 +11,8 @@ Besonders bei "Nicht-Debugging-Modus"
 Mass: Anz. agents die Ziel erreicht haben/min
 
 
+# Metriken:
+Reward pro Testparkour
+Finished Agents pro Testparkour
+Durchschnittliche Ankunftsrate bei 1|2|3... Agents
+
