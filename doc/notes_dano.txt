@@ -1,13 +1,41 @@
 - What we did -
+---------------
+
 Basic a3c learning environment
 TreeObservation ausprobiert keine grossen erfolge
 GlobalObservation + Conv-Network
 Early stopping eingeführt
-Reward für annäherung an Target eingeführt
+
+Problem: Rewards sehr spärlich. Idee: Wir erlösen Agent von step-penalty, wenn 
+    dieser Schritt in die richtung des Ziels des Agents ist.
+    Reward für annäherung an Target eingeführt
+
+
 Residual Connection eingeführt
 Oftmals Problem: Nach einer Weile wählt Programm immer gleiche Aktion
 Besonders bei "Nicht-Debugging-Modus"
 
-Mass: Anz. agents die Ziel erreicht haben/min
+Mass: Anz. Agents die Ziel erreicht haben/min
+
+Überlegungen:
+    Ja observation: POMDP -> Markov-Eigentschaft nicht erfüllt! 
+    Ausser evtl. mit Globalen Observation
+
+    Reward nur wenn ALLE Agents das Ziel erreichen?
+    Versuch: 
+    Erhaltener Reward steigt mit Nummer des Agents.
+    Plus Bonus für alle Agents
+
+    Negativ-Reward bei Blockade?
+
+
+
+
+
+
+
+
+
+
 
 

@@ -8,6 +8,7 @@ import numpy as np
 import argparse
 import matplotlib.pyplot as plt
 import time
+import constants as const
 import tensorflow as tf
 
 from datetime import datetime
@@ -18,6 +19,8 @@ from tensorflow.python.keras.models import Model
 from tensorflow.python.keras.layers import Dense, Input, Flatten, Conv2D, MaxPooling2D,concatenate
 
 from observation import RawObservation
+from neuralnetwork import create_model, single_obs_to_tensor, convert_global_obs, obs_list_to_tensor
+
 from flatland.envs.rail_env import RailEnv
 from flatland.utils.rendertools import RenderTool
 from flatland.envs.observations import TreeObsForRailEnv, LocalObsForRailEnv, GlobalObsForRailEnv
@@ -44,13 +47,6 @@ parser.add_argument('--save-dir', default='/tmp/', type=str,
                                         help='Directory in which you desire to save the model.')
 args = parser.parse_args()
 
-NUMBER_OF_AGENTS = 2
-ACTIONS = [0,1,2,3,4]
-ACTION_SIZE = len(ACTIONS)
-SHOULD_RENDER = False
-SAVE_INTERVAL_EPS = 50
-STATE_SIZE = (20,20,6)
-MAX_EPISODES_PLAY = 20
 
 
 simplicity_start = 0
@@ -61,7 +57,7 @@ def update_rail_gen(env):
     simplicity_start += 0.001
     current_difficulty = int(np.round(simplicity_start))
     env.rail_generator = complex_rail_generator( 
-                                        nr_start_goal=np.max([current_difficulty,NUMBER_OF_AGENTS]),
+                                        nr_start_goal=np.max([current_difficulty,const.NUMBER_OF_AGENTS]),
                                         nr_extra=10,
                                         min_dist=5,
                                         max_dist=99999,
@@ -76,7 +72,7 @@ def create_env():
                                         min_dist=5,
                                         max_dist=99999,
                                         seed=random.randint(0,100000)),
-                number_of_agents=NUMBER_OF_AGENTS,
+                number_of_agents=const.NUMBER_OF_AGENTS,
                 obs_builder_object=RawObservation([20,20]))
 
     env.invalid_action_penalty = -1
@@ -84,85 +80,6 @@ def create_env():
     env.global_reward = 20
 
     return env
-
-def convert_global_obs(global_obs):
-    observations = []
-    for i in range(NUMBER_OF_AGENTS):
-        agent_obs = global_obs[i]
-        state1 = np.array(agent_obs[0])
-        state2 = np.array(agent_obs[1])
-        observation1 = state1.astype(np.float).reshape((1,state1.shape[0],state1.shape[1],state1.shape[2]))
-        observation2 = state2.astype(np.float).reshape((1,state2.shape[0]))
-        observations.append([observation1, observation2])
-
-    return observations
-
-def single_obs_to_tensor(observation):
-    obs1 = tf.convert_to_tensor(observation[0], dtype=tf.float32)
-    obs2 = tf.convert_to_tensor(observation[1], dtype=tf.float32)
-    return [obs1,obs2]
-
-def obs_list_to_tensor(observations):
-    t_obs1 = []
-    t_obs2 = []
-    for i in range(len(observations)):
-        observation = observations[i]
-        t_obs1.append(observation[0][0])
-        t_obs2.append(observation[1][0])
-
-    t_obs1 = tf.convert_to_tensor(t_obs1, dtype=tf.float32)
-    t_obs2 = tf.convert_to_tensor(t_obs2, dtype=tf.float32)
-    return [t_obs1,t_obs2]
-
-
-def create_model():
-    batch_size=21
-    i1 = Input(shape=(20,20,6),batch_size=batch_size)
-    c = Conv2D(32, kernel_size=(5,5))(i1)
-    c = MaxPooling2D()(c)
-    c = Conv2D(32, kernel_size=(4,4))(c)
-    c = MaxPooling2D()(c)
-    f1 = Flatten()(c)
-
-    res_i1 = Flatten()(i1)
-
-    i2 = Input(shape=(6,),batch_size=batch_size)
-    r = Dense(64)(i2)
-    r = Dense(64)(r)
-    r = Flatten()(r)
-    i = concatenate([f1,r])
-    
-    # Value network
-    v = Dense(300, activation='relu')(i)
-    v = Dense(300, activation='relu')(v)
-    v = concatenate([v,res_i1,i2])
-    v = Dense(300, activation='relu')(v)
-    v = Dense(200, activation='relu')(v)
-    v = Dense(100, activation='relu')(v)
-    value = Dense(1)(v)
-
-    c = Conv2D(32, kernel_size=(5,5))(i1)
-    c = MaxPooling2D()(c)
-    c = Conv2D(32, kernel_size=(4,4))(c)
-    c = MaxPooling2D()(c)
-    f1 = Flatten()(c)
-
-    r = Dense(64)(i2)
-    r = Dense(64)(r)
-    r = Flatten()(r)
-    i = concatenate([f1,r])
-
-    # Policy network
-    p = Dense(300, activation='relu')(i)
-    p = Dense(300, activation='relu')(p)
-    p = concatenate([p,res_i1,i2])
-    p = Dense(300, activation='relu')(p)
-    p = Dense(200, activation='relu')(p)
-    p = Dense(100, activation='relu')(p)
-    policy = Dense(ACTION_SIZE)(p)
-
-    model = Model(inputs=[i1,i2], outputs=[policy,value])
-    return model
 
 def record(episode,
                      episode_reward,
@@ -240,7 +157,7 @@ class MasterAgent():
         env = create_env()
         self.opt = tf.compat.v1.train.RMSPropOptimizer(0.0001, use_locking=True, decay = 0.99, epsilon = 0.1)
         self.global_model = create_model()
-        self.global_model.load_weights('model16_28.h5')
+        self.global_model.load_weights('model16.h5')
 
         obs1 = tf.convert_to_tensor(np.random.random((1,20,20,6)), dtype=tf.float32)
         obs2 = tf.convert_to_tensor(np.random.random((1,6)), dtype=tf.float32)
@@ -254,9 +171,8 @@ class MasterAgent():
             return
 
         res_queue = Queue()
-        if SHOULD_RENDER:
-            w = Worker(STATE_SIZE,
-                                ACTION_SIZE,
+        if const.SHOULD_RENDER:
+            w = Worker(const.STATE_SIZE,
                                 self.global_model,
                                 self.opt, res_queue,
                                 0,
@@ -265,8 +181,7 @@ class MasterAgent():
             w.run()
 
         else:
-            workers = [Worker(STATE_SIZE,
-                                ACTION_SIZE,
+            workers = [Worker(const.STATE_SIZE,
                                 self.global_model,
                                 self.opt, res_queue,
                                 i) for i in range(multiprocessing.cpu_count())]
@@ -311,12 +226,12 @@ class MasterAgent():
             while not env_done and ep_steps < 200:
                 print(ep_steps)
                 actions = {}
-                for i in range(NUMBER_OF_AGENTS):
+                for i in range(const.NUMBER_OF_AGENTS):
                     current_observation = current_observations[i]
                     t_obs = single_obs_to_tensor(current_observation)
                     logits, _ = self.local_model(t_obs)
                     probs = tf.nn.softmax(logits).numpy()[0]
-                    actions[i] = np.random.choice(ACTIONS, p=probs)
+                    actions[i] = np.random.choice(const.ACTIONS, p=probs)
                     print('Agent', i ,'does action', actions[i] )
 
                 current_observations, rewards, done, _ = self.env.step(actions)
@@ -371,7 +286,6 @@ class Worker(threading.Thread):
 
     def __init__(self,
                     state_size,
-                    action_size,
                     global_model,
                     opt,
                     result_queue,
@@ -380,7 +294,6 @@ class Worker(threading.Thread):
         super(Worker, self).__init__()
 
         self.state_size = state_size
-        self.action_size = action_size
         self.result_queue = result_queue
         self.global_model = global_model
         self.opt = opt
@@ -393,17 +306,17 @@ class Worker(threading.Thread):
         total_step = 1
         mems = []
         dist = []
-        for i in range(NUMBER_OF_AGENTS):
+        for i in range(const.NUMBER_OF_AGENTS):
             mems.append(Memory())
             dist.append(1000)
 
-        if SHOULD_RENDER:
+        if const.SHOULD_RENDER:
             env_renderer = RenderTool(self.env)
         
         while Worker.global_episode < args.max_eps:
             update_rail_gen(self.env)
             current_observations = convert_global_obs(self.env.reset())
-            if SHOULD_RENDER:
+            if const.SHOULD_RENDER:
                 env_renderer.set_new_rail()
 
             ep_reward = 0.
@@ -414,16 +327,16 @@ class Worker(threading.Thread):
             env_done = False
             pos = {}
 
-            for i in range(NUMBER_OF_AGENTS):
+            for i in range(const.NUMBER_OF_AGENTS):
                 dist[i] = 1000
 
             while not env_done and ep_steps < 200:
                 actions = {}
-                for i in range(NUMBER_OF_AGENTS):
+                for i in range(const.NUMBER_OF_AGENTS):
                     current_observation = current_observations[i]
                     logits, _ = self.local_model(single_obs_to_tensor(current_observation))
                     probs = tf.nn.softmax(logits).numpy()[0]
-                    actions[i] = np.random.choice(ACTIONS, p=probs)
+                    actions[i] = np.random.choice(const.ACTIONS, p=probs)
                     print('Agent', i ,'does action', actions[i] )
 
                 next_observations, rewards, done, _ = self.env.step(actions)
@@ -445,7 +358,7 @@ class Worker(threading.Thread):
                         env_done = True
                         break
                 
-                for i in range(NUMBER_OF_AGENTS):
+                for i in range(const.NUMBER_OF_AGENTS):
                     agent = self.env.agents[i]
                     grid = np.zeros((20,20),dtype=np.uint16)
                     path_to_target = a_star(self.env.rail.transitions, grid, agent.position, agent.target)
@@ -455,12 +368,12 @@ class Worker(threading.Thread):
                         rewards[i] += 0.2
                         dist[i] = current_path_length
                 
-                if SHOULD_RENDER:
+                if const.SHOULD_RENDER:
                     env_renderer.render_env(show=True, frames=False, show_observations=True)
 
                 ep_reward += np.sum(np.fromiter(rewards.values(), dtype=float))
 
-                for i in range(NUMBER_OF_AGENTS):
+                for i in range(const.NUMBER_OF_AGENTS):
                     obs = current_observations[i]
                     action = actions[i]
                     reward = rewards[i]
@@ -472,7 +385,7 @@ class Worker(threading.Thread):
                 if update_counter == args.update_freq or env_done or ep_steps > 199:
                     # Calculate gradient wrt to local model. We do so by tracking the
                     # variables involved in computing the loss by using tf.GradientTape
-                    for i in range(NUMBER_OF_AGENTS):
+                    for i in range(const.NUMBER_OF_AGENTS):
                         next_observation = next_observations[i]
                         agent_done = done[i]
                         agent_memory = mems[i]
