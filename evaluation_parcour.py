@@ -203,7 +203,7 @@ class Evaluator:
         print('Round 1 - simple environment with one agent')
         self.run_episodes(1, 20)
 
-        print('Round 3 - Two agents, more difficult environment')
+        print('Round 2 - Single agent, more difficult environment')
         self.change_grid_round2()
         self.run_episodes(2, 16)
 
@@ -211,6 +211,7 @@ class Evaluator:
         self.change_grid_round3()
         self.run_episodes(3, 16)
 
+        """
         print('Round 4 - four agents, even more difficult environment')
         self.change_grid_round4()
         self.run_episodes(4, 5)
@@ -218,6 +219,7 @@ class Evaluator:
         print('Round 5 - Evaluation environment')
         self.change_grid_round5()
         self.run_episodes(5, 4)
+        """
 
 
     def analyze_stats(self,run_name):

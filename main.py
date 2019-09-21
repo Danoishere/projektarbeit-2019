@@ -475,29 +475,24 @@ class Worker(threading.Thread):
             discounted_rewards.append(reward_sum)
 
         discounted_rewards.reverse()
-        #states = np.vstack(memory.states)
         # For all visited states get policy/value
         states = obs_list_to_tensor(memory.states)
         logits, values = self.local_model(states)
-        
         # Advantage = reward - value (expected reward)
         advantage = np.array(discounted_rewards) - values
-        #advantage = np.array(memory.rewards) - values
+        # Value loss
+        value_loss = advantage ** 2
 
         # Calculate our policy loss
         policy = tf.nn.softmax(logits)
-        entropy = - tf.reduce_sum(policy * tf.math.log(policy))
- 
-        #actions_onehot  = tf.one_hot(policy, const.ACTION_SIZE, dtype=tf.float32)
-        #responsible_outputs = tf.reduce_sum(policy * actions_onehot, [1])
+        entropy = tf.nn.softmax_cross_entropy_with_logits_v2(labels=policy, logits=logits)
 
-        value_loss = 0.5*tf.reduce_sum(tf.square(advantage))
-        entropy = - tf.reduce_sum(policy * tf.math.log(policy))
-        #policy_loss = -tf.reduce_sum(tf.math.log(responsible_outputs)*advantage)
-        policy_loss = tf.reduce_sum(tf.nn.sparse_softmax_cross_entropy_with_logits(labels=memory.actions, logits=logits))
-        loss = 0.5 * value_loss + policy_loss - entropy * 0.01
+        policy_loss = tf.nn.sparse_softmax_cross_entropy_with_logits(labels=memory.actions, logits=logits)
+        policy_loss *= tf.stop_gradient(advantage)
+        policy_loss -= 0.01 * entropy
+        total_loss = tf.reduce_mean((0.5 * value_loss + policy_loss))
 
-        return loss
+        return total_loss
 
 
 if __name__ == '__main__':

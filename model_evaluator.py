@@ -7,7 +7,7 @@ import numpy as np
 
 tf.enable_eager_execution()
 
-def start_model_evaluation(model_name = 'model20_27'):
+def start_model_evaluation(model_name = 'model07_32'):
     model = create_model()
     model.load_weights(model_name + '.h5')
     def model_function(observations,num_agents):
