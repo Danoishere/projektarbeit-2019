@@ -338,7 +338,7 @@ class Worker(threading.Thread):
                 actions = {}
                 for i in range(const.NUMBER_OF_AGENTS):
                     actions[i] = np.random.choice(const.ACTIONS, p=probs[i])
-                    print('Agent', i ,'does action', actions[i] )   
+                    #print('Agent', i ,'does action', actions[i] )   
 
                 next_observations, rewards, done, _ = self.env.step(actions)
                 next_observations = convert_global_obs(next_observations)
@@ -419,7 +419,7 @@ class Worker(threading.Thread):
                                                                 agent_memory,
                                                                 args.gamma)
                             ep_loss += tf.reduce_mean(total_loss)
-                            print('Loss:', ep_loss)
+                            #print('Loss:', ep_loss)
 
                             # Calculate local gradients
                             grads = tape.gradient(total_loss, self.local_model.trainable_weights)
@@ -435,15 +435,18 @@ class Worker(threading.Thread):
                             update_counter = 0
 
                     if env_done and not is_stuck:    # done and print information
+                        
                         Worker.global_moving_average_reward = \
                             record(Worker.global_episode, ep_reward, self.worker_idx,
                                         Worker.global_moving_average_reward, self.result_queue,
                                         ep_loss, ep_steps)
+                        
+                        
 
                         # We must use a lock to save our model and to print to prevent data races.
                         #if total_step % SAVE_INTERVAL_EPS == 0:
                         with Worker.save_lock:
-                            print(f'Saving model with: {ep_reward}')
+                            #print(f'Saving model with: {ep_reward}')
                             current_time = datetime.now().strftime('%H_%M')
                             #self.global_model.save_weights('model_'+ current_time +'_'+str(ep_reward)+'_'+str(simplicity_start)+'.h5')
                             self.global_model.save_weights('model'+ current_time +'.h5')
