@@ -49,8 +49,8 @@ from observation import RawObservation
 from flatland.envs.rail_env import RailEnv
 from flatland.utils.rendertools import RenderTool
 from flatland.envs.observations import TreeObsForRailEnv, LocalObsForRailEnv, GlobalObsForRailEnv
-from flatland.envs.rail_generators import complex_rail_generator, sparse_rail_generator
-from flatland.envs.schedule_generators import sparse_schedule_generator
+from flatland.envs.rail_generators import complex_rail_generator
+from flatland.envs.schedule_generators import complex_schedule_generator
 from flatland.core.grid.grid4_astar import a_star
 
 
@@ -74,10 +74,10 @@ def reshape_obs(agent_observations):
     num_agents = len(agent_observations)
     for i in range(num_agents):
         agent_obs = agent_observations[i]
-        state1 = np.array(agent_obs[0])
-        state2 = np.array(agent_obs[1])
-        observation0 = state1.astype(np.float).reshape((state1.shape[0],state1.shape[1],state1.shape[2]))
-        observation1 = state2.astype(np.float).reshape((state2.shape[0]))
+        state1 = np.array(agent_obs)
+        #state2 = np.array(agent_obs[1])
+        observation0 = state1.astype(np.float).reshape((state1.shape[0],state1.shape[1],state1.shape[2],1))
+        #observation1 = state2.astype(np.float).reshape((state2.shape[0]))
         # observations.append([observation1, observation2])
         observations.append(observation0)
     observations = np.array(observations)
@@ -136,14 +136,14 @@ class AC_Network():
     def __init__(self,s_size,a_size,scope,trainer):
         with tf.variable_scope(scope):
             #Input and visual encoding layers
-            self.inputs = tf.placeholder(shape=[None,s_size[0],s_size[1],s_size[2]],dtype=tf.float32)
+            self.inputs = tf.placeholder(shape=[None,s_size[0],s_size[1],s_size[2],s_size[3]],dtype=tf.float32)
             #self.imageIn = tf.reshape(self.inputs,shape=[-1,84,84,1])
-            self.conv1 = slim.conv2d(activation_fn=tf.nn.elu,
+            self.conv1 = slim.conv3d(activation_fn=tf.nn.elu,
                 inputs=self.inputs,num_outputs=16,
-                kernel_size=[8,8],stride=[4,4],padding='VALID')
-            self.conv2 = slim.conv2d(activation_fn=tf.nn.elu,
+                kernel_size=[8,8,8],stride=[4,4,4],padding='VALID')
+            self.conv2 = slim.conv3d(activation_fn=tf.nn.elu,
                 inputs=self.conv1,num_outputs=32,
-                kernel_size=[4,4],stride=[2,2],padding='VALID')
+                kernel_size=[4,4,4],stride=[2,2,2],padding='VALID')
             hidden = slim.fully_connected(slim.flatten(self.conv2),256,activation_fn=tf.nn.elu)
             
             #Recurrent network for temporal dependencies
@@ -224,35 +224,24 @@ class Worker():
         
         num_agents = 2
 
-        rail_gen = sparse_rail_generator(
-                    num_cities=4,
-                    num_intersections=2,
-                    num_trainstations=4,
-                    grid_mode=True,
-                    enhance_intersection=True,
-                    seed=0 
-                )
-        
-        #The Below code is related to setting up the Doom environment
+        rail_gen = complex_rail_generator(
+            nr_start_goal=3,
+            nr_extra=7,
+            min_dist=15,
+            seed=random.randint(0,100000)
+        )
+                    
+        #The Below code is related to setting up the Flatland environment
         env = RailEnv(
-                width=12,
-                height=12,
+                width=14,
+                height=14,
                 rail_generator = rail_gen,
-                schedule_generator = sparse_schedule_generator(),
+                schedule_generator =complex_schedule_generator(),
                 number_of_agents=num_agents,
                 obs_builder_object=RawObservation([21,21]))
 
-        print('')
-        '''
-        complex_rail_generator(nr_start_goal=6,
-                                nr_extra=4,
-                                min_dist=5,
-                                max_dist=99999,
-                                seed=random.randint(0,100000)),
-        '''
-
         env.num_agents = num_agents
-        
+
         self.actions = [0,1,2,3,4]
         self.env = env
         
@@ -320,7 +309,6 @@ class Worker():
                 while obs.shape[0] == 0:
                     obs = self.env.reset()
                     obs = reshape_obs(obs)
-
 
                 is_episode_finished = False
                 
@@ -452,7 +440,7 @@ class Worker():
                 if self.name == 'worker_0':
                     sess.run(self.increment)
                 episode_count += 1
-                print('Episode', episode_count,'of',self.name)
+                print('Episode', episode_count,'of',self.name,'with',episode_step_count,'steps')
 
 
 # In[23]:
@@ -460,7 +448,7 @@ class Worker():
 
 max_episode_length = 200
 gamma = .99 # discount rate for advantage estimation and reward discounting
-s_size = (21,21,6) #  Observations are 21*21 with six channels
+s_size = (20,21,21,1) #  Observations are 21*21 with six channels
 a_size = 5 # Agent can move Left, Right, or Fire
 load_model = False
 model_path = './model'

@@ -12,6 +12,7 @@ from flatland.core.grid.grid4_astar import a_star
 from flatland.core.transition_map import GridTransitionMap
 from numpy.core.umath import divide
 from numba import njit, jitclass
+from numba.typed import List
 
 
 class RawObservation(ObservationBuilder):
@@ -22,6 +23,7 @@ class RawObservation(ObservationBuilder):
         self.reset()
         self.size_ = size_
         self.observation_space = np.zeros((6,size_[0],size_[1]))
+        self.offset_initialized = False
     def _set_env(self, env):
         self.env = env
  
@@ -122,77 +124,111 @@ class RawObservation(ObservationBuilder):
        
         
         map_ = self.convert_grid(self.env.rail.grid)
+        self.map_size = map_.shape
         
         agents = self.env.agents
         agent = agents[handle]
         target = agent.target
         position = agent.position
         
-        x0,x1,y0,y1,b0,b1 = self.slice_map(position)
+        self.pos = np.array(list(agent.position))
+        self.offset = np.floor(np.divide(self.size_,2))
 
-        smap =  np.zeros((self.size_[0],self.size_[1]),dtype = map_.dtype)
-        smap[y0:y0+b0,y1:y1+b1] = map_[x0:x0+b0,x1:x1+b1]
+        # Layer with target of agent
+        target_map = self.tuples_to_grid([(agent.position[0],agent.position[0], self.convert_dir(agent.direction))])
+        layer_target_map = self.to_obs_space(target_map)
 
-        test_map = np.zeros_like(smap)
-
-        agent_positions_ = np.zeros_like(smap)
-        agent_targets_ = np.zeros_like(smap)
-        path_to_target_ = np.zeros_like(smap, dtype=np.uint16)
+        # Layer with path to target
         rail_grid = np.zeros_like(map_, dtype=np.uint16)
-        
         path = a_star(self.env.rail.transitions, rail_grid, agent.position,agent.target)
-        pos = np.array(list(agent.position))
-        offset = np.floor(np.divide(self.size_,2))
-        
-        path_to_target_ = path_to_obs(self.size_,offset, pos, path, path_to_target_)
-    
-        size_half_0 = int(self.size_[0]/2)
-        size_half_1 = int(self.size_[1]/2)
-        for handle_, agent in enumerate(agents):
-            if handle!= handle_:
-                dir_ = agent.direction
-                tar_ = agent.target
-                direction_ = float(dir_ + 1)/10.0
-                position_ = agent.position
-            
-                if position_[0]>= x0 and position_[0]< x0 + b0 \
-                and position_[1]>= x1 and position_[1]< x1 + b1:
-                    agent_positions_[position_[0]-x0][position_[1]-x1] = direction_
+        path_map = self.tuples_to_grid(path)
+        layer_path_to_target = self.to_obs_space(path_map)
 
-                if tar_[0]>= x0 and tar_[0]< x0 + b0 \
-                and tar_[1]>= x1 and tar_[1]< x1 + b1:
-                    agent_targets_[tar_[0]-x0][tar_[1]-x1] = 0.7
-                    
-            else:
-                
-                if target[0]>= x0 and target[0]< x0 + b0 \
-                and target[1]>= x1 and target[1]< x1 + b1:
-                    agent_targets_[target[0]-x0][target[1]-x1] = 0.3
-                    
- 
-        my_position_ = np.zeros_like(smap)
+        # Targets for other agents & their positions
+        agent_targets = []
+        agent_positions = []
+        for agent in agents:
+            if agent.handle != handle:
+                agent_targets.append(agent.target)
+                agent_positions.append((
+                    agent.position[0],
+                    agent.position[1],
+                    self.convert_dir(agent.direction)))
+        if len(agent_targets) > 0:
+            target_map = self.tuples_to_grid(agent_targets)
+            layer_agent_target_map = self.to_obs_space(target_map)
+
+            agent_positions_map = self.tuples_to_grid(agent_positions)
+            layer_agent_positions_map = self.to_obs_space(agent_positions_map)
+
         
-        direction = float(agents[handle].direction + 1)/10.0
-        my_position_[int(self.size_[0]/2)][int(self.size_[1]/2)] = direction
-        agent_positions_[int(self.size_[0]/2)][int(self.size_[1]/2)] = direction
-        my_target_ = np.zeros_like(smap)
-        if target[0]>= x0 and target[0]< x0 + b0 \
-                and target[1]>= x1 and target[1]< x1 + b1:
-                    my_target_[target[0]-x0][target[1]-x1] = 0.5                                                                    
-        
-      
-        self.observation_space = np.stack(( smap,agent_positions_,agent_targets_,my_position_,my_target_,path_to_target_))
-        self.observation_space = np.swapaxes(self.observation_space,0,2)
-        self.observation_space = [self.observation_space, self.get_target_vec(target,position,direction)]
+        self.observation_space = np.array([
+            layer_target_map, 
+            layer_path_to_target, 
+            layer_agent_positions_map,
+            layer_agent_target_map])
+
+        for l in range(16):
+            shift = 15 - l
+            #mask = 2**l
+            layer = (self.env.rail.grid >> shift) & 1
+            layer_grid = self.to_obs_space(layer)
+            self.observation_space= np.append(self.observation_space,[layer_grid],axis=0)
+                                                            
+        #self.observation_space = [self.observation_space, self.get_target_vec(target,position,direction)]
         return self.observation_space
 
-#@njit
-def path_to_obs(size_, offset, pos, path, path_to_target_):
-    for point in path:
-        p = np.array(list(point)) - pos + offset
-        if p[0] >= 0 and p[0] < size_[0] and p[1] >= 0 and p[1] < size_[1]:
-            p = p.astype(np.int)
-            path_to_target_[p[0],p[1]] = 1
 
-    path_to_target_ = path_to_target_.astype(np.float32)
-    return path_to_target_
+    def tuples_to_grid(self,tuples_list):
+        # Tuples in format (y,x,val)
+        if len(tuples_list[0]) == 3:
+            obs_grid = np.zeros(self.map_size)
+            for tp in tuples_list:
+                obs_grid[tp[0],tp[1]] = tp[2]
+            return obs_grid
+        # Tuples in format (y,x)
+        else:
+            obs_grid = np.zeros(self.map_size)
+            for tp in tuples_list:
+                obs_grid[tp] = 1.0
+            return obs_grid
+
+
+    def to_obs_space(self, orig_map):
+
+        obs_grid = np.zeros(self.size_)
+        orig_size = orig_map.shape
+
+        grid_offset = self.pos - self.offset
+        if not self.offset_initialized:
+            self.min_map_y = np.int(np.max([grid_offset[0],0]))
+            self.max_map_y = np.int(np.min([orig_size[0] + grid_offset[0] + 1, orig_size[0]]))
+
+            self.min_map_x =np.int(np.max([grid_offset[1],0]))
+            self.max_map_x = np.int(np.min([orig_size[1] + grid_offset[1] + 1, orig_size[1]]))
+
+            self.min_obs_y = np.int(np.max([grid_offset[0],0]))
+            self.max_obs_y = np.int(np.min([orig_size[0] + grid_offset[0] + 1, orig_size[0]]))
+
+            self.min_obs_x =np.int(np.max([grid_offset[1],0]))
+            self.max_obs_x = np.int(np.min([orig_size[1] + grid_offset[1] + 1, orig_size[1]]))
+            self.offset_initialized = True
+
+        copied_area = orig_map[self.min_map_y:self.max_map_y, self.min_map_x:self.max_map_x]
+        obs_grid[self.min_obs_y:self.max_obs_y, self.min_obs_x:self.max_obs_x] = copied_area
+        return obs_grid
+
+
+    #@njit
+    def path_to_obs(size_, offset, pos, path, path_to_target_):
+        for point in path:
+            p = np.array(list(point)) - pos + offset
+            if p[0] >= 0 and p[0] < size_[0] and p[1] >= 0 and p[1] < size_[1]:
+                p = p.astype(np.int)
+                path_to_target_[p[0],p[1]] = 1
+
+        path_to_target_ = path_to_target_.astype(np.float32)
+        return path_to_target_
+
+    def convert_dir(self, direction):
+        return float(direction + 1)/10.0
