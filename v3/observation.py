@@ -140,13 +140,12 @@ class RawObservation(ObservationBuilder):
         path_to_target_ = np.zeros_like(smap, dtype=np.uint16)
         rail_grid = np.zeros_like(map_, dtype=np.uint16)
         
-
         path = a_star(self.env.rail.transitions, rail_grid, agent.position,agent.target)
         pos = np.array(list(agent.position))
         offset = np.floor(np.divide(self.size_,2))
         
         path_to_target_ = path_to_obs(self.size_,offset, pos, path, path_to_target_)
-
+    
         size_half_0 = int(self.size_[0]/2)
         size_half_1 = int(self.size_[1]/2)
         for handle_, agent in enumerate(agents):
