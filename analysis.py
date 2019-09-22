@@ -8,7 +8,8 @@ plot_reports = ['random_report.csv',
     'model23_14_report.csv',
     'model00_11_report.csv',
     'model00_48_report.csv',
-    'model07_32_report.csv']
+    'model07_32_report.csv',
+    'model00_22_report.csv']
 
 for report in plot_reports:
     df = pd.read_csv(report)
