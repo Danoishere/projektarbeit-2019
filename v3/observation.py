@@ -20,7 +20,6 @@ class RawObservation(ObservationBuilder):
         self.reset()
         self.size_ = size_
         self.observation_space = np.zeros((6,size_[0],size_[1]))
-        self.offset_initialized = False
 
     def _set_env(self, env):
         self.env = env
@@ -131,6 +130,8 @@ class RawObservation(ObservationBuilder):
         Transition map as local window of size x,y , agent-positions if in window and target.
         """
        
+        self.offset_initialized = False
+
         grid_map = self.convert_grid(self.env.rail.grid)
         self.map_size = grid_map.shape
         
@@ -223,26 +224,31 @@ class RawObservation(ObservationBuilder):
 
 
     def to_obs_space(self, orig_map):
-        obs_grid = np.zeros(self.size_)
-        orig_size = orig_map.shape
-
-        grid_offset = self.pos - self.offset
         if not self.offset_initialized:
-            self.min_map_y = np.int(np.max([grid_offset[0],0]))
-            self.max_map_y = np.int(np.min([orig_size[0] + grid_offset[0] + 1, orig_size[0]]))
+            orig_size = orig_map.shape
 
-            self.min_map_x =np.int(np.max([grid_offset[1],0]))
-            self.max_map_x = np.int(np.min([orig_size[1] + grid_offset[1] + 1, orig_size[1]]))
+            grid_offset_min = self.pos - self.offset
+            grid_offset_max = self.pos + self.offset + 1
 
-            self.min_obs_y = np.int(np.max([grid_offset[0],0]))
-            self.max_obs_y = np.int(np.min([orig_size[0] + grid_offset[0] + 1, orig_size[0]]))
+            self.min_map = np.maximum(grid_offset_min,[0,0]).astype(np.int16)
+            self.max_map = np.minimum(grid_offset_max, orig_size).astype(np.int16)
 
-            self.min_obs_x =np.int(np.max([grid_offset[1],0]))
-            self.max_obs_x = np.int(np.min([orig_size[1] + grid_offset[1] + 1, orig_size[1]]))
+            grid_offset_min = self.offset - self.pos
+            grid_offset_max = self.offset + orig_size - self.pos
+
+            self.min_obs = np.maximum(grid_offset_min,[0,0]).astype(np.int16)
+            self.max_obs = np.minimum(grid_offset_max, self.size_).astype(np.int16)
             self.offset_initialized = True
 
-        copied_area = orig_map[self.min_map_y:self.max_map_y, self.min_map_x:self.max_map_x]
-        obs_grid[self.min_obs_y:self.max_obs_y, self.min_obs_x:self.max_obs_x] = copied_area
+        copied_area = orig_map[
+            self.min_map[0]:self.max_map[0], 
+            self.min_map[1]:self.max_map[1]]
+
+        obs_grid = np.zeros(self.size_)
+        obs_grid[
+            self.min_obs[0]:self.max_obs[0], 
+            self.min_obs[1]:self.max_obs[1]] = copied_area
+
         return obs_grid
 
     def path_to_obs(size_, offset, pos, path, path_to_target_):
