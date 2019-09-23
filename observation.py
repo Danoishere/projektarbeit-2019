@@ -6,11 +6,13 @@ Associated with ZHAW datalab
 This code is not exhaustive and "is as it is"!
 """
 
-from flatland.core.env_observation_builder import ObservationBuilder
-from flatland.core.transition_map import GridTransitionMap
-from flatland.core.grid.grid4_astar import a_star
-
 import numpy as np
+from flatland.core.env_observation_builder import ObservationBuilder
+from flatland.core.grid.grid4_astar import a_star
+from flatland.core.transition_map import GridTransitionMap
+from numpy.core.umath import divide
+from numba import njit, jitclass
+
 
 class RawObservation(ObservationBuilder):
     """
@@ -19,7 +21,7 @@ class RawObservation(ObservationBuilder):
     def __init__(self, size_):
         self.reset()
         self.size_ = size_
-        self.observation_space = np.zeros((5,size_[0],size_[1]))
+        self.observation_space = np.zeros((6,size_[0],size_[1]))
     def _set_env(self, env):
         self.env = env
  
@@ -43,7 +45,6 @@ class RawObservation(ObservationBuilder):
         dir_ = np.array([dir_])
         pos_ = np.array([position]).flatten()
         return np.concatenate([vec_/dist_, dist_,pos_,dir_]).flatten()
-
 
     def slice_map(self, position):
 
@@ -72,7 +73,6 @@ class RawObservation(ObservationBuilder):
         
 
         return int(x0),int(x1),int(y0),int(y1),int(b0),int(b1)
-
 
     def convert_grid(self, grid_):
         """
@@ -133,14 +133,19 @@ class RawObservation(ObservationBuilder):
         smap =  np.zeros((self.size_[0],self.size_[1]),dtype = map_.dtype)
         smap[y0:y0+b0,y1:y1+b1] = map_[x0:x0+b0,x1:x1+b1]
 
+        test_map = np.zeros_like(smap)
+
         agent_positions_ = np.zeros_like(smap)
         agent_targets_ = np.zeros_like(smap)
         path_to_target_ = np.zeros_like(smap, dtype=np.uint16)
+        rail_grid = np.zeros_like(map_, dtype=np.uint16)
+        
 
-        path = a_star(self.env.rail.transitions, path_to_target_,agent.position,agent.target)
-        for p in path:
-            path_to_target_[p[0]-x0][p[1]-x1] = 1
-        path_to_target_ = path_to_target_.astype(np.float32)
+        path = a_star(self.env.rail.transitions, rail_grid, agent.position,agent.target)
+        pos = np.array(list(agent.position))
+        offset = np.floor(np.divide(self.size_,2))
+        
+        path_to_target_ = path_to_obs(self.size_,offset, pos, path, path_to_target_)
 
         size_half_0 = int(self.size_[0]/2)
         size_half_1 = int(self.size_[1]/2)
@@ -174,7 +179,7 @@ class RawObservation(ObservationBuilder):
         my_target_ = np.zeros_like(smap)
         if target[0]>= x0 and target[0]< x0 + b0 \
                 and target[1]>= x1 and target[1]< x1 + b1:
-                    my_target_[target[0]-x0][target[1]-x1] = 0.5
+                    my_target_[target[0]-x0][target[1]-x1] = 0.5                                                                    
         
       
         self.observation_space = np.stack(( smap,agent_positions_,agent_targets_,my_position_,my_target_,path_to_target_))
@@ -182,3 +187,13 @@ class RawObservation(ObservationBuilder):
         self.observation_space = [self.observation_space, self.get_target_vec(target,position,direction)]
         return self.observation_space
 
+#@njit
+def path_to_obs(size_, offset, pos, path, path_to_target_):
+    for point in path:
+        p = np.array(list(point)) - pos + offset
+        if p[0] >= 0 and p[0] < size_[0] and p[1] >= 0 and p[1] < size_[1]:
+            p = p.astype(np.int)
+            path_to_target_[p[0],p[1]] = 1
+
+    path_to_target_ = path_to_target_.astype(np.float32)
+    return path_to_target_
