@@ -431,7 +431,7 @@ class Worker():
 
 max_episode_length = 70
 gamma = .99 # discount rate for advantage estimation and reward discounting
-s_size = (21,21,8) #  Observations are 21*21 with five channels
+s_size = (21,21,24) #  Observations are 21*21 with five channels
 a_size = 5 # Agent can move Left, Right, or Fire
 load_model = False
 model_path = './model'

@@ -198,6 +198,14 @@ class RawObservation(ObservationBuilder):
             layer_grid_map
         ])
 
+        layers = np.zeros((16,self.map_size[0],self.map_size[1]))
+        for l in range(16):
+            shift = 15 - l
+            layers[l,:,:] = (self.env.rail.grid >> shift) & 1
+
+        layer_grid = self.to_obs_space(layers, (16,self.size_[0],self.size_[1]))
+        self.observation_space = np.concatenate([self.observation_space, layer_grid])
+
         return self.observation_space
 
 
@@ -223,7 +231,13 @@ class RawObservation(ObservationBuilder):
             return obs_grid
 
 
-    def to_obs_space(self, orig_map):
+    def to_obs_space(self, orig_map,obs_size=-1):
+
+        use_default_size = False
+        if obs_size == -1:
+            use_default_size = True
+            obs_size = self.size_
+
         if not self.offset_initialized:
             orig_size = orig_map.shape
 
@@ -237,17 +251,25 @@ class RawObservation(ObservationBuilder):
             grid_offset_max = self.offset + orig_size - self.pos
 
             self.min_obs = np.maximum(grid_offset_min,[0,0]).astype(np.int16)
-            self.max_obs = np.minimum(grid_offset_max, self.size_).astype(np.int16)
+            self.max_obs = np.minimum(grid_offset_max, obs_size).astype(np.int16)
             self.offset_initialized = True
 
-        copied_area = orig_map[
-            self.min_map[0]:self.max_map[0], 
-            self.min_map[1]:self.max_map[1]]
+    
+        # Default obs_size
+        if use_default_size:
+            copied_area = orig_map[
+                self.min_map[0]:self.max_map[0], 
+                self.min_map[1]:self.max_map[1]]
+            obs_grid = np.zeros(self.size_)
+        else:
+            copied_area = orig_map[:,
+                self.min_map[0]:self.max_map[0], 
+                self.min_map[1]:self.max_map[1]]
 
-        obs_grid = np.zeros(self.size_)
-        obs_grid[
-            self.min_obs[0]:self.max_obs[0], 
-            self.min_obs[1]:self.max_obs[1]] = copied_area
+            obs_grid = np.zeros(obs_size)
+            obs_grid[:,
+                self.min_obs[0]:self.max_obs[0], 
+                self.min_obs[1]:self.max_obs[1]] = copied_area
 
         return obs_grid
 
