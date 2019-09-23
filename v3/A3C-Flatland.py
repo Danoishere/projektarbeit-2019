@@ -31,7 +31,6 @@ from time import time
 
 # In[19]:
 
-
 from observation import RawObservation
 
 from flatland.envs.rail_env import RailEnv
@@ -40,7 +39,6 @@ from flatland.envs.observations import TreeObsForRailEnv, LocalObsForRailEnv, Gl
 from flatland.envs.rail_generators import complex_rail_generator
 from flatland.envs.schedule_generators import complex_schedule_generator
 from flatland.core.grid.grid4_astar import a_star
-
 
 # ### Helper Functions
 
@@ -62,10 +60,9 @@ def reshape_obs(agent_observations):
     num_agents = len(agent_observations)
     for i in range(num_agents):
         agent_obs = agent_observations[i]
-        state1 = np.array(agent_obs)
-        observation0 = state1.astype(np.float).reshape(s_size)
-        observations.append(observation0)
+        observations.append(agent_obs)
     observations = np.array(observations)
+    observations = np.swapaxes(observations,1,3)
     return observations
 
 def modify_reward(env, rewards, done, done_last_step, num_of_done_agents, shortest_dist):
