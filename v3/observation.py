@@ -152,7 +152,7 @@ class RawObservation(ObservationBuilder):
 
         # Layer with path to target
         rail_grid = np.zeros_like(grid_map, dtype=np.uint16)
-        path_map = self.tuples_to_grid(agent.path_to_target)
+        path_map = self.tuples_to_grid(agent.path_to_target, True)
         layer_path_to_target = self.to_obs_space(path_map)
 
         path_priority_map = path_map*self.handle_to_prio(handle)
@@ -200,7 +200,7 @@ class RawObservation(ObservationBuilder):
         return self.observation_space
 
 
-    def tuples_to_grid(self,tuples_list):
+    def tuples_to_grid(self,tuples_list,increase_with_dist=False):
         # Tuples in format (y,x,val)
         if len(tuples_list[0]) == 3:
             obs_grid = np.zeros(self.map_size)
@@ -210,8 +210,15 @@ class RawObservation(ObservationBuilder):
         # Tuples in format (y,x)
         else:
             obs_grid = np.zeros(self.map_size)
+            cnt = 0
+            dist = len(tuples_list)
             for tp in tuples_list:
-                obs_grid[tp] = 1.0
+                if increase_with_dist:
+                    obs_grid[tp] = (dist-cnt+1)/(dist+1)
+                    cnt += 1
+                else:
+                    obs_grid[tp] = 1.0
+                
             return obs_grid
 
 
