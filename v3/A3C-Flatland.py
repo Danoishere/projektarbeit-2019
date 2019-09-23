@@ -21,6 +21,7 @@ import matplotlib.pyplot as plt
 import tensorflow as tf
 import tensorflow.contrib.slim as slim
 import scipy.signal
+from tensorflow.keras import layers
 #get_ipython().run_line_magic('matplotlib', 'inline')
 from helper import *
 
@@ -62,7 +63,7 @@ def reshape_obs(agent_observations):
         agent_obs = agent_observations[i]
         observations.append(agent_obs)
     observations = np.array(observations)
-    observations = np.swapaxes(observations,1,3)
+    observations = np.reshape(observations,(num_agents, s_size[0],s_size[1],s_size[2], 1))
     return observations
 
 def modify_reward(env, rewards, done, done_last_step, num_of_done_agents, shortest_dist):
@@ -118,20 +119,31 @@ class AC_Network():
     def __init__(self,s_size,a_size,scope,trainer):
         with tf.variable_scope(scope):
             #Input and visual encoding layers
-            self.inputs = tf.placeholder(shape=[None,s_size[0],s_size[1],s_size[2]],dtype=tf.float32)
+            self.inputs = tf.placeholder(shape=[None,s_size[0],s_size[1],s_size[2],1],dtype=tf.float32)
             
-            self.conv1 = slim.conv2d(
-                activation_fn=tf.nn.elu,
-                inputs=self.inputs,num_outputs=32,
-                kernel_size=[7,7],
-                stride=[4,4],padding='VALID')
+            def network(input):
+                conv1 = layers.Conv3D(32, (4,4,4), strides=(2,2,2))(input)
+                conv2 = layers.Conv3D(32, (3,3,3), strides=(1,1,1))(conv1)
+                max_p = layers.MaxPooling3D(pool_size=(2, 2, 2))(conv2)
 
-            self.conv2 = slim.conv2d(activation_fn=tf.nn.elu,
-                inputs=self.conv1,num_outputs=32,
-                kernel_size=[4,4],stride=[2,2],padding='VALID')
+                flattend = layers.Flatten()(max_p)
+                hidden = layers.Dense(256, activation='relu')(flattend)
+                hidden = layers.Dense(256, activation='relu')(hidden)
+                hidden = layers.Dropout(0.9)(hidden)
+                hidden = layers.Dense(256, activation='relu')(hidden)
+                hidden = layers.Dense(128, activation='relu')(hidden)
+                hidden = layers.Dropout(0.9)(hidden)
+                hidden = layers.Dense(128, activation='relu')(hidden)
+                hidden = layers.Dense(64, activation='relu')(hidden)
+                hidden = layers.Dropout(0.9)(hidden)
+                hidden = layers.Dense(32, activation='relu')(hidden)
+                hidden = layers.Dense(16, activation='relu')(hidden)
+                hidden = layers.Dense(8, activation='relu')(hidden)
+                return hidden
 
-            hidden = slim.fully_connected(slim.flatten(self.conv2),256,activation_fn=tf.nn.elu)
-            
+            v = network(self.inputs)
+            p = network(self.inputs)
+
             #Recurrent network for temporal dependencies
             lstm_cell = tf.contrib.rnn.BasicLSTMCell(256,state_is_tuple=True)
             c_init = np.zeros((1, lstm_cell.state_size.c), np.float32)
@@ -140,7 +152,7 @@ class AC_Network():
             c_in = tf.placeholder(tf.float32, [1, lstm_cell.state_size.c])
             h_in = tf.placeholder(tf.float32, [1, lstm_cell.state_size.h])
             self.state_in = (c_in, h_in)
-            rnn_in = tf.expand_dims(hidden, [0])
+            rnn_in = tf.expand_dims(p, [0])
             step_size = tf.shape(self.inputs)[:1]
             state_in = tf.contrib.rnn.LSTMStateTuple(c_in, h_in)
             lstm_outputs, lstm_state = tf.nn.dynamic_rnn(
@@ -151,11 +163,11 @@ class AC_Network():
             rnn_out = tf.reshape(lstm_outputs, [-1, 256])
             
             #Output layers for policy and value estimations
-            self.policy = slim.fully_connected(rnn_out,a_size,
+            self.policy = slim.fully_connected(p,a_size,
                 activation_fn=tf.nn.softmax,
                 weights_initializer=normalized_columns_initializer(0.01),
                 biases_initializer=None)
-            self.value = slim.fully_connected(rnn_out,1,
+            self.value = slim.fully_connected(v,1,
                 activation_fn=None,
                 weights_initializer=normalized_columns_initializer(1.0),
                 biases_initializer=None)
@@ -171,18 +183,18 @@ class AC_Network():
 
                 #Loss functions
                 self.value_loss = 0.5 * tf.reduce_sum(tf.square(self.target_v - tf.reshape(self.value,[-1])))
-                self.entropy = - tf.reduce_sum(self.policy * tf.log(self.policy))
-                self.policy_loss = -tf.reduce_sum(tf.log(self.responsible_outputs)*self.advantages)
+                self.entropy = - tf.reduce_sum(self.policy * tf.math.log(self.policy))
+                self.policy_loss = -tf.reduce_sum(tf.math.log(self.responsible_outputs)*self.advantages)
                 self.loss = 0.5 * self.value_loss + self.policy_loss - self.entropy * 0.01
 
                 #Get gradients from local network using local losses
-                local_vars = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope)
+                local_vars = tf.compat.v1.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope)
                 self.gradients = tf.gradients(self.loss,local_vars)
                 self.var_norms = tf.global_norm(local_vars)
                 grads,self.grad_norms = tf.clip_by_global_norm(self.gradients,40.0)
                 
                 #Apply local gradients to global network
-                global_vars = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, 'global')
+                global_vars = tf.compat.v1.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, 'global')
                 self.apply_grads = trainer.apply_gradients(zip(grads,global_vars))
 
 
@@ -202,7 +214,7 @@ class Worker():
         self.episode_rewards = []
         self.episode_lengths = []
         self.episode_mean_values = []
-        self.summary_writer = tf.summary.FileWriter("train_" + str(self.number))
+        self.summary_writer = tf.compat.v1.summary.FileWriter("train_" + str(self.number))
 
         #Create the local copy of the network and the tensorflow op to copy global paramters to local network
         self.local_AC = AC_Network(s_size, a_size, self.name, trainer)
