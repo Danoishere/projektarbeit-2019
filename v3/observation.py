@@ -11,9 +11,6 @@ from flatland.core.env_observation_builder import ObservationBuilder
 from flatland.core.grid.grid4_astar import a_star
 from flatland.core.transition_map import GridTransitionMap
 from numpy.core.umath import divide
-from numba import njit, jitclass
-from numba.typed import List
-
 
 class RawObservation(ObservationBuilder):
     """
@@ -24,6 +21,7 @@ class RawObservation(ObservationBuilder):
         self.size_ = size_
         self.observation_space = np.zeros((6,size_[0],size_[1]))
         self.offset_initialized = False
+
     def _set_env(self, env):
         self.env = env
  
@@ -34,6 +32,9 @@ class RawObservation(ObservationBuilder):
         self.map_ = None
         self.agent_positions_ = None
         self.agent_handles_ = None
+        
+    def handle_to_prio(self, handle):
+        return (handle + 1)/15
  
     def get_target_vec(self, target, position_,dir_):
 
@@ -104,6 +105,14 @@ class RawObservation(ObservationBuilder):
   
         return map_
 
+    def get_many(self, handles=[]):
+        for agent in self.env.agents:
+            rail_grid = np.zeros_like(self.env.rail.grid, dtype=np.uint16)
+            path = a_star(self.env.rail.transitions, rail_grid, agent.position,agent.target)
+            agent.path_to_target = path
+
+        self.path_priority_map = np.zeros(self.env.rail.grid.shape)
+        return super().get_many(handles=handles)
 
     def get(self, handle=0):
         """
@@ -122,9 +131,8 @@ class RawObservation(ObservationBuilder):
         Transition map as local window of size x,y , agent-positions if in window and target.
         """
        
-        
-        map_ = self.convert_grid(self.env.rail.grid)
-        self.map_size = map_.shape
+        grid_map = self.convert_grid(self.env.rail.grid)
+        self.map_size = grid_map.shape
         
         agents = self.env.agents
         agent = agents[handle]
@@ -134,19 +142,27 @@ class RawObservation(ObservationBuilder):
         self.pos = np.array(list(agent.position))
         self.offset = np.floor(np.divide(self.size_,2))
 
-        # Layer with target of agent
-        target_map = self.tuples_to_grid([(agent.position[0],agent.position[0], self.convert_dir(agent.direction))])
+        # Layer with position of agent
+        position_map = self.tuples_to_grid([(agent.position[0],agent.position[1], self.convert_dir(agent.direction))])
+        layer_position_map = self.to_obs_space(position_map)
+
+        # Layer with position of agent
+        target_map = self.tuples_to_grid([(agent.target[0],agent.target[1])])
         layer_target_map = self.to_obs_space(target_map)
 
         # Layer with path to target
-        rail_grid = np.zeros_like(map_, dtype=np.uint16)
-        path = a_star(self.env.rail.transitions, rail_grid, agent.position,agent.target)
-        path_map = self.tuples_to_grid(path)
+        rail_grid = np.zeros_like(grid_map, dtype=np.uint16)
+        path_map = self.tuples_to_grid(agent.path_to_target)
         layer_path_to_target = self.to_obs_space(path_map)
+
+        path_priority_map = path_map*self.handle_to_prio(handle)
+        self.path_priority_map = np.maximum(path_priority_map, self.path_priority_map)
+        layer_path_priority = self.to_obs_space(self.path_priority_map)
 
         # Targets for other agents & their positions
         agent_targets = []
         agent_positions = []
+        agent_priority = []
         for agent in agents:
             if agent.handle != handle:
                 agent_targets.append(agent.target)
@@ -154,28 +170,33 @@ class RawObservation(ObservationBuilder):
                     agent.position[0],
                     agent.position[1],
                     self.convert_dir(agent.direction)))
+                
+            agent_priority.append((
+                agent.position[0],
+                agent.position[1],
+                self.handle_to_prio(handle)))
+
         if len(agent_targets) > 0:
             target_map = self.tuples_to_grid(agent_targets)
             layer_agent_target_map = self.to_obs_space(target_map)
-
             agent_positions_map = self.tuples_to_grid(agent_positions)
             layer_agent_positions_map = self.to_obs_space(agent_positions_map)
 
-        
-        self.observation_space = np.array([
-            layer_target_map, 
-            layer_path_to_target, 
-            layer_agent_positions_map,
-            layer_agent_target_map])
+        priority_map = self.tuples_to_grid(agent_priority)
+        layer_agent_priority = self.to_obs_space(priority_map)
+        layer_grid_map = self.to_obs_space(grid_map)
 
-        for l in range(16):
-            shift = 15 - l
-            #mask = 2**l
-            layer = (self.env.rail.grid >> shift) & 1
-            layer_grid = self.to_obs_space(layer)
-            self.observation_space= np.append(self.observation_space,[layer_grid],axis=0)
-                                                            
-        #self.observation_space = [self.observation_space, self.get_target_vec(target,position,direction)]
+        self.observation_space = np.array([
+            layer_position_map,
+            layer_target_map, 
+            layer_path_to_target,
+            layer_path_priority,
+            layer_agent_positions_map,
+            layer_agent_priority,
+            layer_agent_target_map,
+            layer_grid_map
+        ])
+
         return self.observation_space
 
 
@@ -195,7 +216,6 @@ class RawObservation(ObservationBuilder):
 
 
     def to_obs_space(self, orig_map):
-
         obs_grid = np.zeros(self.size_)
         orig_size = orig_map.shape
 
@@ -218,8 +238,6 @@ class RawObservation(ObservationBuilder):
         obs_grid[self.min_obs_y:self.max_obs_y, self.min_obs_x:self.max_obs_x] = copied_area
         return obs_grid
 
-
-    #@njit
     def path_to_obs(size_, offset, pos, path, path_to_target_):
         for point in path:
             p = np.array(list(point)) - pos + offset

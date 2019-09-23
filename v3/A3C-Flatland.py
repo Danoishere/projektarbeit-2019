@@ -1,27 +1,15 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# # Simple Reinforcement Learning with Tensorflow Part 8: Asynchronus Advantage Actor-Critic (A3C)
-# 
-# This iPython notebook includes an implementation of the [A3C algorithm](https://arxiv.org/pdf/1602.01783.pdf). In it we use A3C to solve a simple 3D Doom challenge using the [VizDoom engine](http://vizdoom.cs.put.edu.pl/). For more information on A3C, see the accompanying [Medium post](https://medium.com/p/c88f72a5e9f2/edit).
-# 
-# This tutorial requires that VizDoom is installed. It can be easily obtained with:
-# 
-# `pip install vizdoom`
-# 
-# We also require `basic.wad` and `helper.py`, both of which are available from the [DeepRL-Agents github repo](https://github.com/awjuliani/DeepRL-Agents).
-# 
-# While training is taking place, statistics on agent performance are available from Tensorboard. To launch it use:
+# This iPython notebook includes an implementation of the [A3C algorithm](https://arxiv.org/pdf/1602.01783.pdf).
 # 
 # `tensorboard --logdir=worker_0:'./train_0',worker_1:'./train_1',worker_2:'./train_2',worker_3:'./train_3'`
-
-# ##### Enable autocomplete
+#
+#  ##### Enable autocomplete
 
 # In[17]:
 
-
 #get_ipython().run_line_magic('config', 'IPCompleter.greedy=True')
-
 
 # In[18]:
 
@@ -75,15 +63,12 @@ def reshape_obs(agent_observations):
     for i in range(num_agents):
         agent_obs = agent_observations[i]
         state1 = np.array(agent_obs)
-        #state2 = np.array(agent_obs[1])
-        observation0 = state1.astype(np.float).reshape((state1.shape[0],state1.shape[1],state1.shape[2],1))
-        #observation1 = state2.astype(np.float).reshape((state2.shape[0]))
-        # observations.append([observation1, observation2])
+        observation0 = state1.astype(np.float).reshape(s_size)
         observations.append(observation0)
     observations = np.array(observations)
     return observations
 
-def modify_reward(env, rewards, done, done_last_step, num_of_done_agents, dist):
+def modify_reward(env, rewards, done, done_last_step, num_of_done_agents, shortest_dist):
     for i in range(env.num_agents):
         if not done_last_step[i] and done[i]:
             num_of_done_agents += 1
@@ -94,24 +79,24 @@ def modify_reward(env, rewards, done, done_last_step, num_of_done_agents, dist):
             # Give some reward to our agent
             rewards[i] += 2**num_of_done_agents * 5
 
+    
     for i in range(env.num_agents):
         agent = env.agents[i]
-        grid = np.zeros((21,21),dtype=np.uint16)
-        path_to_target = a_star(env.rail.transitions, grid, agent.position, agent.target)
+        path_to_target = agent.path_to_target
         current_path_length = len(path_to_target)
-        last_path_length = dist[i]
+        shortest_path_length = shortest_dist[i]
 
         # Adding reward for getting closer to goal
-        if current_path_length < last_path_length:
-            rewards[i] += 0.2
-            dist[i] = current_path_length
+        if current_path_length < shortest_path_length:
+            rewards[i] +=1
+            shortest_dist[i] = current_path_length
 
         # Subtract reward for getting further away
-        if current_path_length > last_path_length:
-            rewards[i] -= 0.2
-            dist[i] = current_path_length
+        if current_path_length > shortest_path_length:
+            rewards[i] -= 1
     
     return num_of_done_agents
+
 
 
 # Discounting function used to calculate discounted returns.
@@ -136,14 +121,18 @@ class AC_Network():
     def __init__(self,s_size,a_size,scope,trainer):
         with tf.variable_scope(scope):
             #Input and visual encoding layers
-            self.inputs = tf.placeholder(shape=[None,s_size[0],s_size[1],s_size[2],s_size[3]],dtype=tf.float32)
-            #self.imageIn = tf.reshape(self.inputs,shape=[-1,84,84,1])
-            self.conv1 = slim.conv3d(activation_fn=tf.nn.elu,
-                inputs=self.inputs,num_outputs=16,
-                kernel_size=[8,8,8],stride=[4,4,4],padding='VALID')
-            self.conv2 = slim.conv3d(activation_fn=tf.nn.elu,
+            self.inputs = tf.placeholder(shape=[None,s_size[0],s_size[1],s_size[2]],dtype=tf.float32)
+            
+            self.conv1 = slim.conv2d(
+                activation_fn=tf.nn.elu,
+                inputs=self.inputs,num_outputs=32,
+                kernel_size=[7,7],
+                stride=[4,4],padding='VALID')
+
+            self.conv2 = slim.conv2d(activation_fn=tf.nn.elu,
                 inputs=self.conv1,num_outputs=32,
-                kernel_size=[4,4,4],stride=[2,2,2],padding='VALID')
+                kernel_size=[4,4],stride=[2,2],padding='VALID')
+
             hidden = slim.fully_connected(slim.flatten(self.conv2),256,activation_fn=tf.nn.elu)
             
             #Recurrent network for temporal dependencies
@@ -226,7 +215,7 @@ class Worker():
 
         rail_gen = complex_rail_generator(
             nr_start_goal=3,
-            nr_extra=7,
+            nr_extra=3,
             min_dist=15,
             seed=random.randint(0,100000)
         )
@@ -240,6 +229,7 @@ class Worker():
                 number_of_agents=num_agents,
                 obs_builder_object=RawObservation([21,21]))
 
+        env.global_reward = 10
         env.num_agents = num_agents
 
         self.actions = [0,1,2,3,4]
@@ -298,11 +288,8 @@ class Worker():
                 episode_frames = []
                 episode_reward = 0
                 episode_step_count = 0
-                
                 num_of_done_agents = 0
-                d = False
-
-
+                
                 obs = self.env.reset()
                 obs = reshape_obs(obs)
 
@@ -310,7 +297,7 @@ class Worker():
                     obs = self.env.reset()
                     obs = reshape_obs(obs)
 
-                is_episode_finished = False
+                episode_done = False
                 
                 rnn_state = self.local_AC.state_init
                 self.batch_rnn_state = rnn_state
@@ -321,8 +308,8 @@ class Worker():
                 for i in range(self.env.num_agents):
                     done_last_step[i] = 0
                     dist[i] = 100
-
-                while is_episode_finished == False and episode_step_count < max_episode_length:
+                    
+                while episode_done == False and episode_step_count < max_episode_length:
                     #Take an action using probabilities from policy network output.
                     a_dist,v,rnn_state = sess.run([
                         self.local_AC.policy,
@@ -346,10 +333,9 @@ class Worker():
                     done_last_step = done
                     
                     # Is episode finished?
-                    d = done['__all__']
-                    is_episode_finished = d
+                    episode_done = done['__all__']
                   
-                    if d == True:
+                    if episode_done == True:
                         next_obs = obs
 
                     for i in range(self.env.num_agents):
@@ -363,7 +349,7 @@ class Worker():
                             agent_action,
                             agent_reward,
                             agent_next_obs,
-                            d,
+                            episode_done,
                             v[0,0]])
                         
                         episode_values.append(v[0,0])
@@ -375,7 +361,7 @@ class Worker():
 
                     # If the episode hasn't ended, but the experience buffer is full, then we
                     # make an update step using that experience rollout.
-                    if len(episode_buffer) == 30 and d != True and episode_step_count != max_episode_length - 1:
+                    if len(episode_buffer) == 30 and episode_done != True and episode_step_count != max_episode_length - 1:
                         # Since we don't know what the true final return is, we "bootstrap" from our current
                         # value estimation.
                         #for i in range(self.env.num_agents):
@@ -393,7 +379,7 @@ class Worker():
                         episode_buffer = []
                         episode_frames = []
                         sess.run(self.update_local_ops)
-                    if d == True:
+                    if episode_done == True:
                         break
                                             
                 self.episode_rewards.append(episode_reward)
@@ -446,9 +432,9 @@ class Worker():
 # In[23]:
 
 
-max_episode_length = 200
+max_episode_length = 70
 gamma = .99 # discount rate for advantage estimation and reward discounting
-s_size = (20,21,21,1) #  Observations are 21*21 with six channels
+s_size = (21,21,8) #  Observations are 21*21 with five channels
 a_size = 5 # Agent can move Left, Right, or Fire
 load_model = False
 model_path = './model'
