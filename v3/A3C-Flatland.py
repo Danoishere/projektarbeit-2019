@@ -119,43 +119,31 @@ class AC_Network():
         with tf.variable_scope(scope):
             #Input and visual encoding layers
             self.inputs = tf.placeholder(shape=[None,s_size[0],s_size[1],s_size[2],1],dtype=tf.float32)
-
             flattend = layers.Flatten()(self.inputs)
-            hidden = layers.Dense(256, activation='relu')(flattend)
-            hidden = layers.Dropout(0.2)(hidden)
-            hidden = layers.Dense(128,activation='relu')(hidden)
-            hidden = layers.Dropout(0.2)(hidden)
-            hidden = layers.Dense(64, activation='relu')(hidden)
-            hidden = layers.Dropout(0.2)(hidden)
-            hidden = layers.Dense(8, activation='relu')(hidden)
 
-            #Recurrent network for temporal dependencies
-            lstm_cell = tf.contrib.rnn.BasicLSTMCell(8,state_is_tuple=True)
-            c_init = np.zeros((1, lstm_cell.state_size.c), np.float32)
-            h_init = np.zeros((1, lstm_cell.state_size.h), np.float32)
-            self.state_init = [c_init, h_init]
-            c_in = tf.placeholder(tf.float32, [1, lstm_cell.state_size.c])
-            h_in = tf.placeholder(tf.float32, [1, lstm_cell.state_size.h])
-            self.state_in = (c_in, h_in)
-            rnn_in = tf.expand_dims(hidden, [0])
-            step_size = tf.shape(self.inputs)[:1]
-            state_in = tf.contrib.rnn.LSTMStateTuple(c_in, h_in)
-            lstm_outputs, lstm_state = tf.nn.dynamic_rnn(
-                lstm_cell, rnn_in, initial_state=state_in, sequence_length=step_size,
-                time_major=False)
-            lstm_c, lstm_h = lstm_state
-            self.state_out = (lstm_c[:1, :], lstm_h[:1, :])
-            rnn_out = tf.reshape(lstm_outputs, [-1, 8])
+            hidden_policy = layers.Dense(512, activation='relu')(flattend)
+            hidden_policy = layers.Dropout(0.1)(hidden_policy)
+            hidden_policy = layers.Dense(256, activation='relu')(hidden_policy)
+            hidden_policy = layers.Dropout(0.1)(hidden_policy)
+            hidden_policy = layers.Dense(128,activation='relu')(hidden_policy)
+            hidden_policy = layers.Dropout(0.1)(hidden_policy)
+            hidden_policy = layers.Dense(64, activation='relu')(hidden_policy)
+            hidden_policy = layers.Dropout(0.1)(hidden_policy)
+            hidden_policy = layers.Dense(8, activation='relu')(hidden_policy)
+
+            hidden_value = layers.Dense(512, activation='relu')(flattend)
+            hidden_value = layers.Dropout(0.1)(hidden_value)
+            hidden_value = layers.Dense(256,activation='relu')(hidden_value)
+            hidden_value = layers.Dropout(0.1)(hidden_value)
+            hidden_value = layers.Dense(128,activation='relu')(hidden_value)
+            hidden_value = layers.Dropout(0.1)(hidden_value)
+            hidden_value = layers.Dense(64, activation='relu')(hidden_value)
+            hidden_value = layers.Dropout(0.1)(hidden_value)
+            hidden_value = layers.Dense(8, activation='relu')(hidden_value)
             
             #Output layers for policy and value estimations
-            self.policy = slim.fully_connected(rnn_out,a_size,
-                activation_fn=tf.nn.softmax,
-                weights_initializer=normalized_columns_initializer(0.01),
-                biases_initializer=None)
-            self.value = slim.fully_connected(rnn_out,1,
-                activation_fn=None,
-                weights_initializer=normalized_columns_initializer(1.0),
-                biases_initializer=None)
+            self.policy = layers.Dense(a_size,activation='softmax')(hidden_policy)
+            self.value = layers.Dense(1)(hidden_value)
             
             #Only the worker network need ops for loss functions and gradient updating.
             if scope != 'global':
@@ -176,7 +164,7 @@ class AC_Network():
                 local_vars = tf.compat.v1.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope)
                 self.gradients = tf.gradients(self.loss,local_vars)
                 self.var_norms = tf.global_norm(local_vars)
-                grads,self.grad_norms = tf.clip_by_global_norm(self.gradients,40.0)
+                grads, self.grad_norms = tf.clip_by_global_norm(self.gradients,40.0)
                 
                 #Apply local gradients to global network
                 global_vars = tf.compat.v1.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, 'global')
@@ -252,18 +240,15 @@ class Worker():
             self.local_AC.target_v : discounted_rewards,
             self.local_AC.inputs : observations,
             self.local_AC.actions : actions,
-            self.local_AC.advantages : advantages,
-            self.local_AC.state_in[0] : self.batch_rnn_state[0],
-            self.local_AC.state_in[1] : self.batch_rnn_state[1]
+            self.local_AC.advantages : advantages
         }
         
-        v_l,p_l,e_l,g_n,v_n, self.batch_rnn_state,_ = sess.run([
+        v_l,p_l,e_l,g_n,v_n,_ = sess.run([
             self.local_AC.value_loss,
             self.local_AC.policy_loss,
             self.local_AC.entropy,
             self.local_AC.grad_norms,
             self.local_AC.var_norms,
-            self.local_AC.state_out,
             self.local_AC.apply_grads],
             feed_dict=feed_dict)
         
@@ -291,8 +276,6 @@ class Worker():
                     obs = reshape_obs(obs)
 
                 episode_done = False
-                rnn_state = self.local_AC.state_init
-                self.batch_rnn_state = rnn_state
                 
                 done_last_step = {}                
                 dist = {}
@@ -304,14 +287,11 @@ class Worker():
                     
                 while episode_done == False and episode_step_count < max_episode_length:
                     #Take an action using probabilities from policy network output.
-                    a_dist,v,rnn_state = sess.run([
+                    a_dist,v = sess.run([
                         self.local_AC.policy,
-                        self.local_AC.value,
-                        self.local_AC.state_out], 
+                        self.local_AC.value], 
                         feed_dict={
-                            self.local_AC.inputs : obs,
-                            self.local_AC.state_in[0] : rnn_state[0],
-                            self.local_AC.state_in[1] : rnn_state[1]
+                            self.local_AC.inputs : obs
                         })
 
                     actions = {}
@@ -363,9 +343,8 @@ class Worker():
 
                         v1 = sess.run(self.local_AC.value, 
                             feed_dict={
-                                self.local_AC.inputs : obs,
-                                self.local_AC.state_in[0] : rnn_state[0],
-                                self.local_AC.state_in[1] : rnn_state[1]})
+                                self.local_AC.inputs : obs
+                                })
 
                         info = np.zeros((self.env.num_agents,5))
                         for i in range(self.env.num_agents):
@@ -446,8 +425,8 @@ class Worker():
 
 
 max_episode_length = 80
-gamma = .90 # discount rate for advantage estimation and reward discounting
-s_size = (11,11,24) #  Observations are 21*21 with five channels
+gamma = 0.98 # discount rate for advantage estimation and reward discounting
+s_size = (11,11,26) #  Observations are 21*21 with five channels
 a_size = 5 # Agent can move Left, Right, or Fire
 load_model = False
 model_path = './model'
@@ -467,7 +446,7 @@ if not os.path.exists('./frames'):
 
 with tf.device("/cpu:0"): 
     global_episodes = tf.Variable(0,dtype=tf.int32,name='global_episodes',trainable=False)
-    trainer = tf.train.AdamOptimizer(learning_rate=1e-3)
+    trainer = tf.train.AdamOptimizer(learning_rate=1e-4)
     master_network = AC_Network(s_size,a_size,'global',None) # Generate global network
     num_workers = multiprocessing.cpu_count() # Set workers to number of available CPU threads
     workers = []

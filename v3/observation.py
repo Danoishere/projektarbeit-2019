@@ -147,6 +147,8 @@ class RawObservation(ObservationBuilder):
         agent = agents[handle]
         target = agent.target
         position = agent.position
+        speed = agent.speed_data['speed']
+        last_action =  agent.speed_data['transition_action_on_cellexit']/4.0
         
         self.pos = np.array(list(agent.position))
         self.offset = np.floor(np.divide(self.size_,2))
@@ -154,6 +156,14 @@ class RawObservation(ObservationBuilder):
         # Layer with position of agent
         position_map = self.tuples_to_grid([(agent.position[0],agent.position[1], self.convert_dir(agent.direction))])
         layer_position_map = self.to_obs_space(position_map)
+
+        # Layer with speed of agent
+        speed_map = self.tuples_to_grid([(agent.position[0],agent.position[1], speed)])
+        layer_speed_map = self.to_obs_space(speed_map)
+
+        # Layer with speed of agent
+        last_action_map = self.tuples_to_grid([(agent.position[0],agent.position[1], last_action)])
+        layer_last_action_map = self.to_obs_space(last_action_map)
 
         # Layer with position of agent
         target_map = self.tuples_to_grid([(agent.target[0],agent.target[1])])
@@ -200,6 +210,8 @@ class RawObservation(ObservationBuilder):
 
         self.observation_space = np.array([
             layer_position_map,
+            layer_speed_map,
+            layer_last_action_map,
             layer_target_map, 
             layer_path_to_target,
             layer_path_priority,
@@ -213,6 +225,8 @@ class RawObservation(ObservationBuilder):
 
         layer_grid = self.to_obs_space(self.layers, (16,self.size_[0],self.size_[1]))
         self.observation_space = np.concatenate([self.observation_space, layer_grid])
+
+
 
         return self.observation_space
 
