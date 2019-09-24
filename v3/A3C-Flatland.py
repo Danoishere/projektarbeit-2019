@@ -3,7 +3,7 @@
 
 # This iPython notebook includes an implementation of the [A3C algorithm](https://arxiv.org/pdf/1602.01783.pdf).
 # 
-# `tensorboard --logdir=worker_0:'./train_0',worker_1:'./train_1',worker_2:'./train_2',worker_3:'./train_3'`
+# `tensorboard --logdir=worker_0:./train_0,worker_1:./train_1,worker_2:./train_2,worker_3:./train_3`
 #
 #  ##### Enable autocomplete
 
@@ -41,6 +41,13 @@ from flatland.envs.rail_generators import complex_rail_generator
 from flatland.envs.schedule_generators import complex_schedule_generator
 from flatland.core.grid.grid4_astar import a_star
 
+
+from make_env import make_env
+from gym.spaces import Discrete
+
+
+
+
 # ### Helper Functions
 
 # In[20]:
@@ -66,35 +73,6 @@ def reshape_obs(agent_observations):
     observations = np.reshape(observations,(num_agents, s_size[0],s_size[1],s_size[2], 1))
     return observations
 
-def modify_reward(env, rewards, done, done_last_step, num_of_done_agents, shortest_dist):
-    for i in range(env.num_agents):
-        if not done_last_step[i] and done[i]:
-            num_of_done_agents += 1
-            # Hand out some reward to all the agents
-            for j in range(env.num_agents):
-                rewards[j] += 5  
-
-            # Give some reward to our agent
-            rewards[i] += 2**num_of_done_agents * 5
-
-    
-    for i in range(env.num_agents):
-        agent = env.agents[i]
-        path_to_target = agent.path_to_target
-        current_path_length = len(path_to_target)
-        shortest_path_length = shortest_dist[i]
-
-        # Adding reward for getting closer to goal
-        if current_path_length < shortest_path_length:
-            rewards[i] +=1
-            shortest_dist[i] = current_path_length
-
-        # Subtract reward for getting further away
-        if current_path_length > shortest_path_length:
-            rewards[i] -= 1
-    
-    return num_of_done_agents
-
 
 
 # Discounting function used to calculate discounted returns.
@@ -118,26 +96,15 @@ def normalized_columns_initializer(std=1.0):
 class AC_Network():
     def __init__(self,s_size,a_size,scope,trainer):
         with tf.variable_scope(scope):
-            #Input and visual encoding layers
-            self.inputs = tf.placeholder(shape=[None,s_size[0],s_size[1],s_size[2],1],dtype=tf.float32)
+            self.inputs = tf.placeholder(shape=[None,s_size[0]],dtype=tf.float32)
             
             def network(input):
-                conv1 = layers.Conv3D(32, (4,4,4), strides=(2,2,2))(input)
-                conv2 = layers.Conv3D(32, (3,3,3), strides=(1,1,1))(conv1)
-                max_p = layers.MaxPooling3D(pool_size=(2, 2, 2))(conv2)
-
-                flattend = layers.Flatten()(max_p)
-                hidden = layers.Dense(256, activation='relu')(flattend)
-                hidden = layers.Dense(256, activation='relu')(hidden)
-                hidden = layers.Dropout(0.9)(hidden)
-                hidden = layers.Dense(256, activation='relu')(hidden)
+                hidden = layers.Dense(256, activation='relu')(input)
+                hidden = layers.Dropout(0.1)(hidden)
                 hidden = layers.Dense(128, activation='relu')(hidden)
-                hidden = layers.Dropout(0.9)(hidden)
-                hidden = layers.Dense(128, activation='relu')(hidden)
+                hidden = layers.Dropout(0.1)(hidden)
                 hidden = layers.Dense(64, activation='relu')(hidden)
-                hidden = layers.Dropout(0.9)(hidden)
-                hidden = layers.Dense(32, activation='relu')(hidden)
-                hidden = layers.Dense(16, activation='relu')(hidden)
+                hidden = layers.Dropout(0.1)(hidden)
                 hidden = layers.Dense(8, activation='relu')(hidden)
                 return hidden
 
@@ -145,7 +112,7 @@ class AC_Network():
             p = network(self.inputs)
 
             #Recurrent network for temporal dependencies
-            lstm_cell = tf.contrib.rnn.BasicLSTMCell(256,state_is_tuple=True)
+            lstm_cell = tf.contrib.rnn.BasicLSTMCell(32,state_is_tuple=True)
             c_init = np.zeros((1, lstm_cell.state_size.c), np.float32)
             h_init = np.zeros((1, lstm_cell.state_size.h), np.float32)
             self.state_init = [c_init, h_init]
@@ -160,7 +127,7 @@ class AC_Network():
                 time_major=False)
             lstm_c, lstm_h = lstm_state
             self.state_out = (lstm_c[:1, :], lstm_h[:1, :])
-            rnn_out = tf.reshape(lstm_outputs, [-1, 256])
+            rnn_out = tf.reshape(lstm_outputs, [-1, 32])
             
             #Output layers for policy and value estimations
             self.policy = slim.fully_connected(p,a_size,
@@ -222,24 +189,9 @@ class Worker():
         
         num_agents = 2
 
-        rail_gen = complex_rail_generator(
-            nr_start_goal=3,
-            nr_extra=3,
-            min_dist=15,
-            seed=random.randint(0,100000)
-        )
-                    
-        #The Below code is related to setting up the Flatland environment
-        env = RailEnv(
-                width=14,
-                height=14,
-                rail_generator = rail_gen,
-                schedule_generator =complex_schedule_generator(),
-                number_of_agents=num_agents,
-                obs_builder_object=RawObservation([21,21]))
-
-        env.global_reward = 10
-        env.num_agents = num_agents
+        env = make_env('simple_spread')
+        np.random.seed(123)
+        env.seed(123)
 
         self.actions = [0,1,2,3,4]
         self.env = env
@@ -300,23 +252,10 @@ class Worker():
                 num_of_done_agents = 0
                 
                 obs = self.env.reset()
-                obs = reshape_obs(obs)
-
-                while obs.shape[0] == 0:
-                    obs = self.env.reset()
-                    obs = reshape_obs(obs)
-
                 episode_done = False
                 
                 rnn_state = self.local_AC.state_init
                 self.batch_rnn_state = rnn_state
-                
-                done_last_step = {}
-                dist = {}
-
-                for i in range(self.env.num_agents):
-                    done_last_step[i] = 0
-                    dist[i] = 100
                     
                 while episode_done == False and episode_step_count < max_episode_length:
                     #Take an action using probabilities from policy network output.
@@ -330,24 +269,22 @@ class Worker():
                             self.local_AC.state_in[1] : rnn_state[1]
                         })
 
-                    actions = {}
-                    for i in range(self.env.num_agents):
+                    actions = []
+                    one_hot_actions = np.zeros((self.env.n,5))
+                    for i in range(self.env.n):
                         a = np.random.choice([0,1,2,3,4], p = a_dist[i])
-                        actions[i] = a
+                        one_hot_actions[i,a] = 1
+                        actions.append(a)
 
-                    next_obs, rewards, done, _ = self.env.step(actions)
-                    next_obs = reshape_obs(next_obs)
-
-                    num_of_done_agents = modify_reward(self.env, rewards, done, done_last_step, num_of_done_agents,dist)
-                    done_last_step = done
+                    next_obs, rewards, done, info = self.env.step(one_hot_actions)
                     
                     # Is episode finished?
-                    episode_done = done['__all__']
+                    episode_done = np.all(done)
                   
                     if episode_done == True:
                         next_obs = obs
 
-                    for i in range(self.env.num_agents):
+                    for i in range(self.env.n):
                         agent_state = obs[i]
                         agent_action = actions[i]
                         agent_reward = rewards[i]
@@ -441,9 +378,9 @@ class Worker():
 # In[23]:
 
 
-max_episode_length = 70
+max_episode_length = 200
 gamma = .99 # discount rate for advantage estimation and reward discounting
-s_size = (21,21,24) #  Observations are 21*21 with five channels
+s_size = (18,) #  Observations are 21*21 with five channels
 a_size = 5 # Agent can move Left, Right, or Fire
 load_model = False
 model_path = './model'
