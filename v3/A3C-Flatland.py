@@ -224,6 +224,7 @@ class Worker():
                 number_of_agents=num_agents,
                 obs_builder_object=RawObservation([11,11]))
 
+        env.step_penalty = -2
         env.global_reward = 10
         env.num_agents = num_agents
 
