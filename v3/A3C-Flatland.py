@@ -57,14 +57,17 @@ def update_target_graph(from_scope,to_scope):
     return op_holder
 
 def reshape_obs(agent_observations):
-    observations = []
+    map_obs = []
+    vec_obs = []
     num_agents = len(agent_observations)
     for i in range(num_agents):
         agent_obs = agent_observations[i]
-        observations.append(agent_obs)
-    observations = np.array(observations)
-    observations = np.reshape(observations,(num_agents, s_size[0],s_size[1],s_size[2], 1))
-    return observations
+        map_obs.append(agent_obs[0])
+        vec_obs.append(agent_obs[1])
+    map_obs = np.asarray(map_obs)
+    map_obs = np.reshape(map_obs,(num_agents, s_size[0],s_size[1],s_size[2]))
+    vec_obs = np.asarray(vec_obs)
+    return [map_obs, vec_obs]
 
 def modify_reward(env, rewards, done, done_last_step, num_of_done_agents, shortest_dist):
     for i in range(env.num_agents):
@@ -118,24 +121,35 @@ class AC_Network():
     def __init__(self,s_size,a_size,scope,trainer):
         with tf.variable_scope(scope):
             #Input and visual encoding layers
-            self.inputs = tf.placeholder(shape=[None,s_size[0],s_size[1],s_size[2],1],dtype=tf.float32)
-            flattend = layers.Flatten()(self.inputs)
+            self.input_map = tf.placeholder(shape=[None,s_size[0],s_size[1],s_size[2]],dtype=tf.float32)
+            self.input_vector = tf.placeholder(shape=[None,4],dtype=tf.float32)
 
+            conv_policy = layers.Conv2D(64,(6,6))(self.input_map)
+            conv_policy = layers.Conv2D(64,(3,3))(conv_policy)
+            conv_policy = layers.Flatten()(conv_policy)
+
+            flattend = layers.Flatten()(self.input_map)
             hidden_policy = layers.Dense(512, activation='relu')(flattend)
             hidden_policy = layers.Dropout(0.1)(hidden_policy)
             hidden_policy = layers.Dense(256, activation='relu')(hidden_policy)
             hidden_policy = layers.Dropout(0.1)(hidden_policy)
-            hidden_policy = layers.Dense(128,activation='relu')(hidden_policy)
+            hidden_policy = layers.Dense(64,activation='relu')(hidden_policy)
+            hidden_policy = layers.concatenate([hidden_policy, self.input_vector,conv_policy])
             hidden_policy = layers.Dropout(0.1)(hidden_policy)
             hidden_policy = layers.Dense(64, activation='relu')(hidden_policy)
             hidden_policy = layers.Dropout(0.1)(hidden_policy)
             hidden_policy = layers.Dense(8, activation='relu')(hidden_policy)
 
+            conv_value = layers.Conv2D(64,(6,6))(self.input_map)
+            conv_value = layers.Conv2D(64,(3,3))(conv_value)
+            conv_value = layers.Flatten()(conv_value)
+
             hidden_value = layers.Dense(512, activation='relu')(flattend)
             hidden_value = layers.Dropout(0.1)(hidden_value)
             hidden_value = layers.Dense(256,activation='relu')(hidden_value)
             hidden_value = layers.Dropout(0.1)(hidden_value)
-            hidden_value = layers.Dense(128,activation='relu')(hidden_value)
+            hidden_value = layers.Dense(64,activation='relu')(hidden_value)
+            hidden_value = layers.concatenate([hidden_value, self.input_vector,conv_value])
             hidden_value = layers.Dropout(0.1)(hidden_value)
             hidden_value = layers.Dense(64, activation='relu')(hidden_value)
             hidden_value = layers.Dropout(0.1)(hidden_value)
@@ -219,7 +233,8 @@ class Worker():
     def train(self, rollout, sess, gamma, bootstrap_value):
         ''' Gradient decent for a single agent'''
 
-        observations = np.asarray([row[0] for row in rollout])
+        observations_map = np.asarray([row[0][0] for row in rollout])
+        observations_vector = np.asarray([row[0][1] for row in rollout])
         actions = np.asarray([row[1] for row in rollout]) # rollout[:,1]
         rewards = np.asarray([row[2] for row in rollout]) # rollout[:,2]
         values = np.asarray([row[5] for row in rollout]) # rollout[:,5]
@@ -238,7 +253,8 @@ class Worker():
         # Generate network statistics to periodically save
         feed_dict = {
             self.local_AC.target_v : discounted_rewards,
-            self.local_AC.inputs : observations,
+            self.local_AC.input_map : observations_map,
+            self.local_AC.input_vector : observations_vector,
             self.local_AC.actions : actions,
             self.local_AC.advantages : advantages
         }
@@ -271,7 +287,7 @@ class Worker():
                 obs = self.env.reset()
                 obs = reshape_obs(obs)
 
-                while obs.shape[0] == 0:
+                while obs[0].shape[0] == 0:
                     obs = self.env.reset()
                     obs = reshape_obs(obs)
 
@@ -282,7 +298,7 @@ class Worker():
 
                 for i in range(self.env.num_agents):
                     episode_buffers.append([])
-                    done_last_step[i] = 0
+                    done_last_step[i] = False
                     dist[i] = 100
                     
                 while episode_done == False and episode_step_count < max_episode_length:
@@ -291,7 +307,8 @@ class Worker():
                         self.local_AC.policy,
                         self.local_AC.value], 
                         feed_dict={
-                            self.local_AC.inputs : obs
+                            self.local_AC.input_map : obs[0],
+                            self.local_AC.input_vector : obs[1]
                         })
 
                     actions = {}
@@ -302,7 +319,7 @@ class Worker():
                     next_obs, rewards, done, _ = self.env.step(actions)
                     next_obs = reshape_obs(next_obs)
 
-                    num_of_done_agents = modify_reward(self.env, rewards, done, done_last_step, num_of_done_agents,dist)
+                    num_of_done_agents = modify_reward(self.env, rewards, done, done_last_step, num_of_done_agents, dist)
                     
                     
                     # Is episode finished?
@@ -312,7 +329,7 @@ class Worker():
                         next_obs = obs
 
                     for i in range(self.env.num_agents):
-                        agent_obs = obs[i]
+                        agent_obs = [obs[0][i],obs[1][i]]
                         agent_action = actions[i]
                         agent_reward = rewards[i]
                         agent_next_obs = next_obs[i]
@@ -332,7 +349,7 @@ class Worker():
                     obs = next_obs                  
                     total_steps += 1
                     episode_step_count += 1
-                    done_last_step = done
+                    done_last_step = dict(done)
 
                     # If the episode hasn't ended, but the experience buffer is full, then we
                     # make an update step using that experience rollout.
@@ -343,8 +360,9 @@ class Worker():
 
                         v1 = sess.run(self.local_AC.value, 
                             feed_dict={
-                                self.local_AC.inputs : obs
-                                })
+                                self.local_AC.input_map : obs[0],
+                                self.local_AC.input_vector : obs[1]
+                            })
 
                         info = np.zeros((self.env.num_agents,5))
                         for i in range(self.env.num_agents):
@@ -426,7 +444,7 @@ class Worker():
 
 max_episode_length = 80
 gamma = 0.98 # discount rate for advantage estimation and reward discounting
-s_size = (11,11,26) #  Observations are 21*21 with five channels
+s_size = (11,11,23) #  Observations are 21*21 with five channels
 a_size = 5 # Agent can move Left, Right, or Fire
 load_model = False
 model_path = './model'

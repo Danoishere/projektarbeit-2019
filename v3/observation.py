@@ -11,6 +11,7 @@ from flatland.core.env_observation_builder import ObservationBuilder
 from flatland.core.grid.grid4_astar import a_star
 from flatland.core.transition_map import GridTransitionMap
 from numpy.core.umath import divide
+import math
 
 class RawObservation(ObservationBuilder):
     """
@@ -24,6 +25,7 @@ class RawObservation(ObservationBuilder):
     def _set_env(self, env):
         self.env = env
  
+
     def reset(self):
         """
         Called after each environment reset.
@@ -105,6 +107,9 @@ class RawObservation(ObservationBuilder):
   
         return map_
 
+    def sigmoid_shifted(self,x):
+        return 1 / (1 + math.exp(-5-x))
+
     def get_many(self, handles=[]):
         for agent in self.env.agents:
             rail_grid = np.zeros_like(self.env.rail.grid, dtype=np.uint16)
@@ -153,6 +158,7 @@ class RawObservation(ObservationBuilder):
         self.pos = np.array(list(agent.position))
         self.offset = np.floor(np.divide(self.size_,2))
 
+        '''
         # Layer with position of agent
         position_map = self.tuples_to_grid([(agent.position[0],agent.position[1], self.convert_dir(agent.direction))])
         layer_position_map = self.to_obs_space(position_map)
@@ -164,7 +170,8 @@ class RawObservation(ObservationBuilder):
         # Layer with speed of agent
         last_action_map = self.tuples_to_grid([(agent.position[0],agent.position[1], last_action)])
         layer_last_action_map = self.to_obs_space(last_action_map)
-
+        '''
+        
         # Layer with position of agent
         target_map = self.tuples_to_grid([(agent.target[0],agent.target[1])])
         layer_target_map = self.to_obs_space(target_map)
@@ -209,9 +216,9 @@ class RawObservation(ObservationBuilder):
         layer_grid_map = self.to_obs_space(grid_map)
 
         self.observation_space = np.array([
-            layer_position_map,
-            layer_speed_map,
-            layer_last_action_map,
+            # layer_position_map,
+            # layer_speed_map,
+            # layer_last_action_map,
             layer_target_map, 
             layer_path_to_target,
             layer_path_priority,
@@ -224,10 +231,8 @@ class RawObservation(ObservationBuilder):
         
 
         layer_grid = self.to_obs_space(self.layers, (16,self.size_[0],self.size_[1]))
-        self.observation_space = np.concatenate([self.observation_space, layer_grid])
-
-
-
+        vector = [speed, last_action, self.sigmoid_shifted(len(agent.path_to_target)),self.convert_dir(agent.direction)]
+        self.observation_space = [np.concatenate([self.observation_space, layer_grid]), vector]
         return self.observation_space
 
 
