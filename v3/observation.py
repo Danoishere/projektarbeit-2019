@@ -31,6 +31,7 @@ class RawObservation(ObservationBuilder):
         self.map_ = None
         self.agent_positions_ = None
         self.agent_handles_ = None
+        self.is_reset = True
         
     def handle_to_prio(self, handle):
         return (handle + 1)/15
@@ -129,12 +130,19 @@ class RawObservation(ObservationBuilder):
         function
         Transition map as local window of size x,y , agent-positions if in window and target.
         """
-       
+
         self.offset_initialized = False
 
         grid_map = self.convert_grid(self.env.rail.grid)
         self.map_size = grid_map.shape
         
+        if self.is_reset:
+            self.is_reset = False
+            self.layers = np.zeros((16,self.map_size[0],self.map_size[1]))
+            for l in range(16):
+                shift = 15 - l
+                self.layers[l,:,:] = (self.env.rail.grid >> shift) & 1
+
         agents = self.env.agents
         agent = agents[handle]
         target = agent.target
@@ -182,6 +190,9 @@ class RawObservation(ObservationBuilder):
             layer_agent_target_map = self.to_obs_space(target_map)
             agent_positions_map = self.tuples_to_grid(agent_positions)
             layer_agent_positions_map = self.to_obs_space(agent_positions_map)
+        else:
+            layer_agent_target_map = np.zeros(self.size_)
+            layer_agent_positions_map = np.zeros(self.size_)
 
         priority_map = self.tuples_to_grid(agent_priority)
         layer_agent_priority = self.to_obs_space(priority_map)
@@ -198,12 +209,9 @@ class RawObservation(ObservationBuilder):
             layer_grid_map
         ])
 
-        layers = np.zeros((16,self.map_size[0],self.map_size[1]))
-        for l in range(16):
-            shift = 15 - l
-            layers[l,:,:] = (self.env.rail.grid >> shift) & 1
+        
 
-        layer_grid = self.to_obs_space(layers, (16,self.size_[0],self.size_[1]))
+        layer_grid = self.to_obs_space(self.layers, (16,self.size_[0],self.size_[1]))
         self.observation_space = np.concatenate([self.observation_space, layer_grid])
 
         return self.observation_space
