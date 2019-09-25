@@ -122,26 +122,30 @@ class AC_Network():
         with tf.variable_scope(scope):
             #Input and visual encoding layers
             self.input_map = tf.placeholder(shape=[None,s_size[0],s_size[1],s_size[2]],dtype=tf.float32)
+            input_map = layers.BatchNormalization()(self.input_map)
             self.input_vector = tf.placeholder(shape=[None,4],dtype=tf.float32)
+            input_vector = layers.BatchNormalization()(self.input_vector)
 
-            conv_policy = layers.Conv2D(64,(6,6))(self.input_map)
+            conv_policy = layers.Conv2D(64,(4,4))(input_map)
             conv_policy = layers.Conv2D(64,(3,3))(conv_policy)
+            conv_policy = layers.MaxPooling2D()(conv_policy)
             conv_policy = layers.Flatten()(conv_policy)
 
-            flattend = layers.Flatten()(self.input_map)
+            flattend = layers.Flatten()(input_map)
             hidden_policy = layers.Dense(512, activation='relu')(flattend)
             hidden_policy = layers.Dropout(0.1)(hidden_policy)
             hidden_policy = layers.Dense(256, activation='relu')(hidden_policy)
             hidden_policy = layers.Dropout(0.1)(hidden_policy)
             hidden_policy = layers.Dense(64,activation='relu')(hidden_policy)
-            hidden_policy = layers.concatenate([hidden_policy, self.input_vector,conv_policy])
+            hidden_policy = layers.concatenate([hidden_policy, input_vector, conv_policy])
             hidden_policy = layers.Dropout(0.1)(hidden_policy)
-            hidden_policy = layers.Dense(64, activation='relu')(hidden_policy)
+            hidden_policy = layers.Dense(64, activation='tanh')(hidden_policy)
             hidden_policy = layers.Dropout(0.1)(hidden_policy)
             hidden_policy = layers.Dense(8, activation='relu')(hidden_policy)
 
-            conv_value = layers.Conv2D(64,(6,6))(self.input_map)
+            conv_value = layers.Conv2D(64,(4,4))(input_map)
             conv_value = layers.Conv2D(64,(3,3))(conv_value)
+            conv_value = layers.MaxPooling2D()(conv_value)
             conv_value = layers.Flatten()(conv_value)
 
             hidden_value = layers.Dense(512, activation='relu')(flattend)
@@ -149,9 +153,9 @@ class AC_Network():
             hidden_value = layers.Dense(256,activation='relu')(hidden_value)
             hidden_value = layers.Dropout(0.1)(hidden_value)
             hidden_value = layers.Dense(64,activation='relu')(hidden_value)
-            hidden_value = layers.concatenate([hidden_value, self.input_vector,conv_value])
+            hidden_value = layers.concatenate([hidden_value, input_vector,conv_value])
             hidden_value = layers.Dropout(0.1)(hidden_value)
-            hidden_value = layers.Dense(64, activation='relu')(hidden_value)
+            hidden_value = layers.Dense(64, activation='tanh')(hidden_value)
             hidden_value = layers.Dropout(0.1)(hidden_value)
             hidden_value = layers.Dense(8, activation='relu')(hidden_value)
             
@@ -172,7 +176,7 @@ class AC_Network():
                 self.value_loss = 0.5 * tf.reduce_sum(tf.square(self.target_v - tf.reshape(self.value,[-1])))
                 self.entropy = - tf.reduce_sum(self.policy * tf.math.log(self.policy))
                 self.policy_loss = -tf.reduce_sum(tf.math.log(self.responsible_outputs)*self.advantages)
-                self.loss = 0.5 * self.value_loss + self.policy_loss - self.entropy * 0.01
+                self.loss = 0.5 * self.value_loss + self.policy_loss - self.entropy * 0.08
 
                 #Get gradients from local network using local losses
                 local_vars = tf.compat.v1.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope)
@@ -210,15 +214,15 @@ class Worker():
         num_agents = 1
         rail_gen = complex_rail_generator(
             nr_start_goal=2,
-            nr_extra=3,
+            nr_extra=4,
             min_dist=10,
             seed=random.randint(0,100000)
         )
                     
         #The Below code is related to setting up the Flatland environment
         env = RailEnv(
-                width=6,
-                height=6,
+                width=8,
+                height=8,
                 rail_generator = rail_gen,
                 schedule_generator =complex_schedule_generator(),
                 number_of_agents=num_agents,
@@ -293,7 +297,7 @@ class Worker():
                     obs = reshape_obs(obs)
 
                 episode_done = False
-                
+                self.env.step_penalty = -2
                 done_last_step = {}                
                 dist = {}
 
@@ -320,6 +324,8 @@ class Worker():
                     next_obs, rewards, done, _ = self.env.step(actions)
                     next_obs = reshape_obs(next_obs)
 
+                    # increase step penalty over time
+                    self.env.step_penalty = -2*1.02**episode_step_count
                     num_of_done_agents = modify_reward(self.env, rewards, done, done_last_step, num_of_done_agents, dist)
                     
                     
@@ -445,7 +451,7 @@ class Worker():
 
 max_episode_length = 80
 gamma = 0.98 # discount rate for advantage estimation and reward discounting
-s_size = (11,11,23) #  Observations are 21*21 with five channels
+s_size = (11,11,25) #  Observations are 21*21 with five channels
 a_size = 5 # Agent can move Left, Right, or Fire
 load_model = False
 model_path = './model'

@@ -177,7 +177,6 @@ class RawObservation(ObservationBuilder):
         layer_target_map = self.to_obs_space(target_map)
 
         # Layer with path to target
-        rail_grid = np.zeros_like(grid_map, dtype=np.uint16)
         path_map = self.tuples_to_grid(agent.path_to_target, True)
         layer_path_to_target = self.to_obs_space(path_map)
 
@@ -189,6 +188,8 @@ class RawObservation(ObservationBuilder):
         agent_targets = []
         agent_positions = []
         agent_priority = []
+        agent_speed = []
+        agent_action_on_cellexit = []
         for agent in agents:
             if agent.handle != handle:
                 agent_targets.append(agent.target)
@@ -196,6 +197,16 @@ class RawObservation(ObservationBuilder):
                     agent.position[0],
                     agent.position[1],
                     self.convert_dir(agent.direction)))
+
+            agent_speed.append((
+                agent.position[0],
+                agent.position[1],
+                agent.speed_data['speed']))
+
+            agent_action_on_cellexit.append((
+                agent.position[0],
+                agent.position[1],
+                agent.speed_data['transition_action_on_cellexit']/4.0))
                 
             agent_priority.append((
                 agent.position[0],
@@ -213,12 +224,19 @@ class RawObservation(ObservationBuilder):
 
         priority_map = self.tuples_to_grid(agent_priority)
         layer_agent_priority = self.to_obs_space(priority_map)
+
+        speed_map = self.tuples_to_grid(agent_speed)
+        layer_agent_speed = self.to_obs_space(speed_map)
+
+        action_map = self.tuples_to_grid(agent_action_on_cellexit)
+        layer_agent_action = self.to_obs_space(action_map)
+
+
         layer_grid_map = self.to_obs_space(grid_map)
 
         self.observation_space = np.array([
-            # layer_position_map,
-            # layer_speed_map,
-            # layer_last_action_map,
+            layer_agent_speed,
+            layer_agent_action,
             layer_target_map, 
             layer_path_to_target,
             layer_path_priority,
