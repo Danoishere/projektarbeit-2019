@@ -171,7 +171,7 @@ class RawObservation(ObservationBuilder):
         last_action_map = self.tuples_to_grid([(agent.position[0],agent.position[1], last_action)])
         layer_last_action_map = self.to_obs_space(last_action_map)
         '''
-        
+
         # Layer with position of agent
         target_map = self.tuples_to_grid([(agent.target[0],agent.target[1])])
         layer_target_map = self.to_obs_space(target_map)
@@ -234,7 +234,7 @@ class RawObservation(ObservationBuilder):
 
         layer_grid_map = self.to_obs_space(grid_map)
 
-        self.observation_space = np.array([
+        observation_maps = np.array([
             layer_agent_speed,
             layer_agent_action,
             layer_target_map, 
@@ -246,11 +246,13 @@ class RawObservation(ObservationBuilder):
             layer_grid_map
         ])
 
-        
-
+        # Grid layout with 16 x obs-size x obs-size
         layer_grid = self.to_obs_space(self.layers, (16,self.size_[0],self.size_[1]))
-        vector = [speed, last_action, self.sigmoid_shifted(len(agent.path_to_target)),self.convert_dir(agent.direction)]
-        self.observation_space = [np.concatenate([self.observation_space, layer_grid]), vector]
+
+        # Vector with train-info
+        vector = [speed, last_action, self.sigmoid_shifted(len(agent.path_to_target)),self.convert_dir(agent.direction), self.env._elapsed_steps]
+        
+        self.observation_space = [observation_maps, layer_grid, vector]
         return self.observation_space
 
 

@@ -59,15 +59,23 @@ def update_target_graph(from_scope,to_scope):
 def reshape_obs(agent_observations):
     map_obs = []
     vec_obs = []
+    grid_obs = []
     num_agents = len(agent_observations)
+
     for i in range(num_agents):
         agent_obs = agent_observations[i]
         map_obs.append(agent_obs[0])
-        vec_obs.append(agent_obs[1])
+        grid_obs.append(agent_obs[1])
+        vec_obs.append(agent_obs[2])
+        
     map_obs = np.asarray(map_obs)
-    map_obs = np.reshape(map_obs,(num_agents, s_size[0],s_size[1],s_size[2]))
+    map_obs = np.reshape(map_obs,(num_agents, map_state_size[0],map_state_size[1],map_state_size[2]))
+
+    grid_obs = np.asarray(grid_obs)
+    grid_obs = np.reshape(grid_obs,(num_agents, grid_state_size[0],grid_state_size[1],grid_state_size[2],1))
+
     vec_obs = np.asarray(vec_obs)
-    return [map_obs, vec_obs]
+    return [map_obs, grid_obs, vec_obs]
 
 def modify_reward(env, rewards, done, done_last_step, num_of_done_agents, shortest_dist):
     for i in range(env.num_agents):
@@ -118,50 +126,46 @@ def normalized_columns_initializer(std=1.0):
 # In[21]:
 
 class AC_Network():
-    def __init__(self,s_size,a_size,scope,trainer):
+    def __init__(self,a_size,scope,trainer):
         with tf.variable_scope(scope):
-            #Input and visual encoding layers
-            self.input_map = tf.placeholder(shape=[None,s_size[0],s_size[1],s_size[2]],dtype=tf.float32)
-            input_map = layers.BatchNormalization()(self.input_map)
-            self.input_vector = tf.placeholder(shape=[None,4],dtype=tf.float32)
-            input_vector = layers.BatchNormalization()(self.input_vector)
+   
+            self.input_map = tf.placeholder(shape=[None,map_state_size[0],map_state_size[1],map_state_size[2]],dtype=tf.float32)
+            self.input_grid = tf.placeholder(shape=[None,grid_state_size[0],grid_state_size[1],grid_state_size[2],1],dtype=tf.float32)
+            self.input_vector = tf.placeholder(shape=[None,vector_state_size],dtype=tf.float32)
 
-            conv_policy = layers.Conv2D(64,(4,4))(input_map)
-            conv_policy = layers.Conv2D(64,(3,3))(conv_policy)
-            conv_policy = layers.MaxPooling2D()(conv_policy)
-            conv_policy = layers.Flatten()(conv_policy)
+            def network(input_map,input_grid,input_vector):
+                conv_grid = layers.Conv3D(64,(1,1,4),strides=(1,1,4))(input_grid)
+                conv_grid = layers.Conv3D(64,(4,4,4))(conv_grid)
+                conv_grid = layers.Flatten()(conv_grid)
+                conv_hidden_grid = layers.Dense(256, activation='relu')(conv_grid)
+                conv_hidden_grid = layers.Dropout(0.1)(conv_hidden_grid)
+                conv_hidden_grid = layers.Dense(256, activation='relu')(conv_hidden_grid)
 
-            flattend = layers.Flatten()(input_map)
-            hidden_policy = layers.Dense(512, activation='relu')(flattend)
-            hidden_policy = layers.Dropout(0.1)(hidden_policy)
-            hidden_policy = layers.Dense(256, activation='relu')(hidden_policy)
-            hidden_policy = layers.Dropout(0.1)(hidden_policy)
-            hidden_policy = layers.Dense(64,activation='relu')(hidden_policy)
-            hidden_policy = layers.concatenate([hidden_policy, input_vector, conv_policy])
-            hidden_policy = layers.Dropout(0.1)(hidden_policy)
-            hidden_policy = layers.Dense(64, activation='tanh')(hidden_policy)
-            hidden_policy = layers.Dropout(0.1)(hidden_policy)
-            hidden_policy = layers.Dense(8, activation='relu')(hidden_policy)
+                conv_map = layers.Conv2D(64,(3,3))(input_map)
+                conv_map = layers.Flatten()(conv_map)
+                conv_hidden_map = layers.Dense(256, activation='relu')(conv_map)
+                conv_hidden_map = layers.Dropout(0.1)(conv_hidden_map)
+                conv_hidden_map = layers.Dense(256, activation='relu')(conv_hidden_map)
 
-            conv_value = layers.Conv2D(64,(4,4))(input_map)
-            conv_value = layers.Conv2D(64,(3,3))(conv_value)
-            conv_value = layers.MaxPooling2D()(conv_value)
-            conv_value = layers.Flatten()(conv_value)
+                flattend = layers.Flatten()(input_map)
+                hidden = layers.Dense(512, activation='relu')(flattend)
+                hidden = layers.Dropout(0.1)(hidden)
+                hidden = layers.Dense(256,activation='relu')(hidden)
+                hidden = layers.concatenate([hidden, input_vector, conv_hidden_grid, conv_hidden_map])
+                hidden = layers.Dropout(0.1)(hidden)
+                hidden = layers.Dense(512, activation='relu')(hidden)
+                hidden = layers.Dropout(0.1)(hidden)
+                hidden = layers.Dense(256, activation='relu')(hidden)
+                hidden = layers.Dropout(0.1)(hidden)
+                hidden = layers.Dense(8, activation='relu')(hidden)
+                return hidden
 
-            hidden_value = layers.Dense(512, activation='relu')(flattend)
-            hidden_value = layers.Dropout(0.1)(hidden_value)
-            hidden_value = layers.Dense(256,activation='relu')(hidden_value)
-            hidden_value = layers.Dropout(0.1)(hidden_value)
-            hidden_value = layers.Dense(64,activation='relu')(hidden_value)
-            hidden_value = layers.concatenate([hidden_value, input_vector,conv_value])
-            hidden_value = layers.Dropout(0.1)(hidden_value)
-            hidden_value = layers.Dense(64, activation='tanh')(hidden_value)
-            hidden_value = layers.Dropout(0.1)(hidden_value)
-            hidden_value = layers.Dense(8, activation='relu')(hidden_value)
+            out_policy = network(self.input_map,self.input_grid,self.input_vector)
+            out_value = network(self.input_map,self.input_grid,self.input_vector)
             
             #Output layers for policy and value estimations
-            self.policy = layers.Dense(a_size,activation='softmax')(hidden_policy)
-            self.value = layers.Dense(1)(hidden_value)
+            self.policy = layers.Dense(a_size,activation='softmax')(out_policy)
+            self.value = layers.Dense(1)(out_value)
             
             #Only the worker network need ops for loss functions and gradient updating.
             if scope != 'global':
@@ -176,7 +180,7 @@ class AC_Network():
                 self.value_loss = 0.5 * tf.reduce_sum(tf.square(self.target_v - tf.reshape(self.value,[-1])))
                 self.entropy = - tf.reduce_sum(self.policy * tf.math.log(self.policy))
                 self.policy_loss = -tf.reduce_sum(tf.math.log(self.responsible_outputs)*self.advantages)
-                self.loss = 0.5 * self.value_loss + self.policy_loss - self.entropy * 0.08
+                self.loss = 0.5 * self.value_loss + self.policy_loss - self.entropy * 0.05
 
                 #Get gradients from local network using local losses
                 local_vars = tf.compat.v1.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope)
@@ -195,7 +199,7 @@ class AC_Network():
 
 
 class Worker():
-    def __init__(self,name,s_size,a_size,trainer,model_path,global_episodes):
+    def __init__(self,name,a_size,trainer,model_path,global_episodes):
         self.name = "worker_" + str(name)
         self.number = name        
         self.model_path = model_path
@@ -204,25 +208,26 @@ class Worker():
         self.increment = self.global_episodes.assign_add(1)
         self.episode_rewards = []
         self.episode_lengths = []
+        self.episode_success = []
         self.episode_mean_values = []
         self.summary_writer = tf.compat.v1.summary.FileWriter("train_" + str(self.number))
 
         #Create the local copy of the network and the tensorflow op to copy global paramters to local network
-        self.local_AC = AC_Network(s_size, a_size, self.name, trainer)
+        self.local_AC = AC_Network(a_size, self.name, trainer)
         self.update_local_ops = update_target_graph('global', self.name)        
         
         num_agents = 1
         rail_gen = complex_rail_generator(
             nr_start_goal=2,
-            nr_extra=4,
+            nr_extra=3,
             min_dist=10,
             seed=random.randint(0,100000)
         )
                     
         #The Below code is related to setting up the Flatland environment
         env = RailEnv(
-                width=8,
-                height=8,
+                width=6,
+                height=6,
                 rail_generator = rail_gen,
                 schedule_generator =complex_schedule_generator(),
                 number_of_agents=num_agents,
@@ -239,7 +244,9 @@ class Worker():
         ''' Gradient decent for a single agent'''
 
         observations_map = np.asarray([row[0][0] for row in rollout])
-        observations_vector = np.asarray([row[0][1] for row in rollout])
+        observations_grid = np.asarray([row[0][1] for row in rollout])
+        observations_vector = np.asarray([row[0][2] for row in rollout])
+
         actions = np.asarray([row[1] for row in rollout]) # rollout[:,1]
         rewards = np.asarray([row[2] for row in rollout]) # rollout[:,2]
         values = np.asarray([row[5] for row in rollout]) # rollout[:,5]
@@ -259,6 +266,7 @@ class Worker():
         feed_dict = {
             self.local_AC.target_v : discounted_rewards,
             self.local_AC.input_map : observations_map,
+            self.local_AC.input_grid: observations_grid,
             self.local_AC.input_vector : observations_vector,
             self.local_AC.actions : actions,
             self.local_AC.advantages : advantages
@@ -289,6 +297,8 @@ class Worker():
                 episode_step_count = 0
                 num_of_done_agents = 0
                 
+                self.env.step_penalty = -2
+
                 obs = self.env.reset()
                 obs = reshape_obs(obs)
 
@@ -297,7 +307,7 @@ class Worker():
                     obs = reshape_obs(obs)
 
                 episode_done = False
-                self.env.step_penalty = -2
+                
                 done_last_step = {}                
                 dist = {}
 
@@ -313,7 +323,8 @@ class Worker():
                         self.local_AC.value], 
                         feed_dict={
                             self.local_AC.input_map : obs[0],
-                            self.local_AC.input_vector : obs[1]
+                            self.local_AC.input_grid: obs[1],
+                            self.local_AC.input_vector : obs[2]
                         })
 
                     actions = {}
@@ -324,10 +335,8 @@ class Worker():
                     next_obs, rewards, done, _ = self.env.step(actions)
                     next_obs = reshape_obs(next_obs)
 
-                    # increase step penalty over time
                     self.env.step_penalty = -2*1.02**episode_step_count
                     num_of_done_agents = modify_reward(self.env, rewards, done, done_last_step, num_of_done_agents, dist)
-                    
                     
                     # Is episode finished?
                     episode_done = done['__all__']
@@ -336,7 +345,7 @@ class Worker():
                         next_obs = obs
 
                     for i in range(self.env.num_agents):
-                        agent_obs = [obs[0][i],obs[1][i]]
+                        agent_obs = [obs[0][i],obs[1][i],obs[2][i]]
                         agent_action = actions[i]
                         agent_reward = rewards[i]
                         agent_next_obs = next_obs[i]
@@ -368,7 +377,8 @@ class Worker():
                         v1 = sess.run(self.local_AC.value, 
                             feed_dict={
                                 self.local_AC.input_map : obs[0],
-                                self.local_AC.input_vector : obs[1]
+                                self.local_AC.input_grid: obs[1],
+                                self.local_AC.input_vector : obs[2]
                             })
 
                         info = np.zeros((self.env.num_agents,5))
@@ -394,6 +404,10 @@ class Worker():
                 self.episode_rewards.append(episode_reward)
                 self.episode_lengths.append(episode_step_count)
                 self.episode_mean_values.append(np.mean(episode_values))
+
+                if len(self.episode_success) >= 100:
+                    self.episode_success.pop(0)
+                self.episode_success.append(episode_done)
                 
                 # Update the network using the episode buffer at the end of the episode.
                 if episode_done and len(episode_buffers[0]) != 0:
@@ -430,10 +444,14 @@ class Worker():
                     mean_reward = np.mean(self.episode_rewards[-5:])
                     mean_length = np.mean(self.episode_lengths[-5:])
                     mean_value = np.mean(self.episode_mean_values[-5:])
+                    mean_success_rate = np.mean(self.episode_success[-5:])
+
                     summary = tf.Summary()
                     summary.value.add(tag='Perf/Reward', simple_value=float(mean_reward))
                     summary.value.add(tag='Perf/Length', simple_value=float(mean_length))
                     summary.value.add(tag='Perf/Value', simple_value=float(mean_value))
+                    summary.value.add(tag='Perf/Successrate/100 episodes', simple_value=float(mean_success_rate))
+
                     summary.value.add(tag='Losses/Value Loss', simple_value=float(np.mean(info[:,0])))
                     summary.value.add(tag='Losses/Policy Loss', simple_value=float(np.mean(info[:,1])))
                     summary.value.add(tag='Losses/Entropy', simple_value=float(np.mean(info[:,2])))
@@ -451,7 +469,11 @@ class Worker():
 
 max_episode_length = 80
 gamma = 0.98 # discount rate for advantage estimation and reward discounting
-s_size = (11,11,25) #  Observations are 21*21 with five channels
+
+map_state_size = (11,11,9) #  Observations are 21*21 with five channels
+grid_state_size = (11,11,16)
+vector_state_size = 5
+
 a_size = 5 # Agent can move Left, Right, or Fire
 load_model = False
 model_path = './model'
@@ -472,12 +494,12 @@ if not os.path.exists('./frames'):
 with tf.device("/cpu:0"): 
     global_episodes = tf.Variable(0,dtype=tf.int32,name='global_episodes',trainable=False)
     trainer = tf.train.AdamOptimizer(learning_rate=1e-4)
-    master_network = AC_Network(s_size,a_size,'global',None) # Generate global network
+    master_network = AC_Network(a_size,'global',None) # Generate global network
     num_workers = multiprocessing.cpu_count() # Set workers to number of available CPU threads
     workers = []
     # Create worker classes
     for i in range(num_workers):
-        workers.append(Worker(i,s_size,a_size,trainer,model_path,global_episodes))
+        workers.append(Worker(i,a_size,trainer,model_path,global_episodes))
     saver = tf.train.Saver(max_to_keep=5)
 
 with tf.Session() as sess:
