@@ -149,6 +149,7 @@ class AC_Network():
                 flattend = layers.Flatten()(input_map)
                 hidden = layers.Dense(256, activation='relu')(flattend)
                 hidden = layers.Dropout(0.1)(hidden)
+
                 hidden = layers.concatenate([hidden, input_vector, conv_hidden_grid, conv_hidden_map])
                 hidden = layers.Dropout(0.1)(hidden)
                 hidden = layers.Dense(256, activation='relu')(hidden)
@@ -156,6 +157,7 @@ class AC_Network():
                 hidden = layers.Dense(64, activation='relu')(hidden)
                 hidden = layers.Dropout(0.1)(hidden)
                 hidden = layers.Dense(8, activation='relu')(hidden)
+
                 return hidden
 
             out_policy = network(self.input_map,self.input_grid,self.input_vector)
@@ -216,7 +218,7 @@ class Worker():
         
         num_agents = 1
         rail_gen = complex_rail_generator(
-            nr_start_goal=2,
+            nr_start_goal=3,
             nr_extra=3,
             min_dist=10,
             seed=random.randint(0,100000)
@@ -224,8 +226,8 @@ class Worker():
                     
         #The Below code is related to setting up the Flatland environment
         env = RailEnv(
-                width=6,
-                height=6,
+                width=8,
+                height=8,
                 rail_generator = rail_gen,
                 schedule_generator =complex_schedule_generator(),
                 number_of_agents=num_agents,
@@ -431,9 +433,9 @@ class Worker():
                         saver.save(sess,self.model_path+'/model-'+str(episode_count)+'.cptk')
                         print ("Saved Model")
 
-                    mean_reward = np.mean(self.episode_rewards[-5:])
-                    mean_length = np.mean(self.episode_lengths[-5:])
-                    mean_value = np.mean(self.episode_mean_values[-5:])
+                    mean_reward = np.mean(self.episode_rewards[-100:])
+                    mean_length = np.mean(self.episode_lengths[-100:])
+                    mean_value = np.mean(self.episode_mean_values[-100:])
                     mean_success_rate = np.mean(self.episode_success[-100:])
 
                     summary = tf.Summary()
