@@ -135,27 +135,25 @@ class AC_Network():
 
             def network(input_map,input_grid,input_vector):
                 conv_grid = layers.Conv3D(64,(1,1,4),strides=(1,1,4))(input_grid)
-                conv_grid = layers.Conv3D(64,(4,4,4))(conv_grid)
                 conv_grid = layers.Flatten()(conv_grid)
-                conv_hidden_grid = layers.Dense(256, activation='relu')(conv_grid)
-                conv_hidden_grid = layers.Dropout(0.1)(conv_hidden_grid)
-                conv_hidden_grid = layers.Dense(256, activation='relu')(conv_hidden_grid)
+
+                conv_hidden_grid = layers.Dropout(0.1)(conv_grid)
+                conv_hidden_grid = layers.Dense(128, activation='relu')(conv_hidden_grid)
 
                 conv_map = layers.Conv2D(64,(3,3))(input_map)
                 conv_map = layers.Flatten()(conv_map)
-                conv_hidden_map = layers.Dense(256, activation='relu')(conv_map)
-                conv_hidden_map = layers.Dropout(0.1)(conv_hidden_map)
-                conv_hidden_map = layers.Dense(256, activation='relu')(conv_hidden_map)
+
+                conv_hidden_map = layers.Dropout(0.1)(conv_map)
+                conv_hidden_map = layers.Dense(128, activation='relu')(conv_hidden_map)
 
                 flattend = layers.Flatten()(input_map)
-                hidden = layers.Dense(512, activation='relu')(flattend)
+                hidden = layers.Dense(256, activation='relu')(flattend)
                 hidden = layers.Dropout(0.1)(hidden)
-                hidden = layers.Dense(256,activation='relu')(hidden)
                 hidden = layers.concatenate([hidden, input_vector, conv_hidden_grid, conv_hidden_map])
                 hidden = layers.Dropout(0.1)(hidden)
-                hidden = layers.Dense(512, activation='relu')(hidden)
-                hidden = layers.Dropout(0.1)(hidden)
                 hidden = layers.Dense(256, activation='relu')(hidden)
+                hidden = layers.Dropout(0.1)(hidden)
+                hidden = layers.Dense(64, activation='relu')(hidden)
                 hidden = layers.Dropout(0.1)(hidden)
                 hidden = layers.Dense(8, activation='relu')(hidden)
                 return hidden
@@ -305,6 +303,7 @@ class Worker():
                 while obs[0].shape[0] == 0:
                     obs = self.env.reset()
                     obs = reshape_obs(obs)
+                    print('Regenerate environment - no suitable solution found')
 
                 episode_done = False
                 
@@ -404,9 +403,6 @@ class Worker():
                 self.episode_rewards.append(episode_reward)
                 self.episode_lengths.append(episode_step_count)
                 self.episode_mean_values.append(np.mean(episode_values))
-
-                if len(self.episode_success) >= 100:
-                    self.episode_success.pop(0)
                 self.episode_success.append(episode_done)
                 
                 # Update the network using the episode buffer at the end of the episode.
@@ -430,13 +426,7 @@ class Worker():
                 # Periodically save gifs of episodes, model parameters, and summary statistics.
                 if episode_count % 5 == 0 and episode_count != 0:
                     if self.name == 'worker_0' and episode_count % 25 == 0:
-                        '''
-                        time_per_step = 0.05
-                        images = np.array(episode_frames)
-                        
-                        make_gif(images,'./frames/image'+str(episode_count)+'.gif',
-                            duration=len(images)*time_per_step,true_image=True,salience=False)
-                        '''
+                        ''' TODO: Save Gif of current agents '''
                     if episode_count % 50 == 0 and self.name == 'worker_0':
                         saver.save(sess,self.model_path+'/model-'+str(episode_count)+'.cptk')
                         print ("Saved Model")
@@ -444,7 +434,7 @@ class Worker():
                     mean_reward = np.mean(self.episode_rewards[-5:])
                     mean_length = np.mean(self.episode_lengths[-5:])
                     mean_value = np.mean(self.episode_mean_values[-5:])
-                    mean_success_rate = np.mean(self.episode_success[-5:])
+                    mean_success_rate = np.mean(self.episode_success[-100:])
 
                     summary = tf.Summary()
                     summary.value.add(tag='Perf/Reward', simple_value=float(mean_reward))
