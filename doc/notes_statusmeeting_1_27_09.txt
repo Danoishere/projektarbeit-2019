@@ -1,0 +1,225 @@
+
+
+- What we did -
+---------------
+
+Basic a3c learning environment
+TreeObservation ausprobiert keine grossen erfolge
+GlobalObservation + Conv-Network
+Early stopping eingeführt
+
+Problem: Rewards sehr spärlich. Idee: Wir erlösen Agent von step-penalty, wenn 
+    dieser Schritt in die richtung des Ziels des Agents ist.
+    Reward für annäherung an Target eingeführt
+
+
+Residual Connection eingeführt
+Oftmals Problem: Nach einer Weile wählt Programm immer gleiche Aktion
+Besonders bei "Nicht-Debugging-Modus"
+
+Mass: Anz. Agents die Ziel erreicht haben/min
+
+Überlegungen:
+    Ja observation: POMDP -> Markov-Eigentschaft nicht erfüllt! 
+    Ausser evtl. mit Globalen Observation
+
+    Reward nur wenn ALLE Agents das Ziel erreichen?
+    Versuch: 
+    Erhaltener Reward steigt mit Nummer des Agents.
+    Plus Bonus für alle Agents
+
+    Negativ-Reward bei Blockade?
+
+
+Idee: Kommunikation zwischen Agenten
+-> Wie? bzw. wie trainieren
+-> Problem: Einfach sicht der anderen Agenten übergeben reicht wohl nicht.
+
+Vergleiche:
+https://pub.tik.ee.ethz.ch/students/2018-FS/BA-2018-04.pdf
+
+
+# OpenAI - A2C baseline
+https://github.com/openai/baselines/blob/master/baselines/a2c/a2c.py
+
+# Metriken:
+Reward pro Testparkour
+Finished Agents pro Testparkour
+Durchschnittliche Ankunftsrate bei 1|2|3... Agents
+
+
+Was wir versucht haben:
+
+1. Neurales Netzwerk
+
+Kommentar: 
+Lernfortschritt am Anfang gut, anschliessend Kollaps sowohl auf Laptop sowie auf Cluster
+
+Siehe train_folders_cluster_25_09_afternoon
+
+self.input_map = tf.placeholder(shape=[None,map_state_size[0],map_state_size[1],map_state_size[2]],dtype=tf.float32)
+self.input_grid = tf.placeholder(shape=[None,grid_state_size[0],grid_state_size[1],grid_state_size[2],1],dtype=tf.float32)
+self.input_vector = tf.placeholder(shape=[None,vector_state_size],dtype=tf.float32)
+
+def network(input_map,input_grid,input_vector):
+	conv_grid = layers.Conv3D(64,(1,1,4),strides=(1,1,4))(input_grid)
+	conv_grid = layers.Conv3D(64,(4,4,4))(conv_grid)
+	conv_grid = layers.Flatten()(conv_grid)
+	conv_hidden_grid = layers.Dense(256, activation='relu')(conv_grid)
+	conv_hidden_grid = layers.Dropout(0.1)(conv_hidden_grid)
+	conv_hidden_grid = layers.Dense(256, activation='relu')(conv_hidden_grid)
+
+	conv_map = layers.Conv2D(64,(3,3))(input_map)
+	conv_map = layers.Flatten()(conv_map)
+	conv_hidden_map = layers.Dense(256, activation='relu')(conv_map)
+	conv_hidden_map = layers.Dropout(0.1)(conv_hidden_map)
+	conv_hidden_map = layers.Dense(256, activation='relu')(conv_hidden_map)
+
+	flattend = layers.Flatten()(input_map)
+	hidden = layers.Dense(512, activation='relu')(flattend)
+	hidden = layers.Dropout(0.1)(hidden)
+	hidden = layers.Dense(256,activation='relu')(hidden)
+	hidden = layers.concatenate([hidden, input_vector, conv_hidden_grid, conv_hidden_map])
+	hidden = layers.Dropout(0.1)(hidden)
+	hidden = layers.Dense(512, activation='relu')(hidden)
+	hidden = layers.Dropout(0.1)(hidden)
+	hidden = layers.Dense(256, activation='relu')(hidden)
+	hidden = layers.Dropout(0.1)(hidden)
+	hidden = layers.Dense(8, activation='relu')(hidden)
+	return hidden
+
+out_policy = network(self.input_map,self.input_grid,self.input_vector)
+out_value = network(self.input_map,self.input_grid,self.input_vector)
+
+#Output layers for policy and value estimations
+self.policy = layers.Dense(a_size,activation='softmax')(out_policy)
+self.value = layers.Dense(1)(out_value)
+
+
+
+2. Neuronales Netzwerk
+
+Kommentar: 
+Läuft auf Danos Laptops gut und lernt ansprechend. 
+Auf Cluster lernt dieses Netz sehr viel schneller, hat jedoch auch einen Entropie-Kollaps.
+Auch Entropie-Rate von .15 hilft nichts.
+
+https://github.com/Danoishere/projektarbeit-2019/blob/3b33351bb08cdfe81793bce5067ca77740217fa2/v3/A3C-Flatland.py
+
+self.input_map = tf.placeholder(shape=[None,map_state_size[0],map_state_size[1],map_state_size[2]],dtype=tf.float32)
+self.input_grid = tf.placeholder(shape=[None,grid_state_size[0],grid_state_size[1],grid_state_size[2],1],dtype=tf.float32)
+self.input_vector = tf.placeholder(shape=[None,vector_state_size],dtype=tf.float32)
+
+def network(input_map,input_grid,input_vector):
+	conv_grid = layers.Conv3D(64,(1,1,4),strides=(1,1,4))(input_grid)
+	conv_grid = layers.Flatten()(conv_grid)
+
+	conv_hidden_grid = layers.Dropout(0.1)(conv_grid)
+	conv_hidden_grid = layers.Dense(128, activation='relu')(conv_hidden_grid)
+
+	conv_map = layers.Conv2D(64,(3,3))(input_map)
+	conv_map = layers.Flatten()(conv_map)
+
+	conv_hidden_map = layers.Dropout(0.1)(conv_map)
+	conv_hidden_map = layers.Dense(128, activation='relu')(conv_hidden_map)
+
+	flattend = layers.Flatten()(input_map)
+	hidden = layers.Dense(256, activation='relu')(flattend)
+	hidden = layers.Dropout(0.1)(hidden)
+	hidden = layers.concatenate([hidden, input_vector, conv_hidden_grid, conv_hidden_map])
+	hidden = layers.Dropout(0.1)(hidden)
+	hidden = layers.Dense(256, activation='relu')(hidden)
+	hidden = layers.Dropout(0.1)(hidden)
+	hidden = layers.Dense(64, activation='relu')(hidden)
+	hidden = layers.Dropout(0.1)(hidden)
+	hidden = layers.Dense(8, activation='relu')(hidden)
+	return hidden
+
+out_policy = network(self.input_map,self.input_grid,self.input_vector)
+out_value = network(self.input_map,self.input_grid,self.input_vector)
+
+#Output layers for policy and value estimations
+self.policy = layers.Dense(a_size,activation='softmax')(out_policy)
+self.value = layers.Dense(1)(out_value)
+
+
+
+
+Aktuell Zwischenstand - 26.09.2019
+-------------------------------------------------------
+
+- Funktionierender A3C-Algorihtmus bis zum Entropie-Kollaps
+	-> Im Gegensatz zu Stefan nur Stochastische Policy
+	
+	-> Implementation mit Tensorflow
+	-> Modifizierte Rewardfunktion für Belohnung (bzw. verminderung der Bestrafung) wenn sich 
+	   Agent näher zum Ziel bewegt. Plus, alle Agenten bekommen Bonus (klein) wenn ein anderer
+	   Agent das Ziel erreicht (nur die, die noch nicht abgeschlossen haben, kleiner als Abschlussbonus)
+	
+	-> Entropie-Kollaps: Zeigen/Besprechen mit Andy und Thilo
+		- Was könnten Gründe sein, dass neuronales Netzwerk immer die gleiche Wahl trifft?
+		- Warum passiert das nur auf dem Cluster?
+		
+- Überarbeitete Observations
+	-> Verschiedene Beobachtungen (Agents, deren Speed, Ziel, geplante Routen, etc.)
+	-> Grid (OxOx16)
+	-> Aktuelle Informationen des eigenen Agents (Speed, Richtung, letzte Action, Distanz zum Ziel 
+	auf kürzestem Weg)
+	
+-> Einfacher Benchmark. 5 verschiedene Schwierigkeitsstufen, Erfolgsquote kann geplottet werden
+
+- PA in englisch unterschreiben
+
+- Grosse Frage: Ausweichmanöver. Besonders bei zu kleinen Observationsbereich
+- Kleinst mögliche Überschneidung berechnen und diesen Weg "Empfehlen"
+
+What to do next:
+- Weiter erforschen, was den Entropie-Kollaps auslöst, bzw. wie er behoben werden kann
+- Curriculum Learning: Curriculum aufbauen für Lernfortschritt.
+	-> Einfach anfangen, langsam schwerer werden
+	-> Zur nächsten Stufe wechseln, wenn Metrik erreicht (z.B. 80% aller Züge kommen an)
+	z.B.:	- Ein Agent, kleines Env
+			- Ein Agent, kleines Env, mehr Schienen
+			- Ein Agent, grösseres Env
+			- ...
+			- Zwei Agents, kleines Env, viele Ausweichmöglichkeiten
+			- Zwei Agents, wenige Ausweichmöglichkeiten,
+			- Zwei Agents, Bottleneck
+			- ...
+			Etc.
+			
+- Monte-Carlo-Simulation der nächsten Schritte (ca. 20)
+	- Lösung mit dem höchsten Reward (+ Future Reward) nehmen
+	- Alle paar Schritte wiederholen
+	- Lösung soll schon möglichst gut sein durch traininerte Agenten
+	
+- Benchmark v2: System zur Messung von Agent, aber genauer. 
+	- Evtl. auf Curriclulum-Learning-Ablauf
+	- Automatische Datenspeicherung in Liste
+	
+	
+			
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

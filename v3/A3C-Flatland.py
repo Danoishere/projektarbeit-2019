@@ -22,6 +22,8 @@ import tensorflow as tf
 import tensorflow.contrib.slim as slim
 import scipy.signal
 from tensorflow.keras import layers
+from tensorflow.keras import optimizers
+from tensorflow.keras.models import Model
 #get_ipython().run_line_magic('matplotlib', 'inline')
 from helper import *
 
@@ -128,10 +130,14 @@ def normalized_columns_initializer(std=1.0):
 class AC_Network():
     def __init__(self,a_size,scope,trainer):
         with tf.variable_scope(scope):
-   
+
             self.input_map = tf.placeholder(shape=[None,map_state_size[0],map_state_size[1],map_state_size[2]],dtype=tf.float32)
             self.input_grid = tf.placeholder(shape=[None,grid_state_size[0],grid_state_size[1],grid_state_size[2],1],dtype=tf.float32)
             self.input_vector = tf.placeholder(shape=[None,vector_state_size],dtype=tf.float32)
+
+            self.input_map =  layers.Input(shape=[map_state_size[0],map_state_size[1],map_state_size[2]],dtype=tf.float32)
+            self.input_grid = layers.Input(shape=[grid_state_size[0],grid_state_size[1],grid_state_size[2],1],dtype=tf.float32)
+            self.input_vector = layers.Input(shape=[vector_state_size],dtype=tf.float32)
 
             def network(input_map,input_grid,input_vector):
                 conv_grid = layers.Conv3D(64,(1,1,4),strides=(1,1,4))(input_grid)
@@ -157,16 +163,26 @@ class AC_Network():
                 hidden = layers.Dense(64, activation='relu')(hidden)
                 hidden = layers.Dropout(0.1)(hidden)
                 hidden = layers.Dense(8, activation='relu')(hidden)
-
                 return hidden
 
             out_policy = network(self.input_map,self.input_grid,self.input_vector)
             out_value = network(self.input_map,self.input_grid,self.input_vector)
-            
+
             #Output layers for policy and value estimations
             self.policy = layers.Dense(a_size,activation='softmax')(out_policy)
             self.value = layers.Dense(1)(out_value)
-            
+
+            self.keras_model = Model(
+                inputs=[
+                self.input_map,
+                self.input_grid,
+                self.input_vector
+                ],
+                outputs=[
+                    self.policy,
+                    self.value
+                ])
+
             #Only the worker network need ops for loss functions and gradient updating.
             if scope != 'global':
                 self.actions = tf.placeholder(shape=[None],dtype=tf.int32)
@@ -186,7 +202,7 @@ class AC_Network():
                 local_vars = tf.compat.v1.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope)
                 self.gradients = tf.gradients(self.loss,local_vars)
                 self.var_norms = tf.global_norm(local_vars)
-                grads, self.grad_norms = tf.clip_by_global_norm(self.gradients,40.0)
+                grads, self.grad_norms = tf.clip_by_global_norm(self.gradients, 40.0)
                 
                 #Apply local gradients to global network
                 global_vars = tf.compat.v1.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, 'global')
@@ -421,23 +437,24 @@ class Worker():
                         info[i,1] = p_l
                         info[i,2] = e_l
                         info[i,3] = g_n
-                        info[i,4] = v_n
-                        sess.run(self.update_local_ops)
-                        
+                        info[i,4] = v_n                        
                     
                 # Periodically save gifs of episodes, model parameters, and summary statistics.
                 if episode_count % 5 == 0 and episode_count != 0:
                     if self.name == 'worker_0' and episode_count % 25 == 0:
                         ''' TODO: Save Gif of current agents '''
-                    if episode_count % 50 == 0 and self.name == 'worker_0':
-                        saver.save(sess,self.model_path+'/model-'+str(episode_count)+'.cptk')
-                        print ("Saved Model")
 
                     mean_reward = np.mean(self.episode_rewards[-100:])
                     mean_length = np.mean(self.episode_lengths[-100:])
                     mean_value = np.mean(self.episode_mean_values[-100:])
                     mean_success_rate = np.mean(self.episode_success[-100:])
 
+                    if episode_count % 50 == 0 and self.name == 'worker_0':
+                        saver.save(sess,self.model_path+'/model-'+str(episode_count)+'.cptk')
+                        self.local_AC.keras_model.save(self.model_path+'/model-'+str(episode_count)+'.h5')
+                        print ("Saved Model")
+
+                    
                     summary = tf.Summary()
                     summary.value.add(tag='Perf/Reward', simple_value=float(mean_reward))
                     summary.value.add(tag='Perf/Length', simple_value=float(mean_length))
@@ -456,8 +473,9 @@ class Worker():
                 episode_count += 1
                 print('Episode', episode_count,'of',self.name,'with',episode_step_count,'steps, reward of',episode_reward)
 
-# In[23]:
 
+
+# In[23]:
 
 max_episode_length = 80
 gamma = 0.98 # discount rate for advantage estimation and reward discounting
@@ -485,7 +503,7 @@ if not os.path.exists('./frames'):
 
 with tf.device("/cpu:0"): 
     global_episodes = tf.Variable(0,dtype=tf.int32,name='global_episodes',trainable=False)
-    trainer = tf.train.AdamOptimizer(learning_rate=1e-4)
+    trainer = optimizers.Adam(learning_rate=1e-4, clipnorm=3.0)
     master_network = AC_Network(a_size,'global',None) # Generate global network
     num_workers = multiprocessing.cpu_count() # Set workers to number of available CPU threads
     workers = []
