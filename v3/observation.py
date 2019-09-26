@@ -11,6 +11,8 @@ from flatland.core.env_observation_builder import ObservationBuilder
 from flatland.core.grid.grid4_astar import a_star
 from flatland.core.transition_map import GridTransitionMap
 from numpy.core.umath import divide
+import constants
+import math
 
 class RawObservation(ObservationBuilder):
     """
@@ -24,6 +26,7 @@ class RawObservation(ObservationBuilder):
     def _set_env(self, env):
         self.env = env
  
+
     def reset(self):
         """
         Called after each environment reset.
@@ -31,6 +34,7 @@ class RawObservation(ObservationBuilder):
         self.map_ = None
         self.agent_positions_ = None
         self.agent_handles_ = None
+        self.is_reset = True
         
     def handle_to_prio(self, handle):
         return (handle + 1)/15
@@ -104,6 +108,18 @@ class RawObservation(ObservationBuilder):
   
         return map_
 
+    def sigmoid_shifted(self,x):
+        return 1 / (1 + math.exp(-5-x))
+
+    # def get_many(self, handles=[]):
+    #     for agent in self.env.agents:
+    #         rail_grid = np.zeros_like(self.env.rail.grid, dtype=np.uint16)
+    #         path = a_star(self.env.rail.transitions, rail_grid, agent.position,agent.target)
+    #         agent.path_to_target = path
+
+    #     self.path_priority_map = np.zeros(self.env.rail.grid.shape)
+    #     return super().get_many(handles=handles)
+
     def get_many(self, handles=[]):
         for agent in self.env.agents:
             rail_grid = np.zeros_like(self.env.rail.grid, dtype=np.uint16)
@@ -111,7 +127,7 @@ class RawObservation(ObservationBuilder):
             agent.path_to_target = path
 
         self.path_priority_map = np.zeros(self.env.rail.grid.shape)
-        return super().get_many(handles=handles)
+        return self.reshape_obs(super().get_many(handles=handles))
 
     def get(self, handle=0):
         """
@@ -129,30 +145,48 @@ class RawObservation(ObservationBuilder):
         function
         Transition map as local window of size x,y , agent-positions if in window and target.
         """
-       
+
         self.offset_initialized = False
 
         grid_map = self.convert_grid(self.env.rail.grid)
         self.map_size = grid_map.shape
         
+        if self.is_reset:
+            self.is_reset = False
+            self.layers = np.zeros((16,self.map_size[0],self.map_size[1]))
+            for l in range(16):
+                shift = 15 - l
+                self.layers[l,:,:] = (self.env.rail.grid >> shift) & 1
+
         agents = self.env.agents
         agent = agents[handle]
         target = agent.target
         position = agent.position
+        speed = agent.speed_data['speed']
+        last_action =  agent.speed_data['transition_action_on_cellexit']/4.0
         
         self.pos = np.array(list(agent.position))
         self.offset = np.floor(np.divide(self.size_,2))
 
+        '''
         # Layer with position of agent
         position_map = self.tuples_to_grid([(agent.position[0],agent.position[1], self.convert_dir(agent.direction))])
         layer_position_map = self.to_obs_space(position_map)
+
+        # Layer with speed of agent
+        speed_map = self.tuples_to_grid([(agent.position[0],agent.position[1], speed)])
+        layer_speed_map = self.to_obs_space(speed_map)
+
+        # Layer with speed of agent
+        last_action_map = self.tuples_to_grid([(agent.position[0],agent.position[1], last_action)])
+        layer_last_action_map = self.to_obs_space(last_action_map)
+        '''
 
         # Layer with position of agent
         target_map = self.tuples_to_grid([(agent.target[0],agent.target[1])])
         layer_target_map = self.to_obs_space(target_map)
 
         # Layer with path to target
-        rail_grid = np.zeros_like(grid_map, dtype=np.uint16)
         path_map = self.tuples_to_grid(agent.path_to_target, True)
         layer_path_to_target = self.to_obs_space(path_map)
 
@@ -164,6 +198,8 @@ class RawObservation(ObservationBuilder):
         agent_targets = []
         agent_positions = []
         agent_priority = []
+        agent_speed = []
+        agent_action_on_cellexit = []
         for agent in agents:
             if agent.handle != handle:
                 agent_targets.append(agent.target)
@@ -171,6 +207,16 @@ class RawObservation(ObservationBuilder):
                     agent.position[0],
                     agent.position[1],
                     self.convert_dir(agent.direction)))
+
+            agent_speed.append((
+                agent.position[0],
+                agent.position[1],
+                agent.speed_data['speed']))
+
+            agent_action_on_cellexit.append((
+                agent.position[0],
+                agent.position[1],
+                agent.speed_data['transition_action_on_cellexit']/4.0))
                 
             agent_priority.append((
                 agent.position[0],
@@ -182,13 +228,25 @@ class RawObservation(ObservationBuilder):
             layer_agent_target_map = self.to_obs_space(target_map)
             agent_positions_map = self.tuples_to_grid(agent_positions)
             layer_agent_positions_map = self.to_obs_space(agent_positions_map)
+        else:
+            layer_agent_target_map = np.zeros(self.size_)
+            layer_agent_positions_map = np.zeros(self.size_)
 
         priority_map = self.tuples_to_grid(agent_priority)
         layer_agent_priority = self.to_obs_space(priority_map)
+
+        speed_map = self.tuples_to_grid(agent_speed)
+        layer_agent_speed = self.to_obs_space(speed_map)
+
+        action_map = self.tuples_to_grid(agent_action_on_cellexit)
+        layer_agent_action = self.to_obs_space(action_map)
+
+
         layer_grid_map = self.to_obs_space(grid_map)
 
-        self.observation_space = np.array([
-            layer_position_map,
+        observation_maps = np.array([
+            layer_agent_speed,
+            layer_agent_action,
             layer_target_map, 
             layer_path_to_target,
             layer_path_priority,
@@ -198,6 +256,13 @@ class RawObservation(ObservationBuilder):
             layer_grid_map
         ])
 
+        # Grid layout with 16 x obs-size x obs-size
+        layer_grid = self.to_obs_space(self.layers, (16,self.size_[0],self.size_[1]))
+
+        # Vector with train-info
+        vector = [speed, last_action, self.sigmoid_shifted(len(agent.path_to_target)),self.convert_dir(agent.direction), self.env._elapsed_steps]
+        
+        self.observation_space = [observation_maps, layer_grid, vector]
         return self.observation_space
 
 
@@ -223,7 +288,13 @@ class RawObservation(ObservationBuilder):
             return obs_grid
 
 
-    def to_obs_space(self, orig_map):
+    def to_obs_space(self, orig_map,obs_size=-1):
+
+        use_default_size = False
+        if obs_size == -1:
+            use_default_size = True
+            obs_size = self.size_
+
         if not self.offset_initialized:
             orig_size = orig_map.shape
 
@@ -237,17 +308,25 @@ class RawObservation(ObservationBuilder):
             grid_offset_max = self.offset + orig_size - self.pos
 
             self.min_obs = np.maximum(grid_offset_min,[0,0]).astype(np.int16)
-            self.max_obs = np.minimum(grid_offset_max, self.size_).astype(np.int16)
+            self.max_obs = np.minimum(grid_offset_max, obs_size).astype(np.int16)
             self.offset_initialized = True
 
-        copied_area = orig_map[
-            self.min_map[0]:self.max_map[0], 
-            self.min_map[1]:self.max_map[1]]
+    
+        # Default obs_size
+        if use_default_size:
+            copied_area = orig_map[
+                self.min_map[0]:self.max_map[0], 
+                self.min_map[1]:self.max_map[1]]
+            obs_grid = np.zeros(self.size_)
+        else:
+            copied_area = orig_map[:,
+                self.min_map[0]:self.max_map[0], 
+                self.min_map[1]:self.max_map[1]]
 
-        obs_grid = np.zeros(self.size_)
-        obs_grid[
-            self.min_obs[0]:self.max_obs[0], 
-            self.min_obs[1]:self.max_obs[1]] = copied_area
+            obs_grid = np.zeros(obs_size)
+            obs_grid[:,
+                self.min_obs[0]:self.max_obs[0], 
+                self.min_obs[1]:self.max_obs[1]] = copied_area
 
         return obs_grid
 
@@ -263,3 +342,24 @@ class RawObservation(ObservationBuilder):
 
     def convert_dir(self, direction):
         return float(direction + 1)/10.0
+
+    def reshape_obs(self, agent_observations):
+        map_obs = []
+        vec_obs = []
+        grid_obs = []
+        num_agents = len(agent_observations)
+
+        for i in range(num_agents):
+            agent_obs = agent_observations[i]
+            map_obs.append(agent_obs[0])
+            grid_obs.append(agent_obs[1])
+            vec_obs.append(agent_obs[2])
+        
+        map_obs = np.asarray(map_obs)
+        map_obs = np.reshape(map_obs,(num_agents, constants.map_state_size[0], constants.map_state_size[1], constants.map_state_size[2]))
+
+        grid_obs = np.asarray(grid_obs)
+        grid_obs = np.reshape(grid_obs,(num_agents, constants.grid_state_size[0], constants.grid_state_size[1], constants.grid_state_size[2],1))
+
+        vec_obs = np.asarray(vec_obs)
+        return [map_obs, grid_obs, vec_obs]

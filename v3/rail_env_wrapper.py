@@ -6,8 +6,10 @@ from helper import *
 from observation import RawObservation
 
 class Rail_Env_Wrapper():
+    initial_step_penalty = -2
+    global_reward = 10
 
-    def __init__(self, width=14, height=14, num_agents=2):
+    def __init__(self, width=14, height=14, num_agents=1):
         self.num_agents = num_agents
         self.rail_gen = complex_rail_generator(
             nr_start_goal=3,
@@ -15,15 +17,15 @@ class Rail_Env_Wrapper():
             min_dist=15,
             seed=random.randint(0,100000)
         )
-        global_reward = 10
         self.done_last_step = {}
         self.dist = {}
-        self.env = self.generate_env(width, height, global_reward, num_agents)
+        self.env = self.generate_env(width, height)
         self.num_of_done_agents = 0
+        self.episode_step_count = 0
 
     def step(self, actions):
+        self.env.step_penalty = -2*1.02**self.episode_step_count
         next_obs, rewards, done, _ = self.env.step(actions)
-        next_obs = self.reshape_obs(next_obs)
         self.num_of_done_agents = self.modify_reward(rewards, done, self.done_last_step, self.num_of_done_agents, self.dist)
         self.done_last_step = done
         return next_obs ,done, rewards
@@ -31,9 +33,11 @@ class Rail_Env_Wrapper():
     
     def reset(self):
         for i in range(self.num_agents):
-            self.done_last_step[i] = 0
+            self.done_last_step[i] = False
             self.dist[i] = 100
         obs = self.env.reset()
+        self.env.step_penalty = self.initial_step_penalty
+        self.episode_step_count = 0
         return obs
         
 
@@ -65,31 +69,19 @@ class Rail_Env_Wrapper():
     
         return num_of_done_agents
 
-    #Eventuell auslagern nach Observations
-    def reshape_obs(self, agent_observations):
-        observations = []
-        num_agents = len(agent_observations)
-        for i in range(num_agents):
-            agent_obs = agent_observations[i]
-            observations.append(agent_obs)
-        observations = np.array(observations)
-        observations = np.swapaxes(observations,1,3)
-        return observations
-
     def generate_env(self,
                     width,
-                    height,
-                    global_reward,
-                    num_agents):
+                    height):
         self.env = RailEnv(
             width, 
             height, 
             self.rail_gen,
             schedule_generator = complex_schedule_generator(),
-            number_of_agents=num_agents,
-            obs_builder_object=RawObservation([21,21]))
-        self.env.global_reward = global_reward
-        self.env.num_agents = num_agents
+            number_of_agents=self.num_agents,
+            obs_builder_object=RawObservation([11,11]))
+        self.env.global_reward = self.global_reward
+        self.env.num_agents = self.num_agents
+        self.env.step_penalty = -2
         return self.env
 
     def get_agents_count(self):
