@@ -14,36 +14,30 @@
 # In[18]:
 
 
-import threading
+import json
 import multiprocessing
-import numpy as np
+from pathos.multiprocessing import ProcessPool
+import threading
+from copy import deepcopy
+from random import choice
+from time import sleep, time
+
 import matplotlib.pyplot as plt
+import numpy as np
+import scipy.signal
 import tensorflow as tf
 import tensorflow.contrib.slim as slim
-import scipy.signal
-from tensorflow.keras import layers
-from tensorflow.keras import optimizers
-from tensorflow.keras import models
-#get_ipython().run_line_magic('matplotlib', 'inline')
-from helper import *
-from copy import deepcopy
-
-from random import choice
-from time import sleep
-from time import time
-import json
-
-
-# In[19]:
-
-from observation import RawObservation
-
+from flatland.core.grid.grid4_astar import a_star
+from flatland.envs.observations import (GlobalObsForRailEnv,
+                                        LocalObsForRailEnv, TreeObsForRailEnv)
 from flatland.envs.rail_env import RailEnv
-from flatland.utils.rendertools import RenderTool
-from flatland.envs.observations import TreeObsForRailEnv, LocalObsForRailEnv, GlobalObsForRailEnv
 from flatland.envs.rail_generators import complex_rail_generator
 from flatland.envs.schedule_generators import complex_schedule_generator
-from flatland.core.grid.grid4_astar import a_star
+from flatland.utils.rendertools import RenderTool
+from tensorflow.keras import layers, models, optimizers
+
+from helper import *
+from observation import RawObservation
 
 # ### Helper Functions
 
@@ -153,12 +147,11 @@ class Player():
         episode_count = 0
           
         while True:
+            episode_steps_count = 0
             episode_reward = 0
-            episode_step_count = 0
-            
-            
-            self.env.step_penalty = -2
+            episode_done = False
 
+            self.env.step_penalty = -2
             obs = self.env.reset()
             obs = reshape_obs(obs)
 
@@ -168,116 +161,98 @@ class Player():
                 print('Regenerate environment - no suitable solution found')
 
             self.renderer.set_new_rail()
-            episode_done = False
-            
-            
-            
-            env_copy = self.copy_env(self.env)
-            attempt = 0
-            
-            best_action_list = []
-            best_attempt_reward = -1000000
-            last_attempt_step_count = max_episode_length
-            found_solution = False
 
-            while attempt < 20:
-                action_list = []
-                attempt_step_count = 0
-                attempt_reward = 0
-                num_of_done_agents = 0
-                episode_done = False
-                
-                done_last_step = {}                
-                dist = {}
+            while not episode_done and episode_steps_count < max_episode_length:
+                rewards = []
+                action_lists = []
+                for i in range(mc_sim_num):
+                    d = run_attempt(obs, self.env, 10)
+                    action_lists.append(d[2])
+                    rewards.append(d[1])
 
-                for i in range(self.env.num_agents):
-                    done_last_step[i] = False
-                    dist[i] = 100
+                best_action_idx = np.argmax(rewards)
+                best_action = action_lists[best_action_idx]
 
-                while not episode_done and attempt_step_count < last_attempt_step_count:
-                    #Take an action using probabilities from policy network output.
-                    predcition = self.model.predict([obs[0],obs[1],obs[2]])
-                    actions = {}
-                    for i in range(env_copy.num_agents):
-                        a_dist = predcition[0][i]
-                        a = np.random.choice([0,1,2,3,4], p = a_dist)
-                        actions[i] = a
-                    
-                    action_list.append(actions)
-                    next_obs, rewards, done, _ = env_copy.step(actions)
-                    next_obs = reshape_obs(next_obs)
-                    num_of_done_agents = modify_reward(env_copy, rewards, done, done_last_step, num_of_done_agents, dist)
-
-                    for i in range(self.env.num_agents):
-                        if not done_last_step[i]:
-                            attempt_reward += rewards[i]
-
-                    # Is episode finished?
-                    episode_done = done['__all__']
-
-                    total_attempts += 1
-                    attempt_step_count += 1
-                    done_last_step = done
-
-                attempt += 1   
-
-                if attempt_reward > best_attempt_reward:
-                    found_solution = True
-                    best_action_list = action_list
-                    last_attempt_step_count = attempt_step_count
-                    print('Best attempt step count:', attempt_step_count)
-
-                
-
-                env_copy = self.copy_env(self.env)
-                print('Attempt', attempt,'of',self.name,'with',attempt_step_count,'steps, reward of', attempt_reward)
-            
-            if found_solution:
-                # We found working solution. Now replay!
                 episode_done = False
                 steps = 0
-                while not episode_done and steps < max_episode_length:
-                    actions = {}
-                    if len(best_action_list) > 0:
-                        actions = best_action_list.pop(0)
-                    else:
-                        predcition = self.model.predict([obs[0],obs[1],obs[2]])
-                        for i in range(env_copy.num_agents):
-                            a_dist = predcition[0][i]
-                            a = np.random.choice([0,1,2,3,4], p = a_dist)
-                            actions[i] = a
-
+                
+                for actions in best_action:
+                    sleep(0.3)
                     self.renderer.render_env(show=True, frames=False, show_observations=True)
                     obs, rewards, done, _ = self.env.step(actions)
                     obs = reshape_obs(obs)
-                    num_of_done_agents = modify_reward(self.env, rewards, done, done_last_step, num_of_done_agents, dist)
                     steps += 1
-                    # Is episode finished?
                     episode_done = done['__all__']
-
+                    episode_steps_count += 1
 
             episode_count += 1
-            print('Episode', episode_count,', finished=', episode_done, 'of',self.name,'with',episode_step_count,'steps, reward of',episode_reward)
+            print('Episode', episode_count,', finished=', episode_done, 'of',self.name,'with', episode_steps_count ,'steps, reward of',episode_reward)
+
+def run_attempt(obs, env, max_attempt_length):
+    action_list = []
+    attempt_step_count = 0
+    attempt_reward = 0
+    num_of_done_agents = 0
+    episode_done = False
+    env_copy = deepcopy(env)
+
+    done_last_step = {i: False for i in range(env.num_agents)}                
+    dist = {i: 100 for i in range(env.num_agents)}
+    
+    while not episode_done and attempt_step_count < max_attempt_length:
+        #Take an action using probabilities from policy network output.
+        predcition = model.predict([obs[0],obs[1],obs[2]])
+        actions = {}
+        for i in range(env_copy.num_agents):
+            a_dist = predcition[0][i]
+            a = np.random.choice([0,1,2,3,4], p = a_dist)
+            actions[i] = a
+
+        action_list.append(actions)
+        next_obs, rewards, done, _ = env_copy.step(actions)
+        next_obs = reshape_obs(next_obs)
+        num_of_done_agents = modify_reward(env_copy, rewards, done, done_last_step, num_of_done_agents, dist)
+
+        for i in range(env.num_agents):
+            if not done_last_step[i]:
+                attempt_reward += rewards[i]
+
+        # Is episode finished?
+        episode_done = done['__all__']
+
+        attempt_step_count += 1
+        done_last_step = done
+        obs = next_obs
+        
+    if not episode_done:
+        # Bootstrap with value-function for remaining reward
+        for i in range(env.num_agents):
+            if not done_last_step[i]:
+                attempt_reward += rewards[i] + predcition[1][i]
+
+    return episode_done, attempt_reward, action_list, attempt_step_count
+    
 # In[23]:
 
-max_episode_length = 40
-gamma = 0.98 # discount rate for advantage estimation and reward discounting
+max_episode_length = 80
+mc_sim_num = 20
+mc_sim_steps = 6
 
-map_state_size = (11,11,9) #  Observations are 21*21 with five channels
+# Observation sizes
+map_state_size = (11,11,9)
 grid_state_size = (11,11,16)
 vector_state_size = 5
 
+# Action size
 a_size = 5 # Agent can move Left, Right, or Fire
+
 load_model = True
 model_path = './model'
 
+
 # In[24]:
-
-model = models.load_model(model_path + '/' +'model-50.h5')
-player = Player(model)
-player.play(max_episode_length)
-print ("Looks like we're done")
-
-
-
-
+if __name__ == "__main__":
+    model = models.load_model(model_path + '/' +'model-400.h5')
+    player = Player(model)
+    player.play(max_episode_length)
+    print ("Looks like we're done")

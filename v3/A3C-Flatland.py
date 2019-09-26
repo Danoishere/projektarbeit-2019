@@ -196,7 +196,7 @@ class AC_Network():
                 self.value_loss = 0.5 * tf.reduce_sum(tf.square(self.target_v - tf.reshape(self.value,[-1])))
                 self.entropy = - tf.reduce_sum(self.policy * tf.math.log(self.policy))
                 self.policy_loss = -tf.reduce_sum(tf.math.log(self.responsible_outputs)*self.advantages)
-                self.loss = 0.5 * self.value_loss + self.policy_loss - self.entropy * 0.05
+                self.loss = 0.5 * self.value_loss + self.policy_loss - self.entropy * 0.4
 
                 #Get gradients from local network using local losses
                 local_vars = tf.compat.v1.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope)
@@ -232,7 +232,7 @@ class Worker():
         self.local_AC = AC_Network(a_size, self.name, trainer)
         self.update_local_ops = update_target_graph('global', self.name)        
         
-        num_agents = 1
+        num_agents = 2
         rail_gen = complex_rail_generator(
             nr_start_goal=3,
             nr_extra=3,
@@ -424,20 +424,21 @@ class Worker():
                 self.episode_success.append(episode_done)
                 
                 # Update the network using the episode buffer at the end of the episode.
-                if episode_done and len(episode_buffers[0]) != 0:
+                if episode_done:
                     info = np.zeros((self.env.num_agents,5))
                     for i in range(self.env.num_agents):
-                        v_l,p_l,e_l,g_n,v_n = self.train(
-                            episode_buffers[i],
-                            sess,
-                            gamma,
-                            0.0)
-                        
-                        info[i,0] = v_l
-                        info[i,1] = p_l
-                        info[i,2] = e_l
-                        info[i,3] = g_n
-                        info[i,4] = v_n                        
+                        if len(episode_buffers[i]) != 0:
+                            v_l,p_l,e_l,g_n,v_n = self.train(
+                                episode_buffers[i],
+                                sess,
+                                gamma,
+                                0.0)
+                            
+                            info[i,0] = v_l
+                            info[i,1] = p_l
+                            info[i,2] = e_l
+                            info[i,3] = g_n
+                            info[i,4] = v_n                        
                     
                 # Periodically save gifs of episodes, model parameters, and summary statistics.
                 if episode_count % 5 == 0 and episode_count != 0:
@@ -451,9 +452,11 @@ class Worker():
 
                     if episode_count % 50 == 0 and self.name == 'worker_0':
                         saver.save(sess,self.model_path+'/model-'+str(episode_count)+'.cptk')
+                        print ("Saved Checkpoint")
+                    
+                    if episode_count % 500 == 0 and self.name == 'worker_0':
                         self.local_AC.keras_model.save(self.model_path+'/model-'+str(episode_count)+'.h5')
-                        print ("Saved Model")
-
+                        print ("Saved Keras Model")
                     
                     summary = tf.Summary()
                     summary.value.add(tag='Perf/Reward', simple_value=float(mean_reward))
