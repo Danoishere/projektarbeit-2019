@@ -32,12 +32,9 @@ from time import time
 # In[19]:
 
 from observation import RawObservation
-
-from flatland.envs.rail_env import RailEnv
+from rail_env_wrapper import Rail_Env_Wrapper
 from flatland.utils.rendertools import RenderTool
 from flatland.envs.observations import TreeObsForRailEnv, LocalObsForRailEnv, GlobalObsForRailEnv
-from flatland.envs.rail_generators import complex_rail_generator
-from flatland.envs.schedule_generators import complex_schedule_generator
 from flatland.core.grid.grid4_astar import a_star
 
 # ### Helper Functions
@@ -54,46 +51,6 @@ def update_target_graph(from_scope,to_scope):
     for from_var,to_var in zip(from_vars,to_vars):
         op_holder.append(to_var.assign(from_var))
     return op_holder
-
-def reshape_obs(agent_observations):
-    observations = []
-    num_agents = len(agent_observations)
-    for i in range(num_agents):
-        agent_obs = agent_observations[i]
-        observations.append(agent_obs)
-    observations = np.array(observations)
-    observations = np.swapaxes(observations,1,3)
-    return observations
-
-def modify_reward(env, rewards, done, done_last_step, num_of_done_agents, shortest_dist):
-    for i in range(env.num_agents):
-        if not done_last_step[i] and done[i]:
-            num_of_done_agents += 1
-            # Hand out some reward to all the agents
-            for j in range(env.num_agents):
-                rewards[j] += 5  
-
-            # Give some reward to our agent
-            rewards[i] += 2**num_of_done_agents * 5
-
-    
-    for i in range(env.num_agents):
-        agent = env.agents[i]
-        path_to_target = agent.path_to_target
-        current_path_length = len(path_to_target)
-        shortest_path_length = shortest_dist[i]
-
-        # Adding reward for getting closer to goal
-        if current_path_length < shortest_path_length:
-            rewards[i] +=1
-            shortest_dist[i] = current_path_length
-
-        # Subtract reward for getting further away
-        if current_path_length > shortest_path_length:
-            rewards[i] -= 1
-    
-    return num_of_done_agents
-
 
 
 # Discounting function used to calculate discounted returns.
@@ -203,39 +160,16 @@ class Worker():
         self.episode_lengths = []
         self.episode_mean_values = []
         self.summary_writer = tf.summary.FileWriter("train_" + str(self.number))
+        self.rail_env_wrapper = Rail_Env_Wrapper()
 
         #Create the local copy of the network and the tensorflow op to copy global paramters to local network
         self.local_AC = AC_Network(s_size, a_size, self.name, trainer)
-        self.update_local_ops = update_target_graph('global', self.name)        
-        
-        num_agents = 2
-
-        rail_gen = complex_rail_generator(
-            nr_start_goal=3,
-            nr_extra=3,
-            min_dist=15,
-            seed=random.randint(0,100000)
-        )
-                    
-        #The Below code is related to setting up the Flatland environment
-        env = RailEnv(
-                width=14,
-                height=14,
-                rail_generator = rail_gen,
-                schedule_generator =complex_schedule_generator(),
-                number_of_agents=num_agents,
-                obs_builder_object=RawObservation([21,21]))
-
-        env.global_reward = 10
-        env.num_agents = num_agents
-
+        self.update_local_ops = update_target_graph('global', self.name)
         self.actions = [0,1,2,3,4]
-        self.env = env
         
     def train(self, rollout, observations, sess, gamma, bootstrap_value):
         ''' Gradient decent for a single agent'''
         rollout = np.array(rollout)
-
         actions = rollout[:,1]
         rewards = rollout[:,2]
         values = rollout[:,5]
@@ -285,26 +219,20 @@ class Worker():
                 episode_frames = []
                 episode_reward = 0
                 episode_step_count = 0
-                num_of_done_agents = 0
                 
-                obs = self.env.reset()
-                obs = reshape_obs(obs)
+                obs = self.rail_env_wrapper.reset()
+                obs = self.rail_env_wrapper.reshape_obs(obs)
 
                 while obs.shape[0] == 0:
-                    obs = self.env.reset()
-                    obs = reshape_obs(obs)
+                    obs = self.rail_env_wrapper.reset()
+                    obs = self.rail_env_wrapper.reshape_obs(obs)
 
                 episode_done = False
                 
                 rnn_state = self.local_AC.state_init
                 self.batch_rnn_state = rnn_state
                 
-                done_last_step = {}
-                dist = {}
-
-                for i in range(self.env.num_agents):
-                    done_last_step[i] = 0
-                    dist[i] = 100
+            
                     
                 while episode_done == False and episode_step_count < max_episode_length:
                     #Take an action using probabilities from policy network output.
@@ -319,15 +247,12 @@ class Worker():
                         })
 
                     actions = {}
-                    for i in range(self.env.num_agents):
+                    for i in range(self.rail_env_wrapper.num_agents):
                         a = np.random.choice([0,1,2,3,4], p = a_dist[i])
                         actions[i] = a
 
-                    next_obs, rewards, done, _ = self.env.step(actions)
-                    next_obs = reshape_obs(next_obs)
 
-                    num_of_done_agents = modify_reward(self.env, rewards, done, done_last_step, num_of_done_agents,dist)
-                    done_last_step = done
+                    next_obs, done, rewards = self.rail_env_wrapper.step(actions)
                     
                     # Is episode finished?
                     episode_done = done['__all__']
@@ -335,7 +260,7 @@ class Worker():
                     if episode_done == True:
                         next_obs = obs
 
-                    for i in range(self.env.num_agents):
+                    for i in range(self.rail_env_wrapper.num_agents):
                         agent_state = obs[i]
                         agent_action = actions[i]
                         agent_reward = rewards[i]
@@ -480,7 +405,3 @@ with tf.Session() as sess:
         worker_threads.append(t)
     coord.join(worker_threads)
     print ("Looks like we're done")
-
-
-
-
