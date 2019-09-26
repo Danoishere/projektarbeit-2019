@@ -180,6 +180,8 @@ class RawObservation(ObservationBuilder):
         path_map = self.tuples_to_grid(agent.path_to_target, True)
         layer_path_to_target = self.to_obs_space(path_map)
 
+        self.env.dev_obs_dict[handle] = agent.path_to_target
+
         path_priority_map = path_map*self.handle_to_prio(handle)
         self.path_priority_map = np.maximum(path_priority_map, self.path_priority_map)
         layer_path_priority = self.to_obs_space(self.path_priority_map)

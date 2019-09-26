@@ -109,7 +109,7 @@ class Player():
 
         #Create the local copy of the network and the tensorflow op to copy global paramters to local network
         self.model = model
-        num_agents = 2
+        num_agents = 3
         rail_gen = complex_rail_generator(
             nr_start_goal=3,
             nr_extra=3,
@@ -162,11 +162,12 @@ class Player():
 
             self.renderer.set_new_rail()
 
+            pos = {}
             while not episode_done and episode_steps_count < max_episode_length:
                 rewards = []
                 action_lists = []
                 for i in range(mc_sim_num):
-                    d = run_attempt(obs, self.env, 10)
+                    d = run_attempt(obs, self.env, mc_sim_steps)
                     action_lists.append(d[2])
                     rewards.append(d[1])
 
@@ -176,14 +177,35 @@ class Player():
                 episode_done = False
                 steps = 0
                 
-                for actions in best_action:
+                for actions in best_action[:mc_max_rollout]:
                     sleep(0.3)
-                    self.renderer.render_env(show=True, frames=False, show_observations=True)
+                    self.renderer.render_env(show=True, frames=False, show_observations=False)
                     obs, rewards, done, _ = self.env.step(actions)
                     obs = reshape_obs(obs)
                     steps += 1
                     episode_done = done['__all__']
                     episode_steps_count += 1
+
+                    agents_state = tuple([i.position for i in self.env.agents])
+                    if agents_state in pos.keys():
+                        pos[agents_state] += 1
+                    else:
+                        pos[agents_state] = 1
+        
+                    is_stuck = False
+                    for state in pos:
+                        if pos[state] > 8:
+                            is_stuck = True
+                            episode_steps_count = max_episode_length
+                            print('Stuck. Abort simulation')
+                            break
+
+                    
+                    if is_stuck:
+                        break
+
+                if is_stuck:
+                    break
 
             episode_count += 1
             print('Episode', episode_count,', finished=', episode_done, 'of',self.name,'with', episode_steps_count ,'steps, reward of',episode_reward)
@@ -235,8 +257,9 @@ def run_attempt(obs, env, max_attempt_length):
 # In[23]:
 
 max_episode_length = 80
-mc_sim_num = 20
-mc_sim_steps = 6
+mc_sim_num = 6
+mc_sim_steps = 20
+mc_max_rollout = 6
 
 # Observation sizes
 map_state_size = (11,11,9)

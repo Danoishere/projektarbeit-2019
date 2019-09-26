@@ -197,6 +197,11 @@ What to do next:
 	- Evtl. auf Curriclulum-Learning-Ablauf
 	- Automatische Datenspeicherung in Liste
 	
+TODO: Reward-Funktion besprechen
++ Erweitern um "Blockieren"-Term
+
+Idee (Dano): Teil der Policy könnte nächstes Sichtfeld sein. Oder: Zwei Policies
+	
 	
 			
 
