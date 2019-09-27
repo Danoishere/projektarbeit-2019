@@ -25,7 +25,6 @@ from time import time
 from observation import RawObservation
 from rail_env_wrapper import Rail_Env_Wrapper
 
-import argparse
 import constants
 
 
@@ -113,12 +112,12 @@ class AC_Network():
                 self.responsible_outputs = tf.reduce_sum(self.policy * self.actions_onehot, [1])
 
                 #Loss functions
-                self.value_loss = 0.5 * tf.reduce_sum(tf.square(self.target_v - tf.reshape(self.value,[-1])))
+                self.value_loss = tf.reduce_mean(tf.square(self.target_v - tf.reshape(self.value,[-1])))
                 self.entropy = - tf.reduce_sum(self.policy * tf.math.log(self.policy))
                 # self.policy_loss = -tf.reduce_sum(tf.math.log(self.responsible_outputs)*self.advantages)
                 # Attempt to reduce policy loss by using mean instead of sum
-                self.policy_loss = -tf.reduce_mean(tf.math.log(self.responsible_outputs)*self.advantages)
-                self.loss = 0.5 * self.value_loss + self.policy_loss - self.entropy * 0.05
+                self.policy_loss = -tf.reduce_sum(tf.math.log(self.responsible_outputs)*self.advantages)
+                self.loss = 0.5 * self.value_loss + self.policy_loss - self.entropy * 0.02
 
                 #Get gradients from local network using local losses
                 local_vars = tf.compat.v1.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope)
@@ -203,18 +202,15 @@ class Worker():
         with sess.as_default(), sess.graph.as_default():                 
             while not coord.should_stop():
                 sess.run(self.update_local_ops)
-                episode_buffers = []
+                
+                episode_done = False
+                episode_buffers = [[] for i in range(self.rail_env_wrapper.num_agents)]
+                done_last_step = {i:False for i in range(self.rail_env_wrapper.num_agents)}
                 episode_values = []
                 episode_reward = 0
                 episode_step_count = 0
                 
                 obs = self.rail_env_wrapper.reset()
-
-                while obs[0].shape[0] == 0:
-                    obs = self.rail_env_wrapper.reset()
-                    print('Regenerate environment - no suitable solution found')
-
-                episode_done = False
 
                 for i in range(self.rail_env_wrapper.num_agents):
                     episode_buffers.append([])
@@ -359,7 +355,7 @@ class Worker():
                 if self.name == 'worker_0':
                     sess.run(self.increment)
                 episode_count += 1
-                print('Episode', episode_count,'of',self.name,'with',episode_step_count,'steps, reward of',episode_reward)
+                print('Episode', episode_count,'of',self.name,'with',episode_step_count,'steps, reward of',episode_reward, ', mean entropy of', np.mean(info[:,2]))
 
 # In[23]:
 
@@ -377,44 +373,44 @@ model_path = './model'
 
 # In[24]:
 
+def start_train():
+    tf.reset_default_graph()
 
-tf.reset_default_graph()
-
-if not os.path.exists(model_path):
-    os.makedirs(model_path)
-    
-#Create a directory to save episode playback gifs to
-if not os.path.exists('./frames'):
-    os.makedirs('./frames')
-
-with tf.device("/cpu:0"): 
-    global_episodes = tf.Variable(0,dtype=tf.int32,name='global_episodes',trainable=False)
-    trainer = optimizers.Adam(learning_rate=1e-4, clipnorm=3.0)
-    master_network = AC_Network(a_size,'global',None) # Generate global network
-    num_workers = multiprocessing.cpu_count() # Set workers to number of available CPU threads
-    workers = []
-    # Create worker classes
-    for i in range(num_workers):
-        workers.append(Worker(i,a_size,trainer,model_path,global_episodes))
-    saver = tf.train.Saver(max_to_keep=5)
-
-with tf.Session() as sess:
-    coord = tf.train.Coordinator()
-    if load_model == True:
-        print ('Loading Model...')
-        ckpt = tf.train.get_checkpoint_state(model_path)
-        saver.restore(sess,ckpt.model_checkpoint_path)
-    else:
-        sess.run(tf.global_variables_initializer())
+    if not os.path.exists(model_path):
+        os.makedirs(model_path)
         
-    # This is where the asynchronous magic happens.
-    # Start the "work" process for each worker in a separate threat.
-    worker_threads = []
-    for worker in workers:
-        worker_work = lambda: worker.work(max_episode_length,gamma,sess,coord,saver)
-        t = threading.Thread(target=(worker_work))
-        t.start()
-        sleep(0.5)
-        worker_threads.append(t)
-    coord.join(worker_threads)
-    print ("Looks like we're done")
+    #Create a directory to save episode playback gifs to
+    if not os.path.exists('./frames'):
+        os.makedirs('./frames')
+
+    with tf.device("/cpu:0"): 
+        global_episodes = tf.Variable(0,dtype=tf.int32,name='global_episodes',trainable=False)
+        trainer = optimizers.Adam(learning_rate=1e-4, clipnorm=3.0)
+        master_network = AC_Network(a_size,'global',None) # Generate global network
+        num_workers = multiprocessing.cpu_count() # Set workers to number of available CPU threads
+        workers = []
+        # Create worker classes
+        for i in range(num_workers):
+            workers.append(Worker(i,a_size,trainer,model_path,global_episodes))
+        saver = tf.train.Saver(max_to_keep=5)
+
+    with tf.Session() as sess:
+        coord = tf.train.Coordinator()
+        if load_model == True:
+            print ('Loading Model...')
+            ckpt = tf.train.get_checkpoint_state(model_path)
+            saver.restore(sess,ckpt.model_checkpoint_path)
+        else:
+            sess.run(tf.global_variables_initializer())
+            
+        # This is where the asynchronous magic happens.
+        # Start the "work" process for each worker in a separate threat.
+        worker_threads = []
+        for worker in workers:
+            worker_work = lambda: worker.work(max_episode_length,gamma,sess,coord,saver)
+            t = threading.Thread(target=(worker_work))
+            t.start()
+            sleep(0.5)
+            worker_threads.append(t)
+        coord.join(worker_threads)
+        print ("Looks like we're done")
