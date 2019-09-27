@@ -106,3 +106,4 @@ venv.bak/
 # mypy
 .mypy_cache/
 *.pyc
+flatland_a3c/.vscode/settings.json
