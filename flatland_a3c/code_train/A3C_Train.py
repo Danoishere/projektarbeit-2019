@@ -380,7 +380,7 @@ def start_train():
 
     with tf.device("/cpu:0"): 
         global_episodes = tf.Variable(0,dtype=tf.int32,name='global_episodes',trainable=False)
-        trainer = optimizers.RMSProp(learning_rate=1e-4, clipnorm=3.0)
+        trainer = optimizers.RMSprop(learning_rate=1e-4, clipnorm=3.0)
         master_network = AC_Network(a_size,'global',None) # Generate global network
         num_workers = multiprocessing.cpu_count() # Set workers to number of available CPU threads
         workers = []
