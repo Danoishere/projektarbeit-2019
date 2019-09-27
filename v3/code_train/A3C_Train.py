@@ -3,7 +3,7 @@
 
 # This iPython notebook includes an implementation of the [A3C algorithm](https://arxiv.org/pdf/1602.01783.pdf).
 # 
-# `tensorboard --logdir=worker_0:'./train_0',worker_1:'./train_1',worker_2:'./train_2',worker_3:'./train_3'`
+# `tensorboard --logdir=worker_0:./train_0',worker_1:./train_1,worker_2:./train_2,worker_3:./train_3`
 #
 #  ##### Enable autocomplete
 
@@ -11,7 +11,6 @@
 import threading
 import multiprocessing
 import numpy as np
-import matplotlib.pyplot as plt
 import tensorflow as tf
 import tensorflow.contrib.slim as slim
 import scipy.signal
@@ -26,7 +25,10 @@ from time import time
 from observation import RawObservation
 from rail_env_wrapper import Rail_Env_Wrapper
 
+import argparse
 import constants
+
+
 
 # ### Helper Functions
 
@@ -233,7 +235,7 @@ class Worker():
                         a = np.random.choice([0,1,2,3,4], p = a_dist[i])
                         actions[i] = a
 
-                    next_obs, done, rewards = self.rail_env_wrapper.step(actions)
+                    next_obs, rewards, done = self.rail_env_wrapper.step(actions)
 
                     # Is episode finished?
                     episode_done = done['__all__']

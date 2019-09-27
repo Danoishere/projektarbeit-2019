@@ -26,15 +26,13 @@ def run_attempt(obs, model, env, max_attempt_length):
                 actions[i] = a
 
             action_list.append(actions)
-            next_obs, rewards, done, _ = env_copy.step(actions)
-            next_obs = reshape_obs(next_obs)
+            next_obs, rewards, done = env_copy.step(actions)
             num_of_done_agents = modify_reward(env_copy, rewards, done, done_last_step, num_of_done_agents, dist)
 
             for i in range(env.num_agents):
                 if not done_last_step[i]:
                     attempt_reward += rewards[i]
 
-            # Is episode finished?
             episode_done = done['__all__']
 
             attempt_step_count += 1
@@ -49,28 +47,6 @@ def run_attempt(obs, model, env, max_attempt_length):
 
         return episode_done, attempt_reward, action_list, attempt_step_count
 
-def reshape_obs(agent_observations):
-    import numpy as np
-    map_obs = []
-    vec_obs = []
-    grid_obs = []
-    num_agents = len(agent_observations)
-
-    for i in range(num_agents):
-        agent_obs = agent_observations[i]
-        map_obs.append(agent_obs[0])
-        grid_obs.append(agent_obs[1])
-        vec_obs.append(agent_obs[2])
-        
-    map_obs = np.asarray(map_obs).astype(np.float32)
-    map_obs = np.reshape(map_obs,(num_agents, map_state_size[0],map_state_size[1],map_state_size[2]))
-
-    grid_obs = np.asarray(grid_obs).astype(np.float32)
-    grid_obs = np.reshape(grid_obs,(num_agents, grid_state_size[0],grid_state_size[1],grid_state_size[2],1))
-
-    vec_obs = np.asarray(vec_obs).astype(np.float32)
-    return [map_obs, grid_obs, vec_obs]
-
 def modify_reward(env, rewards, done, done_last_step, num_of_done_agents, shortest_dist):
     for i in range(env.num_agents):
         if not done_last_step[i] and done[i]:
@@ -84,7 +60,7 @@ def modify_reward(env, rewards, done, done_last_step, num_of_done_agents, shorte
 
     
     for i in range(env.num_agents):
-        agent = env.agents[i]
+        agent = env.env.agents[i]
         path_to_target = agent.path_to_target
         current_path_length = len(path_to_target)
         shortest_path_length = shortest_dist[i]

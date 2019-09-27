@@ -9,12 +9,12 @@ class Rail_Env_Wrapper():
     initial_step_penalty = -2
     global_reward = 10
 
-    def __init__(self, width=14, height=14, num_agents=1):
+    def __init__(self, width=14, height=14, num_agents=2):
         self.num_agents = num_agents
         self.rail_gen = complex_rail_generator(
             nr_start_goal=3,
             nr_extra=3,
-            min_dist=15,
+            min_dist=10,
             seed=random.randint(0,100000)
         )
         self.done_last_step = {}
@@ -28,14 +28,18 @@ class Rail_Env_Wrapper():
         next_obs, rewards, done, _ = self.env.step(actions)
         self.num_of_done_agents = self.modify_reward(rewards, done, self.done_last_step, self.num_of_done_agents, self.dist)
         self.done_last_step = done
-        return next_obs ,done, rewards
+        return next_obs, rewards, done
     
     
     def reset(self):
         for i in range(self.num_agents):
             self.done_last_step[i] = False
             self.dist[i] = 100
+            
         obs = self.env.reset()
+        while obs[0].shape[0] == 0:
+            obs = self.env.reset()
+
         self.env.step_penalty = self.initial_step_penalty
         self.episode_step_count = 0
         return obs
@@ -69,9 +73,7 @@ class Rail_Env_Wrapper():
     
         return num_of_done_agents
 
-    def generate_env(self,
-                    width,
-                    height):
+    def generate_env(self, width, height):
         self.env = RailEnv(
             width, 
             height, 
@@ -79,6 +81,7 @@ class Rail_Env_Wrapper():
             schedule_generator = complex_schedule_generator(),
             number_of_agents=self.num_agents,
             obs_builder_object=RawObservation([11,11]))
+
         self.env.global_reward = self.global_reward
         self.env.num_agents = self.num_agents
         self.env.step_penalty = -2
