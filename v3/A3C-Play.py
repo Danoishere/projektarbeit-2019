@@ -15,18 +15,16 @@
 
 
 import json
-import multiprocessing
-from pathos.multiprocessing import ProcessPool
 import threading
-from copy import deepcopy
+from multiprocessing import cpu_count
+from multiprocessing.queues import JoinableQueue
 from random import choice
 from time import sleep, time
 
 import matplotlib.pyplot as plt
+import multiprocess
 import numpy as np
 import scipy.signal
-import tensorflow as tf
-import tensorflow.contrib.slim as slim
 from flatland.core.grid.grid4_astar import a_star
 from flatland.envs.observations import (GlobalObsForRailEnv,
                                         LocalObsForRailEnv, TreeObsForRailEnv)
@@ -34,6 +32,7 @@ from flatland.envs.rail_env import RailEnv
 from flatland.envs.rail_generators import complex_rail_generator
 from flatland.envs.schedule_generators import complex_schedule_generator
 from flatland.utils.rendertools import RenderTool
+from multiprocess import JoinableQueue, Manager, Process, Queue
 from tensorflow.keras import layers, models, optimizers
 
 from helper import *
@@ -73,6 +72,7 @@ def modify_reward(env, rewards, done, done_last_step, num_of_done_agents, shorte
     return num_of_done_agents
 
 def reshape_obs(agent_observations):
+    import numpy as np
     map_obs = []
     vec_obs = []
     grid_obs = []
@@ -98,14 +98,55 @@ def reshape_obs(agent_observations):
 
 # In[22]:
 
+class Consumer(multiprocess.Process):
+    def __init__(self, task_queue, result_queue, model_path):
+        print('Created')
+        multiprocess.Process.__init__(self)
+        self.task_queue = task_queue
+        self.result_queue = result_queue
+        self.model_path = model_path
+
+        
+
+    def run(self):
+        from tensorflow.keras import layers, models, optimizers
+        import MCRunner as mc
+        import numpy as np
+
+        self.model = models.load_model(self.model_path + '/' +'model-400.h5')
+        self.np = np
+
+        print('Waitin')
+        proc_name = self.name
+        while True:
+            next_task = self.task_queue.get()
+            if next_task is None:
+                # Poison pill means shutdown
+                print('{}: Exiting'.format(proc_name))
+                self.task_queue.task_done()
+                break
+
+            obs = next_task[0]
+            env = next_task[1]
+            max_attempt_length = next_task[2]
+
+            result = mc.run_attempt(obs, self.model, env, max_attempt_length)
+
+            self.task_queue.task_done()
+            self.result_queue.put(result)
+
+
 
 class Player():
-    def __init__(self, model):
+    def __init__(self, model, tasks, results):
         self.name = "player"    
         self.episode_rewards = []
         self.episode_lengths = []
         self.episode_success = []
         self.episode_mean_values = []
+
+        self.tasks = tasks
+        self.results = results
 
         #Create the local copy of the network and the tensorflow op to copy global paramters to local network
         self.model = model
@@ -132,14 +173,6 @@ class Player():
 
         self.renderer = RenderTool(self.env)
         self.actions = [0,1,2,3,4]
-
-
-    def copy_env(self, env, num=1):
-        #env_str = json.dumps(env)
-        if num == 1:
-            return deepcopy(env) # json.loads(env_str)   
-        else:
-            return [ deepcopy(env) for x in range(num)]
                  
     
     def play(self,max_episode_length):
@@ -167,9 +200,15 @@ class Player():
                 rewards = []
                 action_lists = []
                 for i in range(mc_sim_num):
-                    d = run_attempt(obs, self.env, mc_sim_steps)
-                    action_lists.append(d[2])
-                    rewards.append(d[1])
+                    self.tasks.put((obs, self.env, mc_sim_steps))
+                
+                attempt_results = []
+                while len(attempt_results) != mc_sim_num:
+                    attempt_results.append(self.results.get())
+
+                for r in attempt_results:
+                    action_lists.append(r[2])
+                    rewards.append(r[1])
 
                 best_action_idx = np.argmax(rewards)
                 best_action = action_lists[best_action_idx]
@@ -178,7 +217,7 @@ class Player():
                 steps = 0
                 
                 for actions in best_action[:mc_max_rollout]:
-                    sleep(0.3)
+                    sleep(0.2)
                     self.renderer.render_env(show=True, frames=False, show_observations=False)
                     obs, rewards, done, _ = self.env.step(actions)
                     obs = reshape_obs(obs)
@@ -186,6 +225,7 @@ class Player():
                     episode_done = done['__all__']
                     episode_steps_count += 1
 
+                    # Stuck detection
                     agents_state = tuple([i.position for i in self.env.agents])
                     if agents_state in pos.keys():
                         pos[agents_state] += 1
@@ -200,7 +240,6 @@ class Player():
                             print('Stuck. Abort simulation')
                             break
 
-                    
                     if is_stuck:
                         break
 
@@ -209,56 +248,12 @@ class Player():
 
             episode_count += 1
             print('Episode', episode_count,', finished=', episode_done, 'of',self.name,'with', episode_steps_count ,'steps, reward of',episode_reward)
-
-def run_attempt(obs, env, max_attempt_length):
-    action_list = []
-    attempt_step_count = 0
-    attempt_reward = 0
-    num_of_done_agents = 0
-    episode_done = False
-    env_copy = deepcopy(env)
-
-    done_last_step = {i: False for i in range(env.num_agents)}                
-    dist = {i: 100 for i in range(env.num_agents)}
-    
-    while not episode_done and attempt_step_count < max_attempt_length:
-        #Take an action using probabilities from policy network output.
-        predcition = model.predict([obs[0],obs[1],obs[2]])
-        actions = {}
-        for i in range(env_copy.num_agents):
-            a_dist = predcition[0][i]
-            a = np.random.choice([0,1,2,3,4], p = a_dist)
-            actions[i] = a
-
-        action_list.append(actions)
-        next_obs, rewards, done, _ = env_copy.step(actions)
-        next_obs = reshape_obs(next_obs)
-        num_of_done_agents = modify_reward(env_copy, rewards, done, done_last_step, num_of_done_agents, dist)
-
-        for i in range(env.num_agents):
-            if not done_last_step[i]:
-                attempt_reward += rewards[i]
-
-        # Is episode finished?
-        episode_done = done['__all__']
-
-        attempt_step_count += 1
-        done_last_step = done
-        obs = next_obs
-        
-    if not episode_done:
-        # Bootstrap with value-function for remaining reward
-        for i in range(env.num_agents):
-            if not done_last_step[i]:
-                attempt_reward += rewards[i] + predcition[1][i]
-
-    return episode_done, attempt_reward, action_list, attempt_step_count
     
 # In[23]:
 
 max_episode_length = 80
-mc_sim_num = 6
-mc_sim_steps = 20
+mc_sim_num = 8
+mc_sim_steps = 25
 mc_max_rollout = 6
 
 # Observation sizes
@@ -271,11 +266,22 @@ a_size = 5 # Agent can move Left, Right, or Fire
 
 load_model = True
 model_path = './model'
+processes = []
 
 
-# In[24]:
+
 if __name__ == "__main__":
+    m = Manager()
+    tasks = m.JoinableQueue()
+    results = m.Queue()
+    for ncpu in range(cpu_count()):
+        consumer = Consumer(tasks, results, model_path)
+        processes.append(consumer)
+        consumer.start()
+
+    multiprocess.freeze_support()
     model = models.load_model(model_path + '/' +'model-400.h5')
-    player = Player(model)
+
+    player = Player(model, tasks, results)
     player.play(max_episode_length)
     print ("Looks like we're done")
