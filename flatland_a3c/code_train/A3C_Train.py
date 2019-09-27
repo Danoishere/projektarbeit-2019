@@ -112,12 +112,12 @@ class AC_Network():
                 self.responsible_outputs = tf.reduce_sum(self.policy * self.actions_onehot, [1])
 
                 #Loss functions
-                self.value_loss = tf.reduce_mean(tf.square(self.target_v - tf.reshape(self.value,[-1])))
+                self.value_loss = tf.reduce_sum(tf.square(self.target_v - tf.reshape(self.value,[-1])))
                 self.entropy = - tf.reduce_sum(self.policy * tf.math.log(self.policy))
                 # self.policy_loss = -tf.reduce_sum(tf.math.log(self.responsible_outputs)*self.advantages)
                 # Attempt to reduce policy loss by using mean instead of sum
                 self.policy_loss = -tf.reduce_sum(tf.math.log(self.responsible_outputs)*self.advantages)
-                self.loss = 0.5 * self.value_loss + self.policy_loss - self.entropy * 0.02
+                self.loss = 0.1 * self.value_loss + self.policy_loss - self.entropy * 0.01
 
                 #Get gradients from local network using local losses
                 local_vars = tf.compat.v1.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope)
@@ -369,9 +369,6 @@ vector_state_size = 5
 a_size = 5 # Agent can move Left, Right, or Fire
 load_model = False
 model_path = './model'
-
-
-# In[24]:
 
 def start_train():
     tf.reset_default_graph()
