@@ -11,6 +11,7 @@ from flatland.core.env_observation_builder import ObservationBuilder
 from flatland.core.grid.grid4_astar import a_star
 from flatland.core.transition_map import GridTransitionMap
 from numpy.core.umath import divide
+import constants
 import math
 
 class RawObservation(ObservationBuilder):
@@ -117,7 +118,7 @@ class RawObservation(ObservationBuilder):
             agent.path_to_target = path
 
         self.path_priority_map = np.zeros(self.env.rail.grid.shape)
-        return super().get_many(handles=handles)
+        return self.reshape_obs(super().get_many(handles=handles))
 
     def get(self, handle=0):
         """
@@ -232,8 +233,6 @@ class RawObservation(ObservationBuilder):
 
         action_map = self.tuples_to_grid(agent_action_on_cellexit)
         layer_agent_action = self.to_obs_space(action_map)
-
-
         layer_grid_map = self.to_obs_space(grid_map)
 
         observation_maps = np.array([
@@ -322,15 +321,26 @@ class RawObservation(ObservationBuilder):
 
         return obs_grid
 
-    def path_to_obs(size_, offset, pos, path, path_to_target_):
-        for point in path:
-            p = np.array(list(point)) - pos + offset
-            if p[0] >= 0 and p[0] < size_[0] and p[1] >= 0 and p[1] < size_[1]:
-                p = p.astype(np.int)
-                path_to_target_[p[0],p[1]] = 1
-
-        path_to_target_ = path_to_target_.astype(np.float32)
-        return path_to_target_
-
     def convert_dir(self, direction):
         return float(direction + 1)/10.0
+
+    def reshape_obs(self, agent_observations):
+        map_obs = []
+        vec_obs = []
+        grid_obs = []
+        num_agents = len(agent_observations)
+
+        for i in range(num_agents):
+            agent_obs = agent_observations[i]
+            map_obs.append(agent_obs[0])
+            grid_obs.append(agent_obs[1])
+            vec_obs.append(agent_obs[2])
+        
+        map_obs = np.asarray(map_obs)
+        map_obs = np.reshape(map_obs,(num_agents, constants.map_state_size[0], constants.map_state_size[1], constants.map_state_size[2]))
+
+        grid_obs = np.asarray(grid_obs)
+        grid_obs = np.reshape(grid_obs,(num_agents, constants.grid_state_size[0], constants.grid_state_size[1], constants.grid_state_size[2],1))
+
+        vec_obs = np.asarray(vec_obs)
+        return [map_obs, grid_obs, vec_obs]
