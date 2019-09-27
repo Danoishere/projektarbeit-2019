@@ -414,3 +414,6 @@ def start_train():
             worker_threads.append(t)
         coord.join(worker_threads)
         print ("Looks like we're done")
+
+if __name__ == "__main__":
+    start_train()
