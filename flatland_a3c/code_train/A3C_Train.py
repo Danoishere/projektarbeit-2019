@@ -112,18 +112,16 @@ class AC_Network():
                 self.responsible_outputs = tf.reduce_sum(self.policy * self.actions_onehot, [1])
 
                 #Loss functions
-                self.value_loss = tf.reduce_sum(tf.square(self.target_v - tf.reshape(self.value,[-1])))
+                self.value_loss = 0.5 * tf.reduce_sum(tf.square(self.target_v - tf.reshape(self.value,[-1])))
                 self.entropy = - tf.reduce_sum(self.policy * tf.math.log(self.policy))
-                # self.policy_loss = -tf.reduce_sum(tf.math.log(self.responsible_outputs)*self.advantages)
-                # Attempt to reduce policy loss by using mean instead of sum
                 self.policy_loss = -tf.reduce_sum(tf.math.log(self.responsible_outputs)*self.advantages)
-                self.loss = 0.1 * self.value_loss + self.policy_loss - self.entropy * 0.01
+                self.loss = self.value_loss + self.policy_loss - self.entropy * 0.01
 
                 #Get gradients from local network using local losses
                 local_vars = tf.compat.v1.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope)
                 self.gradients = tf.gradients(self.loss,local_vars)
                 self.var_norms = tf.global_norm(local_vars)
-                grads, self.grad_norms = tf.clip_by_global_norm(self.gradients,40.0)
+                grads, self.grad_norms = tf.cl(self.gradients,40.0)
                 
                 #Apply local gradients to global network
                 global_vars = tf.compat.v1.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, 'global')
@@ -382,7 +380,7 @@ def start_train():
 
     with tf.device("/cpu:0"): 
         global_episodes = tf.Variable(0,dtype=tf.int32,name='global_episodes',trainable=False)
-        trainer = optimizers.Adam(learning_rate=1e-4, clipnorm=3.0)
+        trainer = optimizers.RMSProp(learning_rate=1e-4, clipnorm=3.0)
         master_network = AC_Network(a_size,'global',None) # Generate global network
         num_workers = multiprocessing.cpu_count() # Set workers to number of available CPU threads
         workers = []
