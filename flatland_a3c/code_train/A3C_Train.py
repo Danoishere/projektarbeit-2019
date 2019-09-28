@@ -114,18 +114,19 @@ class AC_Network():
                 #Loss functions
                 self.value_loss = 0.5 * tf.reduce_sum(tf.square(self.target_v - tf.reshape(self.value,[-1])))
                 self.entropy = - tf.reduce_sum(self.policy * tf.math.log(self.policy))
+                self.entropy_avg = - tf.reduce_mean(self.policy * tf.math.log(self.policy))
                 self.policy_loss = -tf.reduce_sum(tf.math.log(self.responsible_outputs)*self.advantages)
-                self.loss = self.value_loss + self.policy_loss - self.entropy * 0.01
+                self.loss = self.value_loss + self.policy_loss - self.entropy * 0.04
 
                 #Get gradients from local network using local losses
                 local_vars = tf.compat.v1.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope)
                 self.gradients = tf.gradients(self.loss,local_vars)
                 self.var_norms = tf.global_norm(local_vars)
-                grads, self.grad_norms = tf.clip_by_global_norm(self.gradients,40.0)
+                grads, self.grad_norms = tf.clip_by_global_norm(self.gradients, 20.0)
                 
                 #Apply local gradients to global network
                 global_vars = tf.compat.v1.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, 'global')
-                self.apply_grads = trainer.apply_gradients(zip(grads,global_vars))
+                self.apply_grads = trainer.apply_gradients(zip(self.gradients,global_vars))
 
 
 class Worker():
@@ -152,39 +153,62 @@ class Worker():
     def train(self, rollout, sess, gamma, bootstrap_value):
         ''' Gradient decent for a single agent'''
 
-        observations_map = np.asarray([row[0][0] for row in rollout])
-        observations_grid = np.asarray([row[0][1] for row in rollout])
-        observations_vector = np.asarray([row[0][2] for row in rollout])
+        all_rollouts = []
+        all_observations_map = []
+        all_observations_grid = []
+        all_observations_vector = []
+        all_advantages = []
+        all_discounted_rewards = []
+        all_actions = []
 
-        actions = np.asarray([row[1] for row in rollout]) # rollout[:,1]
-        rewards = np.asarray([row[2] for row in rollout]) # rollout[:,2]
-        values = np.asarray([row[5] for row in rollout]) # rollout[:,5]
-        
-        # Here we take the rewards and values from the rollout, and use them to 
-        # generate the advantage and discounted returns. 
-        # The advantage function uses "Generalized Advantage Estimation"
-        self.rewards_plus = np.asarray(np.append(rewards, bootstrap_value))
-        discounted_rewards = discount(self.rewards_plus,gamma)[:-1]
-        self.value_plus = np.asarray(np.append(values,bootstrap_value))
-        advantages = rewards + gamma * self.value_plus[1:] - self.value_plus[:-1]
-        #advantages = rewards + gamma * self.value_plus - self.value_plus
-        advantages = discount(advantages, gamma)
+        for i in range(self.rail_env_wrapper.num_agents):
+            observations_map = np.asarray([row[0][0] for row in rollout[i]])
+            observations_grid = np.asarray([row[0][1] for row in rollout[i]])
+            observations_vector = np.asarray([row[0][2] for row in rollout[i]])
+
+            actions = np.asarray([row[1] for row in rollout[i]])
+            rewards = np.asarray([row[2] for row in rollout[i]])
+            values = np.asarray([row[5] for row in rollout[i]])
+            
+            # Here we take the rewards and values from the rollout, and use them to 
+            # generate the advantage and discounted returns. 
+            # The advantage function uses "Generalized Advantage Estimation"
+            self.rewards_plus = np.asarray(np.append(rewards, bootstrap_value[i]))
+            discounted_rewards = discount(self.rewards_plus, gamma)[:-1]
+            self.value_plus = np.asarray(np.append(values, bootstrap_value[i]))
+            advantages = rewards + gamma * self.value_plus[1:] - self.value_plus[:-1]
+            advantages = discount(advantages, gamma)
+
+            all_observations_map.append(observations_map)
+            all_observations_grid.append(observations_grid)
+            all_observations_vector.append(observations_vector)
+            all_advantages.append(advantages)
+            all_discounted_rewards.append(discounted_rewards)
+            all_actions.append(actions)
+
+        all_observations_map = np.vstack(all_observations_map)
+        all_observations_grid = np.vstack(all_observations_grid)
+        all_observations_vector = np.vstack(all_observations_vector)
+
+        all_advantages = np.concatenate(all_advantages)
+        all_discounted_rewards = np.concatenate(all_discounted_rewards)
+        all_actions = np.concatenate(all_actions)
 
         # Update the global network using gradients from loss
         # Generate network statistics to periodically save
         feed_dict = {
-            self.local_AC.target_v : discounted_rewards,
-            self.local_AC.input_map : observations_map,
-            self.local_AC.input_grid: observations_grid,
-            self.local_AC.input_vector : observations_vector,
-            self.local_AC.actions : actions,
-            self.local_AC.advantages : advantages
+            self.local_AC.input_map : all_observations_map,
+            self.local_AC.input_grid: all_observations_grid,
+            self.local_AC.input_vector : all_observations_vector,
+            self.local_AC.target_v : all_discounted_rewards,
+            self.local_AC.actions : all_actions,
+            self.local_AC.advantages : all_advantages
         }
         
         v_l,p_l,e_l,g_n,v_n,_ = sess.run([
             self.local_AC.value_loss,
             self.local_AC.policy_loss,
-            self.local_AC.entropy,
+            self.local_AC.entropy_avg,
             self.local_AC.grad_norms,
             self.local_AC.var_norms,
             self.local_AC.apply_grads],
@@ -200,7 +224,6 @@ class Worker():
         with sess.as_default(), sess.graph.as_default():                 
             while not coord.should_stop():
                 sess.run(self.update_local_ops)
-                
                 episode_done = False
                 episode_buffers = [[] for i in range(self.rail_env_wrapper.num_agents)]
                 done_last_step = {i:False for i in range(self.rail_env_wrapper.num_agents)}
@@ -260,67 +283,41 @@ class Worker():
                     episode_step_count += 1
                     done_last_step = dict(done)
 
-                    # If the episode hasn't ended, but the experience buffer is full, then we
-                    # make an update step using that experience rollout.
-                    if len(episode_buffers[0]) == 25 and not episode_done and episode_step_count != max_episode_length - 1:
-                        # Since we don't know what the true final return is, we "bootstrap" from our current
-                        # value estimation.
-                        #for i in range(self.env.num_agents):
-
-                        v1 = sess.run(self.local_AC.value, 
-                            feed_dict={
-                                self.local_AC.input_map : obs[0],
-                                self.local_AC.input_grid: obs[1],
-                                self.local_AC.input_vector : obs[2]
-                            })
-
-
-                        info = np.zeros((self.rail_env_wrapper.num_agents,5))
-                        for i in range(self.rail_env_wrapper.num_agents):
-                            if len(episode_buffers[i]) > 0:
-                                v_l,p_l,e_l,g_n,v_n = self.train(
-                                    episode_buffers[i], 
-                                    sess,
-                                    gamma,
-                                    v1[i,0])
-                                    
-                                info[i,0] = v_l
-                                info[i,1] = p_l
-                                info[i,2] = e_l
-                                info[i,3] = g_n
-                                info[i,4] = v_n
-
-                                episode_buffers[i] = []
-                        sess.run(self.update_local_ops)
-                    if episode_done == True:
-                        break
-                                            
                 self.episode_rewards.append(episode_reward)
                 self.episode_lengths.append(episode_step_count)
                 self.episode_mean_values.append(np.mean(episode_values))
                 self.episode_success.append(episode_done)
+
+                # Bootstrap values using last state
+                v_last = sess.run(self.local_AC.value, 
+                                feed_dict={
+                                    self.local_AC.input_map : obs[0],
+                                    self.local_AC.input_grid: obs[1],
+                                    self.local_AC.input_vector : obs[2]
+                                })
+
+                # Boostrap if episode not finished
+                info = np.zeros(5)
+                last_rewards = np.zeros(self.rail_env_wrapper.num_agents)
+                for i in range(self.rail_env_wrapper.num_agents):
+                    if not done[i]:
+                        last_rewards[i] = v_last[i]
+                    else:
+                        last_rewards[i] = 0
                 
                 # Update the network using the episode buffer at the end of the episode.
-                # if episode_done:
-                info = np.zeros((self.rail_env_wrapper.num_agents,5))
-                # i in range(self.rail_env_wrapper.num_agents):
-                all_episode_buffers = []
-                for i in range(self.rail_env_wrapper.num_agents):
-                    all_episode_buffers += episode_buffers[i]
-                    if len(all_episode_buffers) != 0:
-                        v_l,p_l,e_l,g_n,v_n = self.train(
-                            all_episode_buffers,
-                            sess,
-                            gamma,
-                            0.0)
-                        
-                        info[:,0] = v_l
-                        info[:,1] = p_l
-                        info[:,2] = e_l
-                        info[:,3] = g_n
-                        info[:,4] = v_n
-                        
+                v_l,p_l,e_l,g_n,v_n = self.train(
+                    episode_buffers, 
+                    sess,
+                    gamma,
+                    last_rewards)
                     
+                info[0] = v_l
+                info[1] = p_l
+                info[2] = e_l
+                info[3] = g_n
+                info[4] = v_n
+                        
                 # Periodically save gifs of episodes, model parameters, and summary statistics.
                 if episode_count % 5 == 0 and episode_count != 0:
                     if self.name == 'worker_0' and episode_count % 25 == 0:
@@ -344,22 +341,21 @@ class Worker():
                     summary.value.add(tag='Perf/Length', simple_value=float(mean_length))
                     summary.value.add(tag='Perf/Value', simple_value=float(mean_value))
                     summary.value.add(tag='Perf/Successrate/100 episodes', simple_value=float(mean_success_rate))
-
-                    summary.value.add(tag='Losses/Value Loss', simple_value=float(np.mean(info[:,0])))
-                    summary.value.add(tag='Losses/Policy Loss', simple_value=float(np.mean(info[:,1])))
-                    summary.value.add(tag='Losses/Entropy', simple_value=float(np.mean(info[:,2])))
-                    summary.value.add(tag='Losses/Grad Norm', simple_value=float(np.mean(info[:,3])))
-                    summary.value.add(tag='Losses/Var Norm', simple_value=float(np.mean(info[:,4])))
+                    summary.value.add(tag='Losses/Value Loss', simple_value=float(np.mean(info[0])))
+                    summary.value.add(tag='Losses/Policy Loss', simple_value=float(np.mean(info[1])))
+                    summary.value.add(tag='Losses/Entropy', simple_value=float(np.mean(info[2])))
+                    summary.value.add(tag='Losses/Grad Norm', simple_value=float(np.mean(info[3])))
+                    summary.value.add(tag='Losses/Var Norm', simple_value=float(np.mean(info[4])))
                     self.summary_writer.add_summary(summary, episode_count)
                     self.summary_writer.flush()
+                
                 if self.name == 'worker_0':
                     sess.run(self.increment)
                 episode_count += 1
-                print('Episode', episode_count,'of',self.name,'with',episode_step_count,'steps, reward of',episode_reward, ', mean entropy of', np.mean(info[:,2]))
+                print('Episode', episode_count,'of',self.name,'with',episode_step_count,'steps, reward of',episode_reward, ', mean entropy of', np.mean(info[2]))
 
-# In[23]:
 
-max_episode_length = 80
+max_episode_length = 50
 gamma = 0.98 # discount rate for advantage estimation and reward discounting
 
 map_state_size = (11,11,9) #  Observations are 21*21 with five channels
@@ -367,7 +363,7 @@ grid_state_size = (11,11,16)
 vector_state_size = 5
 
 a_size = 5 # Agent can move Left, Right, or Fire
-load_model = True
+load_model = False
 model_path = './model'
 
 def start_train():
@@ -382,7 +378,7 @@ def start_train():
 
     with tf.device("/cpu:0"): 
         global_episodes = tf.Variable(0,dtype=tf.int32,name='global_episodes',trainable=False)
-        trainer = optimizers.RMSprop(learning_rate=1e-4,clipnorm=10.0)
+        trainer = optimizers.RMSprop(learning_rate=1e-4, clipnorm=10.0)
         master_network = AC_Network(a_size,'global',None) # Generate global network
         num_workers = multiprocessing.cpu_count() # Set workers to number of available CPU threads
         workers = []
