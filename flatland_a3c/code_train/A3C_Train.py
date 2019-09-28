@@ -4,7 +4,7 @@
 # This iPython notebook includes an implementation of the [A3C algorithm](https://arxiv.org/pdf/1602.01783.pdf).
 # 
 # `tensorboard --logdir=worker_0:./train_0',worker_1:./train_1,worker_2:./train_2,worker_3:./train_3`
-#
+# `tensorboard --logdir=worker_0:./train_0',worker_1:./train_1,worker_2:./train_2,worker_3:./train_3worker_4:./train_4',worker_5:./train_5,worker_6:./train_6,worker_7:./train_7`
 #  ##### Enable autocomplete
 
 
@@ -291,7 +291,7 @@ class Worker():
                                 info[i,4] = v_n
 
                                 episode_buffers[i] = []
-                                sess.run(self.update_local_ops)
+                        sess.run(self.update_local_ops)
                     if episode_done == True:
                         break
                                             
@@ -301,22 +301,24 @@ class Worker():
                 self.episode_success.append(episode_done)
                 
                 # Update the network using the episode buffer at the end of the episode.
-                if episode_done:
-                    info = np.zeros((self.rail_env_wrapper.num_agents,5))
-                    for i in range(self.rail_env_wrapper.num_agents):
-                        if len(episode_buffers[i]) != 0:
-                            v_l,p_l,e_l,g_n,v_n = self.train(
-                                episode_buffers[i],
-                                sess,
-                                gamma,
-                                0.0)
-                            
-                            info[i,0] = v_l
-                            info[i,1] = p_l
-                            info[i,2] = e_l
-                            info[i,3] = g_n
-                            info[i,4] = v_n
-                            sess.run(self.update_local_ops)
+                # if episode_done:
+                info = np.zeros((self.rail_env_wrapper.num_agents,5))
+                # i in range(self.rail_env_wrapper.num_agents):
+                all_episode_buffers = []
+                for i in range(self.rail_env_wrapper.num_agents):
+                    all_episode_buffers += episode_buffers[i]
+                    if len(all_episode_buffers) != 0:
+                        v_l,p_l,e_l,g_n,v_n = self.train(
+                            all_episode_buffers,
+                            sess,
+                            gamma,
+                            0.0)
+                        
+                        info[:,0] = v_l
+                        info[:,1] = p_l
+                        info[:,2] = e_l
+                        info[:,3] = g_n
+                        info[:,4] = v_n
                         
                     
                 # Periodically save gifs of episodes, model parameters, and summary statistics.
@@ -365,7 +367,7 @@ grid_state_size = (11,11,16)
 vector_state_size = 5
 
 a_size = 5 # Agent can move Left, Right, or Fire
-load_model = False
+load_model = True
 model_path = './model'
 
 def start_train():
