@@ -296,7 +296,7 @@ class CombinedObservation(ObservationBuilder):
         observations = {}
         for h in handles:
             observations[h] = self.get(h)
-            
+
         return self.reshape_obs(super().get_many(handles=handles))
 
     def get(self, handle=0):
@@ -620,7 +620,7 @@ class CombinedObservation(ObservationBuilder):
             map_obs.append(agent_obs[0])
             grid_obs.append(agent_obs[1])
             vec_obs.append(agent_obs[2])
-            tree_obs.append(agent_obs[2])
+            tree_obs.append(agent_obs[3])
         
         map_obs = np.asarray(map_obs)
         map_obs = np.reshape(map_obs,(num_agents, constants.map_state_size[0], constants.map_state_size[1], constants.map_state_size[2]))
@@ -629,6 +629,9 @@ class CombinedObservation(ObservationBuilder):
         grid_obs = np.reshape(grid_obs,(num_agents, constants.grid_state_size[0], constants.grid_state_size[1], constants.grid_state_size[2],1))
 
         vec_obs = np.asarray(vec_obs)
+        tree_obs = np.asarray(tree_obs)
+        tree_obs[tree_obs ==  np.inf] = 0.25
+        tree_obs[tree_obs ==  -np.inf] = 0.5
         return [map_obs, grid_obs, vec_obs, tree_obs]
 
     def _num_cells_to_fill_in(self, remaining_depth):

@@ -74,23 +74,24 @@ class AC_Network():
             def network(input_map,input_grid,input_vector, input_tree):
                 conv_grid = layers.Conv3D(32,(1,1,4),strides=(1,1,4))(input_grid)
                 conv_grid = layers.Flatten()(conv_grid)
-                conv_hidden_grid = layers.Dense(64, activation='relu')(conv_grid)
+                conv_grid_hidden = layers.Dense(64, activation='relu')(conv_grid)
 
                 conv_map = layers.Conv2D(32,(3,3))(input_map)
                 conv_map = layers.Flatten()(conv_map)
-                conv_hidden_map = layers.Dense(64, activation='relu')(conv_map)
+                conv_map_hidden = layers.Dense(64, activation='relu')(conv_map)
 
-                flattend = layers.Flatten()(input_map)
-                hidden_map = layers.Dense(256, activation='relu')(flattend)
+                flattend_map = layers.Flatten()(input_map)
+                hidden_map = layers.Dense(128, activation='relu')(flattend_map)
 
-                hidden_tree = layers.Dense(128, activation='tanh')(input_tree)
-                hidden_vector = layers.Dense(32, activation='tanh')(input_vector)
+                hidden_tree = layers.BatchNormalization()(input_tree)
+                hidden_tree = layers.Dense(128, activation='relu')(hidden_tree)
+                hidden_vector = layers.Dense(32, activation='relu')(input_vector)
 
-                hidden = layers.concatenate([hidden_map, input_vector, conv_hidden_grid, conv_hidden_map, hidden_tree])
+                hidden = layers.concatenate([hidden_map, hidden_vector, conv_grid_hidden, conv_map_hidden, hidden_tree])
                 hidden = layers.Dense(256, activation='relu')(hidden)
                 hidden = layers.Dropout(0.2)(hidden)
-                hidden = layers.Dense(8, activation='relu')(hidden)
-                return hidden_map
+                hidden = layers.Dense(32, activation='relu')(hidden)
+                return hidden
 
             out_policy = network(self.input_map,self.input_grid,self.input_vector, self.input_tree)
             out_value = network(self.input_map,self.input_grid,self.input_vector, self.input_tree)
@@ -162,7 +163,7 @@ class Worker():
         observations_map = np.asarray([row[0][0] for row in rollout])
         observations_grid = np.asarray([row[0][1] for row in rollout])
         observations_vector = np.asarray([row[0][2] for row in rollout])
-        observations_tree = np.asarray([row[0][2] for row in rollout])
+        observations_tree = np.asarray([row[0][3] for row in rollout])
 
         actions = np.asarray([row[1] for row in rollout]) # rollout[:,1]
         rewards = np.asarray([row[2] for row in rollout]) # rollout[:,2]
@@ -369,7 +370,7 @@ gamma = 0.98 # discount rate for advantage estimation and reward discounting
 map_state_size = (11,11,9) #  Observations are 21*21 with five channels
 grid_state_size = (11,11,16)
 vector_state_size = 5
-tree_state_size = 5
+tree_state_size = 231
 
 a_size = 5 # Agent can move Left, Right, or Fire
 load_model = False
