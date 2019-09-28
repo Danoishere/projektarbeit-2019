@@ -3,7 +3,7 @@ from flatland.envs.rail_env import RailEnv
 from flatland.envs.rail_generators import complex_rail_generator
 from flatland.envs.schedule_generators import complex_schedule_generator
 from helper import *
-from observation import RawObservation
+from observation import CombinedObservation
 
 class Rail_Env_Wrapper():
     initial_step_penalty = -2
@@ -80,7 +80,7 @@ class Rail_Env_Wrapper():
             self.rail_gen,
             schedule_generator = complex_schedule_generator(),
             number_of_agents=self.num_agents,
-            obs_builder_object=RawObservation([11,11]))
+            obs_builder_object=CombinedObservation([11,11],2))
 
         self.env.global_reward = self.global_reward
         self.env.num_agents = self.num_agents

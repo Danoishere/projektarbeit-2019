@@ -27,7 +27,7 @@ from tensorflow.keras import layers, models, optimizers
 
 from rail_env_wrapper import Rail_Env_Wrapper
 from helper import *
-from observation import RawObservation
+from observation import CombinedObservation
 
 class Consumer(multiprocess.Process):
     def __init__(self, name, task_queue, result_queue, model_path):

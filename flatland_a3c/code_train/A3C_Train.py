@@ -22,11 +22,9 @@ from helper import *
 from random import choice
 from time import sleep
 from time import time
-from observation import RawObservation
 from rail_env_wrapper import Rail_Env_Wrapper
 
 import constants
-
 
 
 # ### Helper Functions
@@ -53,41 +51,49 @@ def normalized_columns_initializer(std=1.0):
         return tf.constant(out)
     return _initializer
 
+def max_length_sublist(top_list):
+    max_len = 0
+    for sub_list in top_list:
+        list_len = len(sub_list)
+        if list_len > max_len:
+            max_len = list_len
+
+    return max_len
+
+
+
+
 class AC_Network():
     def __init__(self,a_size,scope,trainer):
         with tf.variable_scope(scope):
             self.input_map =  layers.Input(shape=[map_state_size[0],map_state_size[1],map_state_size[2]],dtype=tf.float32)
             self.input_grid = layers.Input(shape=[grid_state_size[0],grid_state_size[1],grid_state_size[2],1],dtype=tf.float32)
             self.input_vector = layers.Input(shape=[vector_state_size],dtype=tf.float32)
+            self.input_tree = layers.Input(shape=[tree_state_size],dtype=tf.float32)
 
-            def network(input_map,input_grid,input_vector):
-                conv_grid = layers.Conv3D(64,(1,1,4),strides=(1,1,4))(input_grid)
+            def network(input_map,input_grid,input_vector, input_tree):
+                conv_grid = layers.Conv3D(32,(1,1,4),strides=(1,1,4))(input_grid)
                 conv_grid = layers.Flatten()(conv_grid)
+                conv_hidden_grid = layers.Dense(64, activation='relu')(conv_grid)
 
-                conv_hidden_grid = layers.Dropout(0.1)(conv_grid)
-                conv_hidden_grid = layers.Dense(128, activation='relu')(conv_hidden_grid)
-
-                conv_map = layers.Conv2D(64,(3,3))(input_map)
+                conv_map = layers.Conv2D(32,(3,3))(input_map)
                 conv_map = layers.Flatten()(conv_map)
-
-                conv_hidden_map = layers.Dropout(0.1)(conv_map)
-                conv_hidden_map = layers.Dense(128, activation='relu')(conv_hidden_map)
+                conv_hidden_map = layers.Dense(64, activation='relu')(conv_map)
 
                 flattend = layers.Flatten()(input_map)
-                hidden = layers.Dense(256, activation='relu')(flattend)
-                hidden = layers.Dropout(0.1)(hidden)
+                hidden_map = layers.Dense(256, activation='relu')(flattend)
 
-                hidden = layers.concatenate([hidden, input_vector, conv_hidden_grid, conv_hidden_map])
-                hidden = layers.Dropout(0.1)(hidden)
+                hidden_tree = layers.Dense(128, activation='tanh')(input_tree)
+                hidden_vector = layers.Dense(32, activation='tanh')(input_vector)
+
+                hidden = layers.concatenate([hidden_map, input_vector, conv_hidden_grid, conv_hidden_map, hidden_tree])
                 hidden = layers.Dense(256, activation='relu')(hidden)
-                hidden = layers.Dropout(0.1)(hidden)
-                hidden = layers.Dense(64, activation='relu')(hidden)
-                hidden = layers.Dropout(0.1)(hidden)
+                hidden = layers.Dropout(0.2)(hidden)
                 hidden = layers.Dense(8, activation='relu')(hidden)
-                return hidden
+                return hidden_map
 
-            out_policy = network(self.input_map,self.input_grid,self.input_vector)
-            out_value = network(self.input_map,self.input_grid,self.input_vector)
+            out_policy = network(self.input_map,self.input_grid,self.input_vector, self.input_tree)
+            out_value = network(self.input_map,self.input_grid,self.input_vector, self.input_tree)
 
             #Output layers for policy and value estimations
             self.policy = layers.Dense(a_size,activation='softmax')(out_policy)
@@ -97,7 +103,8 @@ class AC_Network():
                 inputs=[
                     self.input_map,
                     self.input_grid,
-                    self.input_vector
+                    self.input_vector,
+                    self.input_tree
                 ],
                 outputs=[
                     self.policy,
@@ -115,17 +122,17 @@ class AC_Network():
                 self.value_loss = 0.5 * tf.reduce_sum(tf.square(self.target_v - tf.reshape(self.value,[-1])))
                 self.entropy = - tf.reduce_sum(self.policy * tf.math.log(self.policy))
                 self.policy_loss = -tf.reduce_sum(tf.math.log(self.responsible_outputs)*self.advantages)
-                self.loss = self.value_loss + self.policy_loss - self.entropy * 0.01
+                self.loss = 0.5 * self.value_loss + self.policy_loss - self.entropy * 0.1
 
                 #Get gradients from local network using local losses
                 local_vars = tf.compat.v1.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope)
                 self.gradients = tf.gradients(self.loss,local_vars)
                 self.var_norms = tf.global_norm(local_vars)
-                grads, self.grad_norms = tf.clip_by_global_norm(self.gradients,40.0)
+                self.grad_norms = tf.global_norm(self.gradients)
                 
                 #Apply local gradients to global network
                 global_vars = tf.compat.v1.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, 'global')
-                self.apply_grads = trainer.apply_gradients(zip(grads,global_vars))
+                self.apply_grads = trainer.apply_gradients(zip(self.gradients, global_vars))
 
 
 class Worker():
@@ -155,6 +162,7 @@ class Worker():
         observations_map = np.asarray([row[0][0] for row in rollout])
         observations_grid = np.asarray([row[0][1] for row in rollout])
         observations_vector = np.asarray([row[0][2] for row in rollout])
+        observations_tree = np.asarray([row[0][2] for row in rollout])
 
         actions = np.asarray([row[1] for row in rollout]) # rollout[:,1]
         rewards = np.asarray([row[2] for row in rollout]) # rollout[:,2]
@@ -167,7 +175,6 @@ class Worker():
         discounted_rewards = discount(self.rewards_plus,gamma)[:-1]
         self.value_plus = np.asarray(np.append(values,bootstrap_value))
         advantages = rewards + gamma * self.value_plus[1:] - self.value_plus[:-1]
-        #advantages = rewards + gamma * self.value_plus - self.value_plus
         advantages = discount(advantages, gamma)
 
         # Update the global network using gradients from loss
@@ -177,6 +184,7 @@ class Worker():
             self.local_AC.input_map : observations_map,
             self.local_AC.input_grid: observations_grid,
             self.local_AC.input_vector : observations_vector,
+            self.local_AC.input_tree : observations_tree,
             self.local_AC.actions : actions,
             self.local_AC.advantages : advantages
         }
@@ -197,6 +205,7 @@ class Worker():
         total_steps = 0
         
         print ("Starting worker " + str(self.number))
+        
         with sess.as_default(), sess.graph.as_default():                 
             while not coord.should_stop():
                 sess.run(self.update_local_ops)
@@ -209,6 +218,7 @@ class Worker():
                 episode_step_count = 0
                 
                 obs = self.rail_env_wrapper.reset()
+                info = np.zeros((self.rail_env_wrapper.num_agents,5))
 
                 for i in range(self.rail_env_wrapper.num_agents):
                     episode_buffers.append([])
@@ -221,7 +231,8 @@ class Worker():
                         feed_dict={
                             self.local_AC.input_map : obs[0],
                             self.local_AC.input_grid: obs[1],
-                            self.local_AC.input_vector : obs[2]
+                            self.local_AC.input_vector : obs[2],
+                            self.local_AC.input_tree : obs[3]
                         })
 
                     actions = {}
@@ -238,7 +249,8 @@ class Worker():
                         next_obs = obs
 
                     for i in range(self.rail_env_wrapper.num_agents):
-                        agent_obs = [obs[0][i],obs[1][i],obs[2][i]]
+                        agent_obs = [obs[0][i],obs[1][i],obs[2][i],obs[3][i]]
+
                         agent_action = actions[i]
                         agent_reward = rewards[i]
                         agent_next_obs = next_obs[i]
@@ -262,7 +274,7 @@ class Worker():
 
                     # If the episode hasn't ended, but the experience buffer is full, then we
                     # make an update step using that experience rollout.
-                    if len(episode_buffers[0]) == 25 and not episode_done and episode_step_count != max_episode_length - 1:
+                    if max_length_sublist(episode_buffers) % 25 == 0 and not episode_done and episode_step_count != max_episode_length - 1:
                         # Since we don't know what the true final return is, we "bootstrap" from our current
                         # value estimation.
                         #for i in range(self.env.num_agents):
@@ -271,11 +283,10 @@ class Worker():
                             feed_dict={
                                 self.local_AC.input_map : obs[0],
                                 self.local_AC.input_grid: obs[1],
-                                self.local_AC.input_vector : obs[2]
+                                self.local_AC.input_vector : obs[2],
+                                self.local_AC.input_tree : obs[3]
                             })
 
-
-                        info = np.zeros((self.rail_env_wrapper.num_agents,5))
                         for i in range(self.rail_env_wrapper.num_agents):
                             if len(episode_buffers[i]) > 0:
                                 v_l,p_l,e_l,g_n,v_n = self.train(
@@ -302,7 +313,6 @@ class Worker():
                 
                 # Update the network using the episode buffer at the end of the episode.
                 if episode_done:
-                    info = np.zeros((self.rail_env_wrapper.num_agents,5))
                     for i in range(self.rail_env_wrapper.num_agents):
                         if len(episode_buffers[i]) != 0:
                             v_l,p_l,e_l,g_n,v_n = self.train(
@@ -318,12 +328,8 @@ class Worker():
                             info[i,4] = v_n
                             sess.run(self.update_local_ops)
                         
-                    
                 # Periodically save gifs of episodes, model parameters, and summary statistics.
                 if episode_count % 5 == 0 and episode_count != 0:
-                    if self.name == 'worker_0' and episode_count % 25 == 0:
-                        ''' TODO: Save Gif of current agents '''
-
                     mean_reward = np.mean(self.episode_rewards[-100:])
                     mean_length = np.mean(self.episode_lengths[-100:])
                     mean_value = np.mean(self.episode_mean_values[-100:])
@@ -357,12 +363,13 @@ class Worker():
 
 # In[23]:
 
-max_episode_length = 80
+max_episode_length = 40
 gamma = 0.98 # discount rate for advantage estimation and reward discounting
 
 map_state_size = (11,11,9) #  Observations are 21*21 with five channels
 grid_state_size = (11,11,16)
 vector_state_size = 5
+tree_state_size = 5
 
 a_size = 5 # Agent can move Left, Right, or Fire
 load_model = False
@@ -380,9 +387,9 @@ def start_train():
 
     with tf.device("/cpu:0"): 
         global_episodes = tf.Variable(0,dtype=tf.int32,name='global_episodes',trainable=False)
-        trainer = optimizers.RMSprop(learning_rate=1e-4,clipnorm=10.0)
-        master_network = AC_Network(a_size,'global',None) # Generate global network
-        num_workers = multiprocessing.cpu_count() # Set workers to number of available CPU threads
+        trainer = optimizers.RMSprop(learning_rate=1e-4, clipnorm=1.0)
+        master_network = AC_Network(a_size,'global',None)
+        num_workers = multiprocessing.cpu_count() 
         workers = []
         # Create worker classes
         for i in range(num_workers):
