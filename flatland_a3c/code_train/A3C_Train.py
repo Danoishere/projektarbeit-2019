@@ -121,15 +121,15 @@ class AC_Network():
 
                 #Loss functions
                 self.value_loss = 0.5 * tf.reduce_sum(tf.square(self.target_v - tf.reshape(self.value,[-1])))
-                self.entropy = - tf.reduce_sum(self.policy * tf.math.log(self.policy))
-                self.policy_loss = -tf.reduce_sum(tf.math.log(self.responsible_outputs)*self.advantages)
+                self.entropy = - tf.reduce_sum(self.policy * tf.math.log(self.policy + 1e-10))
+                self.policy_loss = -tf.reduce_sum(tf.math.log(self.responsible_outputs)*self.advantages  + 1e-10)
                 self.loss = 0.5 * self.value_loss + self.policy_loss - self.entropy * 0.1
 
                 #Get gradients from local network using local losses
                 local_vars = tf.compat.v1.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope)
                 self.gradients = tf.gradients(self.loss,local_vars)
-                self.var_norms = tf.global_norm(local_vars)
-                self.grad_norms = tf.global_norm(self.gradients)
+                self.var_norms = tf.linalg.global_norm(local_vars)
+                self.grad_norms = tf.linalg.global_norm(self.gradients)
                 
                 #Apply local gradients to global network
                 global_vars = tf.compat.v1.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, 'global')
@@ -238,8 +238,14 @@ class Worker():
 
                     actions = {}
                     for i in range(self.rail_env_wrapper.num_agents):
-                        a = np.random.choice([0,1,2,3,4], p = a_dist[i])
-                        actions[i] = a
+                        try:
+                            a = np.random.choice([0,1,2,3,4], p = a_dist[i])
+                            actions[i] = a
+                        except:
+                            import sys
+                            np.set_printoptions(threshold=sys.maxsize)
+                            print('Observations while error:')
+                            print(obs)
 
                     next_obs, rewards, done = self.rail_env_wrapper.step(actions)
 
@@ -388,7 +394,7 @@ def start_train():
 
     with tf.device("/cpu:0"): 
         global_episodes = tf.Variable(0,dtype=tf.int32,name='global_episodes',trainable=False)
-        trainer = optimizers.RMSprop(learning_rate=1e-4, clipnorm=1.0)
+        trainer = optimizers.RMSprop(learning_rate=1e-4, clipnorm=1.0, decay=0.999)
         master_network = AC_Network(a_size,'global',None)
         num_workers = multiprocessing.cpu_count() 
         workers = []

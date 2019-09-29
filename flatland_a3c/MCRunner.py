@@ -18,7 +18,7 @@ def run_attempt(obs, model, env, max_attempt_length):
         
         while not episode_done and attempt_step_count < max_attempt_length:
             #Take an action using probabilities from policy network output.
-            predcition = model.predict([obs[0],obs[1],obs[2]])
+            predcition = model.predict([obs[0],obs[1],obs[2],obs[3]])
             actions = {}
             for i in range(env_copy.num_agents):
                 a_dist = predcition[0][i]
