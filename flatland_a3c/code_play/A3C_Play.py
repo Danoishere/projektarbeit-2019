@@ -30,12 +30,13 @@ from helper import *
 from observation import CombinedObservation
 
 class Consumer(multiprocess.Process):
-    def __init__(self, name, task_queue, result_queue, model_path):
+    def __init__(self, name, task_queue, result_queue, model_path, model_name):
         print('Created')
         multiprocess.Process.__init__(self)
         self.name = name
         self.task_queue = task_queue
         self.result_queue = result_queue
+        self.model_name = model_name
         self.model_path = model_path
 
 
@@ -44,7 +45,7 @@ class Consumer(multiprocess.Process):
         import MCRunner as mc
         import numpy as np
 
-        self.model = models.load_model(self.model_path + '/' +'model-400.h5')
+        self.model = models.load_model(self.model_path + '/' + self.model_name)
         self.np = np
 
         print('Model loaded in ' + self.name)
@@ -163,7 +164,7 @@ class Player():
 
 max_episode_length = 80
 mc_sim_num = 8
-mc_sim_steps = 15
+mc_sim_steps = 8
 mc_max_rollout = 6
 
 # Observation sizes
@@ -176,6 +177,7 @@ a_size = 5 # Agent can move Left, Right, or Fire
 
 load_model = True
 model_path = './model'
+model_name =  'model-1500.h5'
 processes = []
 
 
@@ -184,12 +186,12 @@ def start_play():
     tasks = m.JoinableQueue()
     results = m.Queue()
     for ncpu in range(cpu_count()):
-        consumer = Consumer('runner_' + str(ncpu), tasks, results, model_path)
+        consumer = Consumer('runner_' + str(ncpu), tasks, results, model_path, model_name)
         processes.append(consumer)
         consumer.start()
 
     multiprocess.freeze_support()
-    model = models.load_model(model_path + '/' +'model-400.h5')
+    model = models.load_model(model_path + '/' + model_name)
 
     player = Player(model, tasks, results)
     player.play(max_episode_length)
