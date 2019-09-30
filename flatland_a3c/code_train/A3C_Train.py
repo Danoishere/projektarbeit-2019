@@ -123,13 +123,13 @@ class AC_Network():
                 self.value_loss = 0.5 * tf.reduce_sum(tf.square(self.target_v - tf.reshape(self.value,[-1])))
                 self.entropy = - tf.reduce_sum(self.policy * tf.math.log(self.policy + 1e-10))
                 self.policy_loss = -tf.reduce_sum(tf.math.log(self.responsible_outputs  + 1e-10)*self.advantages)
-                self.loss = 0.5 * self.value_loss + self.policy_loss - self.entropy * 0.1
+                self.loss = 0.5 * self.value_loss + self.policy_loss - self.entropy * 0.05
 
                 #Get gradients from local network using local losses
                 local_vars = tf.compat.v1.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope)
                 self.gradients = tf.gradients(self.loss, local_vars)
                 self.var_norms = tf.linalg.global_norm(local_vars)
-                self.gradients, self.grad_norms = tf.clip_by_global_norm(self.gradients, 10.0)
+                self.gradients, self.grad_norms = tf.clip_by_global_norm(self.gradients, 5.0)
 
                 #Apply local gradients to global network
                 global_vars = tf.compat.v1.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, 'global')
