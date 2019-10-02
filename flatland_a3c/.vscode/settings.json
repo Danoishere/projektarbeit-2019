@@ -1,3 +1,4 @@
 {
-    "python.pythonPath": "C:\\Users\\Dano\\Anaconda3\\envs\\pa-flatland-rl\\python.exe"
+    "python.pythonPath": "C:\\Users\\Dano\\Anaconda3\\envs\\pa-flatland-rl\\python.exe",
+    "python.analysis.downloadChannel": "beta",
 }

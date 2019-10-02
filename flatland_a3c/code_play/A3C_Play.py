@@ -23,11 +23,11 @@ import scipy.signal
 
 from flatland.utils.rendertools import RenderTool
 from multiprocess import JoinableQueue, Manager, Process, Queue
-from tensorflow.python.keras import layers, models, optimizers
+from tensorflow.keras import optimizers
 
 from rail_env_wrapper import RailEnvWrapper
 from helper import *
-from observation import CombinedObservation
+from code_input.observation import CombinedObservation
 
 class Consumer(multiprocess.Process):
     def __init__(self, name, task_queue, result_queue, model_path, model_name):
