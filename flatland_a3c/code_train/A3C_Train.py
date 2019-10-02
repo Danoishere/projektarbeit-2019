@@ -14,18 +14,18 @@ import numpy as np
 import tensorflow as tf
 import tensorflow.contrib.slim as slim
 import scipy.signal
-from tensorflow.keras import layers
-from tensorflow.keras import optimizers
-from tensorflow.keras.models import Model
+from tensorflow.python.keras import layers
+from tensorflow.python.keras import optimizers
+from tensorflow.python.keras.models import Model
 from helper import *
 
 from random import choice
 from time import sleep
 from time import time
-from rail_env_wrapper import Rail_Env_Wrapper
+from rail_env_wrapper import RailEnvWrapper
+from code_input.network import AC_Network
 
 import constants
-
 
 # ### Helper Functions
 
@@ -61,81 +61,6 @@ def max_length_sublist(top_list):
     return max_len
 
 
-
-
-class AC_Network():
-    def __init__(self,a_size,scope,trainer):
-        with tf.variable_scope(scope):
-            self.input_map =  layers.Input(shape=[map_state_size[0],map_state_size[1],map_state_size[2]],dtype=tf.float32)
-            self.input_grid = layers.Input(shape=[grid_state_size[0],grid_state_size[1],grid_state_size[2],1],dtype=tf.float32)
-            self.input_vector = layers.Input(shape=[vector_state_size],dtype=tf.float32)
-            self.input_tree = layers.Input(shape=[tree_state_size],dtype=tf.float32)
-
-            def network(input_map,input_grid,input_vector, input_tree):
-                conv_grid = layers.Conv3D(32,(1,1,4),strides=(1,1,4))(input_grid)
-                conv_grid = layers.Flatten()(conv_grid)
-                conv_grid_hidden = layers.Dense(64, activation='relu')(conv_grid)
-
-                conv_map = layers.Conv2D(32,(3,3))(input_map)
-                conv_map = layers.Flatten()(conv_map)
-                conv_map_hidden = layers.Dense(64, activation='relu')(conv_map)
-
-                flattend_map = layers.Flatten()(input_map)
-                hidden_map = layers.Dense(128, activation='relu')(flattend_map)
-
-                hidden_tree = layers.BatchNormalization()(input_tree)
-                hidden_tree = layers.Dense(128, activation='relu')(hidden_tree)
-                hidden_vector = layers.Dense(32, activation='relu')(input_vector)
-
-                hidden = layers.concatenate([hidden_map, hidden_vector, conv_grid_hidden, conv_map_hidden, hidden_tree])
-                hidden = layers.Dense(256, activation='relu')(hidden)
-                hidden = layers.Dropout(0.2)(hidden)
-                hidden = layers.Dense(32, activation='relu')(hidden)
-                return hidden
-
-            out_policy = network(self.input_map,self.input_grid,self.input_vector, self.input_tree)
-            out_value = network(self.input_map,self.input_grid,self.input_vector, self.input_tree)
-
-            #Output layers for policy and value estimations
-            self.policy = layers.Dense(a_size,activation='softmax')(out_policy)
-            self.value = layers.Dense(1)(out_value)
-
-            self.keras_model = Model(
-                inputs=[
-                    self.input_map,
-                    self.input_grid,
-                    self.input_vector,
-                    self.input_tree
-                ],
-                outputs=[
-                    self.policy,
-                    self.value
-                ])
-
-            if scope != 'global':
-                self.actions = tf.placeholder(shape=[None],dtype=tf.int32)
-                self.actions_onehot = tf.one_hot(self.actions,a_size,dtype=tf.float32)
-                self.target_v = tf.placeholder(shape=[None],dtype=tf.float32)
-                self.advantages = tf.placeholder(shape=[None],dtype=tf.float32)
-                self.responsible_outputs = tf.reduce_sum(self.policy * self.actions_onehot, [1])
-
-                #Loss functions
-                self.value_loss = 0.5 * tf.reduce_sum(tf.square(self.target_v - tf.reshape(self.value,[-1])))
-                self.entropy = - tf.reduce_sum(self.policy * tf.math.log(self.policy + 1e-10))
-                self.policy_loss = -tf.reduce_sum(tf.math.log(self.responsible_outputs  + 1e-10)*self.advantages)
-                self.loss = 0.5 * self.value_loss + self.policy_loss - self.entropy * 0.05
-
-                #Get gradients from local network using local losses
-                local_vars = tf.compat.v1.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope)
-                self.gradients = tf.gradients(self.loss, local_vars)
-                self.var_norms = tf.linalg.global_norm(local_vars)
-                self.gradients, self.grad_norms = tf.clip_by_global_norm(self.gradients, 5.0)
-
-                #Apply local gradients to global network
-                global_vars = tf.compat.v1.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, 'global')
-                self.apply_grads = trainer.apply_gradients(zip(self.gradients, global_vars))
-
-
 class Worker():
     def __init__(self,name,a_size,trainer,model_path,global_episodes):
         self.name = "worker_" + str(name)
@@ -149,12 +74,11 @@ class Worker():
         self.episode_success = []
         self.episode_mean_values = []
         self.summary_writer = tf.summary.FileWriter("train_" + str(self.number))
-        self.rail_env_wrapper = Rail_Env_Wrapper()
+        self.rail_env_wrapper = RailEnvWrapper()
 
         #Create the local copy of the network and the tensorflow op to copy global paramters to local network
-        self.local_AC = AC_Network(a_size, self.name, trainer)
+        self.local_AC = AC_Network(self.name, trainer)
         self.update_local_ops = update_target_graph('global', self.name)
-
         self.actions = [0,1,2,3,4]
         
     def train(self, rollout, sess, gamma, bootstrap_value):

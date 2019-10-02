@@ -107,3 +107,4 @@ venv.bak/
 .mypy_cache/
 *.pyc
 flatland_a3c/.vscode/settings.json
+doc/pipeline/~$$Pipeline.~vsdx

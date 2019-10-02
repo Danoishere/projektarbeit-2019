@@ -23,9 +23,9 @@ import scipy.signal
 
 from flatland.utils.rendertools import RenderTool
 from multiprocess import JoinableQueue, Manager, Process, Queue
-from tensorflow.keras import layers, models, optimizers
+from tensorflow.python.keras import layers, models, optimizers
 
-from rail_env_wrapper import Rail_Env_Wrapper
+from rail_env_wrapper import RailEnvWrapper
 from helper import *
 from observation import CombinedObservation
 
@@ -80,12 +80,13 @@ class Player():
 
         #Create the local copy of the network and the tensorflow op to copy global paramters to local network
         self.model = model
-        num_agents = 3
+        num_agents = 16
                     
         #The Below code is related to setting up the Flatland environment
-        self.env = Rail_Env_Wrapper(
-            width=8,
-            height=8
+        self.env = RailEnvWrapper(
+            width=40,
+            height=40,
+            num_agents=num_agents
         )
 
         self.env.step_penalty = -2
@@ -163,7 +164,7 @@ class Player():
 
 
 max_episode_length = 80
-mc_sim_num = 8
+mc_sim_num = 1
 mc_sim_steps = 8
 mc_max_rollout = 6
 
@@ -177,7 +178,7 @@ a_size = 5 # Agent can move Left, Right, or Fire
 
 load_model = True
 model_path = './model'
-model_name =  'model-1500.h5'
+model_name =  'model-6000.h5'
 processes = []
 
 
