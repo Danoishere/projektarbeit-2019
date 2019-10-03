@@ -5,7 +5,7 @@ import os
 
 
 class CheckpointManager:
-    def __init__(self, global_model, authorized_worker, save_best_after_min=2, save_ckpt_after_min=4):
+    def __init__(self, global_model, authorized_worker, save_best_after_min=2, save_ckpt_after_min=2):
         self.global_model = global_model
         self.best_reward = -np.inf
         self.last_save_best_on_episode_nr = 0
@@ -25,7 +25,8 @@ class CheckpointManager:
 
     def load_checkpoint_model(self):
         if self.does_file_exist(const.checkpoint_file):
-            last_training = json.load(const.checkpoint_file)
+            with open(const.checkpoint_file, 'r') as f:  
+                last_training = json.load(f)
             self.best_reward = last_training['best_reward']
             self.last_ckpt_on_episode_nr = last_training['last_ckpt_on_episode_nr']
             self.global_model.load_model(const.model_path, 'checkpoint')
@@ -38,19 +39,19 @@ class CheckpointManager:
             return
 
         if reward > self.best_reward:
-            if self.last_save_best_on_episode_nr + self.save_best_after_min <  episode_nr:
+            if self.last_save_best_on_episode_nr + self.save_best_after_min <=  episode_nr:
                 self.best_reward = reward
                 self.last_save_best_on_episode_nr = episode_nr
                 self.global_model.save_model(const.model_path, 'best')
 
-        elif self.last_ckpt_on_episode_nr + self.save_ckpt_after_min <  episode_nr:
+        if self.last_ckpt_on_episode_nr + self.save_ckpt_after_min <=  episode_nr:
             self.last_ckpt_on_episode_nr = episode_nr
             self.global_model.save_model(const.model_path, 'checkpoint')
-            with open(const.checkpoint_file, 'w') as outfile:  
+            with open(const.checkpoint_file, 'w') as f:  
                 json.dump({
-                    'best_reward' : self.best_reward,
-                    'last_ckpt_on_episode_nr' : episode_nr,
-                }, outfile)
+                    'best_reward' : float(self.best_reward),
+                    'last_ckpt_on_episode_nr' : int(episode_nr)
+                }, f)
 
 
 

@@ -77,6 +77,7 @@ class Worker():
         observations_grid = np.asarray([row[0][1] for row in rollout])
         observations_vector = np.asarray([row[0][2] for row in rollout])
         observations_tree = np.asarray([row[0][3] for row in rollout])
+        
         obs = [observations_map, observations_grid, observations_vector, observations_tree]
 
         actions = np.asarray([row[1] for row in rollout]) # rollout[:,1]
@@ -226,7 +227,7 @@ class Worker():
             episode_count += 1
             print('Episode', episode_count,'of',self.name,'with',episode_step_count,'steps, reward of',episode_reward, ', mean entropy of', np.mean(info[:,2]))
 
-load_model = False
+load_model = True
 
 def start_train():
     with tf.device("/cpu:0"): 

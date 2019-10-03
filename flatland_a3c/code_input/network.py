@@ -106,13 +106,12 @@ class AC_Network():
     def save_model(self, model_path, suffix):
         self.actor_model.save(model_path+'/actor_model_' + suffix + '.h5')
         self.critic_model.save(model_path+'/critic_model_' + suffix + '.h5')
-        print('New best model saved')
+        print('New',suffix,'model saved')
 
 
     def load_model(self,model_path, suffix):
         self.actor_model = load_model(model_path+'/actor_model_' + suffix + '.h5')
         self.critic_model = load_model(model_path+'/critic_model_' + suffix + '.h5')
-        print('New checkpoint model saved')
 
 
     def value_loss(self, target_v, value):
