@@ -3,7 +3,7 @@
 
 # This iPython notebook includes an implementation of the [A3C algorithm](https://arxiv.org/pdf/1602.01783.pdf).
 # 
-# `tensorboard --logdir=worker_0:./train_0',worker_1:./train_1,worker_2:./train_2,worker_3:./train_3,worker_4:./train_4,worker_5:./train_5,worker_6:./train_6,worker_7:./train_7`
+# `tensorboard --logdir=worker_0:./train_0,worker_1:./train_1,worker_2:./train_2,worker_3:./train_3,worker_4:./train_4,worker_5:./train_5,worker_6:./train_6,worker_7:./train_7`
 #
 #  ##### Enable autocomplete
 
@@ -14,31 +14,19 @@ import numpy as np
 import tensorflow as tf
 
 import scipy.signal
-from tensorflow.keras import layers, optimizers
+from tensorflow.keras import layers
 from tensorflow.keras.optimizers import RMSprop
 from tensorflow.keras.models import Model
-
-from helper import *
 
 from random import choice
 from time import sleep
 from time import time
 from rail_env_wrapper import RailEnvWrapper
 from code_input.network import AC_Network
-
-import constants
+from code_util.checkpoint import CheckpointManager
+import code_input.input_params as params
 
 # ### Helper Functions
-
-# Copies one set of variables to another.
-# Used to set worker network parameters to those of global network.
-def update_target_graph(from_model,to_model):
-    from_vars = from_model.keras_model.trainable_variables# tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, from_model)
-    to_vars = to_model.keras_model.trainable_variables # tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, to_model)
-    op_holder = []
-    for from_var,to_var in zip(from_vars,to_vars):
-        op_holder.append(to_var.assign(from_var))
-    return op_holder
 
 # Discounting function used to calculate discounted returns.
 def discount(x, gamma):
@@ -61,12 +49,11 @@ def max_length_sublist(top_list):
 
     return max_len
 
-
 class Worker():
-    def __init__(self,name,global_model,trainer,model_path,global_episodes):
+    def __init__(self,name,global_model,trainer,checkpoint_manager,global_episodes):
         self.name = "worker_" + str(name)
         self.number = name        
-        self.model_path = model_path
+        self.checkpoint_manager = checkpoint_manager
         self.global_model = global_model
         self.trainer = trainer
         self.global_episodes = global_episodes
@@ -75,23 +62,22 @@ class Worker():
         self.episode_lengths = []
         self.episode_success = []
         self.episode_mean_values = []
-        self.summary_writer = tf.summary.create_file_writer("train_" + str(self.number))
-        self.rail_env_wrapper = RailEnvWrapper()
+        self.summary_writer = tf.summary.create_file_writer("tensorboard")
+        self.env = RailEnvWrapper()
 
         #Create the local copy of the network and the tensorflow op to copy global paramters to local network
         self.local_model = AC_Network(global_model, trainer)
-        self.update_local_ops = lambda: update_target_graph(self.global_model, self.local_model)
+        self.update_local_ops = lambda: self.local_model.update_from(self.global_model)
         self.actions = [0,1,2,3,4]
         
     def train(self, rollout, gamma, bootstrap_value):
-        ''' Gradient decent for a single agent'''
+        ''' Gradient decent for a SINGLE agent'''
 
         observations_map = np.asarray([row[0][0] for row in rollout])
         observations_grid = np.asarray([row[0][1] for row in rollout])
         observations_vector = np.asarray([row[0][2] for row in rollout])
         observations_tree = np.asarray([row[0][3] for row in rollout])
-
-        observations = [[row[0][0],row[0][1],row[0][2],row[0][3]] for row in rollout]
+        obs = [observations_map, observations_grid, observations_vector, observations_tree]
 
         actions = np.asarray([row[1] for row in rollout]) # rollout[:,1]
         rewards = np.asarray([row[2] for row in rollout]) # rollout[:,2]
@@ -108,77 +94,39 @@ class Worker():
 
         # Update the global network using gradients from loss
         # Generate network statistics to periodically save
-        '''
-        feed_dict = {
-            self.local_model.target_v : discounted_rewards,
-            self.local_model.input_map : observations_map,
-            self.local_model.input_grid: observations_grid,
-            self.local_model.input_vector : observations_vector,
-            self.local_model.input_tree : observations_tree,
-            self.local_model.actions : actions,
-            self.local_model.advantages : advantages
-        }
-
-        '''
-        obs = [observations_map, observations_grid, observations_vector, observations_tree]
         v_l,p_l,e_l,g_n,v_n = self.local_model.train(discounted_rewards, advantages, actions, obs)
 
-        '''
-        
-        v_l,p_l,e_l,g_n,v_n,_ = sess.run([
-            self.local_AC.value_loss,
-            self.local_AC.policy_loss,
-            self.local_AC.entropy,
-            self.local_AC.grad_norms,
-            self.local_AC.var_norms,
-            self.local_AC.apply_grads],
-            feed_dict=feed_dict)
-        '''
         return v_l / len(rollout),p_l / len(rollout),e_l / len(rollout), g_n,v_n
     
-    def work(self,max_episode_length,gamma,coord):
-        episode_count =  0 #self.global_episodes
+    def work(self, max_episode_length, gamma, coord, start_episode):
+        episode_count =  start_episode
         total_steps = 0
         print ("Starting worker " + str(self.number))
         while not coord.should_stop():
             self.update_local_ops()
             
             episode_done = False
-            episode_buffers = [[] for i in range(self.rail_env_wrapper.num_agents)]
-            done_last_step = {i:False for i in range(self.rail_env_wrapper.num_agents)}
+            episode_buffers = [[] for i in range(self.env.num_agents)]
+            done_last_step = {i:False for i in range(self.env.num_agents)}
             episode_values = []
             episode_reward = 0
             episode_step_count = 0
             
-            obs = self.rail_env_wrapper.reset()
-            info = np.zeros((self.rail_env_wrapper.num_agents,5))
-
-            for i in range(self.rail_env_wrapper.num_agents):
-                episode_buffers.append([])
+            obs = self.env.reset()
+            info = np.zeros((self.env.num_agents,5))
 
             while episode_done == False and episode_step_count < max_episode_length:
                 #Take an action using probabilities from policy network output.
-                a_dist, v = self.local_model.keras_model.predict([obs[0],obs[1],obs[2],obs[3]])
-                actions = {}
-                for i in range(self.rail_env_wrapper.num_agents):
-                    try:
-                        a = np.random.choice([0,1,2,3,4], p = a_dist[i])
-                        actions[i] = a
-                    except:
-                        import sys
-                        np.set_printoptions(threshold=sys.maxsize)
-                        print('Observations while error:')
-                        print(obs)
-
-                next_obs, rewards, done = self.rail_env_wrapper.step(actions)
+                actions, v = self.local_model.get_actions_and_values(obs, self.env.num_agents)
+                next_obs, rewards, done = self.env.step(actions)
 
                 # Is episode finished?
                 episode_done = done['__all__']
-                
+
                 if episode_done == True:
                     next_obs = obs
 
-                for i in range(self.rail_env_wrapper.num_agents):
+                for i in range(self.env.num_agents):
                     agent_obs = [obs[0][i],obs[1][i],obs[2][i],obs[3][i]]
 
                     agent_action = actions[i]
@@ -209,9 +157,9 @@ class Worker():
                     # value estimation.
                     #for i in range(self.env.num_agents):
 
-                    _,v1 = self.local_model.keras_model.predict(obs)
+                    v1 = self.local_model.get_values(obs, self.env.num_agents)
 
-                    for i in range(self.rail_env_wrapper.num_agents):
+                    for i in range(self.env.num_agents):
                         if len(episode_buffers[i]) > 0:
                             v_l,p_l,e_l,g_n,v_n = self.train(
                                 episode_buffers[i], 
@@ -236,7 +184,7 @@ class Worker():
             
             # Update the network using the episode buffer at the end of the episode.
             if episode_done:
-                for i in range(self.rail_env_wrapper.num_agents):
+                for i in range(self.env.num_agents):
                     if len(episode_buffers[i]) != 0:
                         v_l,p_l,e_l,g_n,v_n = self.train(
                             episode_buffers[i],
@@ -250,20 +198,14 @@ class Worker():
                         info[i,4] = v_n
                         self.update_local_ops()
                     
+            mean_reward = np.mean(self.episode_rewards[-100:])
+            self.checkpoint_manager.try_save_model(episode_count, mean_reward, self.name)
+            
             # Periodically save gifs of episodes, model parameters, and summary statistics.
             if episode_count % 5 == 0 and episode_count != 0:
-                mean_reward = np.mean(self.episode_rewards[-100:])
                 mean_length = np.mean(self.episode_lengths[-100:])
                 mean_value = np.mean(self.episode_mean_values[-100:])
                 mean_success_rate = np.mean(self.episode_success[-100:])
-
-                if episode_count % 50 == 0 and self.name == 'worker_0':
-                    #saver.save(sess,self.model_path+'/model-'+str(episode_count)+'.cptk')
-                    print ("Saved Checkpoint")
-                
-                if episode_count % 500 == 0 and self.name == 'worker_0':
-                    self.local_model.keras_model.save(self.model_path+'/model-'+str(episode_count)+'.h5')
-                    print ("Saved Keras Model")
                 
                 with self.summary_writer.as_default():
                     episode_count = np.int32(episode_count)
@@ -271,67 +213,43 @@ class Worker():
                     tf.summary.scalar('Perf/Length', mean_length, step=episode_count)
                     tf.summary.scalar('Perf/Value', mean_value, step=episode_count)
                     tf.summary.scalar('Perf/Successrate/100 episodes', mean_success_rate, step=episode_count)
-
                     tf.summary.scalar('Losses/Value Loss', np.mean(info[:,0]), step=episode_count)
                     tf.summary.scalar('Losses/Policy Loss', np.mean(info[:,1]), step=episode_count)
                     tf.summary.scalar('Losses/Entropy', np.mean(info[:,2]), step=episode_count)
                     tf.summary.scalar('Losses/Grad Norm', np.mean(info[:,3]), step=episode_count)
                     tf.summary.scalar('Losses/Var Norm', np.mean(info[:,4]), step=episode_count)
                     self.summary_writer.flush()
+
             if self.name == 'worker_0':
                 #sess.run(self.increment)
                 pass
             episode_count += 1
             print('Episode', episode_count,'of',self.name,'with',episode_step_count,'steps, reward of',episode_reward, ', mean entropy of', np.mean(info[:,2]))
 
-# In[23]:
-
-max_episode_length = 40
-gamma = 0.98 # discount rate for advantage estimation and reward discounting
-
-map_state_size = (11,11,9) #  Observations are 21*21 with five channels
-grid_state_size = (11,11,16,1)
-vector_state_size = 5
-tree_state_size = 231
-
-a_size = 5 # Agent can move Left, Right, or Fire
 load_model = False
-model_path = './model'
 
 def start_train():
-    if not os.path.exists(model_path):
-        os.makedirs(model_path)
-        
-    #Create a directory to save episode playback gifs to
-    if not os.path.exists('./frames'):
-        os.makedirs('./frames')
-
     with tf.device("/cpu:0"): 
         global_episodes = tf.Variable(0,dtype=tf.int32,name='global_episodes',trainable=False)
         trainer = RMSprop(learning_rate=1e-4)
-        master_network = AC_Network(None,None)
+        global_model = AC_Network(None,None)
         num_workers = multiprocessing.cpu_count() 
+        ckpt_manager = CheckpointManager(global_model,'worker_0')
+
         workers = []
-        # Create worker classes
         for i in range(num_workers):
-            workers.append(Worker(i,master_network,trainer,model_path,global_episodes))
-        #saver = tf.train.Saver(max_to_keep=5)
+            workers.append(Worker(i,global_model,trainer,ckpt_manager,global_episodes))
+
+    start_episode = 0
 
     coord = tf.train.Coordinator()
-    '''
     if load_model == True:
         print ('Loading Model...')
-        ckpt = tf.train.get_checkpoint_state(model_path)
-        saver.restore(sess,ckpt.model_checkpoint_path)
-    else:
-        pass
-        #sess.run(tf.global_variables_initializer())
-    '''
-    # This is where the asynchronous magic happens.
-    # Start the "work" process for each worker in a separate threat.
+        start_episode = ckpt_manager.load_checkpoint_model()
+
     worker_threads = []
     for worker in workers:
-        worker_work = lambda: worker.work(max_episode_length,gamma,coord)
+        worker_work = lambda: worker.work(params.max_episode_length,params.gamma,coord, start_episode)
         t = threading.Thread(target=(worker_work))
         t.start()
         sleep(0.5)

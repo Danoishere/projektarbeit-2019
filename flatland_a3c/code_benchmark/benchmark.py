@@ -8,7 +8,6 @@ from flatland.envs.schedule_generators import (random_schedule_generator, sparse
 
 from flatland.utils.rendertools import RenderTool
 from rail_env_wrapper import RailEnvWrapper
-import constants
 
 SEED = 5648
 

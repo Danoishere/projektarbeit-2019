@@ -11,7 +11,7 @@ from flatland.core.env_observation_builder import ObservationBuilder
 from flatland.core.grid.grid4_astar import a_star
 from flatland.core.transition_map import GridTransitionMap
 from numpy.core.umath import divide
-import constants
+import code_input.input_params as params
 import math
 
 import pprint
@@ -623,15 +623,21 @@ class CombinedObservation(ObservationBuilder):
             tree_obs.append(agent_obs[3])
         
         map_obs = np.asarray(map_obs)
-        map_obs = np.reshape(map_obs,(num_agents, constants.map_state_size[0], constants.map_state_size[1], constants.map_state_size[2]))
+        map_obs = np.reshape(map_obs,(num_agents, params.map_state_size[0], params.map_state_size[1], params.map_state_size[2]))
 
         grid_obs = np.asarray(grid_obs)
-        grid_obs = np.reshape(grid_obs,(num_agents, constants.grid_state_size[0], constants.grid_state_size[1], constants.grid_state_size[2],1))
+        grid_obs = np.reshape(grid_obs,(num_agents, params.grid_state_size[0], params.grid_state_size[1], params.grid_state_size[2],1))
 
         vec_obs = np.asarray(vec_obs)
         tree_obs = np.asarray(tree_obs)
         tree_obs[tree_obs ==  np.inf] = 0.25
         tree_obs[tree_obs ==  -np.inf] = 0.5
+
+        map_obs = map_obs.astype(np.float32)
+        grid_obs = grid_obs.astype(np.float32)
+        vec_obs = vec_obs.astype(np.float32)
+        tree_obs = tree_obs.astype(np.float32)
+
         return [map_obs, grid_obs, vec_obs, tree_obs]
 
     def _num_cells_to_fill_in(self, remaining_depth):

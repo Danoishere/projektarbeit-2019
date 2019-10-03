@@ -2,8 +2,8 @@
 from flatland.envs.rail_env import RailEnv
 from flatland.envs.rail_generators import complex_rail_generator, sparse_rail_generator
 from flatland.envs.schedule_generators import complex_schedule_generator, sparse_schedule_generator, random_schedule_generator
-from helper import *
 from code_input.observation import CombinedObservation
+import random
 
 class RailEnvWrapper():
     initial_step_penalty = -2

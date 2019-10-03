@@ -26,7 +26,6 @@ from multiprocess import JoinableQueue, Manager, Process, Queue
 from tensorflow.keras import optimizers
 
 from rail_env_wrapper import RailEnvWrapper
-from helper import *
 from code_input.observation import CombinedObservation
 
 class Consumer(multiprocess.Process):
@@ -42,7 +41,7 @@ class Consumer(multiprocess.Process):
 
     def run(self):
         from tensorflow.keras import layers, models, optimizers
-        import MCRunner as mc
+        import code_play.MCRunner as mc
         import numpy as np
 
         self.model = models.load_model(self.model_path + '/' + self.model_name)

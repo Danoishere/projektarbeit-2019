@@ -1,5 +1,7 @@
 max_episode_length = 40
-gamma = 0.98 # discount rate for advantage estimation and reward discounting
+gamma = 0.98
+entropy_factor = 0.01
+learning_rate = 1e-4
 
 number_of_inputs = 4
 number_of_actions = 5
