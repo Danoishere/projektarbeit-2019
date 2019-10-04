@@ -259,11 +259,11 @@ def start_train(resume):
         coord.clear_stop()
 
         # Save model after each curriculum level
-        run_time = datetime.now().strftime("%m/%d/%Y_%H:%M:%S")
+        run_time = datetime.now().strftime("%m_%d_%Y_%H_%M_%S")
         global_model.save_model(const.model_path_hist,'level_' + str(curr_manager.current_level) + '_' + run_time)
         curr_manager.switch_to_next_level()
 
     print ("Looks like we're done")
 
 if __name__ == "__main__":
-    start_train()
+    start_train(False)

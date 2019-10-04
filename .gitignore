@@ -112,3 +112,4 @@ doc/pipeline/~$$Pipeline.~vsdx
 
 flatland_a3c/deliverables/model/*
 flatland_a3c/deliverables/tensorboard/*
+flatland_a3c/.vscode/settings.json
