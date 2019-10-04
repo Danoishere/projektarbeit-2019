@@ -5,8 +5,9 @@ import os
 
 
 class CheckpointManager:
-    def __init__(self, global_model, authorized_worker, save_best_after_min=2, save_ckpt_after_min=2):
+    def __init__(self, global_model, curriculum_manager, authorized_worker, save_best_after_min=2, save_ckpt_after_min=2):
         self.global_model = global_model
+        self.curriculum_manager = curriculum_manager
         self.best_reward = -np.inf
         self.last_save_best_on_episode_nr = 0
         self.last_ckpt_on_episode_nr = 0
@@ -27,8 +28,11 @@ class CheckpointManager:
         if self.does_file_exist(const.checkpoint_file):
             with open(const.checkpoint_file, 'r') as f:  
                 last_training = json.load(f)
+
             self.best_reward = last_training['best_reward']
             self.last_ckpt_on_episode_nr = last_training['last_ckpt_on_episode_nr']
+            self.curriculum_manager.curriculum_level = last_training['curriculum_level']
+
             self.global_model.load_model(const.model_path, const.suffix_checkpoint)
             return self.last_ckpt_on_episode_nr
         else:
@@ -49,6 +53,7 @@ class CheckpointManager:
             self.global_model.save_model(const.model_path, const.suffix_checkpoint)
             with open(const.checkpoint_file, 'w') as f:  
                 json.dump({
+                    'curriculum_level' : self.curriculum_manager.curriculum_level,
                     'best_reward' : float(self.best_reward),
                     'last_ckpt_on_episode_nr' : int(episode_nr)
                 }, f)

@@ -23,7 +23,10 @@ from time import sleep
 from time import time
 from rail_env_wrapper import RailEnvWrapper
 from code_util.checkpoint import CheckpointManager
+from code_train.curriculum import CurriculumManager
 from deliverables.network import AC_Network
+
+import code_util.constants as const
 import deliverables.input_params as params
 
 # Discounting function used to calculate discounted returns.
@@ -40,10 +43,11 @@ def max_length_sublist(top_list):
     return max_len
 
 class Worker():
-    def __init__(self,name,global_model,trainer,checkpoint_manager,global_episodes):
+    def __init__(self,name,global_model,trainer,checkpoint_manager, curriculum_manager,global_episodes):
         self.name = "worker_" + str(name)
         self.number = name        
         self.checkpoint_manager = checkpoint_manager
+        self.curr_manager = curriculum_manager
         self.global_model = global_model
         self.trainer = trainer
         self.global_episodes = global_episodes
@@ -52,12 +56,12 @@ class Worker():
         self.episode_lengths = []
         self.episode_success = []
         self.episode_mean_values = []
-        self.summary_writer = tf.summary.create_file_writer("tensorboard/train_" + str(name))
+        self.summary_writer = tf.summary.create_file_writer(const.tensorboard_path + 'train_' + str(name))
         self.env = RailEnvWrapper()
 
         #Create the local copy of the network and the tensorflow op to copy global paramters to local network
         self.local_model = AC_Network(global_model, trainer)
-        self.update_local_ops = lambda: self.local_model.update_from(self.global_model)
+        self.update_local_model = lambda: self.local_model.update_from(self.global_model)
         self.actions = [0,1,2,3,4]
         
     def train(self, rollout, gamma, bootstrap_value):
@@ -70,9 +74,9 @@ class Worker():
         
         obs = [observations_map, observations_grid, observations_vector, observations_tree]
 
-        actions = np.asarray([row[1] for row in rollout]) # rollout[:,1]
-        rewards = np.asarray([row[2] for row in rollout]) # rollout[:,2]
-        values = np.asarray([row[5] for row in rollout]) # rollout[:,5]
+        actions = np.asarray([row[1] for row in rollout]) 
+        rewards = np.asarray([row[2] for row in rollout])
+        values = np.asarray([row[5] for row in rollout])
         
         # Here we take the rewards and values from the rollout, and use them to 
         # generate the advantage and discounted returns. 
@@ -93,27 +97,34 @@ class Worker():
         episode_count =  start_episode
         total_steps = 0
         print ("Starting worker " + str(self.number))
+
+        # Let the curriculum manager update the level to the current difficulty
+        self.curr_manager.update_env_to_curriculum_level(self.env)
+
         while not coord.should_stop():
-            self.update_local_ops()
-            
+            self.update_local_model()
             episode_done = False
+
+            # Buffer for obs, action, next obs, reward
             episode_buffers = [[] for i in range(self.env.num_agents)]
+
+            # A way to remember if the agent was already done during the last episode
             done_last_step = {i:False for i in range(self.env.num_agents)}
+
+            # Metrics for tensorboard logging
             episode_values = []
             episode_reward = 0
             episode_step_count = 0
+            info = np.zeros((self.env.num_agents,5))
             
             obs = self.env.reset()
-            info = np.zeros((self.env.num_agents,5))
-
+            
             while episode_done == False and episode_step_count < max_episode_length:
                 #Take an action using probabilities from policy network output.
                 actions, v = self.local_model.get_actions_and_values(obs, self.env.num_agents)
                 next_obs, rewards, done = self.env.step(actions)
 
-                # Is episode finished?
                 episode_done = done['__all__']
-
                 if episode_done == True:
                     next_obs = obs
 
@@ -164,10 +175,10 @@ class Worker():
                             info[i,4] = v_n
 
                             episode_buffers[i] = []
-                            self.update_local_ops()
-                if episode_done == True:
-                    break
-                                        
+                            self.update_local_model()
+            
+            # End of episode-loop
+
             self.episode_rewards.append(episode_reward)
             self.episode_lengths.append(episode_step_count)
             self.episode_mean_values.append(np.mean(episode_values))
@@ -187,16 +198,18 @@ class Worker():
                         info[i,2] = e_l
                         info[i,3] = g_n
                         info[i,4] = v_n
-                        self.update_local_ops()
+                
+                self.update_local_model()
                     
-            mean_reward = np.mean(self.episode_rewards[-100:])
-            self.checkpoint_manager.try_save_model(episode_count, mean_reward, self.name)
-            
-            # Periodically save gifs of episodes, model parameters, and summary statistics.
+            # Save stats to Tensorboard every 5 episodes
             if episode_count % 5 == 0 and episode_count != 0:
                 mean_length = np.mean(self.episode_lengths[-100:])
                 mean_value = np.mean(self.episode_mean_values[-100:])
                 mean_success_rate = np.mean(self.episode_success[-100:])
+                mean_reward = np.mean(self.episode_rewards[-100:])
+                
+                self.checkpoint_manager.try_save_model(episode_count, mean_reward, self.name)
+                self.curr_manager.report_success_rate(mean_success_rate, self.name)
                 
                 with self.summary_writer.as_default():
                     episode_count = np.int32(episode_count)
@@ -225,27 +238,40 @@ def start_train():
         trainer = RMSprop(learning_rate=1e-4)
         global_model = AC_Network(None,None)
         num_workers = multiprocessing.cpu_count() 
-        ckpt_manager = CheckpointManager(global_model,'worker_0')
+
+        coord = tf.train.Coordinator()
+
+        # Curriculum-manager manages the generation of the levels
+        curr_manager = CurriculumManager(coord, 'worker_0')
+
+        # Checkpoint-manager saves model-checkpoints
+        ckpt_manager = CheckpointManager(global_model,curr_manager,'worker_0')
+
+        
 
         workers = []
         for i in range(num_workers):
-            workers.append(Worker(i,global_model,trainer,ckpt_manager,global_episodes))
+            workers.append(Worker(i,global_model,trainer,ckpt_manager, curr_manager, global_episodes))
 
     start_episode = 0
 
-    coord = tf.train.Coordinator()
+    
     if load_model == True:
         print ('Loading Model...')
         start_episode = ckpt_manager.load_checkpoint_model()
 
     worker_threads = []
-    for worker in workers:
-        worker_work = lambda: worker.work(params.max_episode_length,params.gamma,coord, start_episode)
-        t = threading.Thread(target=(worker_work))
-        t.start()
-        sleep(0.5)
-        worker_threads.append(t)
-    coord.join(worker_threads)
+
+    while not curr_manager.stop_training:
+        for worker in workers:
+            worker_work = lambda: worker.work(params.max_episode_length,params.gamma,coord, start_episode)
+            t = threading.Thread(target=(worker_work))
+            t.start()
+            sleep(0.5)
+            worker_threads.append(t)
+        coord.join(worker_threads)
+        curr_manager.switch_to_next_level()
+
     print ("Looks like we're done")
 
 if __name__ == "__main__":
