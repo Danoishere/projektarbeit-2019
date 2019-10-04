@@ -127,7 +127,7 @@ class AC_Network():
         v_local_vars = self.critic_model.trainable_variables
         gradients_v = t.gradient(v_loss, v_local_vars)
         var_norms_critic = tf.linalg.global_norm(v_local_vars)
-        _, grad_norms = tf.clip_by_global_norm(gradients_v, params.gradient_norm_critic)
+        gradients_v, grad_norms_v = tf.clip_by_global_norm(gradients_v, params.gradient_norm_critic)
         global_vars = self.global_model.critic_model.trainable_variables
         self.trainer.apply_gradients(zip(gradients_v, global_vars))
 
@@ -139,11 +139,11 @@ class AC_Network():
         p_local_vars = self.actor_model.trainable_variables
         gradients_p = t.gradient(p_loss, p_local_vars)
         var_norms_actor = tf.linalg.global_norm(p_local_vars)
-        _, grad_norms = tf.clip_by_global_norm(gradients_p, params.gradient_norm_actor)
+        gradients_p, grad_norms_p = tf.clip_by_global_norm(gradients_p, params.gradient_norm_actor)
         global_vars = self.global_model.actor_model.trainable_variables
 
         self.trainer.apply_gradients(zip(gradients_p, global_vars))
-        return v_loss, p_loss, entropy, grad_norms, var_norms_actor, var_norms_critic
+        return v_loss, p_loss, entropy, grad_norms_p, grad_norms_v, var_norms_actor, var_norms_critic
 
     def get_actions_and_values(self, obs, num_agents):
         predcition = self.actor_model.predict([obs[0],obs[1],obs[2],obs[3]])

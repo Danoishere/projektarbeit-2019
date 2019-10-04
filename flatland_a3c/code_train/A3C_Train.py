@@ -88,9 +88,9 @@ class Worker():
 
         # Update the global network using gradients from loss
         # Generate network statistics to periodically save
-        v_l,p_l,e_l,g_n, v_n_a, v_n_c = self.local_model.train(discounted_rewards, advantages, actions, obs)
+        v_l,p_l,e_l,g_n_a, g_n_c, v_n_a, v_n_c = self.local_model.train(discounted_rewards, advantages, actions, obs)
 
-        return v_l / len(rollout),p_l / len(rollout),e_l / len(rollout), g_n, v_n_a, v_n_c
+        return v_l / len(rollout),p_l / len(rollout),e_l / len(rollout), g_n_a, g_n_c, v_n_a, v_n_c
     
     def work(self, max_episode_length, gamma, coord):
         total_steps = 0
@@ -113,7 +113,7 @@ class Worker():
             episode_values = []
             episode_reward = 0
             episode_step_count = 0
-            info = np.zeros((self.env.num_agents,6))
+            info = np.zeros((self.env.num_agents,7))
             
             obs = self.env.reset()
             
@@ -161,7 +161,7 @@ class Worker():
             # if episode_done:
             for i in range(self.env.num_agents):
                 if len(episode_buffers[i]) != 0:
-                    v_l,p_l,e_l,g_n,v_n_a, v_n_c = self.train(
+                    v_l, p_l, e_l, g_n_a, g_n_c, v_n_a, v_n_c = self.train(
                         episode_buffers[i],
                         gamma,
                         0.0)
@@ -169,9 +169,10 @@ class Worker():
                     info[i,0] = v_l
                     info[i,1] = p_l
                     info[i,2] = e_l
-                    info[i,3] = g_n
-                    info[i,4] = v_n_a
-                    info[i,5] = v_n_c
+                    info[i,3] = g_n_a
+                    info[i,4] = g_n_c
+                    info[i,5] = v_n_a
+                    info[i,6] = v_n_c
 
             
             self.update_local_model()
@@ -195,9 +196,10 @@ class Worker():
                     tf.summary.scalar('Losses/Value Loss', np.mean(info[:,0]), step=episode_count)
                     tf.summary.scalar('Losses/Policy Loss', np.mean(info[:,1]), step=episode_count)
                     tf.summary.scalar('Losses/Entropy', np.mean(info[:,2]), step=episode_count)
-                    tf.summary.scalar('Losses/Grad Norm', np.mean(info[:,3]), step=episode_count)
-                    tf.summary.scalar('Losses/Var Norm - Actor', np.mean(info[:,4]), step=episode_count)
-                    tf.summary.scalar('Losses/Var Norm - Value', np.mean(info[:,5]), step=episode_count)
+                    tf.summary.scalar('Losses/Grad Norm-Actor', np.mean(info[:,3]), step=episode_count)
+                    tf.summary.scalar('Losses/Grad Norm-Value', np.mean(info[:,4]), step=episode_count)
+                    tf.summary.scalar('Losses/Var Norm-Actor', np.mean(info[:,5]), step=episode_count)
+                    tf.summary.scalar('Losses/Var Norm-Value', np.mean(info[:,6]), step=episode_count)
                     self.summary_writer.flush()
 
             self.episode_count += 1
