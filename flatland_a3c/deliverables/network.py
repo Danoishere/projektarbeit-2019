@@ -108,7 +108,7 @@ class AC_Network():
 
 
     def value_loss(self, target_v, value):
-        return 0.5 * tf.reduce_mean(tf.square(target_v - tf.reshape(value,[-1])))
+        return 0.1 * tf.reduce_mean(tf.square(target_v - tf.reshape(value,[-1])))
     
 
     def policy_loss(self, advantages, actions, policy):
@@ -127,9 +127,9 @@ class AC_Network():
         v_local_vars = self.critic_model.trainable_variables
         gradients_v = t.gradient(v_loss, v_local_vars)
         var_norms_critic = tf.linalg.global_norm(v_local_vars)
-        gradients_v, grad_norms = tf.clip_by_global_norm(gradients_v, params.gradient_norm_critic)
+        _, grad_norms = tf.clip_by_global_norm(gradients_v, params.gradient_norm_critic)
         global_vars = self.global_model.critic_model.trainable_variables
-        #self.trainer.apply_gradients(zip(gradients_v, global_vars))
+        self.trainer.apply_gradients(zip(gradients_v, global_vars))
 
         # Policy loss
         with tf.GradientTape() as t:
@@ -139,12 +139,10 @@ class AC_Network():
         p_local_vars = self.actor_model.trainable_variables
         gradients_p = t.gradient(p_loss, p_local_vars)
         var_norms_actor = tf.linalg.global_norm(p_local_vars)
-        gradients_p, grad_norms = tf.clip_by_global_norm(gradients_p, params.gradient_norm_actor)
+        _, grad_norms = tf.clip_by_global_norm(gradients_p, params.gradient_norm_actor)
         global_vars = self.global_model.actor_model.trainable_variables
 
-        gradients = gradients_p + gradients_v
-        self.trainer.apply_gradients(zip(gradients, global_vars))
-        
+        self.trainer.apply_gradients(zip(gradients_p, global_vars))
         return v_loss, p_loss, entropy, grad_norms, var_norms_actor, var_norms_critic
 
     def get_actions_and_values(self, obs, num_agents):

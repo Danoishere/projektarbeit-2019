@@ -19,7 +19,7 @@
             "request": "launch",
             "program": "${workspaceFolder}/main.py",
             "justMyCode": true,
-            "args": ["--train --resume"],
+            "args": ["--train","--resume"],
             "console": "integratedTerminal"
         },
         {
