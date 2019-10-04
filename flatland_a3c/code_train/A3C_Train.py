@@ -3,7 +3,7 @@
 
 # This iPython notebook includes an implementation of the [A3C algorithm](https://arxiv.org/pdf/1602.01783.pdf).
 # 
-# `tensorboard --logdir=worker_0:./train_0,worker_1:./train_1,worker_2:./train_2,worker_3:./train_3,worker_4:./train_4,worker_5:./train_5,worker_6:./train_6,worker_7:./train_7`
+# tensorboard --logdir=deliverables/tensorboard
 #
 #  ##### Enable autocomplete
 
@@ -150,6 +150,7 @@ class Worker():
                 episode_step_count += 1
                 done_last_step = dict(done)
 
+                '''
                 # If the episode hasn't ended, but the experience buffer is full, then we
                 # make an update step using that experience rollout.
                 if max_length_sublist(episode_buffers) % 25 == 0 and not episode_done and episode_step_count != max_episode_length - 1:
@@ -174,7 +175,7 @@ class Worker():
 
                             episode_buffers[i] = []
                             self.update_local_model()
-            
+                '''
             # End of episode-loop
 
             self.episode_rewards.append(episode_reward)
@@ -183,21 +184,21 @@ class Worker():
             self.episode_success.append(episode_done)
             
             # Update the network using the episode buffer at the end of the episode.
-            if episode_done:
-                for i in range(self.env.num_agents):
-                    if len(episode_buffers[i]) != 0:
-                        v_l,p_l,e_l,g_n,v_n = self.train(
-                            episode_buffers[i],
-                            gamma,
-                            0.0)
-                        
-                        info[i,0] = v_l
-                        info[i,1] = p_l
-                        info[i,2] = e_l
-                        info[i,3] = g_n
-                        info[i,4] = v_n
-                
-                self.update_local_model()
+            # if episode_done:
+            for i in range(self.env.num_agents):
+                if len(episode_buffers[i]) != 0:
+                    v_l,p_l,e_l,g_n,v_n = self.train(
+                        episode_buffers[i],
+                        gamma,
+                        0.0)
+                    
+                    info[i,0] = v_l
+                    info[i,1] = p_l
+                    info[i,2] = e_l
+                    info[i,3] = g_n
+                    info[i,4] = v_n
+            
+            self.update_local_model()
                     
             # Save stats to Tensorboard every 5 episodes
             if self.episode_count % 5 == 0 and self.episode_count != 0:
@@ -266,4 +267,4 @@ def start_train(resume):
     print ("Looks like we're done")
 
 if __name__ == "__main__":
-    start_train()
+    start_train(False)
