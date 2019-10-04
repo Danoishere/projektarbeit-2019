@@ -5,29 +5,30 @@ class CurriculumManager:
         self.next_level = 1
         self.stop_training = False
         self.authorized_worker = authorized_worker
+        self.level_switch_activated = False
         self.curriculum = {
             0: {
-                'next_after_successrate' : 0.95,
+                'next_after_successrate' : 0.92,
                 'level_generator' : lambda env: self.change_grid_round0(env)
             },
             1: {
-                'next_after_successrate' : 0.95,
+                'next_after_successrate' : 0.92,
                 'level_generator' : lambda env: self.change_grid_round1(env)
             },
             2: {
-                'next_after_successrate' : 0.95,
+                'next_after_successrate' : 0.92,
                 'level_generator' : lambda env: self.change_grid_round2(env)
             },
             3: {
-                'next_after_successrate' : 0.95,
+                'next_after_successrate' : 0.92,
                 'level_generator' : lambda env: self.change_grid_round3(env)
             },
             4: {
-                'next_after_successrate' : 0.95,
+                'next_after_successrate' : 0.92,
                 'level_generator' : lambda env: self.change_grid_round4(env)
             },
             5: {
-                'next_after_successrate' : 1,
+                'next_after_successrate' : 0.92,
                 'level_generator' : lambda env: self.change_grid_round5(env)
             }
         }
@@ -40,14 +41,18 @@ class CurriculumManager:
 
 
     def report_success_rate(self, success_rate, worker_name):
-        if self.authorized_worker != worker_name:
+        if self.authorized_worker != worker_name or self.level_switch_activated:
             return
 
         if success_rate >= self.curriculum[self.current_level]['next_after_successrate']:
+            print('Switching to curriculum level', self.current_level + 1,'with a success rate of ', success_rate)
+            self.level_switch_activated = True
             self.next_level = self.current_level + 1
             self.coordinator.request_stop()
+            
 
     def switch_to_next_level(self):
+        self.level_switch_activated = False
         if self.next_level == self.number_of_levels:
             self.stop_training = True
         else:

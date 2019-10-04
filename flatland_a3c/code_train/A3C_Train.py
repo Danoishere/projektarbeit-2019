@@ -51,11 +51,7 @@ class Worker():
         self.curr_manager = curriculum_manager
         self.global_model = global_model
         self.trainer = trainer
-        self.episode_count = start_episode
-        self.episode_rewards = []
-        self.episode_lengths = []
-        self.episode_success = []
-        self.episode_mean_values = []
+        self.episode_count = start_episod
         self.summary_writer = tf.summary.create_file_writer(const.tensorboard_path + 'train_' + str(name))
         
         #Create the local copy of the network and the tensorflow op to copy global paramters to local network
@@ -93,8 +89,12 @@ class Worker():
         return v_l / len(rollout),p_l / len(rollout),e_l / len(rollout), g_n_a, g_n_c, v_n_a, v_n_c
     
     def work(self, max_episode_length, gamma, coord):
-        total_steps = 0
         print ("Starting worker " + str(self.number))
+
+        self.episode_rewards = []
+        self.episode_lengths = []
+        self.episode_success = []
+        self.episode_mean_values = []
 
         # Let the curriculum manager update the level to the current difficulty
         self.curr_manager.update_env_to_curriculum_level(self.env)
@@ -146,7 +146,6 @@ class Worker():
                         episode_reward += agent_reward
                 
                 obs = next_obs                  
-                total_steps += 1
                 episode_step_count += 1
                 done_last_step = dict(done)
 
