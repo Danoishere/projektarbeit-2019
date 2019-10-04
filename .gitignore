@@ -110,3 +110,4 @@ flatland_a3c/.vscode/settings.json
 flatland_a3c/tensorboard/*
 doc/pipeline/~$$Pipeline.~vsdx
 
+flatland_a3c/tensorboard/*

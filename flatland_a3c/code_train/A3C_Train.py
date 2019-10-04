@@ -26,19 +26,9 @@ from code_input.network import AC_Network
 from code_util.checkpoint import CheckpointManager
 import code_input.input_params as params
 
-# ### Helper Functions
-
 # Discounting function used to calculate discounted returns.
 def discount(x, gamma):
     return scipy.signal.lfilter([1], [1, -gamma], x[::-1], axis=0)[::-1]
-
-#Used to initialize weights for policy and value output layers
-def normalized_columns_initializer(std=1.0):
-    def _initializer(shape, dtype=None, partition_info=None):
-        out = np.random.randn(*shape).astype(np.float32)
-        out *= std / np.sqrt(np.square(out).sum(axis=0, keepdims=True))
-        return tf.constant(out)
-    return _initializer
 
 def max_length_sublist(top_list):
     max_len = 0
@@ -62,7 +52,7 @@ class Worker():
         self.episode_lengths = []
         self.episode_success = []
         self.episode_mean_values = []
-        self.summary_writer = tf.summary.create_file_writer("tensorboard")
+        self.summary_writer = tf.summary.create_file_writer("tensorboard/train_" + str(name))
         self.env = RailEnvWrapper()
 
         #Create the local copy of the network and the tensorflow op to copy global paramters to local network
@@ -227,7 +217,7 @@ class Worker():
             episode_count += 1
             print('Episode', episode_count,'of',self.name,'with',episode_step_count,'steps, reward of',episode_reward, ', mean entropy of', np.mean(info[:,2]))
 
-load_model = True
+load_model = False
 
 def start_train():
     with tf.device("/cpu:0"): 

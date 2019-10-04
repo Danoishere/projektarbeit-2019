@@ -8,11 +8,13 @@ import numpy as np
 import code_input.input_params as params
 
 class AC_Network():
-    def __init__(self, global_model, trainer):
+    def __init__(self, global_model, trainer, create_networks=True):
         self.global_model = global_model
         self.trainer = trainer
-        self.actor_model = self.actor_network()
-        self.critic_model = self.critic_network()
+
+        if create_networks:
+            self.actor_model = self.actor_network()
+            self.critic_model = self.critic_network()
 
     def critic_network(self):
         input_map =  layers.Input(shape=list(params.map_state_size) ,dtype=tf.float32)
