@@ -36,15 +36,10 @@ class RunStatistics:
         return str(self.to_dict())
 
 class Evaluator:
-    def __init__(self):
+    def __init__(self, get_policy_method, observation_builder):
         self.stats = []
-        self.env = RailEnvWrapper()
-
-    def set_control_functions(self,get_policy, observation):
-        """ set model function actions = func(observations,num_agents)
-        """
-        self.get_policy = get_policy
-        self.observation = observation
+        self.get_policy = get_policy_method
+        self.env = RailEnvWrapper(observation_builder)
 
     def sum_up_dict(self,dict, num_agents):
         val = 0

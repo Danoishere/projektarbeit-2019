@@ -8,23 +8,23 @@ class CurriculumManager:
         self.authorized_worker = authorized_worker
         self.curriculum = {
             0: {
-                'next_after_successrate' : 0.97,
+                'next_after_successrate' : 0.6,
                 'level_generator' : lambda env: self.change_grid_round0(env)
             },
             1: {
-                'next_after_successrate' : 0.95,
+                'next_after_successrate' : 0.65,
                 'level_generator' : lambda env: self.change_grid_round1(env)
             },
             2: {
-                'next_after_successrate' : 0.93,
+                'next_after_successrate' : 0.65,
                 'level_generator' : lambda env: self.change_grid_round1(env)
             },
             3: {
-                'next_after_successrate' : 0.91,
+                'next_after_successrate' : 0.65,
                 'level_generator' : lambda env: self.change_grid_round1(env)
             },
             4: {
-                'next_after_successrate' : 0.88,
+                'next_after_successrate' : 0.65,
                 'level_generator' : lambda env: self.change_grid_round1(env)
             },
             5: {
@@ -46,12 +46,12 @@ class CurriculumManager:
 
         if success_rate > self.best_success_rate:
             self.best_success_rate = success_rate
-            if self.curriculum[self.current_level]['next_after_success'] > success_rate:
+            if success_rate > self.curriculum[self.current_level]['next_after_successrate']:
                 self.next_level = self.current_level + 1
                 self.coordinator.request_stop()
 
     def switch_to_next_level(self):
-        if self.next_level == number_of_levels:
+        if self.next_level == self.number_of_levels:
             self.stop_training = True
         else:
             self.current_level = self.next_level

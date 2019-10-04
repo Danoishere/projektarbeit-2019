@@ -2,17 +2,15 @@
 from flatland.envs.rail_env import RailEnv
 from flatland.envs.rail_generators import complex_rail_generator, sparse_rail_generator
 from flatland.envs.schedule_generators import complex_schedule_generator, sparse_schedule_generator, random_schedule_generator
-from deliverables.observation import CombinedObservation
 import random
 
 class RailEnvWrapper():
     initial_step_penalty = -2
     global_reward = 10
 
-    def __init__(self, width=14, height=14, num_agents=2):
+    def __init__(self, observation_builder, width=14, height=14, num_agents=2):
         self.num_agents = num_agents
-
-        # Default Rail-Gen
+        
         self.schedule_gen = random_schedule_generator()
         self.rail_gen = complex_rail_generator(
             nr_start_goal=6,
@@ -22,7 +20,7 @@ class RailEnvWrapper():
         )
 
         self.done_last_step = {}
-        self.observation = CombinedObservation([11,11],2)
+        self.observation_builder = observation_builder
         self.dist = {}
 
         self.env = self.generate_env(width, height)
@@ -88,7 +86,7 @@ class RailEnvWrapper():
             self.rail_gen,
             schedule_generator = self.schedule_gen,
             number_of_agents=self.num_agents,
-            obs_builder_object=self.observation)
+            obs_builder_object=self.observation_builder)
 
         self.env.global_reward = self.global_reward
         self.env.num_agents = self.num_agents

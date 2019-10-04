@@ -83,6 +83,7 @@ class Player():
                     
         #The Below code is related to setting up the Flatland environment
         self.env = RailEnvWrapper(
+            model.get_observation_builder(),
             width=40,
             height=40,
             num_agents=num_agents

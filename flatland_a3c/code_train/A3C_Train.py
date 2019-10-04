@@ -43,26 +43,24 @@ def max_length_sublist(top_list):
     return max_len
 
 class Worker():
-    def __init__(self,name,global_model,trainer,checkpoint_manager, curriculum_manager,global_episodes):
+    def __init__(self,name,global_model,trainer,checkpoint_manager, curriculum_manager, start_episode):
         self.name = "worker_" + str(name)
         self.number = name        
         self.checkpoint_manager = checkpoint_manager
         self.curr_manager = curriculum_manager
         self.global_model = global_model
         self.trainer = trainer
-        self.global_episodes = global_episodes
-        self.increment = self.global_episodes.assign_add(1)
+        self.episode_count = start_episode
         self.episode_rewards = []
         self.episode_lengths = []
         self.episode_success = []
         self.episode_mean_values = []
         self.summary_writer = tf.summary.create_file_writer(const.tensorboard_path + 'train_' + str(name))
-        self.env = RailEnvWrapper()
-
+        
         #Create the local copy of the network and the tensorflow op to copy global paramters to local network
         self.local_model = AC_Network(global_model, trainer)
         self.update_local_model = lambda: self.local_model.update_from(self.global_model)
-        self.actions = [0,1,2,3,4]
+        self.env = RailEnvWrapper(self.local_model.get_observation_builder())
         
     def train(self, rollout, gamma, bootstrap_value):
         ''' Gradient decent for a SINGLE agent'''
@@ -93,8 +91,7 @@ class Worker():
 
         return v_l / len(rollout),p_l / len(rollout),e_l / len(rollout), g_n,v_n
     
-    def work(self, max_episode_length, gamma, coord, start_episode):
-        episode_count =  start_episode
+    def work(self, max_episode_length, gamma, coord):
         total_steps = 0
         print ("Starting worker " + str(self.number))
 
@@ -202,17 +199,17 @@ class Worker():
                 self.update_local_model()
                     
             # Save stats to Tensorboard every 5 episodes
-            if episode_count % 5 == 0 and episode_count != 0:
+            if self.episode_count % 5 == 0 and self.episode_count != 0:
                 mean_length = np.mean(self.episode_lengths[-100:])
                 mean_value = np.mean(self.episode_mean_values[-100:])
                 mean_success_rate = np.mean(self.episode_success[-100:])
                 mean_reward = np.mean(self.episode_rewards[-100:])
                 
-                self.checkpoint_manager.try_save_model(episode_count, mean_reward, self.name)
+                self.checkpoint_manager.try_save_model(self.episode_count, mean_reward, self.name)
                 self.curr_manager.report_success_rate(mean_success_rate, self.name)
                 
                 with self.summary_writer.as_default():
-                    episode_count = np.int32(episode_count)
+                    episode_count = np.int32(self.episode_count)
                     tf.summary.scalar('Perf/Reward', mean_reward, step=episode_count)
                     tf.summary.scalar('Perf/Length', mean_length, step=episode_count)
                     tf.summary.scalar('Perf/Value', mean_value, step=episode_count)
@@ -227,49 +224,41 @@ class Worker():
             if self.name == 'worker_0':
                 #sess.run(self.increment)
                 pass
-            episode_count += 1
-            print('Episode', episode_count,'of',self.name,'with',episode_step_count,'steps, reward of',episode_reward, ', mean entropy of', np.mean(info[:,2]))
+            self.episode_count += 1
+            print('Episode', self.episode_count,'of',self.name,'with',episode_step_count,'steps, reward of',episode_reward, ', mean entropy of', np.mean(info[:,2]), ', curriculum level ', self.curr_manager.current_level)
 
-load_model = True
+def start_train(resume):
+    trainer = RMSprop(learning_rate=1e-4)
+    global_model = AC_Network(None,None)
+    num_workers = min([multiprocessing.cpu_count(),const.max_workers])
+    coord = tf.train.Coordinator()
 
-def start_train():
-    with tf.device("/cpu:0"): 
-        global_episodes = tf.Variable(0,dtype=tf.int32,name='global_episodes',trainable=False)
-        trainer = RMSprop(learning_rate=1e-4)
-        global_model = AC_Network(None,None)
-        num_workers = multiprocessing.cpu_count() 
+    # Curriculum-manager manages the generation of the levels
+    curr_manager = CurriculumManager(coord, 'worker_0')
 
-        coord = tf.train.Coordinator()
-
-        # Curriculum-manager manages the generation of the levels
-        curr_manager = CurriculumManager(coord, 'worker_0')
-
-        # Checkpoint-manager saves model-checkpoints
-        ckpt_manager = CheckpointManager(global_model,curr_manager,'worker_0')
-
-        
-
-        workers = []
-        for i in range(num_workers):
-            workers.append(Worker(i,global_model,trainer,ckpt_manager, curr_manager, global_episodes))
+    # Checkpoint-manager saves model-checkpoints
+    ckpt_manager = CheckpointManager(global_model,curr_manager,'worker_0')
 
     start_episode = 0
-
-    
-    if load_model == True:
+    if resume == True:
         print ('Loading Model...')
         start_episode = ckpt_manager.load_checkpoint_model()
 
-    worker_threads = []
+    workers = []
+    for i in range(num_workers):
+        workers.append(Worker(i,global_model,trainer,ckpt_manager, curr_manager, start_episode))
 
+    worker_threads = []
     while not curr_manager.stop_training:
         for worker in workers:
-            worker_work = lambda: worker.work(params.max_episode_length,params.gamma,coord, start_episode)
+            worker_work = lambda: worker.work(params.max_episode_length,params.gamma,coord)
             t = threading.Thread(target=(worker_work))
             t.start()
             sleep(0.5)
             worker_threads.append(t)
+
         coord.join(worker_threads)
+        coord.clear_stop()
         curr_manager.switch_to_next_level()
 
     print ("Looks like we're done")

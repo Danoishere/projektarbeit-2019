@@ -18,6 +18,7 @@ import pprint
 from collections import deque
 from flatland.core.grid.grid4 import Grid4TransitionsEnum
 from flatland.core.grid.grid_utils import coordinate_to_position
+from flatland.envs.predictions import ShortestPathPredictorForRailEnv
 
 class CombinedObservation(ObservationBuilder):
     """
@@ -25,7 +26,6 @@ class CombinedObservation(ObservationBuilder):
     """
     def __init__(self, size_, max_depth, predictor=None):
         
-
         # Tree
         super().__init__()
         self.max_depth = max_depth
@@ -39,7 +39,7 @@ class CombinedObservation(ObservationBuilder):
         self.tree_observation_space = [size * self.observation_dim]
         self.location_has_agent = {}
         self.location_has_agent_direction = {}
-        self.predictor = predictor
+        self.predictor = ShortestPathPredictorForRailEnv()
         self.agents_previous_reset = None
         self.tree_explored_actions = [1, 2, 3, 0]
         self.tree_explorted_actions_char = ['L', 'F', 'R', 'B']

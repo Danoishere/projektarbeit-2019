@@ -8,9 +8,8 @@ import numpy as np
 def run_benchmark():
     model = AC_Network(None,None,False)
     model.load_model(const.model_path, const.suffix_best)
-
-    evaluator = Evaluator()
-    evaluator.set_control_functions(model.get_actions, CombinedObservation([11,11],2))
+    
+    evaluator = Evaluator(model.get_actions, model.get_observation_builder())
     evaluator.start_evaluation()
     evaluator.save_stats_to_csv('benchmark')
 

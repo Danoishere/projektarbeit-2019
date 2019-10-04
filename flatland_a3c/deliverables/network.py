@@ -6,6 +6,7 @@ from tensorflow.keras.models import Model,load_model
 
 import numpy as np
 import deliverables.input_params as params
+from deliverables.observation import CombinedObservation
 
 class AC_Network():
     def __init__(self, global_model, trainer, create_networks=True):
@@ -91,18 +92,8 @@ class AC_Network():
             outputs=policy)
 
     def update_from(self, from_model):
-        from_vars = from_model.actor_model.trainable_variables
-        to_vars = self.actor_model.trainable_variables
-        op_holder = []
-        for from_var,to_var in zip(from_vars,to_vars):
-            op_holder.append(to_var.assign(from_var))
-
-        from_vars = from_model.critic_model.trainable_variables
-        to_vars = self.critic_model.trainable_variables
-        op_holder = []
-        for from_var,to_var in zip(from_vars,to_vars):
-            op_holder.append(to_var.assign(from_var))
-        return op_holder
+        self.actor_model.set_weights(from_model.actor_model.get_weights())
+        self.critic_model.set_weights(from_model.critic_model.get_weights())
 
 
     def save_model(self, model_path, suffix):
@@ -177,10 +168,6 @@ class AC_Network():
 
     def get_values(self, obs, num_agents):
         return self.critic_model.predict([obs[0],obs[1],obs[2],obs[3]])
-        '''
-        values = {}
-        for i in range(num_agents):
-            values[i] = predcition[i]
 
-        return values
-        '''
+    def get_observation_builder(self):
+        return CombinedObservation([11,11],2)

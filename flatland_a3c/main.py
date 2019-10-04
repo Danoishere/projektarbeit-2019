@@ -9,12 +9,13 @@ parser = argparse.ArgumentParser(description='Flatland with A3C')
 parser.add_argument('--train', action='store_true')
 parser.add_argument('--play', action='store_true')
 parser.add_argument('--benchmark', action='store_true')
+parser.add_argument('--resume', action='store_true')
 
 if __name__ == "__main__":
     args = parser.parse_args()
     if args.play:
         play.start_play()
     elif args.train:
-        train.start_train()
+        train.start_train(args.resume)
     elif args.benchmark:
         benchmark.run_benchmark()
