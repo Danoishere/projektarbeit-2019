@@ -21,7 +21,7 @@ class CheckpointManager:
         return os.path.exists(file_name)
 
     def load_best_model(self):
-        self.global_model.load_model(const.model_path, 'best')
+        self.global_model.load_model(const.model_path, const.suffix_best)
 
     def load_checkpoint_model(self):
         if self.does_file_exist(const.checkpoint_file):
@@ -29,10 +29,10 @@ class CheckpointManager:
                 last_training = json.load(f)
             self.best_reward = last_training['best_reward']
             self.last_ckpt_on_episode_nr = last_training['last_ckpt_on_episode_nr']
-            self.global_model.load_model(const.model_path, 'checkpoint')
+            self.global_model.load_model(const.model_path, const.suffix_checkpoint)
             return self.last_ckpt_on_episode_nr
         else:
-            raise ValueError('No checkpoint.json found')
+            raise ValueError('No checkpoint.json found at', const.checkpoint_file)
 
     def try_save_model(self, episode_nr, reward, worker_name):
         if worker_name != self.authorized_worker:
@@ -42,11 +42,11 @@ class CheckpointManager:
             if self.last_save_best_on_episode_nr + self.save_best_after_min <=  episode_nr:
                 self.best_reward = reward
                 self.last_save_best_on_episode_nr = episode_nr
-                self.global_model.save_model(const.model_path, 'best')
+                self.global_model.save_model(const.model_path, const.suffix_best)
 
         if self.last_ckpt_on_episode_nr + self.save_ckpt_after_min <=  episode_nr:
             self.last_ckpt_on_episode_nr = episode_nr
-            self.global_model.save_model(const.model_path, 'checkpoint')
+            self.global_model.save_model(const.model_path, const.suffix_checkpoint)
             with open(const.checkpoint_file, 'w') as f:  
                 json.dump({
                     'best_reward' : float(self.best_reward),

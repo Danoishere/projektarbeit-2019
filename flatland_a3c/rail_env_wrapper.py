@@ -2,7 +2,7 @@
 from flatland.envs.rail_env import RailEnv
 from flatland.envs.rail_generators import complex_rail_generator, sparse_rail_generator
 from flatland.envs.schedule_generators import complex_schedule_generator, sparse_schedule_generator, random_schedule_generator
-from code_input.observation import CombinedObservation
+from deliverables.observation import CombinedObservation
 import random
 
 class RailEnvWrapper():
@@ -129,10 +129,10 @@ class RailEnvWrapper():
                 grid_mode=rail_gen_params['grid_mode'],
                 enhance_intersection=rail_gen_params['enhance_intersection'],
                 seed=seed)
+
+            self.schedule_gen = sparse_schedule_generator()
         else:
-            pass
-            # raise new 
-            # Error!
+            raise ValueError('Please specify either "complex" or "sparse" as rail_type')
 
         self.generate_env(width, height)
             

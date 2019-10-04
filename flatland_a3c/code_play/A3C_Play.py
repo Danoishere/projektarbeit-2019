@@ -26,7 +26,7 @@ from multiprocess import JoinableQueue, Manager, Process, Queue
 from tensorflow.keras import optimizers
 
 from rail_env_wrapper import RailEnvWrapper
-from code_input.observation import CombinedObservation
+from deliverables.observation import CombinedObservation
 
 class Consumer(multiprocess.Process):
     def __init__(self, name, task_queue, result_queue, model_path, model_name):

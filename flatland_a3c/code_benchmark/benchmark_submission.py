@@ -1,35 +1,16 @@
-from code_input.observation import CombinedObservation
+from deliverables.observation import CombinedObservation
 from tensorflow.keras import models
 from code_benchmark.benchmark import Evaluator
+from deliverables.network import AC_Network
+import code_util.constants as const 
 import numpy as np
 
-
 def run_benchmark():
-
-    submission_id = 'example_submission'
-
-    # Todo: Replace by onedrive
-    model_path = 'submissions/' + submission_id
-    model = models.load_model(model_path + '/best_model.h5')
-
-    def make_prediction(obs,num_agents):
-        predcition = model.predict([obs[0],obs[1],obs[2],obs[3]])
-        actions = {}
-        for i in range(num_agents):
-            a_dist = predcition[0][i]
-            a = np.random.choice([0,1,2,3,4], p = a_dist)
-            actions[i] = a
-
-        return actions
-
-    submission = {
-        'observation': CombinedObservation([11,11],2),
-        'get_policy': make_prediction
-    }
-
+    model = AC_Network(None,None,False)
+    model.load_model(const.model_path, const.suffix_best)
 
     evaluator = Evaluator()
-    evaluator.set_benchmark_submission(submission)
+    evaluator.set_control_functions(model.get_actions, CombinedObservation([11,11],2))
     evaluator.start_evaluation()
     evaluator.save_stats_to_csv('benchmark')
 

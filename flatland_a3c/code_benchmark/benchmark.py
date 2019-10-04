@@ -38,16 +38,13 @@ class RunStatistics:
 class Evaluator:
     def __init__(self):
         self.stats = []
-        self.num_agents = 1
-        self.grid_width = 20
-        self.grid_height = 20
         self.env = RailEnvWrapper()
 
-    def set_benchmark_submission(self,benchmark_submission):
+    def set_control_functions(self,get_policy, observation):
         """ set model function actions = func(observations,num_agents)
         """
-        self.get_policy = benchmark_submission['get_policy']
-        self.observation = benchmark_submission['observation']
+        self.get_policy = get_policy
+        self.observation = observation
 
     def sum_up_dict(self,dict, num_agents):
         val = 0
@@ -70,7 +67,7 @@ class Evaluator:
         obs = initial_obs
 
         while not done and step < self.env.max_steps:
-            actions = self.get_policy(obs, self.num_agents)
+            actions = self.get_policy(obs, self.env.num_agents)
             obs, rewards, agents_done = self.env.step(actions)
             done = agents_done['__all__']
             total_reward += self.sum_up_dict(rewards, num_agents)
@@ -81,11 +78,11 @@ class Evaluator:
 
     def save_stats(self, num_agents_done, total_reward, steps_needed, round):
         run_stats = RunStatistics(
-                        self.num_agents,
+                        self.env.num_agents,
                         num_agents_done,
                         total_reward,
-                        self.grid_width,
-                        self.grid_height,
+                        self.env.width,
+                        self.env.height,
                         steps_needed,
                         round
                     )
@@ -155,7 +152,9 @@ class Evaluator:
                 'num_trainstations': 20,  # Number of possible start/targets on map
                 'min_node_dist': 6,  # Minimal distance of nodes
                 'node_radius': 3, # Proximity of stations to city center
-                'num_neighb': 3 # Number of connections to other cities
+                'num_neighb': 3, # Number of connections to other cities
+                'grid_mode': True,
+                'enhance_intersection':True
             },  
             seed=SEED  
         )
@@ -168,12 +167,14 @@ class Evaluator:
             max_steps = 40,
             rail_type = 'sparse',
             rail_gen_params = {
-                'num_cities': 10,  # Number of cities in map
-                'num_intersections': 30,  # Number of interesections in map
-                'num_trainstations': 12,  # Number of possible start/targets on map
-                'min_node_dist': 6,  # Minimal distance of nodes
+                'num_cities': 12,  # Number of cities in map
+                'num_intersections': 15,  # Number of interesections in map
+                'num_trainstations': 20,  # Number of possible start/targets on map
+                'min_node_dist': 10,  # Minimal distance of nodes
                 'node_radius': 3, # Proximity of stations to city center
-                'num_neighb': 5 # Number of connections to other cities
+                'num_neighb': 5, # Number of connections to other cities
+                'grid_mode': False,
+                'enhance_intersection':False
             },  
             seed=SEED
         )
@@ -181,7 +182,7 @@ class Evaluator:
     def run_episodes(self, episode_no, num_episodes):
         for r in range(num_episodes):
             obs = self.env.reset()
-            num_agents_done, total_reward, steps_needed = self.run_to_end(obs, self.num_agents)
+            num_agents_done, total_reward, steps_needed = self.run_to_end(obs, self.env.num_agents)
             self.save_stats(num_agents_done, total_reward, steps_needed, episode_no)
 
     def start_evaluation(self):

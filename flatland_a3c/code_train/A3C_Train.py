@@ -22,9 +22,9 @@ from random import choice
 from time import sleep
 from time import time
 from rail_env_wrapper import RailEnvWrapper
-from code_input.network import AC_Network
 from code_util.checkpoint import CheckpointManager
-import code_input.input_params as params
+from deliverables.network import AC_Network
+import deliverables.input_params as params
 
 # Discounting function used to calculate discounted returns.
 def discount(x, gamma):
@@ -217,7 +217,7 @@ class Worker():
             episode_count += 1
             print('Episode', episode_count,'of',self.name,'with',episode_step_count,'steps, reward of',episode_reward, ', mean entropy of', np.mean(info[:,2]))
 
-load_model = False
+load_model = True
 
 def start_train():
     with tf.device("/cpu:0"): 
