@@ -1,35 +1,34 @@
 class CurriculumManager:
     def __init__(self, coordinator, authorized_worker):
         self.coordinator = coordinator
-        self.best_success_rate = 0
         self.current_level = 0
         self.next_level = 1
         self.stop_training = False
         self.authorized_worker = authorized_worker
         self.curriculum = {
             0: {
-                'next_after_successrate' : 0.6,
+                'next_after_successrate' : 0.95,
                 'level_generator' : lambda env: self.change_grid_round0(env)
             },
             1: {
-                'next_after_successrate' : 0.65,
+                'next_after_successrate' : 0.95,
                 'level_generator' : lambda env: self.change_grid_round1(env)
             },
             2: {
-                'next_after_successrate' : 0.65,
-                'level_generator' : lambda env: self.change_grid_round1(env)
+                'next_after_successrate' : 0.95,
+                'level_generator' : lambda env: self.change_grid_round2(env)
             },
             3: {
-                'next_after_successrate' : 0.65,
-                'level_generator' : lambda env: self.change_grid_round1(env)
+                'next_after_successrate' : 0.95,
+                'level_generator' : lambda env: self.change_grid_round3(env)
             },
             4: {
-                'next_after_successrate' : 0.65,
-                'level_generator' : lambda env: self.change_grid_round1(env)
+                'next_after_successrate' : 0.95,
+                'level_generator' : lambda env: self.change_grid_round4(env)
             },
             5: {
                 'next_after_successrate' : 1,
-                'level_generator' : lambda env: self.change_grid_round1(env)
+                'level_generator' : lambda env: self.change_grid_round5(env)
             }
         }
 
@@ -44,11 +43,9 @@ class CurriculumManager:
         if self.authorized_worker != worker_name:
             return
 
-        if success_rate > self.best_success_rate:
-            self.best_success_rate = success_rate
-            if success_rate > self.curriculum[self.current_level]['next_after_successrate']:
-                self.next_level = self.current_level + 1
-                self.coordinator.request_stop()
+        if success_rate >= self.curriculum[self.current_level]['next_after_successrate']:
+            self.next_level = self.current_level + 1
+            self.coordinator.request_stop()
 
     def switch_to_next_level(self):
         if self.next_level == self.number_of_levels:
@@ -87,8 +84,8 @@ class CurriculumManager:
         )
 
 
-    def change_grid_round2(self):
-        self.env.update_env_with_params(
+    def change_grid_round2(self, env):
+        env.update_env_with_params(
             width=20,
             height=20,
             num_agents=1,
@@ -102,8 +99,8 @@ class CurriculumManager:
             }
         )
     
-    def change_grid_round3(self):
-        self.env.update_env_with_params(
+    def change_grid_round3(self, env):
+        env.update_env_with_params(
             width=20,
             height=20,
             num_agents=2,
@@ -117,11 +114,11 @@ class CurriculumManager:
             }
         )
 
-    def change_grid_round4(self):
-        self.env.update_env_with_params(
+    def change_grid_round4(self, env):
+        env.update_env_with_params(
             width=20,
             height=20,
-            num_agents=2,
+            num_agents=2,           
             max_steps = 40,
             rail_type = 'sparse',
             rail_gen_params = {
@@ -136,8 +133,8 @@ class CurriculumManager:
             }
         )
 
-    def change_grid_round5(self):
-        self.env.update_env_with_params(
+    def change_grid_round5(self, env):
+        env.update_env_with_params(
             width=60,
             height=60,
             num_agents=6,

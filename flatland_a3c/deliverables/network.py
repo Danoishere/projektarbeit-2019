@@ -115,7 +115,7 @@ class AC_Network():
         actions_onehot = tf.one_hot(actions, params.number_of_actions)
         responsible_outputs = tf.reduce_sum(policy * actions_onehot, [1])
         entropy = - tf.reduce_sum(policy * tf.math.log(policy + 1e-10))
-        return -tf.reduce_sum(tf.math.log(responsible_outputs  + 1e-10)*advantages) - entropy * 0.05, entropy
+        return -tf.reduce_sum(tf.math.log(responsible_outputs  + 1e-10)*advantages) - entropy * params.entropy_factor, entropy
 
 
     def train(self, target_v, advantages, actions, obs):
@@ -125,11 +125,11 @@ class AC_Network():
             v_loss = self.value_loss(target_v,value)
 
         v_local_vars = self.critic_model.trainable_variables
-        gradients = t.gradient(v_loss, v_local_vars)
-        var_norms = tf.linalg.global_norm(v_local_vars)
-        gradients, grad_norms = tf.clip_by_global_norm(gradients, 3.0)
+        gradients_v = t.gradient(v_loss, v_local_vars)
+        var_norms_critic = tf.linalg.global_norm(v_local_vars)
+        gradients_v, grad_norms = tf.clip_by_global_norm(gradients_v, params.gradient_norm_critic)
         global_vars = self.global_model.critic_model.trainable_variables
-        apply_grads = self.trainer.apply_gradients(zip(gradients, global_vars))
+        #self.trainer.apply_gradients(zip(gradients_v, global_vars))
 
         # Policy loss
         with tf.GradientTape() as t:
@@ -137,13 +137,15 @@ class AC_Network():
             p_loss, entropy = self.policy_loss(advantages, actions, policy)
 
         p_local_vars = self.actor_model.trainable_variables
-        gradients = t.gradient(p_loss, p_local_vars)
-        var_norms = tf.linalg.global_norm(p_local_vars)
-        gradients, grad_norms = tf.clip_by_global_norm(gradients, 3.0)
+        gradients_p = t.gradient(p_loss, p_local_vars)
+        var_norms_actor = tf.linalg.global_norm(p_local_vars)
+        gradients_p, grad_norms = tf.clip_by_global_norm(gradients_p, params.gradient_norm_actor)
         global_vars = self.global_model.actor_model.trainable_variables
-        apply_grads = self.trainer.apply_gradients(zip(gradients, global_vars))
+
+        gradients = gradients_p + gradients_v
+        self.trainer.apply_gradients(zip(gradients, global_vars))
         
-        return v_loss, p_loss, entropy, grad_norms, var_norms
+        return v_loss, p_loss, entropy, grad_norms, var_norms_actor, var_norms_critic
 
     def get_actions_and_values(self, obs, num_agents):
         predcition = self.actor_model.predict([obs[0],obs[1],obs[2],obs[3]])

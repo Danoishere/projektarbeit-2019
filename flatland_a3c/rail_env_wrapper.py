@@ -4,6 +4,8 @@ from flatland.envs.rail_generators import complex_rail_generator, sparse_rail_ge
 from flatland.envs.schedule_generators import complex_schedule_generator, sparse_schedule_generator, random_schedule_generator
 import random
 
+from deliverables.reward import modify_reward
+
 class RailEnvWrapper():
     initial_step_penalty = -2
     global_reward = 10
@@ -30,7 +32,7 @@ class RailEnvWrapper():
     def step(self, actions):
         self.env.step_penalty = -2*1.02**self.episode_step_count
         next_obs, rewards, done, _ = self.env.step(actions)
-        self.num_of_done_agents = self.modify_reward(rewards, done, self.done_last_step, self.num_of_done_agents, self.dist)
+        self.num_of_done_agents = modify_reward(rewards, self.env, done, self.done_last_step, self.num_of_done_agents, self.dist)
         self.done_last_step = done
         return next_obs, rewards, done
     
@@ -47,35 +49,7 @@ class RailEnvWrapper():
         self.env.step_penalty = self.initial_step_penalty
         self.episode_step_count = 0
         return obs
-        
 
-    def modify_reward(self, rewards, done, done_last_step, num_of_done_agents, shortest_dist):
-        for i in range(self.env.num_agents):
-            if not done_last_step[i] and done[i]:
-                num_of_done_agents += 1
-                # Hand out some reward to all the agents
-                for j in range(self.env.num_agents):
-                    rewards[j] += 5  
-
-                # Give some reward to our agent
-                rewards[i] += 2**num_of_done_agents * 5
-        
-        for i in range(self.env.num_agents):
-            agent = self.env.agents[i]
-            path_to_target = agent.path_to_target
-            current_path_length = len(path_to_target)
-            shortest_path_length = shortest_dist[i]
-
-        # Adding reward for getting closer to goal
-        if current_path_length < shortest_path_length:
-            rewards[i] +=1
-            shortest_dist[i] = current_path_length
-
-        # Subtract reward for getting further away
-        if current_path_length > shortest_path_length:
-            rewards[i] -= 1
-    
-        return num_of_done_agents
 
     def generate_env(self, width, height):
         self.width = width
