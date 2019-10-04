@@ -1,9 +1,5 @@
 """
-Author: S.Huschauer
-Date: 31.08.2019
-Email: huschste@students.zhaw.ch
-Associated with ZHAW datalab
-This code is not exhaustive and "is as it is"!
+On basis of the work of S. Huschauer and the Flatland-Environment-Tree-Observation
 """
 
 import numpy as np
@@ -21,10 +17,8 @@ from flatland.core.grid.grid_utils import coordinate_to_position
 from flatland.envs.predictions import ShortestPathPredictorForRailEnv
 
 class CombinedObservation(ObservationBuilder):
-    """
-    ObservationBuilder for raw observations.
-    """
-    def __init__(self, size_, max_depth, predictor=None):
+
+    def __init__(self, size_, max_depth):
         
         # Tree
         super().__init__()
