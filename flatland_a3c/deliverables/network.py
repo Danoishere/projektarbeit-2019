@@ -128,8 +128,8 @@ class AC_Network():
         gradients_v = t.gradient(v_loss, v_local_vars)
         var_norms_critic = tf.linalg.global_norm(v_local_vars)
         gradients_v, grad_norms_v = tf.clip_by_global_norm(gradients_v, params.gradient_norm_critic)
-        global_vars = self.global_model.critic_model.trainable_variables
-        self.trainer.apply_gradients(zip(gradients_v, global_vars))
+        global_vars_v = self.global_model.critic_model.trainable_variables
+        self.trainer.apply_gradients(zip(gradients_v, global_vars_v))
 
         # Policy loss
         with tf.GradientTape() as t:
@@ -140,9 +140,9 @@ class AC_Network():
         gradients_p = t.gradient(p_loss, p_local_vars)
         var_norms_actor = tf.linalg.global_norm(p_local_vars)
         gradients_p, grad_norms_p = tf.clip_by_global_norm(gradients_p, params.gradient_norm_actor)
-        global_vars = self.global_model.actor_model.trainable_variables
+        global_vars_p = self.global_model.actor_model.trainable_variables
 
-        self.trainer.apply_gradients(zip(gradients_p, global_vars))
+        self.trainer.apply_gradients(zip(gradients_p, global_vars_p))
         return v_loss, p_loss, entropy, grad_norms_p, grad_norms_v, var_norms_actor, var_norms_critic
 
     def get_actions_and_values(self, obs, num_agents):
