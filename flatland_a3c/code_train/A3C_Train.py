@@ -18,6 +18,7 @@ from tensorflow.keras import layers
 from tensorflow.keras.optimizers import RMSprop
 from tensorflow.keras.models import Model
 
+from datetime import datetime
 from random import choice
 from time import sleep
 from time import time
@@ -221,14 +222,11 @@ class Worker():
                     tf.summary.scalar('Losses/Var Norm', np.mean(info[:,4]), step=episode_count)
                     self.summary_writer.flush()
 
-            if self.name == 'worker_0':
-                #sess.run(self.increment)
-                pass
             self.episode_count += 1
             print('Episode', self.episode_count,'of',self.name,'with',episode_step_count,'steps, reward of',episode_reward, ', mean entropy of', np.mean(info[:,2]), ', curriculum level ', self.curr_manager.current_level)
 
 def start_train(resume):
-    trainer = RMSprop(learning_rate=1e-4)
+    trainer = RMSprop(learning_rate=params.learning_rate)
     global_model = AC_Network(None,None)
     num_workers = min([multiprocessing.cpu_count(),const.max_workers])
     coord = tf.train.Coordinator()
@@ -237,7 +235,7 @@ def start_train(resume):
     curr_manager = CurriculumManager(coord, 'worker_0')
 
     # Checkpoint-manager saves model-checkpoints
-    ckpt_manager = CheckpointManager(global_model,curr_manager,'worker_0')
+    ckpt_manager = CheckpointManager(global_model, curr_manager, 'worker_0', save_best_after_min=30, save_ckpt_after_min=100)
 
     start_episode = 0
     if resume == True:
@@ -259,6 +257,10 @@ def start_train(resume):
 
         coord.join(worker_threads)
         coord.clear_stop()
+
+        # Save model after each curriculum level
+        run_time = datetime.now().strftime("%m/%d/%Y_%H:%M:%S")
+        global_model.save_model(const.model_path_hist,'level_' + str(curr_manager.current_level) + '_' + run_time)
         curr_manager.switch_to_next_level()
 
     print ("Looks like we're done")

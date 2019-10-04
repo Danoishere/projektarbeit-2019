@@ -1,5 +1,6 @@
 
 model_path = './deliverables/model'
+model_path_hist = './deliverables/model'
 suffix_best = 'best'
 suffix_checkpoint = 'checkpoint'
 
