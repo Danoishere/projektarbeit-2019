@@ -18,77 +18,30 @@ class AC_Network():
             self.critic_model = self.critic_network()
 
     def critic_network(self):
-        input_map =  layers.Input(shape=list(params.map_state_size) ,dtype=tf.float32)
-        input_grid = layers.Input(shape=list(params.grid_state_size),dtype=tf.float32)
-        input_vector = layers.Input(shape=list(params.vector_state_size),dtype=tf.float32)
         input_tree = layers.Input(shape=list(params.tree_state_size),dtype=tf.float32)
-
-        conv_grid = layers.Conv3D(32,(1,1,4),strides=(1,1,4))(input_grid)
-        conv_grid = layers.Flatten()(conv_grid)
-        conv_grid_hidden = layers.Dense(64, activation='relu')(conv_grid)
-
-        conv_map = layers.Conv2D(32,(3,3))(input_map)
-        conv_map = layers.Flatten()(conv_map)
-        conv_map_hidden = layers.Dense(64, activation='relu')(conv_map)
-
-        flattend_map = layers.Flatten()(input_map)
-        hidden_map = layers.Dense(128, activation='relu')(flattend_map)
-
         hidden_tree = layers.BatchNormalization()(input_tree)
-        hidden_tree = layers.Dense(128, activation='relu')(hidden_tree)
-        hidden_vector = layers.Dense(32, activation='relu')(input_vector)
-
-        hidden = layers.concatenate([hidden_map, hidden_vector, conv_grid_hidden, conv_map_hidden, hidden_tree])
+        hidden = layers.Dense(512, activation='relu')(hidden_tree)
         hidden = layers.Dense(256, activation='relu')(hidden)
-        hidden = layers.Dropout(0.2)(hidden)
         hidden = layers.Dense(32, activation='relu')(hidden)
+        hidden = layers.Dense(8, activation='relu')(hidden)
 
         value = layers.Dense(1)(hidden)
 
         return Model(
-            inputs=[
-                input_map,
-                input_grid,
-                input_vector,
-                input_tree
-            ],
+            inputs=input_tree,
             outputs=value)
 
     def actor_network(self):
-        input_map =  layers.Input(shape=list(params.map_state_size) ,dtype=tf.float32)
-        input_grid = layers.Input(shape=list(params.grid_state_size),dtype=tf.float32)
-        input_vector = layers.Input(shape=list(params.vector_state_size),dtype=tf.float32)
         input_tree = layers.Input(shape=list(params.tree_state_size),dtype=tf.float32)
-
-        conv_grid = layers.Conv3D(32,(1,1,4),strides=(1,1,4))(input_grid)
-        conv_grid = layers.Flatten()(conv_grid)
-        conv_grid_hidden = layers.Dense(64, activation='relu')(conv_grid)
-
-        conv_map = layers.Conv2D(32,(3,3))(input_map)
-        conv_map = layers.Flatten()(conv_map)
-        conv_map_hidden = layers.Dense(64, activation='relu')(conv_map)
-
-        flattend_map = layers.Flatten()(input_map)
-        hidden_map = layers.Dense(128, activation='relu')(flattend_map)
-
         hidden_tree = layers.BatchNormalization()(input_tree)
-        hidden_tree = layers.Dense(128, activation='relu')(hidden_tree)
-        hidden_vector = layers.Dense(32, activation='relu')(input_vector)
-
-        hidden = layers.concatenate([hidden_map, hidden_vector, conv_grid_hidden, conv_map_hidden, hidden_tree])
+        hidden = layers.Dense(256, activation='relu')(hidden_tree)
         hidden = layers.Dense(256, activation='relu')(hidden)
-        hidden = layers.Dropout(0.2)(hidden)
         hidden = layers.Dense(32, activation='relu')(hidden)
-
+        hidden = layers.Dense(8, activation='relu')(hidden)
         policy = layers.Dense(params.number_of_actions, activation='softmax')(hidden)
 
         return Model(
-            inputs=[
-                input_map,
-                input_grid,
-                input_vector,
-                input_tree
-            ],
+            inputs=input_tree,
             outputs=policy)
 
 
@@ -148,8 +101,8 @@ class AC_Network():
 
 
     def get_actions_and_values(self, obs, num_agents):
-        predcition = self.actor_model.predict([obs[0],obs[1],obs[2],obs[3]])
-        values = self.critic_model.predict([obs[0],obs[1],obs[2],obs[3]])
+        predcition = self.actor_model.predict([obs[0]])
+        values = self.critic_model.predict([obs[0]])
         actions = {}
         for i in range(num_agents):
             a_dist = predcition[i]
@@ -160,7 +113,7 @@ class AC_Network():
 
 
     def get_actions(self, obs, num_agents):
-        predcition = self.actor_model.predict([obs[0],obs[1],obs[2],obs[3]],)
+        predcition = self.actor_model.predict([obs[0]],)
         actions = {}
         for i in range(num_agents):
             a_dist = predcition[i] #[i]
@@ -171,8 +124,8 @@ class AC_Network():
 
 
     def get_values(self, obs, num_agents):
-        return self.critic_model.predict([obs[0],obs[1],obs[2],obs[3]])
+        return self.critic_model.predict([obs[0]])
 
 
     def get_observation_builder(self):
-        return CombinedObservation([11,11],2)
+        return CombinedObservation([11,11],3)
