@@ -91,6 +91,7 @@ class AC_Network():
             ],
             outputs=policy)
 
+
     def update_from(self, from_model):
         self.actor_model.set_weights(from_model.actor_model.get_weights())
         self.critic_model.set_weights(from_model.critic_model.get_weights())
@@ -145,6 +146,7 @@ class AC_Network():
         self.trainer.apply_gradients(zip(gradients_p, global_vars_p))
         return v_loss, p_loss, entropy, grad_norms_p, grad_norms_v, var_norms_actor, var_norms_critic
 
+
     def get_actions_and_values(self, obs, num_agents):
         predcition = self.actor_model.predict([obs[0],obs[1],obs[2],obs[3]])
         values = self.critic_model.predict([obs[0],obs[1],obs[2],obs[3]])
@@ -156,6 +158,7 @@ class AC_Network():
 
         return actions, values
 
+
     def get_actions(self, obs, num_agents):
         predcition = self.actor_model.predict([obs[0],obs[1],obs[2],obs[3]],)
         actions = {}
@@ -166,8 +169,10 @@ class AC_Network():
 
         return actions
 
+
     def get_values(self, obs, num_agents):
         return self.critic_model.predict([obs[0],obs[1],obs[2],obs[3]])
+
 
     def get_observation_builder(self):
         return CombinedObservation([11,11],2)

@@ -51,7 +51,7 @@ class Worker():
         self.curr_manager = curriculum_manager
         self.global_model = global_model
         self.trainer = trainer
-        self.episode_count = start_episod
+        self.episode_count = start_episode
         self.summary_writer = tf.summary.create_file_writer(const.tensorboard_path + 'train_' + str(name))
         
         #Create the local copy of the network and the tensorflow op to copy global paramters to local network
