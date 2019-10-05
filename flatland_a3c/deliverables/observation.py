@@ -531,7 +531,7 @@ class CombinedObservation(ObservationBuilder):
         self.env.dev_obs_dict[handle] = visited
 
 
-        self.observation_space = [observation_maps, layer_grid, vector,observation]
+        self.observation_space = [observation]
         return self.observation_space
 
 
@@ -603,36 +603,19 @@ class CombinedObservation(ObservationBuilder):
         return float(direction + 1)/10.0
 
     def reshape_obs(self, agent_observations):
-        map_obs = []
-        vec_obs = []
-        grid_obs = []
         tree_obs = []
         num_agents = len(agent_observations)
 
         for i in range(num_agents):
             agent_obs = agent_observations[i]
-            map_obs.append(agent_obs[0])
-            grid_obs.append(agent_obs[1])
-            vec_obs.append(agent_obs[2])
-            tree_obs.append(agent_obs[3])
-        
-        map_obs = np.asarray(map_obs)
-        map_obs = np.reshape(map_obs,(num_agents, params.map_state_size[0], params.map_state_size[1], params.map_state_size[2]))
+            tree_obs.append(agent_obs[0])
 
-        grid_obs = np.asarray(grid_obs)
-        grid_obs = np.reshape(grid_obs,(num_agents, params.grid_state_size[0], params.grid_state_size[1], params.grid_state_size[2],1))
-
-        vec_obs = np.asarray(vec_obs)
         tree_obs = np.asarray(tree_obs)
         tree_obs[tree_obs ==  np.inf] = 0.25
         tree_obs[tree_obs ==  -np.inf] = 0.5
-
-        map_obs = map_obs.astype(np.float32)
-        grid_obs = grid_obs.astype(np.float32)
-        vec_obs = vec_obs.astype(np.float32)
         tree_obs = tree_obs.astype(np.float32)
 
-        return [map_obs, grid_obs, vec_obs, tree_obs]
+        return [tree_obs]
 
     def _num_cells_to_fill_in(self, remaining_depth):
             """Computes the length of observation vector: sum_{i=0,depth-1} 2^i * observation_dim."""

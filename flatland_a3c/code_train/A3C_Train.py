@@ -51,7 +51,7 @@ class Worker():
         self.curr_manager = curriculum_manager
         self.global_model = global_model
         self.trainer = trainer
-        self.episode_count = start_episod
+        self.episode_count = start_episode
         self.summary_writer = tf.summary.create_file_writer(const.tensorboard_path + 'train_' + str(name))
         
         #Create the local copy of the network and the tensorflow op to copy global paramters to local network
@@ -62,12 +62,12 @@ class Worker():
     def train(self, rollout, gamma, bootstrap_value):
         ''' Gradient decent for a SINGLE agent'''
 
-        observations_map = np.asarray([row[0][0] for row in rollout])
-        observations_grid = np.asarray([row[0][1] for row in rollout])
-        observations_vector = np.asarray([row[0][2] for row in rollout])
-        observations_tree = np.asarray([row[0][3] for row in rollout])
+        #observations_map = np.asarray([row[0][0] for row in rollout])
+        #observations_grid = np.asarray([row[0][1] for row in rollout])
+        #observations_vector = np.asarray([row[0][2] for row in rollout])
+        observations_tree = np.asarray([row[0][0] for row in rollout])
         
-        obs = [observations_map, observations_grid, observations_vector, observations_tree]
+        obs = [observations_tree]
 
         actions = np.asarray([row[1] for row in rollout]) 
         rewards = np.asarray([row[2] for row in rollout])
@@ -127,7 +127,7 @@ class Worker():
                     next_obs = obs
 
                 for i in range(self.env.num_agents):
-                    agent_obs = [obs[0][i],obs[1][i],obs[2][i],obs[3][i]]
+                    agent_obs = [obs[0][i]]
 
                     agent_action = actions[i]
                     agent_reward = rewards[i]
