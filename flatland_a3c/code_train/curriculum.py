@@ -40,8 +40,12 @@ class CurriculumManager:
         return self.curriculum[self.current_level]['level_generator'](env)
 
 
-    def report_success_rate(self, success_rate, worker_name):
+    def report_success_rate(self, success_rate, worker_name, steps_on_level):
         if self.authorized_worker != worker_name or self.level_switch_activated:
+            return
+
+        # It requires at least 100 episodes of play before a level-switch becomes possible
+        if steps_on_level < 100:
             return
 
         if success_rate >= self.curriculum[self.current_level]['next_after_successrate']:
