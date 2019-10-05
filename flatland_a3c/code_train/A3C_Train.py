@@ -187,7 +187,7 @@ class Worker():
                 mean_reward = np.mean(self.episode_rewards[-100:])
                 
                 self.checkpoint_manager.try_save_model(self.episode_count, mean_reward, self.name)
-                self.curr_manager.report_success_rate(mean_success_rate, self.name)
+                self.curr_manager.report_success_rate(mean_success_rate, self.name, steps_on_level)
                 
                 with self.summary_writer.as_default():
                     episode_count = np.int32(self.episode_count)
