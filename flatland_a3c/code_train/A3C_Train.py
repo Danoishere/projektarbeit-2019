@@ -131,7 +131,7 @@ class Worker():
 
                     agent_action = actions[i]
                     agent_reward = rewards[i]
-                    agent_next_obs = next_obs[i]
+                    agent_next_obs = next_obs[0][i]
 
                     if not done_last_step[i]:
                         episode_buffers[i].append([
