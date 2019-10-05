@@ -260,6 +260,9 @@ class CombinedObservation(ObservationBuilder):
     def sigmoid_shifted(self,x):
         return 1 / (1 + math.exp(-5-x))
 
+    def sigmoid(self,x, derivative=False):
+        return x*(1-x) if derivative else 1/(1+np.exp(-x))
+
     def get_many(self, handles=[]):
         for agent in self.env.agents:
             rail_grid = np.zeros_like(self.env.rail.grid, dtype=np.uint16)
@@ -611,9 +614,13 @@ class CombinedObservation(ObservationBuilder):
             tree_obs.append(agent_obs[0])
 
         tree_obs = np.asarray(tree_obs)
-        tree_obs[tree_obs ==  np.inf] = 0.25
-        tree_obs[tree_obs ==  -np.inf] = 0.5
+        tree_obs[tree_obs ==  np.inf] = -15.0
+        tree_obs[tree_obs ==  -np.inf] = 20.0
         tree_obs = tree_obs.astype(np.float32)
+        
+        tree_obs = tree_obs*0.5
+        tree_obs = tree_obs - 5
+        tree_obs = self.sigmoid(tree_obs)
 
         return [tree_obs]
 

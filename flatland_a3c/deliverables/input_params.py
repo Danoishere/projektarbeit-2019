@@ -1,6 +1,6 @@
 max_episode_length = 40
 gamma = 0.99
-entropy_factor = 0.15
+entropy_factor = 0.05
 learning_rate = 1e-4
 gradient_norm_actor = 4.0
 gradient_norm_critic = 10.0
