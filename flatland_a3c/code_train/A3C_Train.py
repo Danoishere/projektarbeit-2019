@@ -44,7 +44,7 @@ def max_length_sublist(top_list):
     return max_len
 
 class Worker():
-    def __init__(self,name,global_model,trainer,checkpoint_manager, curriculum_manager, start_episode):
+    def __init__(self,name,global_model,trainer,checkpoint_manager, curriculum_manager, start_episode, lock):
         self.name = "worker_" + str(name)
         self.number = name        
         self.checkpoint_manager = checkpoint_manager
@@ -55,7 +55,7 @@ class Worker():
         self.summary_writer = tf.summary.create_file_writer(const.tensorboard_path + 'train_' + str(name))
         
         #Create the local copy of the network and the tensorflow op to copy global paramters to local network
-        self.local_model = AC_Network(global_model, trainer)
+        self.local_model = AC_Network(global_model, trainer,True, lock)
         self.update_local_model = lambda: self.local_model.update_from(self.global_model)
         self.env = RailEnvWrapper(self.local_model.get_observation_builder())
         
@@ -221,9 +221,11 @@ def start_train(resume):
         print ('Loading Model...')
         start_episode = ckpt_manager.load_checkpoint_model()
 
+    lock = threading.Lock()
+
     workers = []
     for i in range(num_workers):
-        workers.append(Worker(i,global_model,trainer,ckpt_manager, curr_manager, start_episode))
+        workers.append(Worker(i,global_model,trainer,ckpt_manager, curr_manager, start_episode, lock))
 
     worker_threads = []
     while not curr_manager.stop_training:

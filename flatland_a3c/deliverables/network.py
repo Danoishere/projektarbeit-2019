@@ -9,9 +9,10 @@ import deliverables.input_params as params
 from deliverables.observation import CombinedObservation
 
 class AC_Network():
-    def __init__(self, global_model, trainer, create_networks=True):
+    def __init__(self, global_model, trainer, create_networks=True, lock=None):
         self.global_model = global_model
         self.trainer = trainer
+        self.lock = lock
 
         if create_networks:
             self.actor_model = self.actor_network()
@@ -19,12 +20,10 @@ class AC_Network():
 
     def critic_network(self):
         input_tree = layers.Input(shape=list(params.tree_state_size),dtype=tf.float32)
-        hidden_tree = layers.BatchNormalization()(input_tree)
-        hidden = layers.Dense(512, activation='relu')(hidden_tree)
+        hidden = layers.BatchNormalization()(input_tree)
         hidden = layers.Dense(256, activation='relu')(hidden)
         hidden = layers.Dense(32, activation='relu')(hidden)
         hidden = layers.Dense(8, activation='relu')(hidden)
-
         value = layers.Dense(1)(hidden)
 
         return Model(
@@ -33,8 +32,7 @@ class AC_Network():
 
     def actor_network(self):
         input_tree = layers.Input(shape=list(params.tree_state_size),dtype=tf.float32)
-        hidden_tree = layers.BatchNormalization()(input_tree)
-        hidden = layers.Dense(256, activation='relu')(hidden_tree)
+        hidden = layers.BatchNormalization()(input_tree)
         hidden = layers.Dense(256, activation='relu')(hidden)
         hidden = layers.Dense(32, activation='relu')(hidden)
         hidden = layers.Dense(8, activation='relu')(hidden)
@@ -62,14 +60,16 @@ class AC_Network():
 
 
     def value_loss(self, target_v, value):
-        return 0.1 * tf.reduce_mean(tf.square(target_v - tf.reshape(value,[-1])))
+        return 0.5 * tf.reduce_sum(tf.square(target_v - tf.reshape(value,[-1])))
     
 
     def policy_loss(self, advantages, actions, policy):
         actions_onehot = tf.one_hot(actions, params.number_of_actions)
         responsible_outputs = tf.reduce_sum(policy * actions_onehot, [1])
-        entropy = - tf.reduce_sum(policy * tf.math.log(policy + 1e-10))
-        return -tf.reduce_mean(tf.math.log(responsible_outputs  + 1e-10)*advantages) - entropy * params.entropy_factor, entropy
+        policy_log = tf.math.log(tf.clip_by_value(policy, 1e-10, 1.0))
+        entropy = - tf.reduce_sum(policy * policy_log)
+        policy_loss = -tf.reduce_mean(tf.math.log(responsible_outputs  + 1e-10)*advantages) - entropy * params.entropy_factor
+        return policy_loss, entropy
 
 
     def train(self, target_v, advantages, actions, obs):
@@ -83,7 +83,10 @@ class AC_Network():
         var_norms_critic = tf.linalg.global_norm(v_local_vars)
         gradients_v, grad_norms_v = tf.clip_by_global_norm(gradients_v, params.gradient_norm_critic)
         global_vars_v = self.global_model.critic_model.trainable_variables
+
+        self.lock.acquire()
         self.trainer.apply_gradients(zip(gradients_v, global_vars_v))
+        self.lock.release()
 
         # Policy loss
         with tf.GradientTape() as t:
@@ -96,7 +99,10 @@ class AC_Network():
         gradients_p, grad_norms_p = tf.clip_by_global_norm(gradients_p, params.gradient_norm_actor)
         global_vars_p = self.global_model.actor_model.trainable_variables
 
+        self.lock.acquire()
         self.trainer.apply_gradients(zip(gradients_p, global_vars_p))
+        self.lock.release()
+
         return v_loss, p_loss, entropy, grad_norms_p, grad_norms_v, var_norms_actor, var_norms_critic
 
 
@@ -116,7 +122,7 @@ class AC_Network():
         predcition = self.actor_model.predict([obs[0]],)
         actions = {}
         for i in range(num_agents):
-            a_dist = predcition[i] #[i]
+            a_dist = predcition[i]
             a = np.random.choice([0,1,2,3,4], p = a_dist)
             actions[i] = a
 
@@ -128,4 +134,4 @@ class AC_Network():
 
 
     def get_observation_builder(self):
-        return CombinedObservation([11,11],3)
+        return CombinedObservation([11,11],2)
