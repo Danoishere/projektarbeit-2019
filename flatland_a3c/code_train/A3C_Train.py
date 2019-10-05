@@ -96,6 +96,8 @@ class Worker():
         self.episode_success = []
         self.episode_mean_values = []
 
+        steps_on_level = 0
+
         # Let the curriculum manager update the level to the current difficulty
         self.curr_manager.update_env_to_curriculum_level(self.env)
 
@@ -147,6 +149,7 @@ class Worker():
                 
                 obs = next_obs                  
                 episode_step_count += 1
+                steps_on_level += 1
                 done_last_step = dict(done)
 
             # End of episode-loop
