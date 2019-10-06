@@ -59,29 +59,24 @@ class Worker():
         self.update_local_model = lambda: self.local_model.update_from(self.global_model)
         self.env = RailEnvWrapper(self.local_model.get_observation_builder())
         
-    def train(self, rollout, gamma, bootstrap_value):
-        ''' Gradient decent for a SINGLE agent'''
+    def train(self, rollout, gamma):
+        all_rollouts = []
+        all_rewards = []
+        discounted_rewards = np.array([])
 
-        observations_tree = np.asarray([row[0] for row in rollout])
-        obs = [observations_tree]
+        for i in range(self.env.num_agents):
+            rewards = [row[2] for row in rollout[i]]
+            rewards = discount(rewards,gamma)
+            all_rewards.append(rewards)
+            all_rollouts += rollout[i]
 
-        actions = np.asarray([row[1] for row in rollout]) 
-        rewards = np.asarray([row[2] for row in rollout])
-        values = np.asarray([row[5] for row in rollout])
-        
-        # Here we take the rewards and values from the rollout, and use them to 
-        # generate the advantage and discounted returns. 
-        # The advantage function uses "Generalized Advantage Estimation"
-        self.rewards_plus = np.asarray(np.append(rewards, bootstrap_value))
-        discounted_rewards = discount(self.rewards_plus,gamma)[:-1]
-        self.value_plus = np.asarray(np.append(values,bootstrap_value))
-        advantages = rewards + gamma * self.value_plus[1:] - self.value_plus[:-1]
-        advantages = discount(advantages, gamma)
+        discounted_rewards = np.concatenate(all_rewards)
+        actions = np.asarray([row[1] for row in all_rollouts]) 
+        values = np.asarray([row[5] for row in all_rollouts])
+        obs = np.asarray([row[0] for row in all_rollouts])
+        advantages = discounted_rewards - values
 
-        # Update the global network using gradients from loss
-        # Generate network statistics to periodically save
         v_l,p_l,e_l,g_n_a, g_n_c, v_n_a, v_n_c = self.local_model.train(discounted_rewards, advantages, actions, obs)
-
         return v_l / len(rollout),p_l / len(rollout),e_l / len(rollout), g_n_a, g_n_c, v_n_a, v_n_c
     
     def work(self, max_episode_length, gamma, coord):
@@ -111,7 +106,7 @@ class Worker():
             episode_values = []
             episode_reward = 0
             episode_step_count = 0
-            info = np.zeros((self.env.num_agents,7))
+            info = np.zeros(7)
             
             obs = self.env.reset()
             obs = self.local_model.reshape_obs(obs)
@@ -140,7 +135,8 @@ class Worker():
                             agent_reward,
                             agent_next_obs,
                             episode_done,
-                            v[i,0]])
+                            v[i,0],
+                            episode_step_count])
                         
                         episode_values.append(v[i,0])
                         episode_reward += agent_reward
@@ -159,20 +155,17 @@ class Worker():
             
             # Update the network using the episode buffer at the end of the episode.
             # if episode_done:
-            for i in range(self.env.num_agents):
-                if len(episode_buffers[i]) != 0:
-                    v_l, p_l, e_l, g_n_a, g_n_c, v_n_a, v_n_c = self.train(
-                        episode_buffers[i],
-                        gamma,
-                        0.0)
-                    
-                    info[i,0] = v_l
-                    info[i,1] = p_l
-                    info[i,2] = e_l
-                    info[i,3] = g_n_a
-                    info[i,4] = g_n_c
-                    info[i,5] = v_n_a
-                    info[i,6] = v_n_c
+            v_l, p_l, e_l, g_n_a, g_n_c, v_n_a, v_n_c = self.train(
+                episode_buffers,
+                gamma)
+            
+            info[0] = v_l
+            info[1] = p_l
+            info[2] = e_l
+            info[3] = g_n_a
+            info[4] = g_n_c
+            info[5] = v_n_a
+            info[6] = v_n_c
 
             
             self.update_local_model()
@@ -193,17 +186,17 @@ class Worker():
                     tf.summary.scalar('Perf/Length', mean_length, step=episode_count)
                     tf.summary.scalar('Perf/Value', mean_value, step=episode_count)
                     tf.summary.scalar('Perf/Successrate', mean_success_rate, step=episode_count)
-                    tf.summary.scalar('Losses/Value Loss', np.mean(info[:,0]), step=episode_count)
-                    tf.summary.scalar('Losses/Policy Loss', np.mean(info[:,1]), step=episode_count)
-                    tf.summary.scalar('Losses/Entropy', np.mean(info[:,2]), step=episode_count)
-                    tf.summary.scalar('Losses/Grad Norm-Policy', np.mean(info[:,3]), step=episode_count)
-                    tf.summary.scalar('Losses/Grad Norm-Value', np.mean(info[:,4]), step=episode_count)
-                    tf.summary.scalar('Losses/Var Norm-Policy', np.mean(info[:,5]), step=episode_count)
-                    tf.summary.scalar('Losses/Var Norm-Value', np.mean(info[:,6]), step=episode_count)
+                    tf.summary.scalar('Losses/Value Loss', np.mean(info[0]), step=episode_count)
+                    tf.summary.scalar('Losses/Policy Loss', np.mean(info[1]), step=episode_count)
+                    tf.summary.scalar('Losses/Entropy', np.mean(info[2]), step=episode_count)
+                    tf.summary.scalar('Losses/Grad Norm-Policy', np.mean(info[3]), step=episode_count)
+                    tf.summary.scalar('Losses/Grad Norm-Value', np.mean(info[4]), step=episode_count)
+                    tf.summary.scalar('Losses/Var Norm-Policy', np.mean(info[5]), step=episode_count)
+                    tf.summary.scalar('Losses/Var Norm-Value', np.mean(info[6]), step=episode_count)
                     self.summary_writer.flush()
 
             self.episode_count += 1
-            print('Episode', self.episode_count,'of',self.name,'with',episode_step_count,'steps, reward of',episode_reward, ', mean entropy of', np.mean(info[:,2]), ', curriculum level ', self.curr_manager.current_level)
+            print('Episode', self.episode_count,'of',self.name,'with',episode_step_count,'steps, reward of',episode_reward, ', mean entropy of', np.mean(info[2]), ', curriculum level ', self.curr_manager.current_level)
 
 def start_train(resume):
     trainer = RMSprop(learning_rate=params.learning_rate)
@@ -240,10 +233,11 @@ def start_train(resume):
         coord.join(worker_threads)
         coord.clear_stop()
 
-        # Save model after each curriculum level
-        run_time = datetime.now().strftime("%m_%d_%Y_%H_%M_%S")
-        global_model.save_model(const.model_path_hist,'level_' + str(curr_manager.current_level) + '_' + run_time)
-        curr_manager.switch_to_next_level()
+        if curr_manager.level_switch_activated:
+            # Save model after each curriculum level
+            run_time = datetime.now().strftime("%d_%m_%Y_%H_%M_%S")
+            global_model.save_model(const.model_path_hist,'level_' + str(curr_manager.current_level) + '_' + run_time)
+            curr_manager.switch_to_next_level()
 
     print ("Looks like we're done")
 

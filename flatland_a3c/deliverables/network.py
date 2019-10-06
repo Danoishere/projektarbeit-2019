@@ -67,8 +67,8 @@ class AC_Network():
         self.critic_model = load_model(model_path+'/critic_model_' + suffix + '.h5')
 
 
-    def value_loss(self, target_v, value):
-        return 0.5 * tf.reduce_sum(tf.square(target_v - tf.reshape(value,[-1])))
+    def value_loss(self, rec_reward, est_reward):
+        return 0.5 * tf.reduce_sum(tf.square(rec_reward - tf.reshape(est_reward,[-1])))
     
 
     def policy_loss(self, advantages, actions, policy):
@@ -81,6 +81,7 @@ class AC_Network():
 
 
     def train(self, target_v, advantages, actions, obs):
+
         self.lock.acquire()
 
         # Value loss
@@ -107,7 +108,6 @@ class AC_Network():
         global_vars_p = self.global_model.actor_model.trainable_variables
 
         self.trainer.apply_gradients(zip(gradients_p, global_vars_p))
-        
         self.lock.release()
 
         return v_loss, p_loss, entropy, grad_norms_p, grad_norms_v, var_norms_actor, var_norms_critic
