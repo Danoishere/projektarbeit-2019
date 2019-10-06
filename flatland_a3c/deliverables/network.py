@@ -118,18 +118,43 @@ class AC_Network():
     def reshape_obs(self, obs):
         obs = list(obs.values())
         tree_obs = np.asarray(obs)
-        tree_obs[tree_obs ==  np.inf] = -15.0
-        tree_obs[tree_obs ==  -np.inf] = 20.0
-        tree_obs = tree_obs.astype(np.float32)
-        
+
+        #len_obs = tree_obs.shape[1]
+        #len_cell = 11
+
+        #num_cells = int(len_obs/len_cell)
+
+        tree_obs[tree_obs ==  np.inf] = -1
+        tree_obs[tree_obs ==  -np.inf] = -2
+        #tree_obs = np.asarray(np.split(tree_obs, num_cells, axis=1))
+        #tree_obs = np.swapaxes(tree_obs, 0,1)
+        tree_obs += 2
+        tree_obs /= 40.0
+
+        '''
+        dist_to_target = tree_obs[:,:,0]
+        dist_to_other_agents_target = tree_obs[:,:,1]
+        dist_to_other_agent = tree_obs[:,:,2]
+        possible_conflicts = tree_obs[:,:,3]
+        unusable_switch = tree_obs[:,:,4]
+        branch_length = tree_obs[:,:,5]
+        dist_to_target_with_this_path = tree_obs[:,:,6]
+        num_agents_same_dir = tree_obs[:,:,7]
+        num_agents_opposite_dir = tree_obs[:,:,8]
+        blocked_for_n_more_steps = tree_obs[:,:,9]
+        slowest_agent = tree_obs[:,:,10]
+
         tree_obs = tree_obs*0.5
         tree_obs = tree_obs - 5
         tree_obs = self.sigmoid(tree_obs)
+        '''
+
+        tree_obs = tree_obs.astype(np.float32)
+
         return tree_obs
 
 
     def get_actions_and_values(self, obs, num_agents):
-        obs = np.asarray(obs)
         predcition = self.actor_model.predict(obs)
         values = self.critic_model.predict(obs)
         actions = {}
@@ -142,7 +167,7 @@ class AC_Network():
 
 
     def get_actions(self, obs, num_agents):
-        predcition = self.actor_model.predict([obs[0]],)
+        predcition = self.actor_model.predict(obs)
         actions = {}
         for i in range(num_agents):
             a_dist = predcition[i]
@@ -153,7 +178,7 @@ class AC_Network():
 
 
     def get_values(self, obs, num_agents):
-        return self.critic_model.predict([obs[0]])
+        return self.critic_model.predict(obs)
 
 
     def get_observation_builder(self):
