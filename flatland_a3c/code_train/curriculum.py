@@ -66,7 +66,7 @@ class CurriculumManager:
         env.update_env_with_params(
             width=8,
             height=8,
-            num_agents=1,
+            num_agents=2,
             max_steps = 40,
             rail_type = 'complex',
             rail_gen_params = {
@@ -81,7 +81,7 @@ class CurriculumManager:
         env.update_env_with_params(
             width=12,
             height=12,
-            num_agents=1,
+            num_agents=2,
             max_steps = 40,
             rail_type = 'complex',
             rail_gen_params = {
@@ -97,7 +97,7 @@ class CurriculumManager:
         env.update_env_with_params(
             width=20,
             height=20,
-            num_agents=1,
+            num_agents=2,
             max_steps = 40,
             rail_type = 'complex',
             rail_gen_params = {
@@ -112,7 +112,7 @@ class CurriculumManager:
         env.update_env_with_params(
             width=20,
             height=20,
-            num_agents=2,
+            num_agents=3,
             max_steps = 40,
             rail_type = 'complex',
             rail_gen_params = {
@@ -147,7 +147,7 @@ class CurriculumManager:
             width=60,
             height=60,
             num_agents=6,
-            max_steps = 40,
+            max_steps = 100,
             rail_type = 'sparse',
             rail_gen_params = {
                 'num_cities': 12,  # Number of cities in map
