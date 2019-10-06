@@ -28,6 +28,7 @@ class RailEnvWrapper():
         self.env = self.generate_env(width, height)
         self.num_of_done_agents = 0
         self.episode_step_count = 0
+        self.max_steps = 40
 
     def step(self, actions):
         self.env.step_penalty = -2*1.02**self.episode_step_count

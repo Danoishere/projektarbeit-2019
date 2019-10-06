@@ -128,12 +128,12 @@ class CurriculumManager:
             width=20,
             height=20,
             num_agents=2,           
-            max_steps = 40,
+            max_steps = 55,
             rail_type = 'sparse',
             rail_gen_params = {
                 'num_cities': 10,  # Number of cities in map
                 'num_intersections': 10,  # Number of interesections in map
-                'num_trainstations': 20,  # Number of possible start/targets on map
+                'num_trainstations': 12,  # Number of possible start/targets on map
                 'min_node_dist': 6,  # Minimal distance of nodes
                 'node_radius': 3, # Proximity of stations to city center
                 'num_neighb': 3, # Number of connections to other cities

@@ -119,7 +119,7 @@ class Worker():
             
             obs = self.env.reset()
             
-            while episode_done == False and episode_step_count < max_episode_length:
+            while episode_done == False and episode_step_count < self.env.max_steps:
                 #Take an action using probabilities from policy network output.
                 actions, v = self.local_model.get_actions_and_values(obs, self.env.num_agents)
                 next_obs, rewards, done = self.env.step(actions)
@@ -230,8 +230,8 @@ def start_train(resume):
     for i in range(num_workers):
         workers.append(Worker(i,global_model,trainer,ckpt_manager, curr_manager, start_episode, lock))
 
-    worker_threads = []
     while not curr_manager.stop_training:
+        worker_threads = []
         for worker in workers:
             worker_work = lambda: worker.work(params.max_episode_length,params.gamma,coord)
             t = threading.Thread(target=(worker_work))
