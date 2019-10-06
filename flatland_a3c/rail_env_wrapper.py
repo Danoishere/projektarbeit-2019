@@ -35,6 +35,7 @@ class RailEnvWrapper():
         next_obs, rewards, done, _ = self.env.step(actions)
         self.num_of_done_agents = modify_reward(rewards, self.env, done, self.done_last_step, self.num_of_done_agents, self.dist)
         self.done_last_step = done
+        self.episode_step_count += 1
         return next_obs, rewards, done
     
     
@@ -46,7 +47,7 @@ class RailEnvWrapper():
         obs = self.env.reset()
         
         # Obs-shape must be equal to num of agents, otherwise, the level couldn't be generated orderly
-        while obs[0].shape[0] != self.num_agents:
+        while len(obs) != self.num_agents:
             obs = self.env.reset()
 
         self.env.step_penalty = self.initial_step_penalty

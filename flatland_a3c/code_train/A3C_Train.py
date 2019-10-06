@@ -62,11 +62,7 @@ class Worker():
     def train(self, rollout, gamma, bootstrap_value):
         ''' Gradient decent for a SINGLE agent'''
 
-        #observations_map = np.asarray([row[0][0] for row in rollout])
-        #observations_grid = np.asarray([row[0][1] for row in rollout])
-        #observations_vector = np.asarray([row[0][2] for row in rollout])
-        observations_tree = np.asarray([row[0][0] for row in rollout])
-        
+        observations_tree = np.asarray([row[0] for row in rollout])
         obs = [observations_tree]
 
         actions = np.asarray([row[1] for row in rollout]) 
@@ -118,22 +114,24 @@ class Worker():
             info = np.zeros((self.env.num_agents,7))
             
             obs = self.env.reset()
+            obs = self.local_model.reshape_obs(obs)
             
             while episode_done == False and episode_step_count < self.env.max_steps:
                 #Take an action using probabilities from policy network output.
                 actions, v = self.local_model.get_actions_and_values(obs, self.env.num_agents)
                 next_obs, rewards, done = self.env.step(actions)
+                next_obs = self.local_model.reshape_obs(next_obs)
 
                 episode_done = done['__all__']
+                
                 if episode_done == True:
                     next_obs = obs
 
                 for i in range(self.env.num_agents):
-                    agent_obs = [obs[0][i]]
-
+                    agent_obs = obs[i]
                     agent_action = actions[i]
                     agent_reward = rewards[i]
-                    agent_next_obs = next_obs[0][i]
+                    agent_next_obs = next_obs[i]
 
                     if not done_last_step[i]:
                         episode_buffers[i].append([

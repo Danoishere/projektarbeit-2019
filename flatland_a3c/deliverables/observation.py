@@ -264,12 +264,14 @@ class CombinedObservation(ObservationBuilder):
         return x*(1-x) if derivative else 1/(1+np.exp(-x))
 
     def get_many(self, handles=[]):
+        '''
         for agent in self.env.agents:
             rail_grid = np.zeros_like(self.env.rail.grid, dtype=np.uint16)
             path = a_star(self.env.rail.transitions, rail_grid, agent.position,agent.target)
             agent.path_to_target = path
 
         self.path_priority_map = np.zeros(self.env.rail.grid.shape)
+        '''
 
         if handles is None:
             handles = []
@@ -313,122 +315,6 @@ class CombinedObservation(ObservationBuilder):
         Transition map as local window of size x,y , agent-positions if in window and target.
         """
 
-        self.offset_initialized = False
-
-        grid_map = self.convert_grid(self.env.rail.grid)
-        self.map_size = grid_map.shape
-        
-        if self.is_reset:
-            self.is_reset = False
-            self.layers = np.zeros((16,self.map_size[0],self.map_size[1]))
-            for l in range(16):
-                shift = 15 - l
-                self.layers[l,:,:] = (self.env.rail.grid >> shift) & 1
-
-        agents = self.env.agents
-        agent = agents[handle]
-        target = agent.target
-        position = agent.position
-        speed = agent.speed_data['speed']
-        last_action =  agent.speed_data['transition_action_on_cellexit']/4.0
-        
-        self.pos = np.array(list(agent.position))
-        self.offset = np.floor(np.divide(self.size_,2))
-
-        '''
-        # Layer with position of agent
-        position_map = self.tuples_to_grid([(agent.position[0],agent.position[1], self.convert_dir(agent.direction))])
-        layer_position_map = self.to_obs_space(position_map)
-
-        # Layer with speed of agent
-        speed_map = self.tuples_to_grid([(agent.position[0],agent.position[1], speed)])
-        layer_speed_map = self.to_obs_space(speed_map)
-
-        # Layer with speed of agent
-        last_action_map = self.tuples_to_grid([(agent.position[0],agent.position[1], last_action)])
-        layer_last_action_map = self.to_obs_space(last_action_map)
-        '''
-
-        # Layer with position of agent
-        target_map = self.tuples_to_grid([(agent.target[0],agent.target[1])])
-        layer_target_map = self.to_obs_space(target_map)
-
-        # Layer with path to target
-        path_map = self.tuples_to_grid(agent.path_to_target, True)
-        layer_path_to_target = self.to_obs_space(path_map)
-
-        self.env.dev_obs_dict[handle] = agent.path_to_target
-
-        path_priority_map = path_map*self.handle_to_prio(handle)
-        self.path_priority_map = np.maximum(path_priority_map, self.path_priority_map)
-        layer_path_priority = self.to_obs_space(self.path_priority_map)
-
-        # Targets for other agents & their positions
-        agent_targets = []
-        agent_positions = []
-        agent_priority = []
-        agent_speed = []
-        agent_action_on_cellexit = []
-        for agent in agents:
-            if agent.handle != handle:
-                agent_targets.append(agent.target)
-                agent_positions.append((
-                    agent.position[0],
-                    agent.position[1],
-                    self.convert_dir(agent.direction)))
-
-            agent_speed.append((
-                agent.position[0],
-                agent.position[1],
-                agent.speed_data['speed']))
-
-            agent_action_on_cellexit.append((
-                agent.position[0],
-                agent.position[1],
-                agent.speed_data['transition_action_on_cellexit']/4.0))
-                
-            agent_priority.append((
-                agent.position[0],
-                agent.position[1],
-                self.handle_to_prio(handle)))
-
-        if len(agent_targets) > 0:
-            target_map = self.tuples_to_grid(agent_targets)
-            layer_agent_target_map = self.to_obs_space(target_map)
-            agent_positions_map = self.tuples_to_grid(agent_positions)
-            layer_agent_positions_map = self.to_obs_space(agent_positions_map)
-        else:
-            layer_agent_target_map = np.zeros(self.size_)
-            layer_agent_positions_map = np.zeros(self.size_)
-
-        priority_map = self.tuples_to_grid(agent_priority)
-        layer_agent_priority = self.to_obs_space(priority_map)
-
-        speed_map = self.tuples_to_grid(agent_speed)
-        layer_agent_speed = self.to_obs_space(speed_map)
-
-        action_map = self.tuples_to_grid(agent_action_on_cellexit)
-        layer_agent_action = self.to_obs_space(action_map)
-        layer_grid_map = self.to_obs_space(grid_map)
-
-        observation_maps = np.array([
-            layer_agent_speed,
-            layer_agent_action,
-            layer_target_map, 
-            layer_path_to_target,
-            layer_path_priority,
-            layer_agent_positions_map,
-            layer_agent_priority,
-            layer_agent_target_map,
-            layer_grid_map
-        ])
-
-        # Grid layout with 16 x obs-size x obs-size
-        layer_grid = self.to_obs_space(self.layers, (16,self.size_[0],self.size_[1]))
-
-        # Vector with train-info
-        vector = [speed, last_action, self.sigmoid_shifted(len(agent.path_to_target)),self.convert_dir(agent.direction), self.env._elapsed_steps]
-        
         # Tree
         """
         Computes the current observation for agent `handle' in env
@@ -532,8 +418,6 @@ class CombinedObservation(ObservationBuilder):
                 # add cells filled with infinity if no transition is possible
                 observation = observation + [-np.inf] * self._num_cells_to_fill_in(self.max_depth)
         self.env.dev_obs_dict[handle] = visited
-
-
         self.observation_space = [observation]
         return self.observation_space
 

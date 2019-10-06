@@ -10,6 +10,7 @@ def modify_reward(rewards, env, done, done_last_step, num_of_done_agents, shorte
             # Give some reward to our agent
             rewards[i] += 2**num_of_done_agents * 5
     
+    '''
     for i in range(env.num_agents):
         agent = env.agents[i]
         path_to_target = agent.path_to_target
@@ -24,5 +25,6 @@ def modify_reward(rewards, env, done, done_last_step, num_of_done_agents, shorte
     # Subtract reward for getting further away
     if current_path_length > shortest_path_length:
         rewards[i] -= 1
+    '''
         
     return num_of_done_agents
