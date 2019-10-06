@@ -8,7 +8,7 @@ from deliverables.reward import modify_reward
 
 class RailEnvWrapper():
     initial_step_penalty = -2
-    global_reward = 10
+    global_reward = 40
 
     def __init__(self, observation_builder, width=14, height=14, num_agents=2):
         self.num_agents = num_agents
@@ -44,7 +44,9 @@ class RailEnvWrapper():
             self.dist[i] = 100
             
         obs = self.env.reset()
-        while obs[0].shape[0] == 0:
+        
+        # Obs-shape must be equal to num of agents, otherwise, the level couldn't be generated orderly
+        while obs[0].shape[0] != self.num_agents:
             obs = self.env.reset()
 
         self.env.step_penalty = self.initial_step_penalty
