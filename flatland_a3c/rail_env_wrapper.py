@@ -1,7 +1,6 @@
 
 from flatland.envs.rail_env import RailEnv
-from flatland.envs.rail_generators import complex_rail_generator, sparse_rail_generator
-from flatland.envs.schedule_generators import complex_schedule_generator, sparse_schedule_generator, random_schedule_generator
+from flatland.envs.generators import complex_rail_generator #, sparse_rail_generator
 import random
 
 from deliverables.reward import modify_reward
@@ -13,7 +12,7 @@ class RailEnvWrapper():
     def __init__(self, observation_builder, width=14, height=14, num_agents=2):
         self.num_agents = num_agents
         
-        self.schedule_gen = random_schedule_generator()
+        #self.schedule_gen = random_schedule_generator()
         self.rail_gen = complex_rail_generator(
             nr_start_goal=6,
             nr_extra=6,
@@ -62,7 +61,7 @@ class RailEnvWrapper():
             width, 
             height, 
             self.rail_gen,
-            schedule_generator = self.schedule_gen,
+            #schedule_generator = self.schedule_gen,
             number_of_agents=self.num_agents,
             obs_builder_object=self.observation_builder)
 
@@ -93,7 +92,7 @@ class RailEnvWrapper():
                 seed=seed
             )
 
-            self.schedule_gen = complex_schedule_generator()
+            #self.schedule_gen = complex_schedule_generator()
         elif rail_type == 'sparse':
             self.rail_gen = sparse_rail_generator(
                 num_cities=rail_gen_params['num_cities'],
@@ -106,7 +105,7 @@ class RailEnvWrapper():
                 enhance_intersection=rail_gen_params['enhance_intersection'],
                 seed=seed)
 
-            self.schedule_gen = sparse_schedule_generator()
+            #self.schedule_gen = sparse_schedule_generator()
         else:
             raise ValueError('Please specify either "complex" or "sparse" as rail_type')
 

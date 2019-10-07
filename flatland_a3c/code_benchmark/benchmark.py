@@ -3,8 +3,8 @@ import pandas as pd
 from flatland.core.grid.grid4_astar import a_star
 from flatland.envs.observations import (GlobalObsForRailEnv, LocalObsForRailEnv, TreeObsForRailEnv)
 from flatland.envs.rail_env import RailEnv
-from flatland.envs.rail_generators import (complex_rail_generator, sparse_rail_generator)
-from flatland.envs.schedule_generators import (random_schedule_generator, sparse_schedule_generator)
+from flatland.envs.generators import (complex_rail_generator)
+#from flatland.envs.schedule_generators import (random_schedule_generator)
 
 from flatland.utils.rendertools import RenderTool
 from rail_env_wrapper import RailEnvWrapper
@@ -138,6 +138,23 @@ class Evaluator:
         self.env.update_env_with_params(
             width=20,
             height=20,
+            num_agents=4,
+            max_steps = 40,
+            rail_type = 'complex',
+            rail_gen_params = {
+                'nr_start_goal': 6,
+                'nr_extra': 6,
+                'min_dist': 12,
+                'max_dist' : 99999
+            },
+            seed=SEED
+        )
+        '''
+
+
+        self.env.update_env_with_params(
+            width=20,
+            height=20,
             num_agents=2,
             max_steps = 40,
             rail_type = 'sparse',
@@ -152,9 +169,26 @@ class Evaluator:
                 'enhance_intersection':True
             },  
             seed=SEED  
-        )
+        )'''
 
     def change_grid_round5(self):
+        self.env.update_env_with_params(
+            width=40,
+            height=40,
+            num_agents=6,
+            max_steps = 40,
+            rail_type = 'complex',
+            rail_gen_params = {
+                'nr_start_goal': 6,
+                'nr_extra': 12,
+                'min_dist': 20,
+                'max_dist' : 99999
+            },
+            seed=SEED
+        )
+        '''
+
+
         self.env.update_env_with_params(
             width=60,
             height=60,
@@ -173,6 +207,7 @@ class Evaluator:
             },  
             seed=SEED
         )
+        '''
 
     def run_episodes(self, episode_no, num_episodes):
         for r in range(num_episodes):

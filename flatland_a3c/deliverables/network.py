@@ -52,8 +52,13 @@ class AC_Network():
 
 
     def update_from(self, from_model):
-        self.actor_model.set_weights(from_model.actor_model.get_weights())
-        self.critic_model.set_weights(from_model.critic_model.get_weights())
+        self.lock.acquire()
+        actor_weights = from_model.actor_model.get_weights()
+        critic_weights = from_model.critic_model.get_weights()
+        self.lock.release()
+
+        self.actor_model.set_weights(actor_weights)
+        self.critic_model.set_weights(critic_weights)
 
 
     def save_model(self, model_path, suffix):
@@ -108,6 +113,7 @@ class AC_Network():
         global_vars_p = self.global_model.actor_model.trainable_variables
 
         self.trainer.apply_gradients(zip(gradients_p, global_vars_p))
+        
         self.lock.release()
 
         return v_loss, p_loss, entropy, grad_norms_p, grad_norms_v, var_norms_actor, var_norms_critic
@@ -152,6 +158,16 @@ class AC_Network():
         tree_obs = tree_obs.astype(np.float32)
 
         return tree_obs
+
+
+    def get_best_actions(self, obs, num_agents):
+        predcition = self.actor_model.predict(obs)
+        actions = {}
+        for i in range(num_agents):
+            a_dist = predcition[i]
+            actions[i] = np.argmax(a_dist)
+
+        return actions
 
 
     def get_actions_and_values(self, obs, num_agents):
