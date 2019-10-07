@@ -6,8 +6,8 @@ from tensorflow.keras.models import Model,load_model
 
 import numpy as np
 import deliverables.input_params as params
-from flatland.envs.observations import TreeObsForRailEnv
-from flatland.envs.predictions import ShortestPathPredictorForRailEnv
+from deliverables.observation import TreeObsForRailEnv
+from deliverables.utils.shortest_path import ShortestPathPredictorForRailEnv
 #from deliverables.observation import CombinedObservation
 
 class AC_Network():
@@ -124,37 +124,10 @@ class AC_Network():
     def reshape_obs(self, obs):
         obs = list(obs.values())
         tree_obs = np.asarray(obs)
-
-        #len_obs = tree_obs.shape[1]
-        #len_cell = 11
-
-        #num_cells = int(len_obs/len_cell)
-
         tree_obs[tree_obs ==  np.inf] = -1
         tree_obs[tree_obs ==  -np.inf] = -2
-        #tree_obs = np.asarray(np.split(tree_obs, num_cells, axis=1))
-        #tree_obs = np.swapaxes(tree_obs, 0,1)
         tree_obs += 2
         tree_obs /= 40.0
-
-        '''
-        dist_to_target = tree_obs[:,:,0]
-        dist_to_other_agents_target = tree_obs[:,:,1]
-        dist_to_other_agent = tree_obs[:,:,2]
-        possible_conflicts = tree_obs[:,:,3]
-        unusable_switch = tree_obs[:,:,4]
-        branch_length = tree_obs[:,:,5]
-        dist_to_target_with_this_path = tree_obs[:,:,6]
-        num_agents_same_dir = tree_obs[:,:,7]
-        num_agents_opposite_dir = tree_obs[:,:,8]
-        blocked_for_n_more_steps = tree_obs[:,:,9]
-        slowest_agent = tree_obs[:,:,10]
-
-        tree_obs = tree_obs*0.5
-        tree_obs = tree_obs - 5
-        tree_obs = self.sigmoid(tree_obs)
-        '''
-
         tree_obs = tree_obs.astype(np.float32)
 
         return tree_obs

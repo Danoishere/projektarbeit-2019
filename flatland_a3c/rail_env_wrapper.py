@@ -4,6 +4,7 @@ from flatland.envs.generators import complex_rail_generator #, sparse_rail_gener
 import random
 
 from deliverables.reward import modify_reward
+from deliverables.utils.shortest_path import DistanceMap
 
 class RailEnvWrapper():
     initial_step_penalty = -2
@@ -61,7 +62,6 @@ class RailEnvWrapper():
             width, 
             height, 
             self.rail_gen,
-            #schedule_generator = self.schedule_gen,
             number_of_agents=self.num_agents,
             obs_builder_object=self.observation_builder)
 
