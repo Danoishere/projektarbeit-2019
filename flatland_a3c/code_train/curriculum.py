@@ -125,6 +125,20 @@ class CurriculumManager:
 
     def change_grid_round4(self, env):
         env.update_env_with_params(
+            width=30,
+            height=30,
+            num_agents=5,
+            max_steps = 55,
+            rail_type = 'complex',
+            rail_gen_params = {
+                'nr_start_goal': 6,
+                'nr_extra': 6,
+                'min_dist': 12,
+                'max_dist' : 99999
+            }
+        )
+        '''
+        env.update_env_with_params(
             width=20,
             height=20,
             num_agents=2,           
@@ -141,8 +155,10 @@ class CurriculumManager:
                 'enhance_intersection':True
             }
         )
+        '''
 
     def change_grid_round5(self, env):
+        '''
         env.update_env_with_params(
             width=60,
             height=60,
@@ -158,6 +174,20 @@ class CurriculumManager:
                 'num_neighb': 5, # Number of connections to other cities
                 'grid_mode': False,
                 'enhance_intersection':False
+            }
+        )
+        '''
+        env.update_env_with_params(
+            width=50,
+            height=50,
+            num_agents=10,
+            max_steps = 60,
+            rail_type = 'complex',
+            rail_gen_params = {
+                'nr_start_goal': 12,
+                'nr_extra': 12,
+                'min_dist': 30,
+                'max_dist' : 99999
             }
         )
 
