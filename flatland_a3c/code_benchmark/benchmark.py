@@ -239,4 +239,5 @@ class Evaluator:
 
     def save_stats_to_csv(self,run_name):
         df = pd.DataFrame.from_records([s.to_dict() for s in self.stats])
+        # TODO: Save to deliverables
         df.to_csv(run_name + '_report.csv')

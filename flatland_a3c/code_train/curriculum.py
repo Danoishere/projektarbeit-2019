@@ -1,6 +1,6 @@
 class CurriculumManager:
-    def __init__(self, coordinator, authorized_worker):
-        self.coordinator = coordinator
+    def __init__(self, should_stop, authorized_worker):
+        self.should_stop = should_stop
         self.current_level = 0
         self.next_level = 1
         self.stop_training = False
@@ -52,7 +52,7 @@ class CurriculumManager:
             print('Switching to curriculum level', self.current_level + 1,'with a success rate of ', success_rate)
             self.level_switch_activated = True
             self.next_level = self.current_level + 1
-            self.coordinator.request_stop()
+            self.should_stop.value = True
             
 
     def switch_to_next_level(self):

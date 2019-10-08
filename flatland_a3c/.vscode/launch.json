@@ -9,7 +9,7 @@
             "type": "python",
             "request": "launch",
             "program": "${workspaceFolder}/main.py",
-            "justMyCode": true,
+            "justMyCode": false,
             "args": ["--train"],
             "console": "integratedTerminal"
         },

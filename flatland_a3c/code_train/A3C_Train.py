@@ -9,9 +9,11 @@
 
 
 import threading
-import multiprocessing
+import multiprocess as mp
+
 import numpy as np
 import tensorflow as tf
+from ctypes import c_bool
 
 import scipy.signal
 from tensorflow.keras import layers
@@ -20,196 +22,25 @@ from tensorflow.keras.models import Model
 
 from datetime import datetime
 from random import choice
-from time import sleep
-from time import time
+from time import sleep, time
 from rail_env_wrapper import RailEnvWrapper
 from code_util.checkpoint import CheckpointManager
 from code_train.curriculum import CurriculumManager
 from deliverables.network import AC_Network
+from code_train.multiworker import create_worker
 
 import code_util.constants as const
 import deliverables.input_params as params
 
-# Discounting function used to calculate discounted returns.
-def discount(x, gamma):
-    return scipy.signal.lfilter([1], [1, -gamma], x[::-1], axis=0)[::-1]
-
-def max_length_sublist(top_list):
-    max_len = 0
-    for sub_list in top_list:
-        list_len = len(sub_list)
-        if list_len > max_len:
-            max_len = list_len
-
-    return max_len
-
-class Worker():
-    def __init__(self,name,global_model,trainer,checkpoint_manager, curriculum_manager, start_episode, lock):
-        self.name = "worker_" + str(name)
-        self.number = name        
-        self.checkpoint_manager = checkpoint_manager
-        self.curr_manager = curriculum_manager
-        self.global_model = global_model
-        self.trainer = trainer
-        self.episode_count = start_episode
-        self.summary_writer = tf.summary.create_file_writer(const.tensorboard_path + 'train_' + str(name))
-        
-        #Create the local copy of the network and the tensorflow op to copy global paramters to local network
-        self.local_model = AC_Network(global_model, trainer,True, lock)
-        self.update_local_model = lambda: self.local_model.update_from(self.global_model)
-        self.env = RailEnvWrapper(self.local_model.get_observation_builder())
-        
-    def train(self, rollout, gamma):
-        all_rollouts = []
-        all_rewards = []
-        discounted_rewards = np.array([])
-
-        for i in range(self.env.num_agents):
-            rewards = [row[2] for row in rollout[i]]
-            rewards = discount(rewards,gamma)
-            all_rewards.append(rewards)
-            all_rollouts += rollout[i]
-
-        discounted_rewards = np.concatenate(all_rewards)
-        actions = np.asarray([row[1] for row in all_rollouts]) 
-        values = np.asarray([row[5] for row in all_rollouts])
-
-        obs0 = np.asarray([row[0][0] for row in all_rollouts])
-        obs1 = np.asarray([row[0][1] for row in all_rollouts])
-        obs2 = np.asarray([row[0][2] for row in all_rollouts])
-        obs = [obs0, obs1, obs2]
-
-        advantages = discounted_rewards - values
-
-        v_l,p_l,e_l,g_n_a, g_n_c, v_n_a, v_n_c = self.local_model.train(discounted_rewards, advantages, actions, obs)
-        return v_l / len(rollout),p_l / len(rollout),e_l / len(rollout), g_n_a, g_n_c, v_n_a, v_n_c
-    
-    def work(self, max_episode_length, gamma, coord):
-        print ("Starting worker " + str(self.number))
-
-        self.episode_rewards = []
-        self.episode_lengths = []
-        self.episode_success = []
-        self.episode_mean_values = []
-
-        steps_on_level = 0
-
-        # Let the curriculum manager update the level to the current difficulty
-        self.curr_manager.update_env_to_curriculum_level(self.env)
-
-        while not coord.should_stop():
-            self.update_local_model()
-            episode_done = False
-
-            # Buffer for obs, action, next obs, reward
-            episode_buffer = [[] for i in range(self.env.num_agents)]
-
-            # A way to remember if the agent was already done during the last episode
-            done_last_step = {i:False for i in range(self.env.num_agents)}
-
-            # Metrics for tensorboard logging
-            episode_values = []
-            episode_reward = 0
-            episode_step_count = 0
-            info = np.zeros(7)
-            
-            obs = self.env.reset()
-
-            while episode_done == False and episode_step_count < self.env.max_steps:
-                #Take an action using probabilities from policy network output.
-                actions, v = self.local_model.get_actions_and_values(obs, self.env.num_agents)
-                next_obs, rewards, done = self.env.step(actions)
-                #next_obs = self.local_model.reshape_obs(next_obs)
-
-                episode_done = done['__all__']
-                
-                if episode_done == True:
-                    next_obs = obs
-
-                for i in range(self.env.num_agents):
-                    agent_obs = [obs[0][i],obs[1][i],obs[2][i]]
-                    agent_action = actions[i]
-                    agent_reward = rewards[i]
-                    agent_next_obs = next_obs[i]
-
-                    if not done_last_step[i]:
-                        
-                        episode_buffer[i].append([
-                            agent_obs,
-                            agent_action,
-                            agent_reward,
-                            agent_next_obs,
-                            episode_done,
-                            v[i,0]])
-                        
-                        episode_values.append(v[i,0])
-                        episode_reward += agent_reward
-                
-                obs = next_obs                  
-                episode_step_count += 1
-                steps_on_level += 1
-                done_last_step = dict(done)
-
-            # End of episode-loop
-
-            self.episode_rewards.append(episode_reward)
-            self.episode_lengths.append(episode_step_count)
-            self.episode_mean_values.append(np.mean(episode_values))
-            self.episode_success.append(episode_done)
-            
-            # Update the network using the episode buffer at the end of the episode.
-            # if episode_done:
-            v_l, p_l, e_l, g_n_a, g_n_c, v_n_a, v_n_c = self.train(
-                episode_buffer,
-                gamma)
-            
-            info[0] = v_l
-            info[1] = p_l
-            info[2] = e_l
-            info[3] = g_n_a
-            info[4] = g_n_c
-            info[5] = v_n_a
-            info[6] = v_n_c
-
-            
-            self.update_local_model()
-                    
-            # Save stats to Tensorboard every 5 episodes
-            if self.episode_count % 5 == 0 and self.episode_count != 0:
-                mean_length = np.mean(self.episode_lengths[-100:])
-                mean_value = np.mean(self.episode_mean_values[-100:])
-                mean_success_rate = np.mean(self.episode_success[-100:])
-                mean_reward = np.mean(self.episode_rewards[-100:])
-                
-                self.checkpoint_manager.try_save_model(self.episode_count, mean_reward, self.name)
-                self.curr_manager.report_success_rate(mean_success_rate, self.name, steps_on_level)
-                
-                with self.summary_writer.as_default():
-                    episode_count = np.int32(self.episode_count)
-                    tf.summary.scalar('Perf/Reward', mean_reward, step=episode_count)
-                    tf.summary.scalar('Perf/Length', mean_length, step=episode_count)
-                    tf.summary.scalar('Perf/Value', mean_value, step=episode_count)
-                    tf.summary.scalar('Perf/Successrate', mean_success_rate, step=episode_count)
-                    tf.summary.scalar('Losses/Value Loss', np.mean(info[0]), step=episode_count)
-                    tf.summary.scalar('Losses/Policy Loss', np.mean(info[1]), step=episode_count)
-                    tf.summary.scalar('Losses/Entropy', np.mean(info[2]), step=episode_count)
-                    tf.summary.scalar('Losses/Grad Norm-Policy', np.mean(info[3]), step=episode_count)
-                    tf.summary.scalar('Losses/Grad Norm-Value', np.mean(info[4]), step=episode_count)
-                    tf.summary.scalar('Losses/Var Norm-Policy', np.mean(info[5]), step=episode_count)
-                    tf.summary.scalar('Losses/Var Norm-Value', np.mean(info[6]), step=episode_count)
-                    self.summary_writer.flush()
-
-            self.episode_count += 1
-            print('Episode', self.episode_count,'of',self.name,'with',episode_step_count,'steps, reward of',episode_reward, ', mean entropy of', np.mean(info[2]), ', curriculum level ', self.curr_manager.current_level)
 
 def start_train(resume):
-    trainer = RMSprop(learning_rate=params.learning_rate)
-    global_model = AC_Network(None,None)
-    num_workers = min([multiprocessing.cpu_count(),const.max_workers])
-    coord = tf.train.Coordinator()
+    lock = mp.Lock()
+    global_model = AC_Network(None,None,True,False,lock)
+    num_workers = mp.cpu_count()
 
+    should_stop = mp.Value(c_bool, False)
     # Curriculum-manager manages the generation of the levels
-    curr_manager = CurriculumManager(coord, 'worker_0')
+    curr_manager = CurriculumManager(should_stop, 'worker_0')
 
     # Checkpoint-manager saves model-checkpoints
     ckpt_manager = CheckpointManager(global_model, curr_manager, 'worker_0', save_best_after_min=30, save_ckpt_after_min=100)
@@ -219,24 +50,34 @@ def start_train(resume):
         print ('Loading Model...')
         start_episode = ckpt_manager.load_checkpoint_model()
 
-    lock = threading.Lock()
-
-    workers = []
-    for i in range(num_workers):
-        workers.append(Worker(i,global_model,trainer,ckpt_manager, curr_manager, start_episode, lock))
+    # Initial save for global model
+    global_model.save_model(const.model_path,'global')
 
     while not curr_manager.stop_training:
-        worker_threads = []
-        for worker in workers:
-            worker_work = lambda: worker.work(params.max_episode_length,params.gamma,coord)
-            t = threading.Thread(target=(worker_work))
-            t.start()
+        worker_processes = []
+
+        # Start process 1 - n, running in other processes
+        for w_num in range(1,num_workers):
+            #create_worker(w_num, trainer,ckpt_manager,curr_manager,start_episode,lock, should_stop)
+            process = mp.Process(target=create_worker, args=(w_num,None,curr_manager,start_episode,lock, should_stop))
+            process.start()
             sleep(0.5)
-            worker_threads.append(t)
+            worker_processes.append(process)
 
-        coord.join(worker_threads)
-        coord.clear_stop()
+        try:
+            # Start process 0
+            create_worker(0,ckpt_manager,curr_manager,start_episode,lock, should_stop)
+        except KeyboardInterrupt:
+            print('Key-Interrupt')
+            should_stop.value = True
+            sleep(2.0)
+            raise
 
+
+        for p in worker_processes:
+            p.join()
+
+        should_stop.value = False
         if curr_manager.level_switch_activated:
             # Save model after each curriculum level
             run_time = datetime.now().strftime("%d_%m_%Y_%H_%M_%S")

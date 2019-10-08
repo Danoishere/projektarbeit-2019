@@ -11,14 +11,19 @@ from flatland.envs.predictions import ShortestPathPredictorForRailEnv
 from deliverables.observation import CombinedObservation
 
 class AC_Network():
-    def __init__(self, global_model, trainer, create_networks=True, lock=None):
-        self.global_model = global_model
+    def __init__(self, trainer, model_path, create_networks=True, load_global_model=False, lock=None):
         self.trainer = trainer
         self.lock = lock
 
         if create_networks:
             self.actor_model = self.actor_network()
             self.critic_model = self.critic_network()
+        
+        if load_global_model:
+            lock.acquire()
+            self.global_actor = load_model(model_path + '/actor_model_global.h5')
+            self.global_critic = load_model(model_path + '/critic_model_global.h5')
+            lock.release()
 
     def critic_network(self):
         input_map = layers.Input(shape=list(params.map_state_size),dtype=tf.float32)
@@ -37,8 +42,6 @@ class AC_Network():
         tree_dense = layers.Dense(128, activation='relu')(input_vec_tree)
 
         hidden = layers.concatenate([map_dense, grid_dense, tree_dense])
-        hidden = layers.Dense(256, activation='relu')(hidden)
-        hidden = layers.Dropout(0.1)(hidden)
         hidden = layers.Dense(256, activation='relu')(hidden)
         hidden = layers.Dropout(0.1)(hidden)
         hidden = layers.Dense(32, activation='relu')(hidden)
@@ -68,8 +71,6 @@ class AC_Network():
         hidden = layers.concatenate([map_dense, grid_dense, tree_dense])
         hidden = layers.Dense(256, activation='relu')(hidden)
         hidden = layers.Dropout(0.1)(hidden)
-        hidden = layers.Dense(256, activation='relu')(hidden)
-        hidden = layers.Dropout(0.1)(hidden)
         hidden = layers.Dense(32, activation='relu')(hidden)
         policy = layers.Dense(params.number_of_actions, activation='softmax')(hidden)
 
@@ -78,15 +79,21 @@ class AC_Network():
             outputs=policy)
 
 
-    def update_from(self, from_model):
+    def update_from_global_model(self, model_path):
         self.lock.acquire()
-        actor_weights = from_model.actor_model.get_weights()
-        critic_weights = from_model.critic_model.get_weights()
+        self.actor_model.load_weights(model_path + '/actor_model_global.h5')
+        self.critic_model.load_weights(model_path + '/critic_model_global.h5')
         self.lock.release()
 
-        self.actor_model.set_weights(actor_weights)
-        self.critic_model.set_weights(critic_weights)
 
+    def update_global_model(self, model_path):
+        self.global_actor.load_weights(model_path + '/actor_model_global.h5')
+        self.global_critic.load_weights(model_path + '/critic_model_global.h5')
+
+    def save_global_model(self, model_path):
+        self.global_actor.save(model_path + '/actor_model_global.h5')
+        self.global_critic.save(model_path + '/critic_model_global.h5')
+        
 
     def save_model(self, model_path, suffix):
         self.actor_model.save(model_path+'/actor_model_' + suffix + '.h5')
@@ -112,35 +119,37 @@ class AC_Network():
         return policy_loss, entropy
 
 
-    def train(self, target_v, advantages, actions, obs):
-
-        self.lock.acquire()
+    def train(self, target_v, advantages, actions, obs, model_path):
 
         # Value loss
-        with tf.GradientTape() as t:
+        with tf.GradientTape() as t_v:
             value = self.critic_model(obs)
             v_loss = self.value_loss(target_v,value)
 
-        v_local_vars = self.critic_model.trainable_variables
-        gradients_v = t.gradient(v_loss, v_local_vars)
-        var_norms_critic = tf.linalg.global_norm(v_local_vars)
-        gradients_v, grad_norms_v = tf.clip_by_global_norm(gradients_v, params.gradient_norm_critic)
-        global_vars_v = self.global_model.critic_model.trainable_variables
-        self.trainer.apply_gradients(zip(gradients_v, global_vars_v))
-
         # Policy loss
-        with tf.GradientTape() as t:
+        with tf.GradientTape() as t_p:
             policy = self.actor_model(obs)
             p_loss, entropy = self.policy_loss(advantages, actions, policy)
 
+        self.lock.acquire()
+        self.update_global_model(model_path)
+
+        v_local_vars = self.critic_model.trainable_variables
+        gradients_v = t_v.gradient(v_loss, v_local_vars)
+        var_norms_critic = tf.linalg.global_norm(v_local_vars)
+        gradients_v, grad_norms_v = tf.clip_by_global_norm(gradients_v, params.gradient_norm_critic)
+
         p_local_vars = self.actor_model.trainable_variables
-        gradients_p = t.gradient(p_loss, p_local_vars)
+        gradients_p = t_p.gradient(p_loss, p_local_vars)
         var_norms_actor = tf.linalg.global_norm(p_local_vars)
         gradients_p, grad_norms_p = tf.clip_by_global_norm(gradients_p, params.gradient_norm_actor)
-        global_vars_p = self.global_model.actor_model.trainable_variables
-
-        self.trainer.apply_gradients(zip(gradients_p, global_vars_p))
         
+        global_vars_v = self.global_critic.trainable_variables
+        global_vars_p = self.global_actor.trainable_variables
+        self.trainer.apply_gradients(zip(gradients_v, global_vars_v))
+        self.trainer.apply_gradients(zip(gradients_p, global_vars_p))
+        self.save_global_model(model_path)
+
         self.lock.release()
 
         return v_loss, p_loss, entropy, grad_norms_p, grad_norms_v, var_norms_actor, var_norms_critic
