@@ -39,6 +39,8 @@ class AC_Network():
         hidden = layers.concatenate([map_dense, grid_dense, tree_dense])
         hidden = layers.Dense(256, activation='relu')(hidden)
         hidden = layers.Dropout(0.1)(hidden)
+        hidden = layers.Dense(256, activation='relu')(hidden)
+        hidden = layers.Dropout(0.1)(hidden)
         hidden = layers.Dense(32, activation='relu')(hidden)
         hidden = layers.Dense(8, activation='relu')(hidden)
         value = layers.Dense(1)(hidden)
@@ -64,6 +66,8 @@ class AC_Network():
         tree_dense = layers.Dense(128, activation='relu')(input_vec_tree)
 
         hidden = layers.concatenate([map_dense, grid_dense, tree_dense])
+        hidden = layers.Dense(256, activation='relu')(hidden)
+        hidden = layers.Dropout(0.1)(hidden)
         hidden = layers.Dense(256, activation='relu')(hidden)
         hidden = layers.Dropout(0.1)(hidden)
         hidden = layers.Dense(32, activation='relu')(hidden)
