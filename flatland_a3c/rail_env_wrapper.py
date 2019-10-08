@@ -46,7 +46,7 @@ class RailEnvWrapper():
         obs = self.env.reset()
         
         # Obs-shape must be equal to num of agents, otherwise, the level couldn't be generated orderly
-        while len(obs) != self.num_agents:
+        while len(obs[0]) != self.num_agents:
             obs = self.env.reset()
 
         self.env.step_penalty = self.initial_step_penalty

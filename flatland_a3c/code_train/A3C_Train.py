@@ -12,6 +12,7 @@ import threading
 import multiprocessing
 import numpy as np
 import tensorflow as tf
+import pandas as pd
 
 import scipy.signal
 from tensorflow.keras import layers
@@ -73,7 +74,12 @@ class Worker():
         discounted_rewards = np.concatenate(all_rewards)
         actions = np.asarray([row[1] for row in all_rollouts]) 
         values = np.asarray([row[5] for row in all_rollouts])
-        obs = np.asarray([row[0] for row in all_rollouts])
+
+        obs0 = np.asarray([row[0][0] for row in all_rollouts])
+        obs1 = np.asarray([row[0][1] for row in all_rollouts])
+        obs2 = np.asarray([row[0][2] for row in all_rollouts])
+        obs = [obs0, obs1, obs2]
+
         advantages = discounted_rewards - values
 
         v_l,p_l,e_l,g_n_a, g_n_c, v_n_a, v_n_c = self.local_model.train(discounted_rewards, advantages, actions, obs)
@@ -97,7 +103,7 @@ class Worker():
             episode_done = False
 
             # Buffer for obs, action, next obs, reward
-            episode_buffers = [[] for i in range(self.env.num_agents)]
+            episode_buffer = [[] for i in range(self.env.num_agents)]
 
             # A way to remember if the agent was already done during the last episode
             done_last_step = {i:False for i in range(self.env.num_agents)}
@@ -109,13 +115,12 @@ class Worker():
             info = np.zeros(7)
             
             obs = self.env.reset()
-            obs = self.local_model.reshape_obs(obs)
-            
+
             while episode_done == False and episode_step_count < self.env.max_steps:
                 #Take an action using probabilities from policy network output.
                 actions, v = self.local_model.get_actions_and_values(obs, self.env.num_agents)
                 next_obs, rewards, done = self.env.step(actions)
-                next_obs = self.local_model.reshape_obs(next_obs)
+                #next_obs = self.local_model.reshape_obs(next_obs)
 
                 episode_done = done['__all__']
                 
@@ -123,20 +128,20 @@ class Worker():
                     next_obs = obs
 
                 for i in range(self.env.num_agents):
-                    agent_obs = obs[i]
+                    agent_obs = [obs[0][i],obs[1][i],obs[2][i]]
                     agent_action = actions[i]
                     agent_reward = rewards[i]
                     agent_next_obs = next_obs[i]
 
                     if not done_last_step[i]:
-                        episode_buffers[i].append([
+                        
+                        episode_buffer[i].append([
                             agent_obs,
                             agent_action,
                             agent_reward,
                             agent_next_obs,
                             episode_done,
-                            v[i,0],
-                            episode_step_count])
+                            v[i,0]])
                         
                         episode_values.append(v[i,0])
                         episode_reward += agent_reward
@@ -156,7 +161,7 @@ class Worker():
             # Update the network using the episode buffer at the end of the episode.
             # if episode_done:
             v_l, p_l, e_l, g_n_a, g_n_c, v_n_a, v_n_c = self.train(
-                episode_buffers,
+                episode_buffer,
                 gamma)
             
             info[0] = v_l

@@ -8,7 +8,7 @@ import numpy as np
 import deliverables.input_params as params
 from flatland.envs.observations import TreeObsForRailEnv
 from flatland.envs.predictions import ShortestPathPredictorForRailEnv
-#from deliverables.observation import CombinedObservation
+from deliverables.observation import CombinedObservation
 
 class AC_Network():
     def __init__(self, global_model, trainer, create_networks=True, lock=None):
@@ -21,10 +21,22 @@ class AC_Network():
             self.critic_model = self.critic_network()
 
     def critic_network(self):
-        input_tree = layers.Input(shape=list(params.tree_state_size),dtype=tf.float32)
-        hidden = layers.BatchNormalization()(input_tree)
-        hidden = layers.Dense(512, activation='relu')(hidden)
-        hidden = layers.Dropout(0.1)(hidden)
+        input_map = layers.Input(shape=list(params.map_state_size),dtype=tf.float32)
+        input_grid = layers.Input(shape=list(params.grid_state_size),dtype=tf.float32)
+        input_vec_tree = layers.Input(shape=list(params.vec_tree_state_size),dtype=tf.float32)
+
+        map_dense = layers.Flatten()(input_map)
+        map_dense = layers.Dense(128, activation='relu')(map_dense)
+        map_dense = layers.Dense(64, activation='relu')(map_dense)
+
+        grid_conv = layers.Conv2D(62, (3,3))(input_grid)
+        grid_dense = layers.Flatten()(grid_conv)
+        grid_dense = layers.Dense(128)(grid_dense)
+        
+        tree_dense = layers.Dense(256, activation='relu')(input_vec_tree)
+        tree_dense = layers.Dense(128, activation='relu')(input_vec_tree)
+
+        hidden = layers.concatenate([map_dense, grid_dense, tree_dense])
         hidden = layers.Dense(256, activation='relu')(hidden)
         hidden = layers.Dropout(0.1)(hidden)
         hidden = layers.Dense(32, activation='relu')(hidden)
@@ -32,22 +44,33 @@ class AC_Network():
         value = layers.Dense(1)(hidden)
 
         return Model(
-            inputs=input_tree,
+            inputs=[input_map, input_grid, input_vec_tree],
             outputs=value)
 
     def actor_network(self):
-        input_tree = layers.Input(shape=list(params.tree_state_size),dtype=tf.float32)
-        hidden = layers.BatchNormalization()(input_tree)
-        hidden = layers.Dense(512, activation='relu')(hidden)
-        hidden = layers.Dropout(0.1)(hidden)
+        input_map = layers.Input(shape=list(params.map_state_size),dtype=tf.float32)
+        input_grid = layers.Input(shape=list(params.grid_state_size),dtype=tf.float32)
+        input_vec_tree = layers.Input(shape=list(params.vec_tree_state_size),dtype=tf.float32)
+
+        map_dense = layers.Flatten()(input_map)
+        map_dense = layers.Dense(128, activation='relu')(map_dense)
+        map_dense = layers.Dense(64, activation='relu')(map_dense)
+
+        grid_conv = layers.Conv2D(62, (3,3))(input_grid)
+        grid_dense = layers.Flatten()(grid_conv)
+        grid_dense = layers.Dense(128)(grid_dense)
+        
+        tree_dense = layers.Dense(256, activation='relu')(input_vec_tree)
+        tree_dense = layers.Dense(128, activation='relu')(input_vec_tree)
+
+        hidden = layers.concatenate([map_dense, grid_dense, tree_dense])
         hidden = layers.Dense(256, activation='relu')(hidden)
         hidden = layers.Dropout(0.1)(hidden)
         hidden = layers.Dense(32, activation='relu')(hidden)
-        hidden = layers.Dense(8, activation='relu')(hidden)
         policy = layers.Dense(params.number_of_actions, activation='softmax')(hidden)
 
         return Model(
-            inputs=input_tree,
+            inputs=[input_map, input_grid, input_vec_tree],
             outputs=policy)
 
 
@@ -122,8 +145,7 @@ class AC_Network():
         return x*(1-x) if derivative else 1/(1+np.exp(-x))
 
     def reshape_obs(self, obs):
-        obs = list(obs.values())
-        tree_obs = np.asarray(obs)
+        tree_obs = np.asarray(obs['obs1'])
 
         #len_obs = tree_obs.shape[1]
         #len_cell = 11
@@ -198,4 +220,4 @@ class AC_Network():
 
 
     def get_observation_builder(self):
-        return TreeObsForRailEnv(3, predictor=ShortestPathPredictorForRailEnv(20))
+        return CombinedObservation([11,11],3)
