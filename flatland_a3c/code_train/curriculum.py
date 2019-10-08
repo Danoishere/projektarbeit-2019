@@ -8,27 +8,27 @@ class CurriculumManager:
         self.level_switch_activated = False
         self.curriculum = {
             0: {
-                'next_after_successrate' : 0.86,
+                'next_after_successrate' : 0.85,
                 'level_generator' : lambda env: self.change_grid_round0(env)
             },
             1: {
-                'next_after_successrate' : 0.86,
+                'next_after_successrate' : 0.85,
                 'level_generator' : lambda env: self.change_grid_round1(env)
             },
             2: {
-                'next_after_successrate' : 0.86,
+                'next_after_successrate' : 0.85,
                 'level_generator' : lambda env: self.change_grid_round2(env)
             },
             3: {
-                'next_after_successrate' : 0.86,
+                'next_after_successrate' : 0.85,
                 'level_generator' : lambda env: self.change_grid_round3(env)
             },
             4: {
-                'next_after_successrate' : 0.92,
+                'next_after_successrate' : 0.85,
                 'level_generator' : lambda env: self.change_grid_round4(env)
             },
             5: {
-                'next_after_successrate' : 0.92,
+                'next_after_successrate' : 1.0,
                 'level_generator' : lambda env: self.change_grid_round5(env)
             }
         }
@@ -66,7 +66,7 @@ class CurriculumManager:
         env.update_env_with_params(
             width=8,
             height=8,
-            num_agents=3,
+            num_agents=2,
             max_steps = 40,
             rail_type = 'complex',
             rail_gen_params = {
@@ -81,7 +81,7 @@ class CurriculumManager:
         env.update_env_with_params(
             width=12,
             height=12,
-            num_agents=4,
+            num_agents=3,
             max_steps = 40,
             rail_type = 'complex',
             rail_gen_params = {
@@ -97,7 +97,7 @@ class CurriculumManager:
         env.update_env_with_params(
             width=20,
             height=20,
-            num_agents=5,
+            num_agents=4,
             max_steps = 40,
             rail_type = 'complex',
             rail_gen_params = {

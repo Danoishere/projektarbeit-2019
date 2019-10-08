@@ -3,7 +3,6 @@ On basis of the work of S. Huschauer and the Flatland-Environment-Tree-Observati
 """
 
 import numpy as np
-import pandas as pd
 
 from flatland.core.env_observation_builder import ObservationBuilder
 from flatland.envs.observations import TreeObsForRailEnv
@@ -48,19 +47,6 @@ class CombinedObservation(ObservationBuilder):
 
 
     def convert_grid(self, grid_):
-        """
-        transition_list = [int('0000000000000000', 2),  # empty cell - Case 0
-                       int('1000000000100000', 2),  # Case 1 - straight
-                       int('1001001000100000', 2),  # Case 2 - simple switch
-                       int('1000010000100001', 2),  # Case 3 - diamond drossing
-                       int('1001011000100001', 2),  # Case 4 - single slip
-                       int('1100110000110011', 2),  # Case 5 - double slip
-                       int('0101001000000010', 2),  # Case 6 - symmetrical
-                       int('0010000000000000', 2),  # Case 7 - dead end
-                       int('0100000000000010', 2),  # Case 1b (8)  - simple turn right
-                       int('0001001000000000', 2),  # Case 1c (9)  - simple turn left
-                       int('1100000000100010', 2)]  # Case 2b (10) - simple switch mirrored
-        """
         map_ = np.zeros_like(grid_).astype(np.float)
         map_[grid_==int('1000000000100000', 2)] = 0.3
         map_[grid_==int('1001001000100000', 2)] = 0.35
@@ -93,15 +79,12 @@ class CombinedObservation(ObservationBuilder):
 
         tree_obs = self.tree.get_many(handles)
 
-        df = pd.DataFrame()
-
         obs0 = []
         obs1 = []
         obs2 = []
 
         for h in handles:
             obs = self.get(h)
-
             t_obs = np.asarray(tree_obs[h])
             t_obs[t_obs ==  np.inf] = -1
             t_obs[t_obs ==  -np.inf] = -2
@@ -249,7 +232,7 @@ class CombinedObservation(ObservationBuilder):
         layer_grid = self.to_obs_space(grid_flat)
 
         # Vector with train-info
-        vector = [speed, last_action, 0,self.convert_dir(agent.direction), self.env._elapsed_steps]
+        vector = [speed, last_action, handle/100.0 ,self.convert_dir(agent.direction), self.sigmoid(self.env._elapsed_steps*0.02)]
 
         self.observation_space = [observation_maps, layer_grid, vector]
         return self.observation_space
@@ -307,12 +290,16 @@ class CombinedObservation(ObservationBuilder):
                 self.min_map[0]:self.max_map[0], 
                 self.min_map[1]:self.max_map[1]]
             obs_grid = np.zeros(self.size_)
+            obs_grid[
+                self.min_obs[0]:self.max_obs[0], 
+                self.min_obs[1]:self.max_obs[1]] = copied_area
         else:
             copied_area = orig_map[:,
                 self.min_map[0]:self.max_map[0], 
                 self.min_map[1]:self.max_map[1]]
 
             obs_grid = np.zeros(obs_size)
+
             obs_grid[:,
                 self.min_obs[0]:self.max_obs[0], 
                 self.min_obs[1]:self.max_obs[1]] = copied_area
