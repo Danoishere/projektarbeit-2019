@@ -34,16 +34,20 @@ class AC_Network():
         map_dense = layers.Dense(128, activation='relu')(map_dense)
         map_dense = layers.Dense(64, activation='relu')(map_dense)
 
-        grid_conv = layers.Conv2D(62, (3,3))(input_grid)
+        map_conv = layers.Conv2D(64,(4,4), activation='relu')(input_map)
+        map_conv = layers.Dense(32, activation='relu')(map_conv)
+        map_conv = layers.Flatten()(map_conv)
+        map_conv = layers.Dense(16, activation='relu')(map_conv)
+
+        grid_conv = layers.Conv2D(64, (3,3), activation='relu')(input_grid)
         grid_dense = layers.Flatten()(grid_conv)
-        grid_dense = layers.Dense(128)(grid_dense)
+        grid_dense = layers.Dense(64)(grid_dense)
         
         tree_dense = layers.Dense(256, activation='relu')(input_vec_tree)
-        tree_dense = layers.Dense(128, activation='relu')(input_vec_tree)
+        tree_dense = layers.Dense(64, activation='relu')(input_vec_tree)
 
-        hidden = layers.concatenate([map_dense, grid_dense, tree_dense])
-        hidden = layers.Dense(256, activation='relu')(hidden)
-        hidden = layers.Dropout(0.1)(hidden)
+        hidden = layers.concatenate([map_dense, grid_dense, tree_dense, map_conv])
+        hidden = layers.Dense(128, activation='relu')(hidden)
         hidden = layers.Dense(32, activation='relu')(hidden)
         hidden = layers.Dense(8, activation='relu')(hidden)
         value = layers.Dense(1)(hidden)
@@ -61,17 +65,22 @@ class AC_Network():
         map_dense = layers.Dense(128, activation='relu')(map_dense)
         map_dense = layers.Dense(64, activation='relu')(map_dense)
 
-        grid_conv = layers.Conv2D(62, (3,3))(input_grid)
+        map_conv = layers.Conv2D(64,(4,4), activation='relu')(input_map)
+        map_conv = layers.Dense(32, activation='relu')(map_conv)
+        map_conv = layers.Flatten()(map_conv)
+        map_conv = layers.Dense(16, activation='relu')(map_conv)
+
+        grid_conv = layers.Conv2D(64, (3,3), activation='relu')(input_grid)
         grid_dense = layers.Flatten()(grid_conv)
-        grid_dense = layers.Dense(128)(grid_dense)
+        grid_dense = layers.Dense(64)(grid_dense)
         
         tree_dense = layers.Dense(256, activation='relu')(input_vec_tree)
-        tree_dense = layers.Dense(128, activation='relu')(input_vec_tree)
+        tree_dense = layers.Dense(64, activation='relu')(input_vec_tree)
 
-        hidden = layers.concatenate([map_dense, grid_dense, tree_dense])
-        hidden = layers.Dense(256, activation='relu')(hidden)
-        hidden = layers.Dropout(0.1)(hidden)
+        hidden = layers.concatenate([map_dense, grid_dense, tree_dense, map_conv])
+        hidden = layers.Dense(128, activation='relu')(hidden)
         hidden = layers.Dense(32, activation='relu')(hidden)
+        hidden = layers.Dense(8, activation='relu')(hidden)
         policy = layers.Dense(params.number_of_actions, activation='softmax')(hidden)
 
         return Model(
