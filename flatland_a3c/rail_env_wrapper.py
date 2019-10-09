@@ -7,7 +7,6 @@ from deliverables.reward import modify_reward
 
 class RailEnvWrapper():
     initial_step_penalty = -2
-    global_reward = 40
 
     def __init__(self, observation_builder, width=14, height=14, num_agents=2):
         self.num_agents = num_agents
@@ -32,7 +31,6 @@ class RailEnvWrapper():
     def step(self, actions):
         self.env.step_penalty = -2*1.02**self.episode_step_count
         next_obs, rewards, done, _ = self.env.step(actions)
-        self.num_of_done_agents = modify_reward(rewards, self.env, done, self.done_last_step, self.num_of_done_agents, self.dist)
         self.done_last_step = dict(done)
         self.episode_step_count += 1
         return next_obs, rewards, done
@@ -66,9 +64,9 @@ class RailEnvWrapper():
             number_of_agents=self.num_agents,
             obs_builder_object=self.observation_builder)
 
-        self.env.global_reward = self.global_reward
+        #self.env.global_reward = self.global_reward
         self.env.num_agents = self.num_agents
-        self.env.step_penalty = -2
+        self.env.step_penalty = self.initial_step_penalty
         return self.env
 
     def get_agents_count(self):

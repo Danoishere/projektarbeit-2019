@@ -107,7 +107,6 @@ class Worker():
                 next_obs, rewards, done = self.env.step(actions)
 
                 episode_done = done['__all__']
-                
                 if episode_done == True:
                     next_obs = obs
 
@@ -118,7 +117,6 @@ class Worker():
                     agent_next_obs = next_obs[i]
 
                     if not done_last_step[i]:
-                        
                         episode_buffer[i].append([
                             agent_obs,
                             agent_action,
@@ -136,6 +134,13 @@ class Worker():
                 done_last_step = dict(done)
 
             # End of episode-loop
+
+            if episode_done:
+                for i in range(self.env.num_agents):
+                    # If agents could finish the level, 
+                    # set final reward for all agents
+                    episode_buffer[i][-1][2] += 40
+                    episode_reward += 40
 
             self.episode_rewards.append(episode_reward)
             self.episode_lengths.append(episode_step_count)

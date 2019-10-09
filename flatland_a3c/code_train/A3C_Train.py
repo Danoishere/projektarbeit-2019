@@ -32,6 +32,7 @@ from code_train.multiworker import create_worker
 import code_util.constants as const
 import deliverables.input_params as params
 
+mp.set_start_method('spawn', True)
 
 def start_train(resume):
     lock = mp.Lock()
@@ -72,8 +73,6 @@ def start_train(resume):
             should_stop.value = True
             sleep(2.0)
             raise
-
-        
 
         for p in worker_processes:
             p.join()
