@@ -131,9 +131,6 @@ class AC_Network():
             policy = self.actor_model(obs)
             p_loss, entropy = self.policy_loss(advantages, actions, policy)
 
-        self.lock.acquire()
-        self.update_global_model(model_path)
-
         v_local_vars = self.critic_model.trainable_variables
         gradients_v = t_v.gradient(v_loss, v_local_vars)
         var_norms_critic = tf.linalg.global_norm(v_local_vars)
@@ -144,6 +141,8 @@ class AC_Network():
         var_norms_actor = tf.linalg.global_norm(p_local_vars)
         gradients_p, grad_norms_p = tf.clip_by_global_norm(gradients_p, params.gradient_norm_actor)
         
+        self.lock.acquire()
+        self.update_global_model(model_path)
         global_vars_v = self.global_critic.trainable_variables
         global_vars_p = self.global_actor.trainable_variables
         self.trainer.apply_gradients(zip(gradients_v, global_vars_v))

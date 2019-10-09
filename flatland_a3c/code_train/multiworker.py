@@ -24,8 +24,7 @@ import deliverables.input_params as params
 
 def create_worker(name, checkpoint_manager, curriculum_manager, start_episode, lock, should_stop):
     worker = Worker(name, checkpoint_manager, curriculum_manager,start_episode, lock, should_stop)
-    worker.work()
-
+    return worker.work()
 
 # Discounting function used to calculate discounted returns.
 def discount(x, gamma):
@@ -131,7 +130,7 @@ class Worker():
                         episode_values.append(v[i,0])
                         episode_reward += agent_reward
                 
-                obs = next_obs                  
+                obs = next_obs               
                 episode_step_count += 1
                 steps_on_level += 1
                 done_last_step = dict(done)
@@ -185,3 +184,5 @@ class Worker():
 
             self.episode_count += 1
             print('Episode', self.episode_count,'of',self.name,'with',episode_step_count,'steps, reward of',episode_reward, ', mean entropy of', np.mean(info[2]), ', curriculum level ', self.curr_manager.current_level)
+        
+        return self.episode_count

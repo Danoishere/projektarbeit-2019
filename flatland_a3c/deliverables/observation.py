@@ -6,7 +6,6 @@ import numpy as np
 
 from flatland.core.env_observation_builder import ObservationBuilder
 from flatland.envs.observations import TreeObsForRailEnv
-from flatland.core.grid.grid4_astar import a_star
 from flatland.core.transition_map import GridTransitionMap
 from numpy.core.umath import divide
 import deliverables.input_params as params
@@ -68,15 +67,6 @@ class CombinedObservation(ObservationBuilder):
         return x*(1-x) if derivative else 1/(1+np.exp(-x))
 
     def get_many(self, handles=[]):
-        '''
-        for agent in self.env.agents:
-            rail_grid = np.zeros_like(self.env.rail.grid, dtype=np.uint16)
-            path = a_star(self.env.rail.transitions, rail_grid, agent.position,agent.target)
-            agent.path_to_target = path
-
-        self.path_priority_map = np.zeros(self.env.rail.grid.shape)
-        '''
-
         tree_obs = self.tree.get_many(handles)
 
         obs0 = []

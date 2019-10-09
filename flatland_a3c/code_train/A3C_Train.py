@@ -66,13 +66,14 @@ def start_train(resume):
 
         try:
             # Start process 0
-            create_worker(0,ckpt_manager,curr_manager,start_episode,lock, should_stop)
+            start_episode = create_worker(0,ckpt_manager,curr_manager,start_episode,lock, should_stop)
         except KeyboardInterrupt:
             print('Key-Interrupt')
             should_stop.value = True
             sleep(2.0)
             raise
 
+        
 
         for p in worker_processes:
             p.join()

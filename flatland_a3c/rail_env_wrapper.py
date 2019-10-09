@@ -33,7 +33,7 @@ class RailEnvWrapper():
         self.env.step_penalty = -2*1.02**self.episode_step_count
         next_obs, rewards, done, _ = self.env.step(actions)
         self.num_of_done_agents = modify_reward(rewards, self.env, done, self.done_last_step, self.num_of_done_agents, self.dist)
-        self.done_last_step = done
+        self.done_last_step = dict(done)
         self.episode_step_count += 1
         return next_obs, rewards, done
     
@@ -49,6 +49,7 @@ class RailEnvWrapper():
         while len(obs[0]) != self.num_agents:
             obs = self.env.reset()
 
+        self.num_of_done_agents = 0
         self.env.step_penalty = self.initial_step_penalty
         self.episode_step_count = 0
         return obs
