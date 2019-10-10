@@ -1,0 +1,33 @@
+
+Statusmeeting
+#############
+
+Fortschritt:
+------------
+
+- Curriculum Learning/RailEnvWrapper für besseren Trainingsprozess
+- Benchmark - 5 Levels mit je 20 Durchgängen
+- Webapplikation zur Benchmark-Auswertung (in Progress)
+- Multiprocessing
+- Situation mit Observations/Submissions 2.0.0
+- Erste Submissions
+- Bessere Aufteilung des Codes
+	-> Teil zum kopieren in Benchmark-Webapp (Param. File, Model, Model-Architektur, Tensorboard-Files, Benchmark-Report)
+	-> Statischer Teil (Training, Benchmark-Umgebung, Konstanten)
+
+- Post play reward manipulation (wenn es alle geschafft haben)
+- Behebung des Entropie-Kollapses (Bug vom letzten mal)
+
+TODO: 
+- Analyse Observations für zweite Runde
+- Analyse Kommunikation - Papers studieren - geeignete Loss-Function?
+- Curriculum anpassen für Runde 2 (Mit generierter Schedule & Zugausfällen)
+- Adaptive Entropie
+- Vergleiche Netzwerkarchitekturen
+
+
+Idee PA-Bericht: 
+---------------
+- Performance mit & ohne Curriculum Learning
+- Performance mit & ohne Post play reward shaping
+
