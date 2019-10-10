@@ -181,7 +181,7 @@ class CurriculumManager:
             width=50,
             height=50,
             num_agents=10,
-            max_steps = 60,
+            max_steps = 80,
             rail_type = 'complex',
             rail_gen_params = {
                 'nr_start_goal': 12,
