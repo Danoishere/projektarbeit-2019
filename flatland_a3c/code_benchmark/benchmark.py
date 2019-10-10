@@ -8,6 +8,8 @@ from flatland.envs.generators import (complex_rail_generator)
 
 from flatland.utils.rendertools import RenderTool
 from rail_env_wrapper import RailEnvWrapper
+import code_util.constants as const
+import json
 
 SEED = 5648
 
@@ -106,7 +108,7 @@ class Evaluator:
         self.env.update_env_with_params(
             width=20,
             height=20,
-            num_agents=1,
+            num_agents=2,
             max_steps = 40,
             rail_type = 'complex',
             rail_gen_params = {
@@ -122,7 +124,7 @@ class Evaluator:
         self.env.update_env_with_params(
             width=20,
             height=20,
-            num_agents=2,
+            num_agents=3,
             max_steps = 40,
             rail_type = 'complex',
             rail_gen_params = {
@@ -139,7 +141,7 @@ class Evaluator:
             width=20,
             height=20,
             num_agents=4,
-            max_steps = 40,
+            max_steps = 55,
             rail_type = 'complex',
             rail_gen_params = {
                 'nr_start_goal': 6,
@@ -149,65 +151,22 @@ class Evaluator:
             },
             seed=SEED
         )
-        '''
-
-
-        self.env.update_env_with_params(
-            width=20,
-            height=20,
-            num_agents=2,
-            max_steps = 40,
-            rail_type = 'sparse',
-            rail_gen_params = {
-                'num_cities': 10,  # Number of cities in map
-                'num_intersections': 10,  # Number of interesections in map
-                'num_trainstations': 20,  # Number of possible start/targets on map
-                'min_node_dist': 6,  # Minimal distance of nodes
-                'node_radius': 3, # Proximity of stations to city center
-                'num_neighb': 3, # Number of connections to other cities
-                'grid_mode': True,
-                'enhance_intersection':True
-            },  
-            seed=SEED  
-        )'''
 
     def change_grid_round5(self):
         self.env.update_env_with_params(
-            width=40,
-            height=40,
-            num_agents=6,
-            max_steps = 40,
+            width=50,
+            height=50,
+            num_agents=10,
+            max_steps = 80,
             rail_type = 'complex',
             rail_gen_params = {
-                'nr_start_goal': 6,
+                'nr_start_goal': 14,
                 'nr_extra': 12,
                 'min_dist': 20,
                 'max_dist' : 99999
             },
             seed=SEED
         )
-        '''
-
-
-        self.env.update_env_with_params(
-            width=60,
-            height=60,
-            num_agents=6,
-            max_steps = 40,
-            rail_type = 'sparse',
-            rail_gen_params = {
-                'num_cities': 12,  # Number of cities in map
-                'num_intersections': 15,  # Number of interesections in map
-                'num_trainstations': 20,  # Number of possible start/targets on map
-                'min_node_dist': 10,  # Minimal distance of nodes
-                'node_radius': 3, # Proximity of stations to city center
-                'num_neighb': 5, # Number of connections to other cities
-                'grid_mode': False,
-                'enhance_intersection':False
-            },  
-            seed=SEED
-        )
-        '''
 
     def run_episodes(self, episode_no, num_episodes):
         for r in range(num_episodes):
@@ -220,24 +179,33 @@ class Evaluator:
         self.change_grid_round1()
         self.run_episodes(1, 20)
 
-        print('Round 2 - Single agent, more difficult environment')
+        print('Round 2 - Two agents, larger environment')
         self.change_grid_round2()
         self.run_episodes(2, 20)
 
-        print('Round 3 - Two agents, more difficult environment')
+        print('Round 3 - Three agents, but similar environment')
         self.change_grid_round3()
         self.run_episodes(3, 20)
 
-        print('Round 4 - four agents, even more difficult environment')
+        print('Round 4 - Four agents, same size')
         self.change_grid_round4()
         self.run_episodes(4, 20)
         
-        print('Round 5 - Evaluation environment')
+        print('Round 5 - Large environment, 10 agents')
         self.change_grid_round5()
         self.run_episodes(5, 20)
 
 
     def save_stats_to_csv(self,run_name):
         df = pd.DataFrame.from_records([s.to_dict() for s in self.stats])
-        # TODO: Save to deliverables
-        df.to_csv(run_name + '_report.csv')
+        df.to_csv(const.benchmark_path + 'benchmark_report.csv')
+
+    def update_run_info_benchmark_score(self):
+        df = pd.DataFrame.from_records([s.to_dict() for s in self.stats])
+        benchmark_score = df['num_agents_done'].sum()/df['num_agents'].sum()
+        with open(const.run_info_path + 'run_info.json', 'rw') as json_file:
+            run_info = json.load(json_file)
+            run_info['benchmark_score'] = benchmark_score
+            json.dump(run_info, json_file)
+
+    

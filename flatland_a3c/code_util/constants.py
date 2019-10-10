@@ -6,5 +6,7 @@ suffix_checkpoint = 'checkpoint'
 
 checkpoint_file = './deliverables/model/checkpoint.json'
 tensorboard_path = './deliverables/tensorboard/'
+benchmark_path = './deliverables/'
+run_info_path = './deliverables/'
 
 max_workers = 24

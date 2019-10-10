@@ -3,7 +3,7 @@ import argparse
 import code_benchmark as benchmark
 import code_play.A3C_Play as play
 import code_train.A3C_Train as train
-import code_benchmark.benchmark_submission as benchmark
+import code_benchmark.benchmark_runner as benchmark
 
 parser = argparse.ArgumentParser(description='Flatland with A3C')
 parser.add_argument('--train', action='store_true')

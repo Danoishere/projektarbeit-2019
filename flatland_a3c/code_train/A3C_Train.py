@@ -11,6 +11,7 @@
 import threading
 import multiprocess as mp
 
+
 import numpy as np
 import tensorflow as tf
 from ctypes import c_bool
@@ -25,6 +26,7 @@ from random import choice
 from time import sleep, time
 from rail_env_wrapper import RailEnvWrapper
 from code_util.checkpoint import CheckpointManager
+from code_util.run_info import save_new_run_info
 from code_train.curriculum import CurriculumManager
 from deliverables.network import AC_Network
 from code_train.multiworker import create_worker
@@ -50,6 +52,9 @@ def start_train(resume):
     if resume == True:
         print ('Loading Model...')
         start_episode = ckpt_manager.load_checkpoint_model()
+    else:
+        # Only create a run-info in it is really a new run
+        save_new_run_info()
 
     # Initial save for global model
     global_model.save_model(const.model_path,'global')
