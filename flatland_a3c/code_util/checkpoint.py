@@ -48,7 +48,7 @@ class CheckpointManager:
         else:
             raise ValueError('No checkpoint.json found at', const.checkpoint_file)
 
-    def try_save_model(self, episode_nr, reward, worker_name):
+    def try_save_model(self, model, episode_nr, reward, worker_name):
         if worker_name != self.authorized_worker:
             return
 
@@ -61,12 +61,12 @@ class CheckpointManager:
                 self.best_reward = reward
                 self.last_save_best_on_episode_nr = episode_nr
                 curr_level = str(self.curriculum_manager.current_level)
-                self.global_model.save_model(const.model_path, const.suffix_best +'_lvl_'+ curr_level)
+                model.save_model(const.model_path, const.suffix_best +'_lvl_'+ curr_level)
 
         if self.last_ckpt_on_episode_nr + self.save_ckpt_after_min <=  episode_nr:
             self.last_ckpt_on_episode_nr = episode_nr
             curr_level = str(self.curriculum_manager.current_level)
-            self.global_model.save_model(const.model_path, const.suffix_checkpoint +'_lvl_'+ curr_level)
+            model.save_model(const.model_path, const.suffix_checkpoint +'_lvl_'+ curr_level)
             with open(const.checkpoint_file, 'w') as f:  
                 json.dump({
                     'curriculum_level' : self.curriculum_manager.current_level,
