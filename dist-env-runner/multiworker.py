@@ -61,11 +61,7 @@ class Worker():
         discounted_rewards = np.concatenate(all_rewards)
         actions = np.asarray([row[1] for row in all_rollouts]) 
         values = np.asarray([row[5] for row in all_rollouts])
-
-        obs0 = np.asarray([row[0][0] for row in all_rollouts])
-        obs1 = np.asarray([row[0][1] for row in all_rollouts])
-        obs2 = np.asarray([row[0][2] for row in all_rollouts])
-        obs = [obs0, obs1, obs2]
+        obs = np.asarray([row[0] for row in all_rollouts])
 
         advantages = discounted_rewards - values
 
@@ -76,14 +72,12 @@ class Worker():
         try:
             print ("Starting worker " + str(self.number))
 
+            steps_on_level = 0
+
             self.episode_rewards = []
             self.episode_lengths = []
             self.episode_success = []
             self.episode_mean_values = []
-
-            steps_on_level = 0
-
-            
             self.local_model.update_from_global_model()
             self.episode_count = 0
 
@@ -91,7 +85,7 @@ class Worker():
                 episode_done = False
 
                 # Buffer for obs, action, next obs, reward
-                episode_buffer = [[] for i in range(self.env.num_agents)]
+                episode_buffer = [] * self.env.num_agents# [[] for i in range()]
 
                 # A way to remember if the agent was already done during the last episode
                 done_last_step = {i:False for i in range(self.env.num_agents)}
@@ -103,21 +97,24 @@ class Worker():
                 info = np.zeros(5)
                 
                 obs = self.env.reset()
+                obs = self.local_model.reshape_obs(obs)
 
                 while episode_done == False and episode_step_count < self.env.max_steps:
                     #Take an action using probabilities from policy network output.
                     actions, v = self.local_model.get_actions_and_values(obs, self.env.num_agents)
+                    
                     next_obs, rewards, done = self.env.step(actions)
+                    next_obs = self.local_model.reshape_obs(next_obs)
 
                     episode_done = done['__all__']
                     if episode_done == True:
                         next_obs = obs
 
                     for i in range(self.env.num_agents):
-                        agent_obs = [obs[0][i],obs[1][i],obs[2][i]]
+                        agent_obs = obs[i],
                         agent_action = actions[i]
                         agent_reward = rewards[i]
-                        agent_next_obs =  [next_obs[0][i],next_obs[1][i],next_obs[2][i]] #[i]
+                        agent_next_obs =  next_obs[i]
 
                         if not done_last_step[i]:
                             episode_buffer[i].append([

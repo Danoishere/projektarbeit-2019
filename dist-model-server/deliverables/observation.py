@@ -4,32 +4,28 @@ On basis of the work of S. Huschauer and the Flatland-Environment-Tree-Observati
 
 import numpy as np
 
+from flatland.envs.predictions import ShortestPathPredictorForRailEnv
 from flatland.core.env_observation_builder import ObservationBuilder
 from flatland.envs.observations import TreeObsForRailEnv
 from flatland.core.transition_map import GridTransitionMap
 from numpy.core.umath import divide
 import deliverables.input_params as params
-import math
 
+import math
 import pprint
-from collections import deque
-from flatland.core.grid.grid4 import Grid4TransitionsEnum
-from flatland.core.grid.grid_utils import coordinate_to_position
-from flatland.envs.predictions import ShortestPathPredictorForRailEnv
 
 class CombinedObservation(ObservationBuilder):
-
     def __init__(self, size_, max_depth):
-        self.tree = TreeObsForRailEnv(max_depth, ShortestPathPredictorForRailEnv())
+        self.tree = TreeObsForRailEnv(max_depth, ShortestPathPredictorForRailEnv(40))
 
         # Own
         #self.reset()
         self.size_ = size_
         self.observation_space = np.zeros((6,size_[0],size_[1]))
 
-    def _set_env(self, env):
+    def set_env(self, env):
         self.env = env
-        self.tree._set_env(env)
+        self.tree.set_env(env)
 
     def reset(self):
         """

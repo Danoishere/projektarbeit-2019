@@ -27,9 +27,6 @@ from rail_env_wrapper import RailEnvWrapper
 from multiworker import create_worker
 
 import constant as const
-
-#import code_util.constants as const
-#import deliverables.input_params as params
 import requests
 import urllib
 
@@ -37,7 +34,7 @@ mp.set_start_method('spawn', True)
 
 def start_train(resume):
     
-    urllib.request.urlretrieve(const.url + '/network_file', 'deliverables/network.py')
+    #urllib.request.urlretrieve(const.url + '/network_file', 'deliverables/network.py')
     urllib.request.urlretrieve(const.url + '/config_file', 'deliverables/input_params.py')
     urllib.request.urlretrieve(const.url + '/observation_file', 'deliverables/observation.py')
 
@@ -48,8 +45,10 @@ def start_train(resume):
     while True:
         worker_processes = []
 
+        create_worker(0, should_stop)
+
         # Start process 1 - n, running in other processes
-        for w_num in range(0,num_workers):
+        for w_num in range(1,num_workers):
             process = mp.Process(target=create_worker, args=(w_num, should_stop))
             process.start()
             sleep(0.5)

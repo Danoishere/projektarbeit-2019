@@ -1,6 +1,6 @@
 
 from flatland.envs.rail_env import RailEnv
-from flatland.envs.generators import complex_rail_generator #, sparse_rail_generator
+from flatland.envs.rail_generators import complex_rail_generator 
 import random
 
 class RailEnvWrapper():

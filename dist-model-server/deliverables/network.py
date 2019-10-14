@@ -27,7 +27,6 @@ class AC_Network():
         self.model = self.build_network()
         self.network_hash = self.get_network_hash()
         
-        
 
     def get_network_hash(self):
         summary = StringIO()
@@ -53,24 +52,21 @@ class AC_Network():
             inputs=[input_map, input_grid, input_vec_tree],
             outputs=[policy, value])
 
-    def create_network(self, input_map, input_grid, input_vec_tree):
-        map_dense = layers.Flatten()(input_map)
-        map_dense = layers.Dense(128, activation='relu')(map_dense)
-        map_dense = layers.Dense(64, activation='relu')(map_dense)
 
+    def create_network(self, input_map, input_grid, input_vec_tree):
         map_conv = layers.Conv2D(64,(4,4), activation='relu')(input_map)
         map_conv = layers.Dense(32, activation='relu')(map_conv)
         map_conv = layers.Flatten()(map_conv)
         map_conv = layers.Dense(16, activation='relu')(map_conv)
 
-        grid_conv = layers.Conv2D(64, (3,3), activation='relu')(input_grid)
+        grid_conv = layers.Conv2D(32, (3,3), activation='relu')(input_grid)
         grid_dense = layers.Flatten()(grid_conv)
         grid_dense = layers.Dense(64)(grid_dense)
         
         tree_dense = layers.Dense(256, activation='relu')(input_vec_tree)
         tree_dense = layers.Dense(64, activation='relu')(input_vec_tree)
 
-        hidden = layers.concatenate([map_dense, grid_dense, tree_dense, map_conv])
+        hidden = layers.concatenate([grid_dense, tree_dense, map_conv])
         hidden = layers.Dense(128, activation='relu')(hidden)
         hidden = layers.Dense(32, activation='relu')(hidden)
         hidden = layers.Dense(8, activation='relu')(hidden)
@@ -136,12 +132,19 @@ class AC_Network():
 
 
     def reshape_obs(self, obs):
-        tree_obs = np.asarray(obs['obs1'])
+        for i in range(len(obs[0])):
+            node_obs = obs[0][i]
+            action_req = obs[1]['action_required'][i]
+            malfunction = obs[1]['malfunction'][i]
+            speed = obs[1]['speed'][i]
+            status = obs[1]['status'][i]
+
+        tree_obs = np.fromiter(obs.values(), dtype=np.float32)
         tree_obs[tree_obs ==  np.inf] = -1
         tree_obs[tree_obs ==  -np.inf] = -2
         tree_obs += 2
         tree_obs /= 40.0
-        tree_obs = tree_obs.astype(np.float32)
+        tree_obs = tree_obs.astype()
         return tree_obs
 
 
@@ -182,4 +185,5 @@ class AC_Network():
 
 
     def get_observation_builder(self):
-        return CombinedObservation([11,11],3)
+        return TreeObsForRailEnv(3, ShortestPathPredictorForRailEnv(40))
+        # return CombinedObservation([11,11],3)
