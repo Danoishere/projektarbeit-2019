@@ -45,7 +45,7 @@ class CheckpointManager:
             raise ValueError('No checkpoint.json found at', const.checkpoint_file)
 
 
-    def try_save_model(self, episode_nr, reward, worker_name):
+    def try_save_model(self, episode_nr, reward):
         # Reset best reward on curriculum-level-change
         if self.last_curriculum_level < self.curriculum_manager.current_level:
             self.last_curriculum_level = self.curriculum_manager.current_level
@@ -60,7 +60,7 @@ class CheckpointManager:
                 self.global_model.save_model(const.model_path, const.suffix_best +'_lvl_'+ curr_level)
 
         # Save ckpt every 'save_best_after_min' steps
-        if self.episode_nr % self.save_best_after_min:
+        if episode_nr % self.save_best_after_min:
             curr_level = str(self.curriculum_manager.current_level)
             self.global_model.save_model(const.model_path, const.suffix_checkpoint +'_lvl_'+ curr_level)
             with open(const.checkpoint_file, 'w') as f:  

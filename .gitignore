@@ -115,3 +115,5 @@ flatland_a3c/deliverables/tensorboard/*
 flatland_a3c/.vscode/settings.json
 dist-env-runner/tensorboard/*
 dist-env-runner/deliverables/*
+dist-model-server/deliverables/model/model_global.h5
+dist-model-server/deliverables/weights.h5

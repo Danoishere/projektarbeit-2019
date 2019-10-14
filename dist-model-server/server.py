@@ -20,10 +20,13 @@ state.global_model.model.save_weights('deliverables/weights.h5')
 
 @app.route('/send_gradient', methods=['POST'])
 def post_update_weights():
+
     state.episode_count += 1
     print('Update Nr. ',state.episode_count)
     gradient_str = request.stream.read()
     gradients = dill.loads(gradient_str)
+
+    state.ckpt_manager.try_save_model(state.episode_count, 0)
   
     lock.acquire()
     global_vars = state.global_model.model.trainable_variables
