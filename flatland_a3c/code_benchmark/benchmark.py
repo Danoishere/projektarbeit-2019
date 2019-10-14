@@ -208,4 +208,8 @@ class Evaluator:
             run_info['benchmark_score'] = benchmark_score
             json.dump(run_info, json_file)
 
-    
+'''
+line 206, in update_run_info_benchmark_score
+    with open(const.run_info_path + 'run_info.json', 'rw') as json_file:
+ValueError: must have exactly one of create/read/write/append mode
+'''

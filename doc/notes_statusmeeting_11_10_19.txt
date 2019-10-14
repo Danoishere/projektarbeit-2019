@@ -26,8 +26,20 @@ TODO:
 - Vergleiche Netzwerkarchitekturen
 
 
+
+
+
+
+
+
+
+
+
+
 Idee PA-Bericht: 
 ---------------
 - Performance mit & ohne Curriculum Learning
 - Performance mit & ohne Post play reward shaping
+- Evtl priority planning anschauen & MADDPG
+
 

@@ -4,6 +4,8 @@ from tensorflow.keras import layers
 from tensorflow.keras import optimizers
 from tensorflow.keras.models import Model,load_model
 
+import dill
+
 import numpy as np
 import deliverables.input_params as params
 from flatland.envs.observations import TreeObsForRailEnv
@@ -92,6 +94,14 @@ class AC_Network():
         self.lock.acquire()
         self.actor_model.load_weights(model_path + '/actor_model_global.h5')
         self.critic_model.load_weights(model_path + '/critic_model_global.h5')
+
+
+        actor_weights = self.actor_model.get_weights()
+        actor_weights_serialized = dill.dumps(actor_weights)
+        actor_weights = dill.loads(actor_weights_serialized)
+        
+        self.actor_model.set_weights(actor_weights)
+
         self.lock.release()
 
 
