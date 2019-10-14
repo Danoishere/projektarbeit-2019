@@ -1,7 +1,11 @@
 
 from flatland.envs.rail_env import RailEnv
-from flatland.envs.rail_generators import complex_rail_generator 
+from flatland.envs.rail_generators import sparse_rail_generator, complex_rail_generator 
+from flatland.envs.schedule_generators import sparse_schedule_generator
 import random
+
+
+
 
 class RailEnvWrapper():
     initial_step_penalty = -2
@@ -9,7 +13,19 @@ class RailEnvWrapper():
     def __init__(self, observation_builder, width=12, height=12, num_agents=2):
         self.num_agents = num_agents
         
-        #self.schedule_gen = random_schedule_generator()
+        self.schedule_gen = sparse_schedule_generator({   
+                    1.: 0.25,       # Fast passenger train
+                    1. / 2.: 0.25,  # Fast freight train
+                    1. / 3.: 0.25,  # Slow commuter train
+                    1. / 4.: 0.25
+                })
+
+        self.stochastic_data = {
+                'prop_malfunction': 0.1,  # Percentage of defective agents
+                'malfunction_rate': 30,  # Rate of malfunction occurence
+                'min_duration': 3,  # Minimal duration of malfunction
+                'max_duration': 20  # Max duration of malfunction
+        }
         
 
         self.done_last_step = {}
@@ -20,16 +36,16 @@ class RailEnvWrapper():
         self.episode_step_count = 0
         self.max_steps = 40
         self.update_env_with_params(
-            width=8,
-            height=8,
+            width=50,
+            height=50,
             num_agents=2,
             max_steps = 40,
-            rail_type = 'complex',
+            rail_type = 'sparse',
             rail_gen_params = {
-                'nr_start_goal': 3,
-                'nr_extra': 3,
-                'min_dist': 8,
-                'max_dist' : 99999
+                'num_cities': 2,
+                'grid_mode': False,
+                'max_rails_between_cities': 1,
+                'max_rails_in_city' : 2
             }
         )
 
@@ -46,18 +62,12 @@ class RailEnvWrapper():
             self.done_last_step[i] = False
             self.dist[i] = 100
         
-        print("Before env reset")
         obs = self.env.reset()
         
-        try:
-            # Obs-shape must be equal to num of agents, otherwise, the level couldn't be generated orderly
-            while len(obs[0]) != self.num_agents:
-                print("Reset!")
-                obs = self.env.reset()
-        except:
-            print("Mammamaoi")
+        # Obs-shape must be equal to num of agents, otherwise, the level couldn't be generated orderly
+        while len(obs[0]) != self.num_agents:
+            obs = self.env.reset()
 
-        print("Ok env reset")
         self.num_of_done_agents = 0
         self.env.step_penalty = self.initial_step_penalty
         self.episode_step_count = 0
@@ -70,10 +80,12 @@ class RailEnvWrapper():
         self.env = RailEnv(
             width, 
             height, 
-            self.rail_gen,
-            #schedule_generator = self.schedule_gen,
+            rail_generator=self.rail_gen,
+            stochastic_data=self.stochastic_data,
+            schedule_generator = self.schedule_gen,
             number_of_agents=self.num_agents,
-            obs_builder_object=self.observation_builder)
+            obs_builder_object=self.observation_builder,
+            remove_agents_at_target=True)
 
         #self.env.global_reward = self.global_reward
         self.env.num_agents = self.num_agents
@@ -105,17 +117,13 @@ class RailEnvWrapper():
             #self.schedule_gen = complex_schedule_generator()
         elif rail_type == 'sparse':
             self.rail_gen = sparse_rail_generator(
-                num_cities=rail_gen_params['num_cities'],
-                num_intersections=rail_gen_params['num_intersections'],
-                num_trainstations=rail_gen_params['num_trainstations'],
-                min_node_dist=rail_gen_params['min_node_dist'],
-                node_radius=rail_gen_params['node_radius'],
-                num_neighb=rail_gen_params['num_neighb'],
+                max_num_cities=rail_gen_params['num_cities'],
+                seed=seed,
                 grid_mode=rail_gen_params['grid_mode'],
-                enhance_intersection=rail_gen_params['enhance_intersection'],
-                seed=seed)
-
-            #self.schedule_gen = sparse_schedule_generator()
+                max_rails_between_cities=rail_gen_params['max_rails_between_cities'],
+                max_rails_in_city=rail_gen_params['max_rails_in_city']
+            )
+            
         else:
             raise ValueError('Please specify either "complex" or "sparse" as rail_type')
 
