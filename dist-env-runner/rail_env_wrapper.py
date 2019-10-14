@@ -6,25 +6,32 @@ import random
 class RailEnvWrapper():
     initial_step_penalty = -2
 
-    def __init__(self, observation_builder, width=14, height=14, num_agents=2):
+    def __init__(self, observation_builder, width=12, height=12, num_agents=2):
         self.num_agents = num_agents
         
         #self.schedule_gen = random_schedule_generator()
-        self.rail_gen = complex_rail_generator(
-            nr_start_goal=6,
-            nr_extra=6,
-            min_dist=10,
-            seed=random.randint(0,100000)
-        )
+        
 
         self.done_last_step = {}
         self.observation_builder = observation_builder
         self.dist = {}
 
-        self.env = self.generate_env(width, height)
         self.num_of_done_agents = 0
         self.episode_step_count = 0
         self.max_steps = 40
+        self.update_env_with_params(
+            width=8,
+            height=8,
+            num_agents=2,
+            max_steps = 40,
+            rail_type = 'complex',
+            rail_gen_params = {
+                'nr_start_goal': 3,
+                'nr_extra': 3,
+                'min_dist': 8,
+                'max_dist' : 99999
+            }
+        )
 
     def step(self, actions):
         self.env.step_penalty = -2*1.02**self.episode_step_count
@@ -38,13 +45,19 @@ class RailEnvWrapper():
         for i in range(self.num_agents):
             self.done_last_step[i] = False
             self.dist[i] = 100
-            
+        
+        print("Before env reset")
         obs = self.env.reset()
         
-        # Obs-shape must be equal to num of agents, otherwise, the level couldn't be generated orderly
-        while len(obs[0]) != self.num_agents:
-            obs = self.env.reset()
+        try:
+            # Obs-shape must be equal to num of agents, otherwise, the level couldn't be generated orderly
+            while len(obs[0]) != self.num_agents:
+                print("Reset!")
+                obs = self.env.reset()
+        except:
+            print("Mammamaoi")
 
+        print("Ok env reset")
         self.num_of_done_agents = 0
         self.env.step_penalty = self.initial_step_penalty
         self.episode_step_count = 0

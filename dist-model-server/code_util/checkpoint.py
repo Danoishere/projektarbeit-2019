@@ -60,7 +60,7 @@ class CheckpointManager:
                 self.global_model.save_model(const.model_path, const.suffix_best +'_lvl_'+ curr_level)
 
         # Save ckpt every 'save_best_after_min' steps
-        if episode_nr % self.save_best_after_min:
+        if episode_nr % self.save_best_after_min == 0:
             curr_level = str(self.curriculum_manager.current_level)
             self.global_model.save_model(const.model_path, const.suffix_checkpoint +'_lvl_'+ curr_level)
             with open(const.checkpoint_file, 'w') as f:  

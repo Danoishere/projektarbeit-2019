@@ -34,7 +34,7 @@ class Singleton:
 def init_global_model(singelton):
     # TODO: Refactor to arguments
 
-    singelton.resume = False
+    singelton.resume = True
     singelton.global_model = AC_Network()
     singelton.trainer = RMSprop(learning_rate=params.learning_rate)
 
@@ -46,7 +46,7 @@ def init_global_model(singelton):
         singelton.global_model, 
         singelton.curr_manager, 
         save_best_after_min=30, 
-        save_ckpt_after_min=100)
+        save_ckpt_after_min=1000)
 
     singelton.episode_count  = 0
     if singelton.resume == True:

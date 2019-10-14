@@ -26,9 +26,8 @@ def post_update_weights():
     gradient_str = request.stream.read()
     gradients = dill.loads(gradient_str)
 
-    state.ckpt_manager.try_save_model(state.episode_count, 0)
-  
     lock.acquire()
+    state.ckpt_manager.try_save_model(state.episode_count, 0)
     global_vars = state.global_model.model.trainable_variables
     state.trainer.apply_gradients(zip(gradients, global_vars))
     lock.release()

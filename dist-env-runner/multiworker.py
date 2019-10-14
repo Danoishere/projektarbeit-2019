@@ -96,8 +96,11 @@ class Worker():
                 episode_step_count = 0
                 info = np.zeros(5)
                 
+                print("Before reset", self.name)
                 obs, info = self.env.reset()
+                print("After reset - before reshape")
                 obs = self.local_model.reshape_obs(obs)
+                print("After reset", self.name)
 
                 while episode_done == False and episode_step_count < self.env.max_steps:
                     #Take an action using probabilities from policy network output.
@@ -151,13 +154,15 @@ class Worker():
                 self.episode_mean_values.append(np.mean(episode_values))
                 self.episode_success.append(episode_done)
 
+                print("Before train", self.name)
                 v_l, p_l, e_l, g_n, v_n = self.train(episode_buffer)
+                print("After train", self.name)
                 
                 info[0] = v_l
                 info[1] = p_l
                 info[2] = e_l
                 info[3] = g_n
-                info[4] = g_n
+                info[4] = v_n
                         
                 # Save stats to Tensorboard every 5 episodes
                 if self.episode_count % 5 == 0 and self.episode_count != 0:
