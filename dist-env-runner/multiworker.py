@@ -85,7 +85,7 @@ class Worker():
                 episode_done = False
 
                 # Buffer for obs, action, next obs, reward
-                episode_buffer = [] * self.env.num_agents# [[] for i in range()]
+                episode_buffer = [[] for i in range(self.env.num_agents)]# [[] for i in range()]
 
                 # A way to remember if the agent was already done during the last episode
                 done_last_step = {i:False for i in range(self.env.num_agents)}
@@ -96,7 +96,7 @@ class Worker():
                 episode_step_count = 0
                 info = np.zeros(5)
                 
-                obs = self.env.reset()
+                obs, info = self.env.reset()
                 obs = self.local_model.reshape_obs(obs)
 
                 while episode_done == False and episode_step_count < self.env.max_steps:
@@ -111,7 +111,7 @@ class Worker():
                         next_obs = obs
 
                     for i in range(self.env.num_agents):
-                        agent_obs = obs[i],
+                        agent_obs = obs[i]
                         agent_action = actions[i]
                         agent_reward = rewards[i]
                         agent_next_obs =  next_obs[i]
