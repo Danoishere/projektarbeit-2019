@@ -142,8 +142,9 @@ class Worker():
                         episode_reward += 40
                 else:
                     for i in range(self.env.num_agents):
-                        episode_buffer[i][-1][2] -= 40
-                        episode_reward -= 40
+                        if not done[i]:
+                            episode_buffer[i][-1][2] -= 40
+                            episode_reward -= 40
 
 
                 self.episode_rewards.append(episode_reward)

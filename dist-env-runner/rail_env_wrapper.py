@@ -39,7 +39,7 @@ class RailEnvWrapper():
             width=50,
             height=50,
             num_agents=2,
-            max_steps = 40,
+            max_steps = 80,
             rail_type = 'sparse',
             rail_gen_params = {
                 'num_cities': 2,

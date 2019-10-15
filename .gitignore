@@ -121,3 +121,4 @@ dist-env-runner/.vscode/settings.json
 dist-model-server/deliverables/model/model_best_lvl_0.h5
 dist-model-server/deliverables/model/model_checkpoint_lvl_0.h5
 dist-model-server/deliverables/model/checkpoint.json
+dist-model-server/deliverables/model/model_global.h5

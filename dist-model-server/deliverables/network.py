@@ -145,7 +145,7 @@ class AC_Network():
         found_target = False
 
         current_node = start_node
-        while shortest_way_idx != 'NA' and not found_target:
+        while shortest_way_idx != 'NA' and not found_target and current_node is not None:
             shortest_way_idx = 'NA'
             
             for k in current_node.childs:
@@ -166,6 +166,9 @@ class AC_Network():
         return selected_nodes
 
     def get_ordered_children(self, node):
+        #if node is None:
+        #    return []
+
         children = []
         for k in node.childs:
             child = node.childs[k]
@@ -222,61 +225,66 @@ class AC_Network():
         all_obs = []
         for i in range(len(obs)):
             current_node = obs[i]
+            if current_node is None:
+                obs_agent = np.zeros((params.feature_branches,(params.tree_depth+1)*params.num_features))
+                obs_agent = obs_agent.flatten()
+                all_obs.append(obs_agent)
+            else:
 
-            sorted_children = self.get_ordered_children(current_node)
+                # Fastest way from root
+                fastest_way = self.get_shortest_way_from('.',current_node)
 
-            # Fastest way from root
-            fastest_way = self.get_shortest_way_from('.',current_node)
+                sorted_children = self.get_ordered_children(current_node)
 
-            # Fill missing nodes to tree-depth-length
-            for j in range(len(fastest_way), params.tree_depth+1):
-                fastest_way.append(None)
-
-            alt_way_1 = [None]* params.tree_depth
-            # Try to take second best solution at next intersection
-            if len(sorted_children) > 1:
-                alt_node_1 = sorted_children[1]
-                alt_way_1 = self.get_shortest_way_from(alt_node_1[0], alt_node_1[1])
-
-            alt_way_2 = [None]*params.tree_depth
-            # Try to take third best solution at next intersection
-            if len(sorted_children) > 2:
-                alt_node_2 = sorted_children[2]
-                alt_way_2 = self.get_shortest_way_from(alt_node_2[0], alt_node_2[1])
-            
-            alt_way_3 = [None]*(params.tree_depth-1)
-            alt_way_4 = [None]*(params.tree_depth-1)
-            # Try to take second best solution at second next intersection
-            if len(fastest_way) > 1:
-                sorted_children = self.get_ordered_children(fastest_way[1][1])
+                alt_way_1 = [None]* params.tree_depth
+                # Try to take second best solution at next intersection
                 if len(sorted_children) > 1:
-                    alt_node_3 = sorted_children[1]
-                    alt_way_3 = self.get_shortest_way_from(alt_node_3[0], alt_node_3[1])
+                    alt_node_1 = sorted_children[1]
+                    alt_way_1 = self.get_shortest_way_from(alt_node_1[0], alt_node_1[1])
 
+                alt_way_2 = [None]*params.tree_depth
+                # Try to take third best solution at next intersection
                 if len(sorted_children) > 2:
-                    alt_node_4 = sorted_children[2]
-                    alt_way_4 = self.get_shortest_way_from(alt_node_4[0], alt_node_4[1])
+                    alt_node_2 = sorted_children[2]
+                    alt_way_2 = self.get_shortest_way_from(alt_node_2[0], alt_node_2[1])
+                
+                alt_way_3 = [None]*(params.tree_depth-1)
+                alt_way_4 = [None]*(params.tree_depth-1)
+                # Try to take second best solution at second next intersection
+                if len(fastest_way) > 1:
+                    sorted_children = self.get_ordered_children(fastest_way[1][1])
+                    if len(sorted_children) > 1:
+                        alt_node_3 = sorted_children[1]
+                        alt_way_3 = self.get_shortest_way_from(alt_node_3[0], alt_node_3[1])
 
-            for n in fastest_way:
-                self.node_to_obs(n)
+                    if len(sorted_children) > 2:
+                        alt_node_4 = sorted_children[2]
+                        alt_way_4 = self.get_shortest_way_from(alt_node_4[0], alt_node_4[1])
 
-            obs_layers = [fastest_way, alt_way_1, alt_way_2, alt_way_3, alt_way_4]
+                # Fill missing nodes to tree-depth-length
+                for j in range(len(fastest_way), params.tree_depth+1):
+                    fastest_way.append(None)
 
-            obs_agent = np.zeros((len(obs_layers),(params.tree_depth+1)*params.num_features))
-            for layer_idx in range(len(obs_layers)):
-                layer = obs_layers[layer_idx]
-                for node_idx in range(len(layer)):
-                    node = layer[node_idx]
-                    node_obs = self.node_to_obs(node)
-                    obs_agent[layer_idx,node_idx*params.num_features:node_idx*params.num_features + params.num_features] = node_obs
+                for n in fastest_way:
+                    self.node_to_obs(n)
+
+                obs_layers = [fastest_way, alt_way_1, alt_way_2, alt_way_3, alt_way_4]
+
+                obs_agent = np.zeros((params.feature_branches,(params.tree_depth+1)*params.num_features))
+                for layer_idx in range(len(obs_layers)):
+                    layer = obs_layers[layer_idx]
+                    for node_idx in range(len(layer)):
+                        node = layer[node_idx]
+                        node_obs = self.node_to_obs(node)
+                        obs_agent[layer_idx,node_idx*params.num_features:node_idx*params.num_features + params.num_features] = node_obs
 
 
-            obs_agent = obs_agent.flatten()
+                obs_agent = obs_agent.flatten()
 
-            # Insert additional vector for later obs
-            obs_agent = np.insert(obs_agent,0,[0]*params.num_features)
+                # Insert additional vector for later obs
+                obs_agent = np.insert(obs_agent,0,[0]*params.num_features)
 
-            all_obs.append(obs_agent)
+                all_obs.append(obs_agent)
 
         return np.vstack(all_obs).astype(np.float32)
 
