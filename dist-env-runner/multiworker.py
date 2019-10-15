@@ -6,9 +6,7 @@ from ctypes import c_bool
 
 
 import scipy.signal
-from tensorflow.keras import layers
 from tensorflow.keras.optimizers import RMSprop
-from tensorflow.keras.models import Model
 
 from datetime import datetime
 from random import choice
@@ -19,9 +17,6 @@ from rail_env_wrapper import RailEnvWrapper
 import constant as const
 
 class KeyboardInterruptError(Exception): pass
-
-#import code_util.constants as const
-#import deliverables.input_params as params
 
 def create_worker(name, should_stop):
     worker = Worker(name, should_stop)

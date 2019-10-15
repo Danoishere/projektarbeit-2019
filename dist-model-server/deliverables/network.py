@@ -18,6 +18,7 @@ import base64
 import hashlib
 import urllib
 import msgpack
+import zlib
 
 
 class AC_Network():
@@ -70,9 +71,13 @@ class AC_Network():
     def update_from_global_model(self):
         ''' Updates the local copy of the global model 
         '''
+        print('Before get')
         resp = requests.get(url=self.global_model_url + '/get_global_weights')
         weights_str = resp.content
+        print('Before decrompress')
+        weights_str = zlib.decompress(weights_str)
         weights = msgpack.loads(weights_str)
+        print('Weights set')
         self.model.set_weights(weights)
 
 
@@ -112,15 +117,23 @@ class AC_Network():
         var_norms = tf.linalg.global_norm(local_vars)
         gradients, grad_norms = tf.clip_by_global_norm(gradients, params.gradient_norm)
         gradients_str = dill.dumps(gradients)
+        gradients_str = zlib.compress(gradients_str)
 
+        print('Before update')
         # Send gradient update and receive new global weights
         resp = requests.post(
             url=self.global_model_url + '/send_gradient', 
             data=gradients_str)
 
+        print('New weights received')
         weights_str = resp.content
+        weights_str = zlib.decompress(weights_str)
+        print('Decomp applied')
         weights = msgpack.loads(weights_str)
+
+        
         self.model.set_weights(weights)
+        print('New weights applied')
         return v_loss, p_loss, entropy, grad_norms, var_norms
 
 

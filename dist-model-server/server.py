@@ -9,15 +9,12 @@ import time
 import threading
 import json
 import msgpack
-
+import zlib
 
 app = Flask(__name__)
 lock = threading.RLock()
 state = Singleton.get_instance()
 network_hash = state.global_model.network_hash
-
-# Save weights so they can be received by the workers
-state.global_model.model.save_weights('deliverables/weights.h5')
 
 @app.route('/send_gradient', methods=['POST'])
 def post_update_weights():
@@ -25,14 +22,15 @@ def post_update_weights():
     state.episode_count += 1
     print('Update Nr. ',state.episode_count)
     gradient_str = request.stream.read()
+    gradient_str = zlib.decompress(gradient_str)
     gradients = dill.loads(gradient_str)
 
     lock.acquire()
     state.ckpt_manager.try_save_model(state.episode_count, 0)
     global_vars = state.global_model.model.trainable_variables
     state.trainer.apply_gradients(zip(gradients, global_vars))
+    lock.release()
 
-    # lock release in get_global
     return get_global_weights()
 
 
@@ -42,6 +40,7 @@ def get_global_weights():
     weights = state.global_model.model.get_weights()
     lock.release()
     weights_str = msgpack.dumps(weights)
+    weights_str = zlib.compress(weights_str)
     return weights_str
 
 
@@ -58,9 +57,3 @@ def get_config_file():
 @app.route('/observation_file')
 def get_observation_file():
     return send_from_directory('deliverables', 'observation.py')
-
-
-def numpy_to_gzip_response(arrays):
-    b = BytesIO()
-    np.savez_compressed(b, arr=arrays)
-    return send_file(b, mimetype='application/gzip')
