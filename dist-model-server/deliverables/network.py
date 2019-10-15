@@ -8,7 +8,6 @@ import numpy as np
 import requests 
 import dill
 import deliverables.input_params as params
-import json_tricks as json
 
 from io import StringIO
 from flatland.envs.observations import TreeObsForRailEnv
