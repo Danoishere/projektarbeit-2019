@@ -8,26 +8,15 @@
 #  ##### Enable autocomplete
 
 
-import threading
 import multiprocess as mp
-
 import numpy as np
 import tensorflow as tf
 from ctypes import c_bool
 
-import scipy.signal
-from tensorflow.keras import layers
-from tensorflow.keras.optimizers import RMSprop
-from tensorflow.keras.models import Model
-
-from datetime import datetime
-from random import choice
 from time import sleep, time
-from rail_env_wrapper import RailEnvWrapper
 from multiworker import create_worker
 
 import constant as const
-import requests
 import urllib
 
 mp.set_start_method('spawn', True)
@@ -38,14 +27,11 @@ def start_train(resume):
     urllib.request.urlretrieve(const.url + '/config_file', 'deliverables/input_params.py')
     urllib.request.urlretrieve(const.url + '/observation_file', 'deliverables/observation.py')
 
-    num_workers = mp.cpu_count() - 2
-    lock = mp.Lock()
+    num_workers = mp.cpu_count() - 1
     should_stop = mp.Value(c_bool, False)
 
     while True:
         worker_processes = []
-
-        #create_worker(0, should_stop)
 
         # Start process 1 - n, running in other processes
         for w_num in range(0,num_workers):

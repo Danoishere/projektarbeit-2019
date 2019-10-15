@@ -17,11 +17,13 @@ from deliverables.observation import CombinedObservation
 import base64
 import hashlib
 import urllib
+import msgpack
 
 
 class AC_Network():
-    def __init__(self, create_network=True, global_model_url = '', name = ''):
+    def __init__(self, create_network=True, global_model_url = '', name = '', is_training = True):
         self.name = str(name)
+        self.is_training = is_training
         self.global_model_url = global_model_url
         self.model = self.build_network()
         self.network_hash = self.get_network_hash()
@@ -37,8 +39,6 @@ class AC_Network():
 
 
     def build_network(self):
-        #input_map = layers.Input(shape=list(params.map_state_size),dtype=tf.float32)
-        #input_grid = layers.Input(shape=list(params.grid_state_size),dtype=tf.float32)
         input_vec_tree = layers.Input(shape=list(params.vec_tree_state_size),dtype=tf.float32)
 
         actor_out = self.create_network(input_vec_tree)
@@ -53,27 +53,15 @@ class AC_Network():
 
 
     def create_network(self, input_vec_tree):
-        '''
-        map_conv = layers.Conv2D(64,(4,4), activation='relu')(input_map)
-        map_conv = layers.Dense(32, activation='relu')(map_conv)
-        map_conv = layers.Flatten()(map_conv)
-        map_conv = layers.Dense(16, activation='relu')(map_conv)
-
-        grid_conv = layers.Conv2D(32, (3,3), activation='relu')(input_grid)
-        grid_dense = layers.Flatten()(grid_conv)
-        grid_dense = layers.Dense(64)(grid_dense)
-        
-        tree_dense = layers.Dense(256, activation='relu')(input_vec_tree)
-        tree_dense = layers.Dense(64, activation='relu')(input_vec_tree)
-
-        
-        hidden = layers.concatenate([grid_dense, tree_dense, map_conv])
-        '''
 
         hidden = layers.Dense(512, activation='relu')(input_vec_tree)
         hidden = layers.Dense(256, activation='relu')(hidden)
+        if self.is_training:
+            hidden = layers.GaussianNoise(0.1)(hidden)
         hidden = layers.Dense(128, activation='relu')(hidden)
         hidden = layers.Dense(32, activation='relu')(hidden)
+        if self.is_training:
+            hidden = layers.GaussianNoise(0.1)(hidden)
         hidden = layers.Dense(8, activation='relu')(hidden)
 
         return hidden
@@ -82,8 +70,10 @@ class AC_Network():
     def update_from_global_model(self):
         ''' Updates the local copy of the global model 
         '''
-        urllib.request.urlretrieve(self.global_model_url + '/get_global_weights', 'deliverables/weights_'+self.name+'.h5')
-        self.model.load_weights('deliverables/weights_'+self.name+'.h5')
+        resp = requests.get(url=self.global_model_url + '/get_global_weights')
+        weights_str = resp.content
+        weights = msgpack.loads(weights_str)
+        self.model.set_weights(weights)
 
 
     def save_model(self, model_path, suffix):
@@ -124,11 +114,13 @@ class AC_Network():
         gradients_str = dill.dumps(gradients)
 
         # Send gradient update and receive new global weights
-        data_resp = requests.post(
+        resp = requests.post(
             url=self.global_model_url + '/send_gradient', 
             data=gradients_str)
 
-        self.update_from_global_model()
+        weights_str = resp.content
+        weights = msgpack.loads(weights_str)
+        self.model.set_weights(weights)
         return v_loss, p_loss, entropy, grad_norms, var_norms
 
 

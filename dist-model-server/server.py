@@ -3,11 +3,13 @@ from model_server import Singleton
 import numpy as np
 import dill
 import gzip
-import sys
 from io import BytesIO
 from code_util.locking import ReadWriteLock
 import time
 import threading
+import json
+import msgpack
+
 
 app = Flask(__name__)
 lock = threading.RLock()
@@ -29,14 +31,18 @@ def post_update_weights():
     state.ckpt_manager.try_save_model(state.episode_count, 0)
     global_vars = state.global_model.model.trainable_variables
     state.trainer.apply_gradients(zip(gradients, global_vars))
-    lock.release()
 
-    return "OK"
+    # lock release in get_global
+    return get_global_weights()
 
 
 @app.route('/get_global_weights')
 def get_global_weights():
-    return send_from_directory('deliverables','weights.h5')
+    lock.acquire()
+    weights = state.global_model.model.get_weights()
+    lock.release()
+    weights_str = msgpack.dumps(weights)
+    return weights_str
 
 
 @app.route('/network_file')
