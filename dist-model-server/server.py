@@ -1,6 +1,5 @@
 from flask import Flask, jsonify, send_from_directory,send_file, request, Response
 from model_server import Singleton
-import json_tricks as json
 import numpy as np
 import dill
 import gzip

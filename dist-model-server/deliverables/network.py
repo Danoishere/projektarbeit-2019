@@ -227,6 +227,7 @@ class AC_Network():
             if current_node is None:
                 obs_agent = np.zeros((params.feature_branches,(params.tree_depth+1)*params.num_features))
                 obs_agent = obs_agent.flatten()
+                obs_agent = np.insert(obs_agent,0,[0]*params.num_features)
                 all_obs.append(obs_agent)
             else:
 
