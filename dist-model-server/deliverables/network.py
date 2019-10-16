@@ -47,16 +47,19 @@ class AC_Network():
         policy = layers.Dense(params.number_of_actions, activation='softmax')(actor_out)
         value = layers.Dense(1)(critic_out)
 
-        return Model(
+        model = Model(
             inputs=input_vec_tree,
             outputs=[policy, value])
+        #model.summary()
+        return model
 
 
     def create_network(self, input_vec_tree):
-        hidden = layers.Dense(356, activation='relu')(input_vec_tree)
-        hidden = layers.Dense(256, activation='relu')(hidden)
-        hidden = layers.Dense(128, activation='relu')(hidden)
-        hidden = layers.Dense(32, activation='relu')(hidden)
+        conv = layers.Reshape((params.vec_tree_state_size,1))(input_vec_tree)
+        conv = layers.Conv1D(kernel_size =(params.num_features), strides=(params.num_features),  filters = 20, activation='relu')(conv)
+        conv = layers.Flatten()(conv)
+        conv = layers.Dense(300, activation='relu')(conv)
+        hidden = layers.Dense(64, activation='relu')(conv)
         hidden = layers.Dense(8, activation='relu')(hidden)
 
         return hidden
@@ -186,10 +189,10 @@ class AC_Network():
         node = node_tuple[1]
 
         dir_dict = {
-            '.' : 0,
-            'F': 0.25,
-            'L': 0.5,
-            'R': 0.75,
+            '.' : 0.1,
+            'F': 0.4,
+            'L': 0.6,
+            'R': 0.7,
         }
 
         dir_num = dir_dict[dir]

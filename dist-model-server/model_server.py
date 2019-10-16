@@ -56,7 +56,7 @@ def init_global_model(singelton):
         save_new_run_info()
 
     # Initial save for global model
-    singelton.global_model.save_model(const.model_path, 'global')
+    # singelton.global_model.save_model(const.model_path, 'global')
 
 
 
