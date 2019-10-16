@@ -1,4 +1,5 @@
-from flatland.envs.observations import GlobalObsForRailEnv
+from flatland.envs.observations import GlobalObsForRailEnv, TreeObsForRailEnv
+from flatland.envs.predictions import ShortestPathPredictorForRailEnv
 # First of all we import the Flatland rail environment
 from flatland.envs.rail_env import RailEnv
 from flatland.envs.rail_generators import sparse_rail_generator
@@ -9,20 +10,20 @@ from flatland.utils.rendertools import RenderTool, AgentRenderVariant
 import numpy as np
 import time
 
-width = 100  # With of map
-height = 100  # Height of map
-nr_trains = 50  # Number of trains that have an assigned task in the env
-cities_in_map = 20  # Number of cities where agents can start or end
+width = 30  # With of map
+height = 30  # Height of map
+nr_trains = 1 # Number of trains that have an assigned task in the env
+cities_in_map = 2  # Number of cities where agents can start or end
 seed = 14  # Random seed
 grid_distribution_of_cities = False  # Type of city distribution, if False cities are randomly placed
-max_rails_between_cities = 2  # Max number of tracks allowed between cities. This is number of entry point to a city
-max_rail_in_cities = 6  # Max number of parallel tracks within a city, representing a realistic trainstation
+max_rails_between_cities = 1  # Max number of tracks allowed between cities. This is number of entry point to a city
+max_rail_in_cities = 2  # Max number of parallel tracks within a city, representing a realistic trainstation
 
 rail_generator = sparse_rail_generator(max_num_cities=cities_in_map,
                                        seed=seed,
                                        grid_mode=grid_distribution_of_cities,
                                        max_rails_between_cities=max_rails_between_cities,
-                                       max_rails_in_city=max_rail_in_cities,
+                                       max_rails_in_city=max_rail_in_cities
                                        )
 
 # The schedule generator can make very basic schedules with a start point, end point and a speed profile for each agent.
@@ -42,7 +43,8 @@ schedule_generator = sparse_schedule_generator(speed_ration_map)
 # We can furthermore pass stochastic data to the RailEnv constructor which will allow for stochastic malfunctions
 # during an episode.
 
-stochastic_data = {'prop_malfunction': 0.3,  # Percentage of defective agents
+stochastic_data = {
+                   'prop_malfunction': 0.3,  # Percentage of defective agents
                    'malfunction_rate': 30,  # Rate of malfunction occurence
                    'min_duration': 3,  # Minimal duration of malfunction
                    'max_duration': 20  # Max duration of malfunction
@@ -52,7 +54,7 @@ stochastic_data = {'prop_malfunction': 0.3,  # Percentage of defective agents
 observation_builder = GlobalObsForRailEnv()
 
 # Custom observation builder with predictor, uncomment line below if you want to try this one
-# observation_builder = TreeObsForRailEnv(max_depth=2, predictor=ShortestPathPredictorForRailEnv())
+observation_builder = TreeObsForRailEnv(max_depth=5, predictor=ShortestPathPredictorForRailEnv())
 
 # Construct the enviornment with the given observation, generataors, predictors, and stochastic data
 env = RailEnv(width=width,
@@ -69,8 +71,8 @@ env = RailEnv(width=width,
 env_renderer = RenderTool(env, gl="PILSVG",
                           agent_render_variant=AgentRenderVariant.AGENT_SHOWS_OPTIONS_AND_BOX,
                           show_debug=False,
-                          screen_height=1000,  # Adjust these parameters to fit your resolution
-                          screen_width=1000)  # Adjust these parameters to fit your resolution
+                          screen_height=800,  # Adjust these parameters to fit your resolution
+                          screen_width=800)  # Adjust these parameters to fit your resolution
 
 
 def my_controller():
@@ -79,13 +81,13 @@ def my_controller():
     """
     _action = {}
     for _idx in range(len(env.agents)):
+        print(env.agents[_idx].status)
         _action[_idx] = np.random.randint(0, 5)
     return _action
 
-for step in range(100):
-
+for step in range(1000):
     _action = my_controller()
     obs, all_rewards, done, info = env.step(_action)
     print("Rewards: {}, [done={}]".format( all_rewards, done))
-    env_renderer.render_env(show=True, frames=False, show_observations=False)
-    time.sleep(0.3)
+    env_renderer.render_env(show=True, frames=False, show_observations=True)
+    #time.sleep(0.3)

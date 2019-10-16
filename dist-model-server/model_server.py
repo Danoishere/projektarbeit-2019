@@ -39,12 +39,12 @@ def init_global_model(singelton):
     singelton.trainer = RMSprop(learning_rate=params.learning_rate)
 
     # Curriculum-manager manages the generation of the levels
-    singelton.curr_manager = CurriculumManager()
+    singelton.curriculum_level = 0
 
     # Checkpoint-manager saves model-checkpoints
     singelton.ckpt_manager = CheckpointManager(
         singelton.global_model, 
-        singelton.curr_manager, 
+        singelton, 
         save_best_after_min=100, 
         save_ckpt_after_min=300)
 

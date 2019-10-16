@@ -10,9 +10,9 @@ class CheckpointManager:
     - Saves curriculum-lvl, episod-nr, best reward in checkpoint.json
     '''
 
-    def __init__(self, global_model, curriculum_manager, save_best_after_min=2, save_ckpt_after_min=2):
+    def __init__(self, state, global_model, save_best_after_min=2, save_ckpt_after_min=2):
         self.global_model = global_model
-        self.curriculum_manager = curriculum_manager
+        self.state = state
         self.best_reward = -np.inf
         self.last_curriculum_level = 0
         self.last_save_best_on_episode_nr = 0
@@ -35,9 +35,9 @@ class CheckpointManager:
 
             self.best_reward = last_training['best_reward']
             self.last_ckpt_on_episode_nr = last_training['last_ckpt_on_episode_nr']
-            self.curriculum_manager.current_level = last_training['curriculum_level']
+            self.state.curriculum_level = last_training['curriculum_level']
             
-            curr_level = str(self.curriculum_manager.current_level)
+            curr_level = str(self.state.curriculum_level)
             self.global_model.load_model(const.model_path, const.suffix_checkpoint +'_lvl_'+ curr_level)
 
             return self.last_ckpt_on_episode_nr
@@ -47,8 +47,8 @@ class CheckpointManager:
 
     def try_save_model(self, episode_nr, reward):
         # Reset best reward on curriculum-level-change
-        if self.last_curriculum_level < self.curriculum_manager.current_level:
-            self.last_curriculum_level = self.curriculum_manager.current_level
+        if self.last_curriculum_level < self.state.curriculum_level:
+            self.last_curriculum_level = self.state.curriculum_level
             self.best_reward = 0
             
         if reward > self.best_reward:
@@ -56,12 +56,12 @@ class CheckpointManager:
             if self.last_save_best_on_episode_nr + self.save_best_after_min <=  episode_nr:
                 self.last_save_best_on_episode_nr = episode_nr
                 self.best_reward = reward
-                curr_level = str(self.curriculum_manager.current_level)
+                curr_level = str(self.state.curriculum_level)
                 self.global_model.save_model(const.model_path, const.suffix_best +'_lvl_'+ curr_level)
 
         # Save ckpt every 'save_best_after_min' steps
         if episode_nr % self.save_ckpt_after_min == 0:
-            curr_level = str(self.curriculum_manager.current_level)
+            curr_level = str(self.state.curriculum_level)
             self.global_model.save_model(const.model_path, const.suffix_checkpoint +'_lvl_'+ curr_level)
             with open(const.checkpoint_file, 'w') as f:  
                 json.dump({

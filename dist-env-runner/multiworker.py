@@ -38,6 +38,8 @@ class Worker():
 
         self.params = __import__("deliverables.input_params", fromlist=[''])
 
+        self.obs_helper = __import__("deliverables.observation", fromlist=[''])
+
         #Create the local copy of the network and the tensorflow op to copy global paramters to local network
         self.local_model = network_class(True,const.url, self.number)
         self.env = RailEnvWrapper(self.local_model.get_observation_builder())
@@ -80,7 +82,7 @@ class Worker():
                 episode_done = False
 
                 # Buffer for obs, action, next obs, reward
-                episode_buffer = [[] for i in range(self.env.num_agents)]# [[] for i in range()]
+                episode_buffer = [[] for i in range(self.env.num_agents)]
 
                 # A way to remember if the agent was already done during the last episode
                 done_last_step = {i:False for i in range(self.env.num_agents)}
@@ -93,7 +95,7 @@ class Worker():
                 
                 obs, info = self.env.reset()
                 obs = self.local_model.reshape_obs(obs)
-                obs = self.augment_with_last_frames(obs, episode_buffer)
+                obs = self.obs_helper.augment_with_last_frames(self.params, self.env.num_agents, obs, episode_buffer)
 
                 while episode_done == False and episode_step_count < self.env.max_steps:
                     #Take an action using probabilities from policy network output.
@@ -101,7 +103,7 @@ class Worker():
                     
                     next_obs, rewards, done = self.env.step(actions)
                     next_obs = self.local_model.reshape_obs(next_obs)
-                    next_obs = self.augment_with_last_frames(next_obs, episode_buffer)
+                    next_obs = self.obs_helper.augment_with_last_frames(self.params, self.env.num_agents, next_obs, episode_buffer)
 
                     episode_done = done['__all__']
                     if episode_done == True:
@@ -185,32 +187,6 @@ class Worker():
         except KeyboardInterrupt:
             raise KeyboardInterruptError()
 
-    def augment_with_last_frames(self, new_obs, episode_buffers):
-        # See network for construction of obs
-        single_obs_len = self.params.frame_size
-        full_obs_len = self.params.vec_tree_state_size
-        all_obs = []
-        for i in range(self.env.num_agents):
-            episode_buffer = episode_buffers[i]
-            # Get last observation (n frames) for this agent
-            if len(episode_buffer) == 0:
-                last_obs = np.zeros(single_obs_len)
-            else:
-                last_obs = episode_buffer[-1][0]
-
-            # Remove last frame from the last frame -> l = n-1
-            last_obs_n = last_obs[:single_obs_len]
-
-            obs = np.zeros(full_obs_len)
-
-            # Start = new obs
-            obs[:single_obs_len] = new_obs[i]
-
-            # Fill remaining n-1 slots with last obs
-            obs[single_obs_len:single_obs_len+len(last_obs_n)] = last_obs_n
-            all_obs.append(obs)
-        
-        return np.vstack(all_obs).astype(np.float32)
 
 
 
