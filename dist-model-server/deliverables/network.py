@@ -276,14 +276,13 @@ class AC_Network():
 
                 # Insert additional vector for later obs
                 obs_agent = np.insert(obs_agent,0,[0]*params.num_features)
-
                 all_obs.append(obs_agent)
 
         return np.vstack(all_obs).astype(np.float32)
 
 
     def get_best_actions(self, obs, num_agents):
-        predcition, values = self.model.predict(obs)
+        predcition, _ = self.model.predict_on_batch(obs)
         actions = {}
         for i in range(num_agents):
             a_dist = predcition[i]
@@ -293,7 +292,7 @@ class AC_Network():
 
 
     def get_actions_and_values(self, obs, num_agents):
-        predcition, values = self.model.predict(obs)
+        predcition, values = self.model.predict_on_batch(obs)
         actions = {}
         for i in range(num_agents):
             a_dist = predcition[i]
@@ -304,7 +303,7 @@ class AC_Network():
 
 
     def get_actions(self, obs, num_agents):
-        predcition, values = self.model.predict(obs)
+        predcition, values = self.model.predict_on_batch(obs)
         actions = {}
         for i in range(num_agents):
             a_dist = predcition[i]
@@ -315,7 +314,7 @@ class AC_Network():
 
 
     def get_values(self, obs, num_agents):
-        return self.model.predict(obs)[1]
+        return self.model.predict_on_batch(obs)[1]
 
 
     def get_observation_builder(self):

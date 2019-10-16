@@ -27,7 +27,7 @@ def start_train(resume):
     urllib.request.urlretrieve(const.url + '/config_file', 'deliverables/input_params.py')
     urllib.request.urlretrieve(const.url + '/observation_file', 'deliverables/observation.py')
 
-    num_workers = mp.cpu_count() - 2
+    num_workers = mp.cpu_count() - 1
     should_stop = mp.Value(c_bool, False)
 
     while True:
