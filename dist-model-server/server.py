@@ -45,18 +45,18 @@ def get_global_weights():
 
 
 @app.route('/increase_curriculum_level')
-def get_curriculum_level():
+def increase_curriculum_level():
     state.curriculum_level += 1
 
 
 @app.route('/curriculum_level')
 def get_curriculum_level():
-    data = { 'curriculum_lvl' : state.curr_manager.current_level }
+    data = { 'curriculum_lvl' : state.curriculum_level }
     return jsonify(data)
 
 
 @app.route('/curriculum_file')
-def get_network_file():
+def get_curriculum_file():
     return send_from_directory('deliverables', 'curriculum.py')
 
 

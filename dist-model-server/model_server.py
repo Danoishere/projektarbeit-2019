@@ -1,5 +1,4 @@
 from deliverables.network import AC_Network
-from code_train.curriculum import CurriculumManager
 from code_util.checkpoint import CheckpointManager
 
 from tensorflow.keras.optimizers import RMSprop
@@ -43,8 +42,8 @@ def init_global_model(singelton):
 
     # Checkpoint-manager saves model-checkpoints
     singelton.ckpt_manager = CheckpointManager(
+        singelton,
         singelton.global_model, 
-        singelton, 
         save_best_after_min=100, 
         save_ckpt_after_min=300)
 

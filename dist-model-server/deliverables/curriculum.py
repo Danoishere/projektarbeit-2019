@@ -34,7 +34,7 @@ class Curriculum:
         self.update_curriculum_level()
         
     def should_switch_level(self, successrate):
-        switch_on_successrate = self.curriculum[self.current_level]
+        switch_on_successrate = self.curriculum[self.current_level]['switch_on_successrate']
         return successrate >= switch_on_successrate
             
 
@@ -50,6 +50,7 @@ class Curriculum:
     def increase_curriculum_level(self):
         resp = requests.get(url=const.url + '/increase_curriculum_level')
         self.update_curriculum_level()
+        print('Curriculum level increased')
 
     def change_grid_round0(self, env):
         env.update_env_with_params(

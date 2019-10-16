@@ -36,10 +36,13 @@ class Worker():
         network_mod = __import__("deliverables.network", fromlist=[''])
         network_class = getattr(network_mod, 'AC_Network')
 
+        curriculum_mod = __import__("deliverables.curriculum", fromlist=[''])
+        curriculum_class =  getattr(curriculum_mod, 'Curriculum')
+        self.curriculum = curriculum_class()
+
         self.params = __import__("deliverables.input_params", fromlist=[''])
-
         self.obs_helper = __import__("deliverables.observation", fromlist=[''])
-
+        
         #Create the local copy of the network and the tensorflow op to copy global paramters to local network
         self.local_model = network_class(True,const.url, self.number)
         self.env = RailEnvWrapper(self.local_model.get_observation_builder())
@@ -79,6 +82,11 @@ class Worker():
             self.episode_count = 0
 
             while not bool(self.should_stop.value):
+                # Check with server if there is a new curriculum level available
+                if self.episode_count % 50 == 0:
+                    self.curriculum.update_curriculum_level()
+                    self.curriculum.update_env_to_curriculum_level(self.env)
+
                 episode_done = False
 
                 # Buffer for obs, action, next obs, reward

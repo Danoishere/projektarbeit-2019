@@ -12,7 +12,6 @@ import deliverables.input_params as params
 from io import StringIO
 from flatland.envs.observations import TreeObsForRailEnv
 from flatland.envs.predictions import ShortestPathPredictorForRailEnv
-from deliverables.observation import CombinedObservation
 
 import base64
 import hashlib
