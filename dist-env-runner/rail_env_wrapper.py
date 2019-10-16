@@ -21,7 +21,7 @@ class RailEnvWrapper():
                 })
 
         self.stochastic_data = {
-                'prop_malfunction': 0.1,  # Percentage of defective agents
+                'prop_malfunction': 0.0,  # Percentage of defective agents
                 'malfunction_rate': 30,  # Rate of malfunction occurence
                 'min_duration': 3,  # Minimal duration of malfunction
                 'max_duration': 20  # Max duration of malfunction
@@ -36,10 +36,10 @@ class RailEnvWrapper():
         self.episode_step_count = 0
         self.max_steps = 40
         self.update_env_with_params(
-            width=50,
-            height=50,
-            num_agents=2,
-            max_steps = 80,
+            width=30,
+            height=30,
+            num_agents=1,
+            max_steps = 100,
             rail_type = 'sparse',
             rail_gen_params = {
                 'num_cities': 2,

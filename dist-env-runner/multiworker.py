@@ -91,7 +91,6 @@ class Worker():
                 episode_step_count = 0
                 info = np.zeros(5)
                 
-                
                 obs, info = self.env.reset()
                 obs = self.local_model.reshape_obs(obs)
                 obs = self.augment_with_last_frames(obs, episode_buffer)

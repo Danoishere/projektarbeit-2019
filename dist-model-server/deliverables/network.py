@@ -22,7 +22,7 @@ import zlib
 
 
 class AC_Network():
-    def __init__(self, create_network=True, global_model_url = '', name = '', is_training = True):
+    def __init__(self, create_network=True, global_model_url = '', name = '', is_training = False):
         self.name = str(name)
         self.is_training = is_training
         self.global_model_url = global_model_url
@@ -54,15 +54,10 @@ class AC_Network():
 
 
     def create_network(self, input_vec_tree):
-
-        hidden = layers.Dense(512, activation='relu')(input_vec_tree)
+        hidden = layers.Dense(356, activation='relu')(input_vec_tree)
         hidden = layers.Dense(256, activation='relu')(hidden)
-        if self.is_training:
-            hidden = layers.GaussianNoise(0.1)(hidden)
         hidden = layers.Dense(128, activation='relu')(hidden)
         hidden = layers.Dense(32, activation='relu')(hidden)
-        if self.is_training:
-            hidden = layers.GaussianNoise(0.1)(hidden)
         hidden = layers.Dense(8, activation='relu')(hidden)
 
         return hidden
@@ -116,21 +111,17 @@ class AC_Network():
         gradients_str = dill.dumps(gradients)
         gradients_str = zlib.compress(gradients_str)
 
-        print('Before update')
         # Send gradient update and receive new global weights
         resp = requests.post(
             url=self.global_model_url + '/send_gradient', 
             data=gradients_str)
 
-        print('New weights received')
         weights_str = resp.content
         weights_str = zlib.decompress(weights_str)
-        print('Decomp applied')
         weights = msgpack.loads(weights_str)
 
         
         self.model.set_weights(weights)
-        print('New weights applied')
         return v_loss, p_loss, entropy, grad_norms, var_norms
 
 
