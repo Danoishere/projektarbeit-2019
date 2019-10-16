@@ -65,7 +65,7 @@ class CheckpointManager:
             self.global_model.save_model(const.model_path, const.suffix_checkpoint +'_lvl_'+ curr_level)
             with open(const.checkpoint_file, 'w') as f:  
                 json.dump({
-                    'curriculum_level' : self.curriculum_manager.current_level,
+                    'curriculum_level' : self.state.curriculum_level,
                     'best_reward' : float(self.best_reward),
                     'last_ckpt_on_episode_nr' : int(episode_nr)
                 }, f)
