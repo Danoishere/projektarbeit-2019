@@ -13,6 +13,8 @@ number_of_actions = 5
 tree_depth = 6
 feature_branches = 5
 num_features = 13
+num_frames = 4
 
 # Root-node + n branches on m layers * l features + n features for later usage
-vec_tree_state_size = ((tree_depth+1)*feature_branches*num_features + num_features,)
+frame_size = (tree_depth+1)*feature_branches*num_features + num_features
+vec_tree_state_size = frame_size*num_frames

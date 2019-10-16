@@ -40,7 +40,7 @@ class AC_Network():
 
 
     def build_network(self):
-        input_vec_tree = layers.Input(shape=list(params.vec_tree_state_size),dtype=tf.float32)
+        input_vec_tree = layers.Input(shape=params.vec_tree_state_size,dtype=tf.float32)
 
         actor_out = self.create_network(input_vec_tree)
         critic_out = self.create_network(input_vec_tree)
@@ -71,13 +71,10 @@ class AC_Network():
     def update_from_global_model(self):
         ''' Updates the local copy of the global model 
         '''
-        print('Before get')
         resp = requests.get(url=self.global_model_url + '/get_global_weights')
         weights_str = resp.content
-        print('Before decrompress')
         weights_str = zlib.decompress(weights_str)
         weights = msgpack.loads(weights_str)
-        print('Weights set')
         self.model.set_weights(weights)
 
 
