@@ -9,7 +9,7 @@ import scipy.signal
 from tensorflow.keras.optimizers import RMSprop
 
 from datetime import datetime
-from random import choice
+from random import choice,uniform
 from time import sleep
 from time import time
 from rail_env_wrapper import RailEnvWrapper
@@ -102,15 +102,22 @@ class Worker():
                 info = np.zeros(5)
                 
                 obs, info = self.env.reset()
-                obs = self.local_model.reshape_obs(obs)
+                obs = self.local_model.reshape_obs(obs, info)
                 obs = self.obs_helper.augment_with_last_frames(self.params, self.env.num_agents, obs, episode_buffer)
+
+                use_best_actions = False
+                if uniform(0, 1) < 0.2:
+                    use_best_actions = True
 
                 while episode_done == False and episode_step_count < self.env.max_steps:
                     #Take an action using probabilities from policy network output.
-                    actions, v = self.local_model.get_actions_and_values(obs, self.env.num_agents)
+                    if use_best_actions:
+                        actions, v = self.local_model.get_best_actions_and_values(obs, self.env.num_agents)
+                    else:
+                        actions, v = self.local_model.get_actions_and_values(obs, self.env.num_agents)
                     
                     next_obs, rewards, done = self.env.step(actions)
-                    next_obs = self.local_model.reshape_obs(next_obs)
+                    next_obs = self.local_model.reshape_obs(next_obs, info)
                     next_obs = self.obs_helper.augment_with_last_frames(self.params, self.env.num_agents, next_obs, episode_buffer)
 
                     episode_done = done['__all__']

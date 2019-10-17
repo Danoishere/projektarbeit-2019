@@ -21,6 +21,7 @@ import urllib
 import requests
 
 mp.set_start_method('spawn', True)
+from flatland.utils.rendertools import RenderTool, AgentRenderVariant
 
 def get_curriculum_lvl():
     data = requests.get(url=const.url + '/').json()
@@ -54,7 +55,6 @@ def start_train(resume):
     env = RailEnvWrapper(model.get_observation_builder())
 
     curriculum.update_env_to_curriculum_level(env)
-
     num_repeat = 100
 
     while True:
@@ -77,15 +77,15 @@ def start_train(resume):
             info = np.zeros(5)
             
             obs, info = env.reset()
-            obs = model.reshape_obs(obs)
+
+            obs = model.reshape_obs(obs, info)
             obs = obs_helper.augment_with_last_frames(params, env.num_agents, obs, episode_buffer)
 
             while episode_done == False and episode_step_count < env.max_steps:
-                #Take an action using probabilities from policy network output.
+
                 actions = model.get_best_actions(obs, env.num_agents)
-                
                 next_obs, rewards, done =env.step(actions)
-                next_obs = model.reshape_obs(next_obs)
+                next_obs = model.reshape_obs(next_obs, info)
                 next_obs = obs_helper.augment_with_last_frames(params, env.num_agents, next_obs, episode_buffer)
 
                 episode_done = done['__all__']

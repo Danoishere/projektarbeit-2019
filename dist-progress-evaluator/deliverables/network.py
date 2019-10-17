@@ -47,16 +47,19 @@ class AC_Network():
         policy = layers.Dense(params.number_of_actions, activation='softmax')(actor_out)
         value = layers.Dense(1)(critic_out)
 
-        return Model(
+        model = Model(
             inputs=input_vec_tree,
             outputs=[policy, value])
+        #model.summary()
+        return model
 
 
     def create_network(self, input_vec_tree):
-        hidden = layers.Dense(356, activation='relu')(input_vec_tree)
-        hidden = layers.Dense(256, activation='relu')(hidden)
-        hidden = layers.Dense(128, activation='relu')(hidden)
-        hidden = layers.Dense(32, activation='relu')(hidden)
+        conv = layers.Reshape((params.vec_tree_state_size,1))(input_vec_tree)
+        conv = layers.Conv1D(kernel_size =(params.num_features), strides=(params.num_features),  filters = 20, activation='relu')(conv)
+        conv = layers.Flatten()(conv)
+        conv = layers.Dense(300, activation='relu')(conv)
+        hidden = layers.Dense(64, activation='relu')(conv)
         hidden = layers.Dense(8, activation='relu')(hidden)
 
         return hidden
@@ -186,10 +189,10 @@ class AC_Network():
         node = node_tuple[1]
 
         dir_dict = {
-            '.' : 0,
-            'F': 0.25,
-            'L': 0.5,
-            'R': 0.75,
+            '.' : 0.1,
+            'F': 0.4,
+            'L': 0.6,
+            'R': 0.7,
         }
 
         dir_num = dir_dict[dir]
@@ -212,7 +215,7 @@ class AC_Network():
         return obs
 
 
-    def reshape_obs(self, obs):
+    def reshape_obs(self, obs, info):
         all_obs = []
         for i in range(len(obs)):
             current_node = obs[i]
@@ -275,6 +278,14 @@ class AC_Network():
 
                 # Insert additional vector for later obs
                 obs_agent = np.insert(obs_agent,0,[0]*params.num_features)
+                if info['action_required'][i]:
+                    obs_agent[0] = 1.0
+                if info['malfunction'][i] == 1:
+                    obs_agent[1] = 1.0
+
+                obs_agent[2] =info['speed'][i]
+                obs_agent[3] =info['status'][i].value
+
                 all_obs.append(obs_agent)
 
         return np.vstack(all_obs).astype(np.float32)
@@ -288,6 +299,15 @@ class AC_Network():
             actions[i] = np.argmax(a_dist)
 
         return actions
+
+    def get_best_actions_and_values(self, obs, num_agents):
+        predcition, values = self.model.predict_on_batch(obs)
+        actions = {}
+        for i in range(num_agents):
+            a_dist = predcition[i]
+            actions[i] = np.argmax(a_dist)
+
+        return actions, values
 
 
     def get_actions_and_values(self, obs, num_agents):

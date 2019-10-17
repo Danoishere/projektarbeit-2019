@@ -57,7 +57,7 @@ class Curriculum:
             width=30,
             height=30,
             num_agents=1,
-            max_steps = 100,
+            max_steps = 150,
             rail_type = 'sparse',
             rail_gen_params = {
                 'num_cities': 2,
@@ -72,7 +72,7 @@ class Curriculum:
             width=30,
             height=30,
             num_agents=2,
-            max_steps = 100,
+            max_steps = 150,
             rail_type = 'sparse',
             rail_gen_params = {
                 'num_cities': 2,
@@ -88,7 +88,7 @@ class Curriculum:
             width=40,
             height=40,
             num_agents=3,
-            max_steps = 100,
+            max_steps = 150,
             rail_type = 'sparse',
             rail_gen_params = {
                 'num_cities': 3,
@@ -103,7 +103,7 @@ class Curriculum:
             width=50,
             height=50,
             num_agents=4,
-            max_steps = 140,
+            max_steps = 200,
             rail_type = 'sparse',
             rail_gen_params = {
                 'num_cities': 4,
@@ -115,31 +115,31 @@ class Curriculum:
 
     def change_grid_round4(self, env):
         env.update_env_with_params(
-            width=30,
-            height=30,
-            num_agents=1,
-            max_steps = 100,
+            width=70,
+            height=70,
+            num_agents=10,
+            max_steps = 200,
             rail_type = 'sparse',
             rail_gen_params = {
-                'num_cities': 2,
+                'num_cities': 10,
                 'grid_mode': False,
-                'max_rails_between_cities': 1,
-                'max_rails_in_city' : 2
+                'max_rails_between_cities': 2,
+                'max_rails_in_city' : 3
             }
         )
 
     def change_grid_round5(self, env):
         env.update_env_with_params(
-            width=30,
-            height=30,
-            num_agents=1,
-            max_steps = 100,
+            width=100,
+            height=100,
+            num_agents=20,
+            max_steps = 200,
             rail_type = 'sparse',
             rail_gen_params = {
-                'num_cities': 2,
+                'num_cities': 15,
                 'grid_mode': False,
-                'max_rails_between_cities': 1,
-                'max_rails_in_city' : 2
+                'max_rails_between_cities': 2,
+                'max_rails_in_city' : 4
             }
         )
 

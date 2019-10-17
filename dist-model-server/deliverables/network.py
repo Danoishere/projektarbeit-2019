@@ -215,7 +215,7 @@ class AC_Network():
         return obs
 
 
-    def reshape_obs(self, obs):
+    def reshape_obs(self, obs, info):
         all_obs = []
         for i in range(len(obs)):
             current_node = obs[i]
@@ -278,6 +278,14 @@ class AC_Network():
 
                 # Insert additional vector for later obs
                 obs_agent = np.insert(obs_agent,0,[0]*params.num_features)
+                if info['action_required'][i]:
+                    obs_agent[0] = 1.0
+                if info['malfunction'][i] == 1:
+                    obs_agent[1] = 1.0
+
+                obs_agent[2] =info['speed'][i]
+                obs_agent[3] =info['status'][i].value
+
                 all_obs.append(obs_agent)
 
         return np.vstack(all_obs).astype(np.float32)
@@ -291,6 +299,15 @@ class AC_Network():
             actions[i] = np.argmax(a_dist)
 
         return actions
+
+    def get_best_actions_and_values(self, obs, num_agents):
+        predcition, values = self.model.predict_on_batch(obs)
+        actions = {}
+        for i in range(num_agents):
+            a_dist = predcition[i]
+            actions[i] = np.argmax(a_dist)
+
+        return actions, values
 
 
     def get_actions_and_values(self, obs, num_agents):
