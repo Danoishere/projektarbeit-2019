@@ -28,13 +28,13 @@ def start_train(resume):
     urllib.request.urlretrieve(const.url + '/observation_file', 'deliverables/observation.py')
     urllib.request.urlretrieve(const.url + '/curriculum_file', 'deliverables/curriculum.py')
 
-    num_workers = mp.cpu_count() - 1
+    num_workers = mp.cpu_count()
     should_stop = mp.Value(c_bool, False)
 
     while True:
         worker_processes = []
 
-        # create_worker(0, should_stop)
+        create_worker(0, should_stop)
 
         # Start process 1 - n, running in other processes
         for w_num in range(0,num_workers):

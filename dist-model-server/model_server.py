@@ -33,7 +33,7 @@ class Singleton:
 def init_global_model(singelton):
     # TODO: Refactor to arguments
 
-    singelton.resume = True
+    singelton.resume = False
     singelton.global_model = AC_Network()
     singelton.trainer = RMSprop(learning_rate=params.learning_rate)
 
@@ -55,9 +55,7 @@ def init_global_model(singelton):
         print('Create new run...')
         save_new_run_info()
 
-    # Initial save for global model
-    # singelton.global_model.save_model(const.model_path, 'global')
-
+    singelton.global_model.save_model(const.model_path, 'global')
 
 
 

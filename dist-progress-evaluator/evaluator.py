@@ -21,7 +21,6 @@ import urllib
 import requests
 
 mp.set_start_method('spawn', True)
-from flatland.utils.rendertools import RenderTool, AgentRenderVariant
 
 def get_curriculum_lvl():
     data = requests.get(url=const.url + '/').json()
@@ -62,6 +61,7 @@ def start_train(resume):
         num_success = 0
         episode_count = 0
         model.update_from_global_model()
+        print('Model updated from server.')
 
         for r in range(num_repeat):
             episode_done = False
@@ -77,26 +77,22 @@ def start_train(resume):
             info = np.zeros(5)
             
             obs, info = env.reset()
-
-            obs = model.reshape_obs(obs, info)
-            obs = obs_helper.augment_with_last_frames(params, env.num_agents, obs, episode_buffer)
+            obs = obs_helper.prep_observations(obs, info, episode_buffer, env.num_agents)
 
             while episode_done == False and episode_step_count < env.max_steps:
-
                 actions = model.get_best_actions(obs, env.num_agents)
-                next_obs, rewards, done =env.step(actions)
-                next_obs = model.reshape_obs(next_obs, info)
-                next_obs = obs_helper.augment_with_last_frames(params, env.num_agents, next_obs, episode_buffer)
+                next_obs, rewards, done = env.step(actions)
+                next_obs = obs_helper.prep_observations(next_obs, info, episode_buffer, env.num_agents)
 
                 episode_done = done['__all__']
                 if episode_done == True:
                     next_obs = obs
 
                 for i in range(env.num_agents):
-                    agent_obs = obs[i]
+                    agent_obs = obs_helper.obs_for_agent(obs, i) 
                     agent_action = actions[i]
                     agent_reward = rewards[i]
-                    agent_next_obs =  next_obs[i]
+                    agent_next_obs =  obs_helper.obs_for_agent(next_obs, i) 
 
                     if not done_last_step[i]:
                         episode_buffer[i].append([

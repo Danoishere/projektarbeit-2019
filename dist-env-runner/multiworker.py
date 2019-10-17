@@ -61,8 +61,7 @@ class Worker():
         discounted_rewards = np.concatenate(all_rewards)
         actions = np.asarray([row[1] for row in all_rollouts]) 
         values = np.asarray([row[5] for row in all_rollouts])
-        obs = np.asarray([row[0] for row in all_rollouts])
-
+        obs = self.obs_helper.buffer_to_obs_lists(all_rollouts)
         advantages = discounted_rewards - values
 
         v_l,p_l,e_l,g_n, v_n = self.local_model.train(discounted_rewards, advantages, actions, obs)
@@ -102,33 +101,24 @@ class Worker():
                 info = np.zeros(5)
                 
                 obs, info = self.env.reset()
-                obs = self.local_model.reshape_obs(obs, info)
-                obs = self.obs_helper.augment_with_last_frames(self.params, self.env.num_agents, obs, episode_buffer)
-
-                use_best_actions = False
-                if uniform(0, 1) < 0.2:
-                    use_best_actions = True
+                obs = self.obs_helper.prep_observations(obs, info, episode_buffer, self.env.num_agents)
 
                 while episode_done == False and episode_step_count < self.env.max_steps:
                     #Take an action using probabilities from policy network output.
-                    if use_best_actions:
-                        actions, v = self.local_model.get_best_actions_and_values(obs, self.env.num_agents)
-                    else:
-                        actions, v = self.local_model.get_actions_and_values(obs, self.env.num_agents)
+                    actions, v = self.local_model.get_actions_and_values(obs, self.env.num_agents)
                     
-                    next_obs, rewards, done = self.env.step(actions)
-                    next_obs = self.local_model.reshape_obs(next_obs, info)
-                    next_obs = self.obs_helper.augment_with_last_frames(self.params, self.env.num_agents, next_obs, episode_buffer)
+                    next_obs, rewards, done, info = self.env.step(actions)
+                    next_obs = self.obs_helper.prep_observations(next_obs, info, episode_buffer, self.env.num_agents)
 
                     episode_done = done['__all__']
                     if episode_done == True:
                         next_obs = obs
 
                     for i in range(self.env.num_agents):
-                        agent_obs = obs[i]
+                        agent_obs = self.obs_helper.obs_for_agent(obs, i) 
                         agent_action = actions[i]
                         agent_reward = rewards[i]
-                        agent_next_obs =  next_obs[i]
+                        agent_next_obs =  self.obs_helper.obs_for_agent(next_obs, i)
 
                         if not done_last_step[i]:
                             episode_buffer[i].append([
@@ -142,7 +132,7 @@ class Worker():
                             episode_values.append(v[i,0])
                             episode_reward += agent_reward
                     
-                    obs = next_obs               
+                    obs = next_obs              
                     episode_step_count += 1
                     steps_on_level += 1
                     done_last_step = dict(done)
@@ -159,7 +149,6 @@ class Worker():
                         if not done[i]:
                             episode_buffer[i][-1][2] -= 40
                             episode_reward -= 40
-
 
                 self.episode_rewards.append(episode_reward)
                 self.episode_lengths.append(episode_step_count)
