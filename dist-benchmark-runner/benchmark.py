@@ -23,6 +23,7 @@ import constant as const
 import urllib
 import requests
 import json
+import dill
 
 mp.set_start_method('spawn', True)
 SEED = 345123
@@ -49,18 +50,19 @@ class Benchmark:
 
 
     def start_benchmark(self):
-        self.stats = []
         while True:
             num_success = 0
             episode_count = 0
+            self.stats = []
             self.model.update_from_global_model()
             self.trained_on_curr_level = self.get_curriculum_lvl()
                        
             print('New benchmark run with updated model.')
             print('Round 1 - simple environment with one agent')
             self.change_grid_round1()
-            self.run_episodes(1, 20)
+            self.run_episodes(1, 1)
 
+            '''
             print('Round 2 - Two agents, larger environment')
             self.change_grid_round2()
             self.run_episodes(2, 20)
@@ -76,6 +78,10 @@ class Benchmark:
             print('Round 5 - Large environment, 10 agents')
             self.change_grid_round5()
             self.run_episodes(5, 20)
+            '''
+
+            self.submit_benchmark_report()
+
 
 
     def run_to_end(self):
@@ -161,10 +167,19 @@ class Benchmark:
         self.curriculum.update_env_to_curriculum_level(self.env)
 
 
-    def run_episodes(self, episode_no, num_episodes):
+    def run_episodes(self, round_nr, num_episodes):
         for r in range(num_episodes):
             num_agents_done, total_reward, steps_needed = self.run_to_end()
-            self.save_stats(num_agents_done, total_reward, steps_needed, episode_no)
+            self.save_stats(num_agents_done, total_reward, steps_needed, round_nr)
+
+    def submit_benchmark_report(self):
+        df = pd.DataFrame.from_records([s.to_dict() for s in self.stats])
+        report_str = dill.dumps(df)
+        resp = requests.post(
+            url=const.url + '/send_benchmark_report', 
+            data=report_str)
+        print('Benchmark report submitted')
+        
 
 
     def save_stats_to_csv(self,run_name):

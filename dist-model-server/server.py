@@ -1,10 +1,11 @@
 from flask import Flask, jsonify, send_from_directory,send_file, request, Response
 from model_server import Singleton
 import numpy as np
+import pandas as pd
 import dill
 import gzip
 from io import BytesIO
-from code_util.locking import ReadWriteLock
+from datetime import datetime
 import time
 import threading
 import json
@@ -32,6 +33,15 @@ def post_update_weights():
     lock.release()
 
     return get_global_weights()
+
+
+@app.route('/send_benchmark_report', methods=['POST'])
+def post_send_benchmark_report():
+    report_time = datetime.now().strftime("%d_%m_%Y_%H_%M_%S")
+    report_str = request.stream.read()
+    report = dill.loads(report_str)
+    report.to_csv('./deliverables/benchmark_report_' + report_time + '.csv')
+    return "OK"
 
 
 @app.route('/get_global_weights')
