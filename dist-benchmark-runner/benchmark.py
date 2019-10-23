@@ -86,22 +86,20 @@ class Benchmark:
         episode_step_count = 0
         
         obs, info = self.env.reset()
-        obs = self.obs_helper.prep_observations(obs, info, episode_buffer, self.env.num_agents)
 
         while episode_done == False and episode_step_count < self.env.max_steps:
-            actions = self.model.get_best_actions(obs, self.env.num_agents)
+            actions = self.model.get_best_actions(obs)
             next_obs, rewards, done, info = self.env.step(actions)
-            next_obs = self.obs_helper.prep_observations(next_obs, info, episode_buffer, self.env.num_agents)
 
             episode_done = done['__all__']
             if episode_done == True:
                 next_obs = obs
 
             for i in range(self.env.num_agents):
-                agent_obs = self.obs_helper.obs_for_agent(obs, i) 
+                agent_obs = obs[i] 
                 agent_action = actions[i]
                 agent_reward = rewards[i]
-                agent_next_obs =  self.obs_helper.obs_for_agent(next_obs, i) 
+                agent_next_obs =  next_obs[i] 
 
                 if not done_last_step[i]:
                     episode_buffer[i].append([
@@ -200,7 +198,7 @@ class Benchmark:
 
 
     def get_curriculum_lvl(self):
-        data = requests.get(url=const.url + '/').json()
+        data = requests.get(url=const.url + '/curriculum_level').json()
         return data['curriculum_lvl']
         
     

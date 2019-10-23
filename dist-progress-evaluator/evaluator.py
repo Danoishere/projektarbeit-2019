@@ -76,22 +76,20 @@ def start_train(resume):
             episode_step_count = 0
             
             obs, info = env.reset()
-            obs = obs_helper.prep_observations(obs, info, episode_buffer, env.num_agents)
 
             while episode_done == False and episode_step_count < env.max_steps:
-                actions = model.get_best_actions(obs, env.num_agents)
-                next_obs, rewards, done = env.step(actions)
-                next_obs = obs_helper.prep_observations(next_obs, info, episode_buffer, env.num_agents)
+                actions = model.get_best_actions(obs)
+                next_obs, rewards, done, info = env.step(actions)
 
                 episode_done = done['__all__']
                 if episode_done == True:
                     next_obs = obs
 
                 for i in range(env.num_agents):
-                    agent_obs = obs_helper.obs_for_agent(obs, i) 
+                    agent_obs = obs[i] 
                     agent_action = actions[i]
                     agent_reward = rewards[i]
-                    agent_next_obs =  obs_helper.obs_for_agent(next_obs, i) 
+                    agent_next_obs =  next_obs[i]
 
                     if not done_last_step[i]:
                         episode_buffer[i].append([

@@ -6,8 +6,9 @@ class RunStatistics:
         self.width = width
         self.height = height
         self.evaluation_round = evaluation_round
-        self.steps_needed = steps_needed,
+        self.steps_needed = steps_needed
         self.trained_on_curriculum_level = trained_on_curriculum_level
+
 
     def to_dict(self):
         return {
@@ -20,6 +21,7 @@ class RunStatistics:
             'steps_needed' : self.steps_needed,
             'trained_on_curriculum_level' : self.trained_on_curriculum_level
         }
+
 
     def __str__(self):
         return str(self.to_dict())

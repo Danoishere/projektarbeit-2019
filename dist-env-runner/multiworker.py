@@ -26,9 +26,11 @@ def create_worker(name, should_stop):
     worker = Worker(name, should_stop)
     return worker.work()
 
+
 # Discounting function used to calculate discounted returns.
 def discount(x, gamma):
     return scipy.signal.lfilter([1], [1, -gamma], x[::-1], axis=0)[::-1]
+
 
 class Worker():
     def __init__(self, name, should_stop):
@@ -51,6 +53,7 @@ class Worker():
         self.local_model = network_class(True,const.url, self.number)
         self.env = RailEnvWrapper(self.local_model.get_observation_builder())
         
+
     def train(self, rollout):
         all_rollouts = []
         all_rewards = []
@@ -71,12 +74,11 @@ class Worker():
         v_l,p_l,e_l,g_n, v_n = self.local_model.train(discounted_rewards, advantages, actions, obs)
         return v_l / len(rollout),p_l / len(rollout),e_l / len(rollout), g_n,  v_n
     
+
     def work(self):
         try:
             print ("Starting worker " + str(self.number))
-
             steps_on_level = 0
-
             self.episode_rewards = []
             self.episode_lengths = []
             self.episode_success = []
@@ -102,27 +104,22 @@ class Worker():
                 episode_values = []
                 episode_reward = 0
                 episode_step_count = 0
-                info = np.zeros(5)
                 
                 obs, info = self.env.reset()
-                obs = self.obs_helper.prep_observations(obs, info, episode_buffer, self.env.num_agents)
 
                 while episode_done == False and episode_step_count < self.env.max_steps:
-                    #Take an action using probabilities from policy network output.
-                    actions, v = self.local_model.get_actions_and_values(obs, self.env.num_agents)
-                    
+                    actions, v = self.local_model.get_actions_and_values(obs)
                     next_obs, rewards, done, info = self.env.step(actions)
-                    next_obs = self.obs_helper.prep_observations(next_obs, info, episode_buffer, self.env.num_agents)
 
                     episode_done = done['__all__']
                     if episode_done == True:
                         next_obs = obs
 
                     for i in range(self.env.num_agents):
-                        agent_obs = self.obs_helper.obs_for_agent(obs, i) 
+                        agent_obs = obs[i]
                         agent_action = actions[i]
                         agent_reward = rewards[i]
-                        agent_next_obs =  self.obs_helper.obs_for_agent(next_obs, i)
+                        agent_next_obs =  next_obs[i]
 
                         if not done_last_step[i]:
                             episode_buffer[i].append([
@@ -131,9 +128,9 @@ class Worker():
                                 agent_reward,
                                 agent_next_obs,
                                 episode_done,
-                                v[i,0]])
+                                v[i]])
                             
-                            episode_values.append(v[i,0])
+                            episode_values.append(v[i])
                             episode_reward += agent_reward
                     
                     obs = next_obs              
@@ -168,25 +165,7 @@ class Worker():
                 info[4] = v_n
                         
                 # Save stats to Tensorboard every 5 episodes
-                if self.episode_count % 5 == 0 and self.episode_count != 0:
-                    mean_length = np.mean(self.episode_lengths[-100:])
-                    mean_value = np.mean(self.episode_mean_values[-100:])
-                    mean_success_rate = np.mean(self.episode_success[-100:])
-                    mean_reward = np.mean(self.episode_rewards[-100:])
-                    
-                    with self.summary_writer.as_default():
-                        episode_count = np.int32(self.episode_count)
-                        tf.summary.scalar('Perf/Reward', mean_reward, step=episode_count)
-                        tf.summary.scalar('Perf/Length', mean_length, step=episode_count)
-                        tf.summary.scalar('Perf/Value', mean_value, step=episode_count)
-                        tf.summary.scalar('Perf/Successrate', mean_success_rate, step=episode_count)
-                        tf.summary.scalar('Losses/Value Loss', np.mean(info[0]), step=episode_count)
-                        tf.summary.scalar('Losses/Policy Loss', np.mean(info[1]), step=episode_count)
-                        tf.summary.scalar('Losses/Entropy', np.mean(info[2]), step=episode_count)
-                        tf.summary.scalar('Losses/Grad Norm', np.mean(info[3]), step=episode_count)
-                        tf.summary.scalar('Losses/Var Norm', np.mean(info[4]), step=episode_count)
-                        self.summary_writer.flush()
-
+                self.log_in_tensorboard(info)
                 self.episode_count += 1
                 print('Episode', self.episode_count,'of',self.name,'with',episode_step_count,'steps, reward of',episode_reward, ', mean entropy of', np.mean(info[2]), ', curriculum level ')
             
@@ -194,6 +173,27 @@ class Worker():
     
         except KeyboardInterrupt:
             raise KeyboardInterruptError()
+
+
+    def log_in_tensorboard(self, info):
+        if self.episode_count % 5 == 0 and self.episode_count != 0:
+            mean_length = np.mean(self.episode_lengths[-100:])
+            mean_value = np.mean(self.episode_mean_values[-100:])
+            mean_success_rate = np.mean(self.episode_success[-100:])
+            mean_reward = np.mean(self.episode_rewards[-100:])
+
+            with self.summary_writer.as_default():
+                episode_count = np.int32(self.episode_count)
+                tf.summary.scalar('Perf/Reward', mean_reward, step=episode_count)
+                tf.summary.scalar('Perf/Length', mean_length, step=episode_count)
+                tf.summary.scalar('Perf/Value', mean_value, step=episode_count)
+                tf.summary.scalar('Perf/Successrate', mean_success_rate, step=episode_count)
+                tf.summary.scalar('Losses/Value Loss', np.mean(info[0]), step=episode_count)
+                tf.summary.scalar('Losses/Policy Loss', np.mean(info[1]), step=episode_count)
+                tf.summary.scalar('Losses/Entropy', np.mean(info[2]), step=episode_count)
+                tf.summary.scalar('Losses/Grad Norm', np.mean(info[3]), step=episode_count)
+                tf.summary.scalar('Losses/Var Norm', np.mean(info[4]), step=episode_count)
+                self.summary_writer.flush()
 
 
 

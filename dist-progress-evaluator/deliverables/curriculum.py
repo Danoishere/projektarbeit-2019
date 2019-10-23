@@ -3,6 +3,8 @@ import requests
 
 class Curriculum:
     def __init__(self):
+        # Seed = -1 means create random seed
+        self.seed = -1
         self.curriculum = {
             0: {
                 'level_generator' : lambda env: self.change_grid_round0(env),
@@ -64,7 +66,8 @@ class Curriculum:
                 'grid_mode': False,
                 'max_rails_between_cities': 1,
                 'max_rails_in_city' : 2
-            }
+            },
+            seed = self.seed        
         )
 
     def change_grid_round1(self, env):
@@ -79,7 +82,8 @@ class Curriculum:
                 'grid_mode': False,
                 'max_rails_between_cities': 1,
                 'max_rails_in_city' : 2
-            }
+            },
+            seed = self.seed       
         )
 
 
@@ -95,7 +99,8 @@ class Curriculum:
                 'grid_mode': False,
                 'max_rails_between_cities': 1,
                 'max_rails_in_city' : 2
-            }
+            },
+            seed = self.seed       
         )
     
     def change_grid_round3(self, env):
@@ -110,7 +115,8 @@ class Curriculum:
                 'grid_mode': False,
                 'max_rails_between_cities': 1,
                 'max_rails_in_city' : 2
-            }
+            },
+            seed = self.seed   
         )
 
     def change_grid_round4(self, env):
@@ -125,7 +131,8 @@ class Curriculum:
                 'grid_mode': False,
                 'max_rails_between_cities': 2,
                 'max_rails_in_city' : 3
-            }
+            },
+            seed = self.seed       
         )
 
     def change_grid_round5(self, env):
@@ -140,6 +147,7 @@ class Curriculum:
                 'grid_mode': False,
                 'max_rails_between_cities': 2,
                 'max_rails_in_city' : 4
-            }
+            },
+            seed = self.seed       
         )
 
