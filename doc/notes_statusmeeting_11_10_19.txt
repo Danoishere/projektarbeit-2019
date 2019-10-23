@@ -18,6 +18,8 @@ Fortschritt:
 - Post play reward manipulation (wenn es alle geschafft haben)
 - Behebung des Entropie-Kollapses (Bug vom letzten mal)
 
+
+
 TODO: 
 - Analyse Observations für zweite Runde
 - Analyse Kommunikation - Papers studieren - geeignete Loss-Function?
@@ -36,7 +38,7 @@ TODO:
 
 
 
-Idee PA-Bericht: 
+Weitere dee PA-Bericht: 
 ---------------
 - Performance mit & ohne Curriculum Learning
 - Performance mit & ohne Post play reward shaping
