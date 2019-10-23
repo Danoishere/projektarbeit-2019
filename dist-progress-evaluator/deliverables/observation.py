@@ -159,7 +159,7 @@ def reshape_obs(obs, info):
             
             alt_way_2 = [None]*(params.tree_depth-1)
             # Try to take second best solution at second next intersection
-            if len(fastest_way) > 1:
+            if fastest_way[1] != None:
                 sorted_children = get_ordered_children(fastest_way[1][1])
                 if len(sorted_children) > 1:
                     alt_node_2 = sorted_children[1]
