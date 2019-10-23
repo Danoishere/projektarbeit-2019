@@ -12,6 +12,10 @@ from datetime import datetime
 from random import choice,uniform
 from time import sleep
 from time import time
+
+import os
+cwd = os.getcwd()
+
 from rail_env_wrapper import RailEnvWrapper
 
 import constant as const

@@ -5,9 +5,9 @@ from flatland.envs.schedule_generators import sparse_schedule_generator
 import random
 
 
-
 class RailEnvWrapper():
     initial_step_penalty = -2
+    
     def __init__(self, observation_builder, width=12, height=12, num_agents=2):
         self.num_agents = num_agents
         
@@ -37,7 +37,7 @@ class RailEnvWrapper():
             width=30,
             height=30,
             num_agents=1,
-            max_steps = 100,
+            max_steps = 200,
             rail_type = 'sparse',
             rail_gen_params = {
                 'num_cities': 2,
@@ -49,10 +49,10 @@ class RailEnvWrapper():
 
     def step(self, actions):
         self.env.step_penalty = -2*1.02**self.episode_step_count
-        next_obs, rewards, done, _ = self.env.step(actions)
+        next_obs, rewards, done, info = self.env.step(actions)
         self.done_last_step = dict(done)
         self.episode_step_count += 1
-        return next_obs, rewards, done
+        return next_obs, rewards, done, info
     
     
     def reset(self):
@@ -60,16 +60,16 @@ class RailEnvWrapper():
             self.done_last_step[i] = False
             self.dist[i] = 100
         
-        obs = self.env.reset(activate_agents=True)
+        obs,info = self.env.reset()
         
         # Obs-shape must be equal to num of agents, otherwise, the level couldn't be generated orderly
-        while len(obs[0]) != self.num_agents:
-            obs = self.env.reset(activate_agents=True)
+        while self.env.num_agents != self.num_agents:
+            obs,info = self.env.reset()
 
         self.num_of_done_agents = 0
         self.env.step_penalty = self.initial_step_penalty
         self.episode_step_count = 0
-        return obs
+        return obs,info
 
 
     def generate_env(self, width, height):

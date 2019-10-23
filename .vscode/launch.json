@@ -32,6 +32,14 @@
             "console": "integratedTerminal"
         },
         {
+            "name": "Run benchmark",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/dist-benchmark-runner/benchmark.py",
+            "console": "integratedTerminal", 
+            "cwd": "${workspaceFolder}/dist-benchmark-runner"
+        },
+        {
             "name": "Run progress evaluator",
             "type": "python",
             "request": "launch",

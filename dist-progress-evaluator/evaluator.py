@@ -7,6 +7,8 @@
 #
 #  ##### Enable autocomplete
 
+# import shared directory
+import os, sys; sys.path.append(os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), os.pardir)) + os.sep + 'shared')
 
 import multiprocess as mp
 import numpy as np
@@ -41,12 +43,10 @@ def start_train(resume):
     # Initial receiving of curriculum-level. Maybe the server is running already and
     # progress has been made
     curriculum.update_curriculum_level()
-
+    
     network_mod = __import__("deliverables.network", fromlist=[''])
     network_class = getattr(network_mod, 'AC_Network')
-
     obs_helper = __import__("deliverables.observation", fromlist=[''])
-
     params = __import__("deliverables.input_params", fromlist=[''])
 
     #Create the local copy of the network and the tensorflow op to copy global paramters to local network
@@ -74,7 +74,6 @@ def start_train(resume):
             # Metrics for tensorboard logging
             episode_reward = 0
             episode_step_count = 0
-            info = np.zeros(5)
             
             obs, info = env.reset()
             obs = obs_helper.prep_observations(obs, info, episode_buffer, env.num_agents)
