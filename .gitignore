@@ -123,3 +123,5 @@ dist-model-server/deliverables/model/model_checkpoint_lvl_0.h5
 dist-model-server/deliverables/model/checkpoint.json
 dist-model-server/deliverables/model/model_global.h5
 dist-model-server/deliverables/weights.h5
+dist-model-server/deliverables/model/model_global.h5
+dist-model-server/deliverables/run_info.json

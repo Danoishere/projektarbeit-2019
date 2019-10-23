@@ -60,9 +60,8 @@ class Benchmark:
             print('New benchmark run with updated model.')
             print('Round 1 - simple environment with one agent')
             self.change_grid_round1()
-            self.run_episodes(1, 1)
+            self.run_episodes(1, 20)
 
-            '''
             print('Round 2 - Two agents, larger environment')
             self.change_grid_round2()
             self.run_episodes(2, 20)
@@ -78,7 +77,6 @@ class Benchmark:
             print('Round 5 - Large environment, 10 agents')
             self.change_grid_round5()
             self.run_episodes(5, 20)
-            '''
 
             self.submit_benchmark_report()
 
