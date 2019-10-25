@@ -93,7 +93,8 @@ class Worker():
                 obs, info = self.env.reset()
 
                 while episode_done == False and episode_step_count < self.env.max_steps:
-                    # print(obs[0][0][-240:])
+                    # print(np.max(obs[0][0]))
+                    # print(np.max(obs[0][1]))
                     actions, v = self.local_model.get_actions_and_values(obs)
                     next_obs, rewards, done, info = self.env.step(actions)
 

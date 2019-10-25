@@ -191,8 +191,7 @@ def normalize_field(field, norm_val=100):
     if field == np.inf or field == -np.inf:
         return 0
     else:
-        return 0.1 + field/norm_val
-    
+        return (field+1.0)/norm_val
     
 
 def node_to_obs(node_tuple):

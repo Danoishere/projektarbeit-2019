@@ -90,7 +90,7 @@ class AC_Network():
 
 
     def value_loss(self, rec_reward, est_reward):
-        return 0.5 * tf.reduce_sum(tf.square(rec_reward - tf.reshape(est_reward,[-1])))
+        return 0.2 * tf.reduce_sum(tf.square(rec_reward - tf.reshape(est_reward,[-1])))
     
 
     def policy_loss(self, advantages, actions, policy):
