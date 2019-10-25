@@ -1,12 +1,8 @@
 import constant as const
 import requests
-from random import randint
 
 class Curriculum:
     def __init__(self):
-        # Seed = -1 means create random seed
-        self.seed = -1
-        self.randomize_level_generation = False
         self.curriculum = {
             0: {
                 'level_generator' : lambda env: self.change_grid_round0(env),
@@ -43,11 +39,7 @@ class Curriculum:
             
 
     def update_env_to_curriculum_level(self, env):
-        env_level = self.current_level
-        if self.randomize_level_generation:
-            env_level = randint(0, self.current_level)
-            
-        return self.curriculum[env_level]['level_generator'](env)
+        return self.curriculum[self.current_level]['level_generator'](env)
 
 
     def update_curriculum_level(self):
@@ -72,8 +64,7 @@ class Curriculum:
                 'grid_mode': False,
                 'max_rails_between_cities': 1,
                 'max_rails_in_city' : 2
-            },
-            seed = self.seed        
+            }
         )
 
     def change_grid_round1(self, env):
@@ -88,8 +79,7 @@ class Curriculum:
                 'grid_mode': False,
                 'max_rails_between_cities': 1,
                 'max_rails_in_city' : 2
-            },
-            seed = self.seed       
+            }
         )
 
 
@@ -105,8 +95,7 @@ class Curriculum:
                 'grid_mode': False,
                 'max_rails_between_cities': 1,
                 'max_rails_in_city' : 2
-            },
-            seed = self.seed       
+            }
         )
     
     def change_grid_round3(self, env):
@@ -121,8 +110,7 @@ class Curriculum:
                 'grid_mode': False,
                 'max_rails_between_cities': 1,
                 'max_rails_in_city' : 2
-            },
-            seed = self.seed   
+            }
         )
 
     def change_grid_round4(self, env):
@@ -137,8 +125,7 @@ class Curriculum:
                 'grid_mode': False,
                 'max_rails_between_cities': 2,
                 'max_rails_in_city' : 3
-            },
-            seed = self.seed       
+            }
         )
 
     def change_grid_round5(self, env):
@@ -153,7 +140,6 @@ class Curriculum:
                 'grid_mode': False,
                 'max_rails_between_cities': 2,
                 'max_rails_in_city' : 4
-            },
-            seed = self.seed       
+            }
         )
 

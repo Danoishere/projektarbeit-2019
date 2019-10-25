@@ -1,17 +1,121 @@
 
 import numpy as np
 import deliverables.input_params as params
+from flatland.envs.observations import TreeObsForRailEnv
+from flatland.envs.predictions import ShortestPathPredictorForRailEnv
 
-graph_list = None
+class RailObsBuilder(TreeObsForRailEnv):
+    def __init__(self):
+        super().__init__(params.tree_depth, ShortestPathPredictorForRailEnv(40))
+        self.last_obs = {}
 
-def prep_observations(new_obs, new_infos, episode_buffer, num_agents):
-    tree_obs, vec_obs = reshape_obs(new_obs, new_infos)
-    tree_obs = augment_with_last_frames(num_agents, tree_obs, episode_buffer)
-    return tree_obs, vec_obs
+    def get_many(self, handles=None):
+        obs = super().get_many(handles=handles)
+        all_augmented_obs = {}
+
+        for handle in obs:
+            last_agent_obs = None
+            if handle in self.last_obs:
+                last_agent_obs = self.last_obs[handle]
+
+            next_agent_obs = obs[handle]
+            next_agent_tree_obs, vec_obs = self.reshape_agent_obs(handle, next_agent_obs, None)
+            augmented_tree_obs = self.augment_agent_tree_obs_with_frames(last_agent_obs, next_agent_tree_obs)
+            all_augmented_obs[handle] = (augmented_tree_obs, vec_obs)
+
+        return all_augmented_obs
+
+    def reshape_agent_obs(self, handle, agent_obs, info):
+        if agent_obs is None:
+            # New tree-obs is just the size of one frame
+            tree_obs = np.zeros(params.frame_size)
+            vec_obs = np.zeros(params.vec_state_size)
+            return tree_obs.astype(np.float32), vec_obs.astype(np.float32)
+
+        else:
+
+            root_node = agent_obs
+            # If we are not at a switch, there is an additional node that only contains the
+            # dist. to target. Skip that one and take its first child as root
+            num_root_children = 0
+            for turn in agent_obs.childs:
+                if agent_obs.childs[turn] != -np.inf:
+                    num_root_children += 1
+
+            if num_root_children == 1:
+                agent_obs = agent_obs.childs['F']
+                if agent_obs == -np.inf:
+                    raise ValueError('Well, looks like it\'s not always s straight')
+
+            # Fastest way from root
+            # fastest way: tree-depth + 1 (root)
+            fastest_way = get_shortest_way_from('.',agent_obs, params.tree_depth +1)
+            sorted_children = get_ordered_children(agent_obs)
+
+            # second fastest way: tree-depth
+            alt_way_1 = [None]* params.tree_depth
+            # Try to take second best solution at next intersection
+            if len(sorted_children) > 1:
+                alt_node_1 = sorted_children[1]
+                alt_way_1 = get_shortest_way_from(alt_node_1[0], alt_node_1[1], params.tree_depth)
+            
+            alt_way_2 = [None]*(params.tree_depth-1)
+            # Try to take second best solution at second next intersection
+            if fastest_way[1] != None:
+                sorted_children = get_ordered_children(fastest_way[1][1])
+                if len(sorted_children) > 1:
+                    alt_node_2 = sorted_children[1]
+                    alt_way_2 = get_shortest_way_from(alt_node_2[0],alt_node_2[1], params.tree_depth-1)
+
+            obs_layers = [fastest_way, alt_way_1, alt_way_2]
+            tree_obs = []
+            for layer in obs_layers:
+                for node in layer:
+                    node_obs = node_to_obs(node)
+                    tree_obs.append(node_obs)
+                    
+            tree_obs = np.concatenate(tree_obs)
+
+            agent = self.env.agents[handle]
+
+            # Current info about the train itself
+            vec_obs = np.zeros(params.vec_state_size)
+
+            if agent.moving:
+                vec_obs[0] = 1.0
+
+            vec_obs[1] = agent.malfunction_data['malfunction']
+            vec_obs[2] = agent.speed_data['speed']
+            vec_obs[3] = normalize_field(agent.status.value, 5)
+            vec_obs[4] = normalize_field(agent.direction, 4.0)
+
+            if agent.position is not None and agent.target is not None:
+                dist_x = np.abs(agent.target[0] - agent.position[0])
+                vec_obs[5] = normalize_field(dist_x)
+                dist_y = np.abs(agent.target[1] - agent.position[1])
+                vec_obs[6] = normalize_field(dist_y)
+
+            vec_obs[7] = normalize_field(root_node.dist_min_to_target)             
+
+            return tree_obs.astype(np.float32), vec_obs.astype(np.float32)
 
 
-def obs_for_agent(obs, handle):
-    return obs[0][handle], obs[1][handle]
+    def augment_agent_tree_obs_with_frames(self, last_obs, next_obs):
+        single_obs_len = params.frame_size
+        full_obs_len = params.tree_state_size
+
+        if last_obs == None:
+            last_obs = np.zeros(full_obs_len)
+
+        last_multi_frame_obs = last_obs[:single_obs_len]
+        multi_frame_obs = np.zeros(full_obs_len)
+
+        # Start = new obs
+        multi_frame_obs[:single_obs_len] = next_obs
+
+        # Fill remaining n-1 slots with last obs
+        multi_frame_obs[single_obs_len:single_obs_len+len(last_multi_frame_obs)] = last_multi_frame_obs
+        return multi_frame_obs.astype(np.float32)
 
 
 def buffer_to_obs_lists(episode_buffer):
@@ -129,94 +233,3 @@ def node_to_obs(node_tuple):
     ]
 
     return obs
-
-
-def reshape_obs(obs, info):
-    global graph_list
-    all_tree_obs = []
-    all_vec_obs = []
-
-    for i in range(len(obs)):
-        current_node = obs[i]
-        if current_node is None:
-            # New tree-obs is just the size of one frame
-            obs_tree = np.zeros(params.frame_size)
-            all_tree_obs.append(obs_tree)
-
-            obs_vec = np.zeros(params.vec_state_size)
-            all_vec_obs.append(obs_vec)
-        else:
-
-            # Fastest way from root
-            # fastest way: tree-depth + 1 (root)
-            fastest_way = get_shortest_way_from('.',current_node, params.tree_depth +1)
-            sorted_children = get_ordered_children(current_node)
-
-            # second fastest way: tree-depth
-            alt_way_1 = [None]* params.tree_depth
-            # Try to take second best solution at next intersection
-            if len(sorted_children) > 1:
-                alt_node_1 = sorted_children[1]
-                alt_way_1 = get_shortest_way_from(alt_node_1[0], alt_node_1[1], params.tree_depth)
-            
-            alt_way_2 = [None]*(params.tree_depth-1)
-            # Try to take second best solution at second next intersection
-            if fastest_way[1] != None:
-                sorted_children = get_ordered_children(fastest_way[1][1])
-                if len(sorted_children) > 1:
-                    alt_node_2 = sorted_children[1]
-                    alt_way_2 = get_shortest_way_from(alt_node_2[0],alt_node_2[1], params.tree_depth-1)
-
-            obs_layers = [fastest_way, alt_way_1, alt_way_2]
-            obs_tree = []
-            for layer in obs_layers:
-                for node in layer:
-                    node_obs = node_to_obs(node)
-                    obs_tree.append(node_obs)
-                    
-            obs_tree = np.concatenate(obs_tree)
-            all_tree_obs.append(obs_tree)
-
-            # Current info about the train itself
-            obs_vec = np.zeros(params.vec_state_size)
-            if info['action_required'][i]:
-                obs_vec[0] = 1.0
-            if info['malfunction'][i] == 1:
-                obs_vec[1] = 1.0
-            obs_vec[2] =info['speed'][i]
-            obs_vec[3] =info['status'][i].value
-
-            all_vec_obs.append(obs_vec)
-    try:
-        graph_list = obs_layers
-    except:
-        pass
-        
-    return np.vstack(all_tree_obs).astype(np.float32), np.vstack(all_vec_obs).astype(np.float32)
-
-
-def augment_with_last_frames(num_agents, new_obs, episode_buffers):
-        # See network for construction of obs
-        single_obs_len = params.frame_size
-        full_obs_len = params.tree_state_size
-        all_obs = []
-        for i in range(num_agents):
-            episode_buffer = episode_buffers[i]
-            # Get last observation (n frames) for this agent
-            if len(episode_buffer) == 0:
-                last_multi_frame_obs = np.zeros(single_obs_len)
-            else:
-                last_multi_frame_obs = episode_buffer[-1][0][0]
-
-            # Remove last frame from the last frame -> l = n-1
-            last_multi_frame_obs = last_multi_frame_obs[:single_obs_len]
-            multi_frame_obs = np.zeros(full_obs_len)
-
-            # Start = new obs
-            multi_frame_obs[:single_obs_len] = new_obs[i]
-
-            # Fill remaining n-1 slots with last obs
-            multi_frame_obs[single_obs_len:single_obs_len+len(last_multi_frame_obs)] = last_multi_frame_obs
-            all_obs.append(multi_frame_obs)
-        
-        return np.vstack(all_obs).astype(np.float32)

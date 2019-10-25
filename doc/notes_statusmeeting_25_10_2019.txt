@@ -1,0 +1,19 @@
+Status-Meeting
+##############
+
+
+- AI-Crowd/Flatland-Situation erklären
+- Unsere Lösung für Round 1 (evtl. inkl. Benchmark)
+- Wechsel zu verteilter Architektur (3 Maschinen aktuell)
+	-> Model Server
+	-> Trainer/Env-Runner
+	-> Progress-Evaluator
+	-> Benchmark-Runner
+- Web-App zur Analyse (aktuell nicht lauffähig wegen Update)
+- Observations-Analyse mit Action Probabilities & Obs-Tree
+- Überarbeitete Observations für FL 2.1.6
+
+Aktuell:
+- Kommunikationskonzept
+- Observations-Analyse fertig stellen
+- 

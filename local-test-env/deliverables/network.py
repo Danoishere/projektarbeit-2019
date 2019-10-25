@@ -11,6 +11,7 @@ import deliverables.input_params as params
 
 from io import StringIO
 from flatland.envs.observations import TreeObsForRailEnv
+from deliverables.observation import RailObsBuilder
 from flatland.envs.predictions import ShortestPathPredictorForRailEnv
 
 import base64
@@ -51,13 +52,13 @@ class AC_Network():
         model = Model(
             inputs=[input_tree, input_vec],
             outputs=[policy, value])
-        #model.summary()
+
         return model
 
 
     def create_network(self, input_tree, input_vec):
         conv = layers.Reshape((params.tree_state_size,1))(input_tree)
-        conv = layers.Conv1D(kernel_size =(params.num_features), strides=(params.num_features), filters = 40, activation='relu')(conv)
+        conv = layers.Conv1D(filters = 40, kernel_size =(params.num_features), strides=(params.num_features), activation='relu')(conv)
         conv = layers.Flatten()(conv)
         conv = layers.Dense(256, activation='relu')(conv)
         conv = layers.Dense(64, activation='relu')(conv)
@@ -102,7 +103,6 @@ class AC_Network():
 
 
     def train(self, target_v, advantages, actions, obs):
-
         # Value loss
         with tf.GradientTape() as tape:
             policy,value = self.model(obs)
@@ -130,51 +130,73 @@ class AC_Network():
         return v_loss, p_loss, entropy, grad_norms, var_norms
 
 
-    def get_best_actions(self, obs, num_agents):
-        predcition, _ = self.model.predict_on_batch(obs)
+    def get_best_actions(self, obs):
+        obs_list = self.obs_dict_to_lists(obs)
+        predcition, _ = self.model.predict_on_batch(obs_list)
         actions = {}
-        for i in range(num_agents):
+        for i in obs:
             a_dist = predcition[i]
             actions[i] = np.argmax(a_dist)
 
         return actions
 
 
-    def get_best_actions_and_values(self, obs, num_agents):
-        predcition, values = self.model.predict_on_batch(obs)
+    def obs_dict_to_lists(self, obs):
+        all_tree_obs = []
+        all_vec_obs = []
+        for handle in obs:
+            agent_obs = obs[handle]
+            tree_obs = agent_obs[0]
+            vec_obs = agent_obs[1]
+            all_tree_obs.append(tree_obs)
+            all_vec_obs.append(vec_obs)
+
+        return [all_tree_obs, all_vec_obs]
+
+
+    def get_best_actions_and_values(self, obs):
+        obs_list = self.obs_dict_to_lists(obs)
+        predcition, values = self.model.predict_on_batch(obs_list)
         actions = {}
-        for i in range(num_agents):
-            a_dist = predcition[i]
-            actions[i] = np.argmax(a_dist)
+        values_dict = {}
+        for handle in obs:
+            a_dist = predcition[handle]
+            actions[handle] = np.argmax(a_dist)
+            values_dict[handle] = values[handle,0]
 
-        return actions, values
+        return actions, values_dict
 
 
-    def get_actions_and_values(self, obs, num_agents):
-        predcition, values = self.model.predict_on_batch(obs)
+    def get_actions_and_values(self, obs):
+        obs_list = self.obs_dict_to_lists(obs)
+        predcition, values = self.model.predict_on_batch(obs_list)
         actions = {}
-        for i in range(num_agents):
-            a_dist = predcition[i]
+        values_dict = {}
+        for handle in obs:
+            a_dist = predcition[handle]
             a = np.random.choice([0,1,2,3,4], p = a_dist)
-            actions[i] = a
+            actions[handle] = a
+            values_dict[handle] = values[handle,0]
 
-        return actions, values
+        return actions, values_dict
 
 
-    def get_actions(self, obs, num_agents):
-        predcition, values = self.model.predict_on_batch(obs)
+    def get_actions(self, obs):
+        obs_list = self.obs_dict_to_lists(obs)
+        predcition, _ = self.model.predict_on_batch(obs_list)
         actions = {}
-        for i in range(num_agents):
-            a_dist = predcition[i]
+        for handle in obs:
+            a_dist = predcition[handle]
             a = np.random.choice([0,1,2,3,4], p = a_dist)
-            actions[i] = a
+            actions[handle] = a
 
         return actions
 
 
-    def get_values(self, obs, num_agents):
-        return self.model.predict_on_batch(obs)[1]
+    def get_values(self, obs):
+        obs_list = self.obs_dict_to_lists(obs)
+        return self.model.predict_on_batch(obs_list)[1]
 
 
     def get_observation_builder(self):
-        return TreeObsForRailEnv(params.tree_depth, ShortestPathPredictorForRailEnv(40))
+        return RailObsBuilder()

@@ -110,7 +110,7 @@ stochastic_data = {
 #observation_builder = GlobalObsForRailEnv()
 
 model = AC_Network()
-model.load_model('deliverables/model','test')
+model.load_model('deliverables/model','global')
 
 # Custom observation builder with predictor, uncomment line below if you want to try this one
 observation_builder = model.get_observation_builder()
@@ -139,29 +139,24 @@ plt.show()
 
 while True:
     episode_done = False
-    episode_buffer = [[] for i in range(nr_trains)]
-    done_last_step = {i:False for i in range(nr_trains)}
-
-    # Metrics for tensorboard logging
     episode_reward = 0
     episode_step_count = 0
-    info = np.zeros(5)
-    
+
     obs, info = env.reset()
-    obs = obs_helper.prep_observations(obs, info, episode_buffer, nr_trains)
-    plot_graph(obs_helper.graph_list)
+    #plot_graph(obs_helper.graph_list)
 
     env_renderer.set_new_rail()
 
     while episode_done == False and episode_step_count < 200:
         # Usually, this part is handled in the network, but to get
         # the probabilities, we do it ourselfs
+        obs = model.obs_dict_to_lists(obs)
         predcition, _ = model.model.predict_on_batch(obs)
         actions = {}
 
         for i in range(nr_trains):
             a_dist = predcition[i]
-            actions[i] = np.argmax(a_dist)
+            actions[i] = np.random.choice([0,1,2,3,4], p=a_dist) #np.argmax(a_dist)
 
         plt.clf()
         
@@ -169,16 +164,14 @@ while True:
         plt.bar([0,1,2,3,4],predcition[0],tick_label=['do nothing', 'forward', 'left', 'right', 'stop'])
         
         next_obs, rewards, done, info = env.step(actions)
-        next_obs = obs_helper.prep_observations(next_obs, info, episode_buffer, nr_trains)
-        plt.subplot(2,1,2)
-
+        #plt.subplot(2,1,2)
         
-        plot_graph(obs_helper.graph_list)
+        #plot_graph(obs_helper.graph_list)
 
-        plt.xlim([-1.1,1.1])
-        plt.ylim([-1.4,1.4])
+        #plt.xlim([-1.1,1.1])
+        #plt.ylim([-1.4,1.4])
 
-        plt.waitforbuttonpress()
+        #plt.waitforbuttonpress()
         plt.draw()
     
         env_renderer.render_env(show=True)
@@ -186,24 +179,6 @@ while True:
         episode_done = done['__all__']
         if episode_done == True:
             next_obs = obs
-
-        for i in range(nr_trains):
-            agent_obs = obs_helper.obs_for_agent(obs, i) 
-            agent_action = actions[i]
-            agent_reward = rewards[i]
-            agent_next_obs =  obs_helper.obs_for_agent(next_obs, i) 
-
-            if not done_last_step[i]:
-                episode_buffer[i].append([
-                    agent_obs,
-                    agent_action,
-                    agent_reward,
-                    agent_next_obs,
-                    episode_done,
-                    0])
-                
-                episode_reward += agent_reward
         
         obs = next_obs               
         episode_step_count += 1
-        done_last_step = dict(done)

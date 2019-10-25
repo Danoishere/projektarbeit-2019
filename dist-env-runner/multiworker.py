@@ -45,6 +45,9 @@ class Worker():
         curriculum_mod = __import__("deliverables.curriculum", fromlist=[''])
         curriculum_class =  getattr(curriculum_mod, 'Curriculum')
         self.curriculum = curriculum_class()
+        # Not only create levels with the current curriculum level but also
+        # the levels below
+        self.curriculum.randomize_level_generation = True
 
         self.params = __import__("deliverables.input_params", fromlist=[''])
         self.obs_helper = __import__("deliverables.observation", fromlist=[''])
@@ -53,27 +56,6 @@ class Worker():
         self.local_model = network_class(True,const.url, self.number)
         self.env = RailEnvWrapper(self.local_model.get_observation_builder())
         
-
-    def train(self, rollout):
-        all_rollouts = []
-        all_rewards = []
-        discounted_rewards = np.array([])
-
-        for i in range(self.env.num_agents):
-            rewards = [row[2] for row in rollout[i]]
-            rewards = discount(rewards, self.params.gamma)
-            all_rewards.append(rewards)
-            all_rollouts += rollout[i]
-
-        discounted_rewards = np.concatenate(all_rewards)
-        actions = np.asarray([row[1] for row in all_rollouts]) 
-        values = np.asarray([row[5] for row in all_rollouts])
-        obs = self.obs_helper.buffer_to_obs_lists(all_rollouts)
-        advantages = discounted_rewards - values
-
-        v_l,p_l,e_l,g_n, v_n = self.local_model.train(discounted_rewards, advantages, actions, obs)
-        return v_l / len(rollout),p_l / len(rollout),e_l / len(rollout), g_n,  v_n
-    
 
     def work(self):
         try:
@@ -90,8 +72,8 @@ class Worker():
                 # Check with server if there is a new curriculum level available
                 if self.episode_count % 50 == 0:
                     self.curriculum.update_curriculum_level()
-                    self.curriculum.update_env_to_curriculum_level(self.env)
-
+                
+                self.curriculum.update_env_to_curriculum_level(self.env)
                 episode_done = False
 
                 # Buffer for obs, action, next obs, reward
@@ -174,6 +156,27 @@ class Worker():
         except KeyboardInterrupt:
             raise KeyboardInterruptError()
 
+
+    def train(self, rollout):
+        all_rollouts = []
+        all_rewards = []
+        discounted_rewards = np.array([])
+
+        for i in range(self.env.num_agents):
+            rewards = [row[2] for row in rollout[i]]
+            rewards = discount(rewards, self.params.gamma)
+            all_rewards.append(rewards)
+            all_rollouts += rollout[i]
+
+        discounted_rewards = np.concatenate(all_rewards)
+        actions = np.asarray([row[1] for row in all_rollouts]) 
+        values = np.asarray([row[5] for row in all_rollouts])
+        obs = self.obs_helper.buffer_to_obs_lists(all_rollouts)
+        advantages = discounted_rewards - values
+
+        v_l,p_l,e_l,g_n, v_n = self.local_model.train(discounted_rewards, advantages, actions, obs)
+        return v_l / len(rollout),p_l / len(rollout),e_l / len(rollout), g_n,  v_n
+    
 
     def log_in_tensorboard(self, info):
         if self.episode_count % 5 == 0 and self.episode_count != 0:
