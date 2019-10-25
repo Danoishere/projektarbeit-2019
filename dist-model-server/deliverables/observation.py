@@ -9,6 +9,10 @@ class RailObsBuilder(TreeObsForRailEnv):
         super().__init__(params.tree_depth, ShortestPathPredictorForRailEnv(40))
         self.last_obs = {}
 
+    def reset(self):
+        self.last_obs = {}
+        return super().reset()
+
     def get_many(self, handles=None):
         obs = super().get_many(handles=handles)
         all_augmented_obs = {}
@@ -20,7 +24,11 @@ class RailObsBuilder(TreeObsForRailEnv):
 
             next_agent_obs = obs[handle]
             next_agent_tree_obs, vec_obs = self.reshape_agent_obs(handle, next_agent_obs, None)
+            # print(next_agent_tree_obs)
             augmented_tree_obs = self.augment_agent_tree_obs_with_frames(last_agent_obs, next_agent_tree_obs)
+            self.last_obs[handle] = augmented_tree_obs
+
+            # print(augmented_tree_obs)
             all_augmented_obs[handle] = (augmented_tree_obs, vec_obs)
 
         return all_augmented_obs
@@ -77,6 +85,7 @@ class RailObsBuilder(TreeObsForRailEnv):
             tree_obs = np.concatenate(tree_obs)
 
             agent = self.env.agents[handle]
+            # print(agent.position)
 
             # Current info about the train itself
             vec_obs = np.zeros(params.vec_state_size)
@@ -104,10 +113,10 @@ class RailObsBuilder(TreeObsForRailEnv):
         single_obs_len = params.frame_size
         full_obs_len = params.tree_state_size
 
-        if last_obs == None:
+        if last_obs is None:
             last_obs = np.zeros(full_obs_len)
 
-        last_multi_frame_obs = last_obs[:single_obs_len]
+        last_multi_frame_obs = last_obs[:-single_obs_len]
         multi_frame_obs = np.zeros(full_obs_len)
 
         # Start = new obs

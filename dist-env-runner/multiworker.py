@@ -19,6 +19,9 @@ cwd = os.getcwd()
 from rail_env_wrapper import RailEnvWrapper
 
 import constant as const
+#import sys
+
+#np.set_printoptions(threshold=sys.maxsize)
 
 class KeyboardInterruptError(Exception): pass
 
@@ -90,6 +93,7 @@ class Worker():
                 obs, info = self.env.reset()
 
                 while episode_done == False and episode_step_count < self.env.max_steps:
+                    # print(obs[0][0][-240:])
                     actions, v = self.local_model.get_actions_and_values(obs)
                     next_obs, rewards, done, info = self.env.step(actions)
 
