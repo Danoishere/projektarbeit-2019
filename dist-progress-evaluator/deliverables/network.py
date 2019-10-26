@@ -52,13 +52,13 @@ class AC_Network():
         model = Model(
             inputs=[input_tree, input_vec],
             outputs=[policy, value])
-        #model.summary()
+
         return model
 
 
     def create_network(self, input_tree, input_vec):
         conv = layers.Reshape((params.tree_state_size,1))(input_tree)
-        conv = layers.Conv1D(kernel_size =(params.num_features), strides=(params.num_features), filters = 40, activation='relu')(conv)
+        conv = layers.Conv1D(filters = 40, kernel_size =(params.num_features), strides=(params.num_features), activation='relu')(conv)
         conv = layers.Flatten()(conv)
         conv = layers.Dense(256, activation='relu')(conv)
         conv = layers.Dense(64, activation='relu')(conv)

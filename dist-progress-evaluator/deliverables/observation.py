@@ -9,6 +9,10 @@ class RailObsBuilder(TreeObsForRailEnv):
         super().__init__(params.tree_depth, ShortestPathPredictorForRailEnv(40))
         self.last_obs = {}
 
+    def reset(self):
+        self.last_obs = {}
+        return super().reset()
+
     def get_many(self, handles=None):
         obs = super().get_many(handles=handles)
         all_augmented_obs = {}
@@ -20,7 +24,11 @@ class RailObsBuilder(TreeObsForRailEnv):
 
             next_agent_obs = obs[handle]
             next_agent_tree_obs, vec_obs = self.reshape_agent_obs(handle, next_agent_obs, None)
-            augmented_tree_obs = self.augment_agent_obs(last_agent_obs, next_agent_tree_obs)
+            # print(next_agent_tree_obs)
+            augmented_tree_obs = self.augment_agent_tree_obs_with_frames(last_agent_obs, next_agent_tree_obs)
+            self.last_obs[handle] = augmented_tree_obs
+
+            # print(augmented_tree_obs)
             all_augmented_obs[handle] = (augmented_tree_obs, vec_obs)
 
         return all_augmented_obs
@@ -33,6 +41,20 @@ class RailObsBuilder(TreeObsForRailEnv):
             return tree_obs.astype(np.float32), vec_obs.astype(np.float32)
 
         else:
+
+            root_node = agent_obs
+            # If we are not at a switch, there is an additional node that only contains the
+            # dist. to target. Skip that one and take its first child as root
+            num_root_children = 0
+            for turn in agent_obs.childs:
+                if agent_obs.childs[turn] != -np.inf:
+                    num_root_children += 1
+
+            if num_root_children == 1:
+                agent_obs = agent_obs.childs['F']
+                if agent_obs == -np.inf:
+                    raise ValueError('Well, looks like it\'s not always s straight')
+
             # Fastest way from root
             # fastest way: tree-depth + 1 (root)
             fastest_way = get_shortest_way_from('.',agent_obs, params.tree_depth +1)
@@ -62,29 +84,39 @@ class RailObsBuilder(TreeObsForRailEnv):
                     
             tree_obs = np.concatenate(tree_obs)
 
+            agent = self.env.agents[handle]
+            # print(agent.position)
+
             # Current info about the train itself
             vec_obs = np.zeros(params.vec_state_size)
-            '''
-            if info['action_required'][i]:
-                obs_vec[0] = 1.0
-            if info['malfunction'][i] == 1:
-                obs_vec[1] = 1.0
-            obs_vec[2] =info['speed'][i]
-            obs_vec[3] =info['status'][i].value
 
-            all_vec_obs.append(obs_vec)
-            '''
+            if agent.moving:
+                vec_obs[0] = 1.0
+
+            vec_obs[1] = agent.malfunction_data['malfunction']
+            vec_obs[2] = agent.speed_data['speed']
+            vec_obs[3] = normalize_field(agent.status.value, 5)
+            vec_obs[4] = normalize_field(agent.direction, 4.0)
+
+            if agent.position is not None and agent.target is not None:
+                dist_x = np.abs(agent.target[0] - agent.position[0])
+                vec_obs[5] = normalize_field(dist_x)
+                dist_y = np.abs(agent.target[1] - agent.position[1])
+                vec_obs[6] = normalize_field(dist_y)
+
+            vec_obs[7] = normalize_field(root_node.dist_min_to_target)             
+
             return tree_obs.astype(np.float32), vec_obs.astype(np.float32)
 
 
-    def augment_agent_obs(self, last_obs, next_obs):
+    def augment_agent_tree_obs_with_frames(self, last_obs, next_obs):
         single_obs_len = params.frame_size
         full_obs_len = params.tree_state_size
 
-        if last_obs == None:
+        if last_obs is None:
             last_obs = np.zeros(full_obs_len)
 
-        last_multi_frame_obs = last_obs[:single_obs_len]
+        last_multi_frame_obs = last_obs[:-single_obs_len]
         multi_frame_obs = np.zeros(full_obs_len)
 
         # Start = new obs
@@ -159,8 +191,7 @@ def normalize_field(field, norm_val=100):
     if field == np.inf or field == -np.inf:
         return 0
     else:
-        return 0.1 + field/norm_val
-    
+        return (field+1.0)/norm_val
     
 
 def node_to_obs(node_tuple):

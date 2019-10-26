@@ -1,10 +1,12 @@
 import constant as const
 import requests
+from random import randint
 
 class Curriculum:
     def __init__(self):
         # Seed = -1 means create random seed
         self.seed = -1
+        self.randomize_level_generation = False
         self.curriculum = {
             0: {
                 'level_generator' : lambda env: self.change_grid_round0(env),
@@ -41,7 +43,11 @@ class Curriculum:
             
 
     def update_env_to_curriculum_level(self, env):
-        return self.curriculum[self.current_level]['level_generator'](env)
+        env_level = self.current_level
+        if self.randomize_level_generation:
+            env_level = randint(0, self.current_level)
+            
+        return self.curriculum[env_level]['level_generator'](env)
 
 
     def update_curriculum_level(self):
@@ -59,7 +65,7 @@ class Curriculum:
             width=30,
             height=30,
             num_agents=1,
-            max_steps = 150,
+            max_steps = 80,
             rail_type = 'sparse',
             rail_gen_params = {
                 'num_cities': 2,
@@ -75,7 +81,7 @@ class Curriculum:
             width=30,
             height=30,
             num_agents=2,
-            max_steps = 150,
+            max_steps = 80,
             rail_type = 'sparse',
             rail_gen_params = {
                 'num_cities': 2,
@@ -92,7 +98,7 @@ class Curriculum:
             width=40,
             height=40,
             num_agents=3,
-            max_steps = 150,
+            max_steps = 100,
             rail_type = 'sparse',
             rail_gen_params = {
                 'num_cities': 3,
