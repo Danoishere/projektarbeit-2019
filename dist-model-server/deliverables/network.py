@@ -97,8 +97,8 @@ class AC_Network():
         actions_onehot = tf.one_hot(actions, params.number_of_actions)
         responsible_outputs = tf.reduce_sum(policy * actions_onehot, [1])
         policy_log = tf.math.log(tf.clip_by_value(policy, 1e-10, 1.0))
-        entropy = -(policy * policy_log) * params.entropy_factor
-        policy_loss = -tf.reduce_sum(tf.math.log(responsible_outputs  + 1e-10)*advantages) - entropy
+        entropy = -tf.reduce_sum(policy * policy_log, axis=1)
+        policy_loss = -tf.reduce_sum(tf.math.log(responsible_outputs  + 1e-10)*advantages) - tf.reduce_sum(entropy * params.entropy_factor)
         return policy_loss, tf.reduce_mean(entropy)
 
 
