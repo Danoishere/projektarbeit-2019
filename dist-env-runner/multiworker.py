@@ -130,13 +130,13 @@ class Worker():
                     for i in range(self.env.num_agents):
                         # If agents could finish the level, 
                         # set final reward for all agents
-                        episode_buffer[i][-1][2] += 40
-                        episode_reward += 40
+                        episode_buffer[i][-1][2] += 5
+                        episode_reward += 5
                 else:
                     for i in range(self.env.num_agents):
                         if not done[i]:
-                            episode_buffer[i][-1][2] -= 40
-                            episode_reward -= 40
+                            episode_buffer[i][-1][2] -= 5
+                            episode_reward -= 5
 
                 self.episode_rewards.append(episode_reward)
                 self.episode_lengths.append(episode_step_count)

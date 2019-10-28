@@ -6,7 +6,7 @@ import random
 
 
 class RailEnvWrapper():
-    initial_step_penalty = -2
+    initial_step_penalty = -0.1
     
     def __init__(self, observation_builder, width=12, height=12, num_agents=2):
         self.num_agents = num_agents
@@ -48,7 +48,7 @@ class RailEnvWrapper():
         )
 
     def step(self, actions):
-        self.env.step_penalty = -2*1.02**self.episode_step_count
+        self.env.step_penalty = -0.1
         next_obs, rewards, done, info = self.env.step(actions)
         self.done_last_step = dict(done)
         self.episode_step_count += 1
