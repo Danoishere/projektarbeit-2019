@@ -69,12 +69,14 @@ class Worker():
             self.episode_success = []
             self.episode_mean_values = []
             self.local_model.update_from_global_model()
+            self.local_model.update_entropy_factor()
             self.episode_count = 0
 
             while not bool(self.should_stop.value):
                 # Check with server if there is a new curriculum level available
                 if self.episode_count % 50 == 0:
                     self.curriculum.update_curriculum_level()
+                    self.local_model.update_entropy_factor()
                 
                 self.curriculum.update_env_to_curriculum_level(self.env)
                 episode_done = False
@@ -181,7 +183,6 @@ class Worker():
 
         v_l,p_l,e_l,g_n, v_n = self.local_model.train(discounted_rewards, advantages, actions, obs)
         return v_l / len(rollout),p_l / len(rollout),e_l / len(rollout), g_n,  v_n
-    
 
     def log_in_tensorboard(self, info):
         if self.episode_count % 5 == 0 and self.episode_count != 0:

@@ -28,6 +28,7 @@ class AC_Network():
         self.global_model_url = global_model_url
         self.model = self.build_network()
         self.network_hash = self.get_network_hash()
+        self.entropy_factor = 0.1
         
 
     def get_network_hash(self):
@@ -79,6 +80,12 @@ class AC_Network():
         weights = msgpack.loads(weights_str)
         self.model.set_weights(weights)
 
+
+    def update_entropy_factor(self):
+        ''' Updates the local copy of the global model 
+        '''
+        resp = requests.get(url=self.global_model_url + '/entropy_factor').json()
+        self.entropy_factor = resp['entropy_factor']
 
     def save_model(self, model_path, suffix):
         self.model.save(model_path+'/model_' + suffix + '.h5')
