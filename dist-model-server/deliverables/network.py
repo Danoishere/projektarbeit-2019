@@ -85,7 +85,10 @@ class AC_Network():
         ''' Updates the local copy of the global model 
         '''
         resp = requests.get(url=self.global_model_url + '/entropy_factor').json()
-        self.entropy_factor = resp['entropy_factor']
+        new_entropy_factor = resp['entropy_factor']
+        if new_entropy_factor != self.entropy_factor:
+            print('New entropy factor aquired:', new_entropy_factor)
+            self.entropy_factor = new_entropy_factor
 
     def save_model(self, model_path, suffix):
         self.model.save(model_path+'/model_' + suffix + '.h5')
@@ -107,7 +110,7 @@ class AC_Network():
         entropy = -tf.reduce_sum(policy * policy_log, axis=1)
         policy_loss = tf.math.log(responsible_outputs  + 1e-10)*advantages
         policy_loss *= 0.5
-        policy_loss = -tf.reduce_sum(policy_loss + entropy * params.entropy_factor)
+        policy_loss = -tf.reduce_sum(policy_loss + entropy * self.entropy_factor)
         return policy_loss, tf.reduce_mean(entropy)
 
 
