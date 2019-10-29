@@ -69,9 +69,9 @@ def get_curriculum_level():
 def get_entropy_factor():
     entropy_factor = 0.0
     if state.episode_count < 5000:
-        entropy_factor = 0.02
+        entropy_factor = 0.03
     elif state.episode_count < 10000:
-        entropy_factor = 0.015
+        entropy_factor = 0.02
     elif state.episode_count < 20000:
         entropy_factor = 0.01
     elif state.episode_count < 30000:
