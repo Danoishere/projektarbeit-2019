@@ -83,7 +83,7 @@ def start_train(resume):
             #env_renderer.set_new_rail()
 
             while episode_done == False and episode_step_count < env.max_steps:
-                actions = model.get_best_actions(obs)
+                actions = model.get_actions(obs)
                 next_obs, rewards, done, _ = env.step(actions)
                 #env_renderer.render_env(show=True)
 
