@@ -29,6 +29,9 @@ class AC_Network():
         self.model = self.build_network()
         self.network_hash = self.get_network_hash()
         self.entropy_factor = 0.1
+
+        self.gradient_update_interval = 10
+        self.last_gradient_update = 0
         
 
     def get_network_hash(self):
@@ -123,22 +126,34 @@ class AC_Network():
             tot_loss = p_loss + v_loss
 
         local_vars = self.model.trainable_variables
-        gradients = tape.gradient(tot_loss, local_vars)
+        gradients_new = tape.gradient(tot_loss, local_vars)
         var_norms = tf.linalg.global_norm(local_vars)
-        gradients, grad_norms = tf.clip_by_global_norm(gradients, params.gradient_norm)
-        gradients_str = dill.dumps(gradients)
-        gradients_str = zlib.compress(gradients_str)
+        gradients_new, grad_norms = tf.clip_by_global_norm(gradients_new, params.gradient_norm)
 
-        # Send gradient update and receive new global weights
-        resp = requests.post(
-            url=self.global_model_url + '/send_gradient', 
-            data=gradients_str)
+        try:
+            self.gradients += gradients_new
+        except:
+            self.gradients = gradients_new
 
-        weights_str = resp.content
-        weights_str = zlib.decompress(weights_str)
-        weights = msgpack.loads(weights_str)
+        if self.last_gradient_update >= self.gradient_update_interval:
+            self.last_gradient_update = 0
+            gradients_str = dill.dumps(self.gradients)
+            gradients_str = zlib.compress(gradients_str)
 
-        self.model.set_weights(weights)
+            # Send gradient update and receive new global weights
+            resp = requests.post(
+                url=self.global_model_url + '/send_gradient', 
+                data=gradients_str)
+
+            weights_str = resp.content
+            weights_str = zlib.decompress(weights_str)
+            weights = msgpack.loads(weights_str)
+
+            self.model.set_weights(weights)
+            self.gradients = None
+        else:
+            self.last_gradient_update += 1
+
         return v_loss, p_loss, entropy, grad_norms, var_norms
 
 

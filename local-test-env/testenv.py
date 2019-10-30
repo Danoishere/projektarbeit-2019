@@ -15,6 +15,7 @@ import deliverables.observation as obs_helper
 import matplotlib.pyplot as plt
 import networkx as nx
 from matplotlib.widgets import Button
+from flatland.envs.rail_env import RailEnvActions
 
 def plot_graph(obs):
     G=nx.DiGraph()
@@ -65,6 +66,43 @@ def draw_branch(start_node, node_id, G, y_pos, source_node):
     return node_id
         
 
+def punish_impossible_actions(env, obs, actions, rewards):
+    for handle in obs:
+
+        agent = env.agents[handle]
+        if agent.position is None:
+            if actions[handle] != RailEnvActions.MOVE_FORWARD:
+                rewards[handle] -= 0.5
+            return
+
+        possible_transitions = env.rail.get_transitions(*agent.position, agent.direction)
+        num_transitions = np.count_nonzero(possible_transitions)
+
+        # Start from the current orientation, and see which transitions are available;
+        # organize them as [left, forward, right], relative to the current orientation
+        # If only one transition is possible, the forward branch is aligned with it.
+        if num_transitions == 1:
+            possible_actions = [0, 1, 0]
+        else:
+            min_distances = []
+            possible_actions = []
+            for direction in [(agent.direction + i) % 4 for i in range(-1, 2)]:
+                if possible_transitions[direction]:
+                    possible_actions.append(1)
+                else:
+                    possible_actions.append(0)
+
+        # Try left but its prohibited
+        if actions[handle] == RailEnvActions.MOVE_LEFT and possible_actions[0] == 0:
+            rewards[handle] -= 0.2
+            print('left pen')
+        if actions[handle] == RailEnvActions.MOVE_FORWARD and possible_actions[1] == 0:
+            rewards[handle] -= 0.2
+            print('forward pen')
+        if actions[handle] == RailEnvActions.MOVE_RIGHT and possible_actions[2] == 0:
+            rewards[handle] -= 0.2
+            print('right pen')
+
 
 width = 30  # With of map
 height = 30  # Height of map
@@ -110,7 +148,7 @@ stochastic_data = {
 #observation_builder = GlobalObsForRailEnv()
 
 model = AC_Network()
-model.load_model('deliverables/model','global')
+model.load_model('deliverables/model','checkpoint_lvl_0')
 
 # Custom observation builder with predictor, uncomment line below if you want to try this one
 observation_builder = model.get_observation_builder()
@@ -150,8 +188,8 @@ while True:
     while episode_done == False and episode_step_count < 200:
         # Usually, this part is handled in the network, but to get
         # the probabilities, we do it ourselfs
-        obs = model.obs_dict_to_lists(obs)
-        predcition, _ = model.model.predict_on_batch(obs)
+        obs_ = model.obs_dict_to_lists(obs)
+        predcition, _ = model.model.predict_on_batch(obs_)
         actions = {}
 
         for i in range(nr_trains):
@@ -161,9 +199,10 @@ while True:
         plt.clf()
         
         plt.subplot(2,1,1)
-        plt.bar([0,1,2,3,4],predcition[0],tick_label=['do nothing', 'forward', 'left', 'right', 'stop'])
+        plt.bar([0,1,2,3,4],predcition[0],tick_label=['do nothing', 'left', 'forward', 'right', 'stop'])
         
         next_obs, rewards, done, info = env.step(actions)
+        punish_impossible_actions(env, obs, actions, rewards)
         #plt.subplot(2,1,2)
         
         #plot_graph(obs_helper.graph_list)
