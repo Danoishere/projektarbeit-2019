@@ -124,7 +124,10 @@ class Worker():
                     if self.curriculum.current_level != old_curriculum_level:
                         self.curriculum.update_env_to_curriculum_level(self.env)
                 
-                
+                # Every 500 episodes, regenerate the environment
+                if self.episode_count % 500 == 0:
+                    self.curriculum.update_env_to_curriculum_level(self.env)
+
                 episode_done = False
 
                 # Buffer for obs, action, next obs, reward
