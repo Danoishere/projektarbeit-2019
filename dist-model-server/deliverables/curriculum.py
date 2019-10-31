@@ -1,6 +1,6 @@
 import constant as const
 import requests
-from random import randint
+from random import randint, random
 
 class Curriculum:
     def __init__(self):
@@ -30,7 +30,7 @@ class Curriculum:
                 },
             5: {
                 'level_generator' : lambda env: self.change_grid_round5(env),
-                'switch_on_successrate': 0.95
+                'switch_on_successrate': 1.0
                 }
         }
 
@@ -45,8 +45,13 @@ class Curriculum:
     def update_env_to_curriculum_level(self, env):
         env_level = self.current_level
         if self.randomize_level_generation:
-            env_level = randint(0, self.current_level)
-            
+            # Take the new level with a higher probability
+            if random() > 0.4:
+                env_level = self.current_level
+            else:  
+                env_level = randint(0, self.current_level)
+        
+        self.active_level = env_level
         return self.curriculum[env_level]['level_generator'](env)
 
 
