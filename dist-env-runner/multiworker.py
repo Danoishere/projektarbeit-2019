@@ -110,6 +110,7 @@ class Worker():
             self.local_model.update_from_global_model()
             self.local_model.update_entropy_factor()
             self.episode_count = 0
+            self.curriculum.update_env_to_curriculum_level(self.env)
 
             while not bool(self.should_stop.value):
                 # Check with server if there is a new curriculum level available

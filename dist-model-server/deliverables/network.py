@@ -130,29 +130,29 @@ class AC_Network():
         var_norms = tf.linalg.global_norm(local_vars)
         gradients_new, grad_norms = tf.clip_by_global_norm(gradients_new, params.gradient_norm)
 
-        #try:
-        #    self.gradients += gradients_new
-        #except:
-        #    self.gradients = gradients_new
+        try:
+            self.gradients += gradients_new
+        except:
+            self.gradients = gradients_new
 
-        #if self.last_gradient_update >= self.gradient_update_interval:
-        #    self.last_gradient_update = 0
-        gradients_str = dill.dumps(gradients_new)
-        gradients_str = zlib.compress(gradients_str)
+        if self.last_gradient_update >= self.gradient_update_interval:
+            self.last_gradient_update = 0
+            gradients_str = dill.dumps(gradients_new)
+            gradients_str = zlib.compress(gradients_str)
 
-        # Send gradient update and receive new global weights
-        resp = requests.post(
-            url=self.global_model_url + '/send_gradient', 
-            data=gradients_str)
+            # Send gradient update and receive new global weights
+            resp = requests.post(
+                url=self.global_model_url + '/send_gradient', 
+                data=gradients_str)
 
-        weights_str = resp.content
-        weights_str = zlib.decompress(weights_str)
-        weights = msgpack.loads(weights_str)
+            weights_str = resp.content
+            weights_str = zlib.decompress(weights_str)
+            weights = msgpack.loads(weights_str)
 
-        self.model.set_weights(weights)
-        #self.gradients = None
-        #else:
-        #    self.last_gradient_update += 1
+            self.model.set_weights(weights)
+            self.gradients = None
+        else:
+            self.last_gradient_update += 1
 
         return v_loss, p_loss, entropy, grad_norms, var_norms
 
