@@ -29,6 +29,9 @@ class AC_Network():
         self.model = self.build_network()
         self.network_hash = self.get_network_hash()
         self.entropy_factor = 0.1
+
+        self.gradient_update_interval = 10
+        self.last_gradient_update = 0
         
 
     def get_network_hash(self):
@@ -123,10 +126,11 @@ class AC_Network():
             tot_loss = p_loss + v_loss
 
         local_vars = self.model.trainable_variables
-        gradients = tape.gradient(tot_loss, local_vars)
+        gradients_new = tape.gradient(tot_loss, local_vars)
         var_norms = tf.linalg.global_norm(local_vars)
-        gradients, grad_norms = tf.clip_by_global_norm(gradients, params.gradient_norm)
-        gradients_str = dill.dumps(gradients)
+        _, grad_norms = tf.clip_by_global_norm(gradients_new, params.gradient_norm)
+
+        gradients_str = dill.dumps(gradients_new)
         gradients_str = zlib.compress(gradients_str)
 
         # Send gradient update and receive new global weights
@@ -137,8 +141,8 @@ class AC_Network():
         weights_str = resp.content
         weights_str = zlib.decompress(weights_str)
         weights = msgpack.loads(weights_str)
-
         self.model.set_weights(weights)
+
         return v_loss, p_loss, entropy, grad_norms, var_norms
 
 

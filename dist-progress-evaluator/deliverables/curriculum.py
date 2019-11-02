@@ -1,6 +1,5 @@
 import constant as const
 import requests
-import numpy as np
 from random import randint, random
 
 class Curriculum:
@@ -8,7 +7,6 @@ class Curriculum:
         # Seed = -1 means create random seed
         self.seed = -1
         self.randomize_level_generation = False
-        self.active_level = 0
         self.curriculum = {
             0: {
                 'level_generator' : lambda env: self.change_grid_round0(env),
@@ -32,7 +30,7 @@ class Curriculum:
                 },
             5: {
                 'level_generator' : lambda env: self.change_grid_round5(env),
-                'switch_on_successrate': 0.95
+                'switch_on_successrate': 1.0
                 }
         }
 
@@ -48,7 +46,8 @@ class Curriculum:
         env_level = self.current_level
         if self.randomize_level_generation:
             # Take the new level with a higher probability
-            if random() > 0.4:
+            # HINT: Temporarily disabled
+            if random() > 0.0:
                 env_level = self.current_level
             else:  
                 env_level = randint(0, self.current_level)
@@ -88,7 +87,7 @@ class Curriculum:
             width=30,
             height=30,
             num_agents=2,
-            max_steps = 150,
+            max_steps = 200,
             rail_type = 'sparse',
             rail_gen_params = {
                 'num_cities': 2,
@@ -105,7 +104,7 @@ class Curriculum:
             width=40,
             height=40,
             num_agents=3,
-            max_steps = 150,
+            max_steps = 300,
             rail_type = 'sparse',
             rail_gen_params = {
                 'num_cities': 3,
@@ -121,7 +120,7 @@ class Curriculum:
             width=50,
             height=50,
             num_agents=4,
-            max_steps = 200,
+            max_steps = 450,
             rail_type = 'sparse',
             rail_gen_params = {
                 'num_cities': 4,
@@ -137,7 +136,7 @@ class Curriculum:
             width=70,
             height=70,
             num_agents=10,
-            max_steps = 200,
+            max_steps = 450,
             rail_type = 'sparse',
             rail_gen_params = {
                 'num_cities': 10,
@@ -153,7 +152,7 @@ class Curriculum:
             width=100,
             height=100,
             num_agents=20,
-            max_steps = 200,
+            max_steps = 500,
             rail_type = 'sparse',
             rail_gen_params = {
                 'num_cities': 15,

@@ -6,7 +6,7 @@ import random
 
 
 class RailEnvWrapper():
-    initial_step_penalty = -0.1
+    initial_step_penalty = -0.05
     
     def __init__(self, observation_builder, width=12, height=12, num_agents=2):
         self.num_agents = num_agents
