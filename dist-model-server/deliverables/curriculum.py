@@ -86,7 +86,7 @@ class Curriculum:
             width=30,
             height=30,
             num_agents=2,
-            max_steps = 150,
+            max_steps = 200,
             rail_type = 'sparse',
             rail_gen_params = {
                 'num_cities': 2,
@@ -103,7 +103,7 @@ class Curriculum:
             width=40,
             height=40,
             num_agents=3,
-            max_steps = 150,
+            max_steps = 300,
             rail_type = 'sparse',
             rail_gen_params = {
                 'num_cities': 3,
@@ -119,7 +119,7 @@ class Curriculum:
             width=50,
             height=50,
             num_agents=4,
-            max_steps = 200,
+            max_steps = 450,
             rail_type = 'sparse',
             rail_gen_params = {
                 'num_cities': 4,
@@ -135,7 +135,7 @@ class Curriculum:
             width=70,
             height=70,
             num_agents=10,
-            max_steps = 200,
+            max_steps = 450,
             rail_type = 'sparse',
             rail_gen_params = {
                 'num_cities': 10,
@@ -151,7 +151,7 @@ class Curriculum:
             width=100,
             height=100,
             num_agents=20,
-            max_steps = 200,
+            max_steps = 500,
             rail_type = 'sparse',
             rail_gen_params = {
                 'num_cities': 15,
