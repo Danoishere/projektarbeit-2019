@@ -124,7 +124,7 @@ class Worker():
                     # Important, because otherwise the player doens't see all levels
                     if self.curriculum.current_level != old_curriculum_level:
                         self.curriculum.update_env_to_curriculum_level(self.env)
-                        # self.episode_count = 0
+                        self.episode_count = 0
                 
 
                 episode_done = False
