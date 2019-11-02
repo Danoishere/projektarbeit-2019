@@ -46,7 +46,7 @@ class Curriculum:
         env_level = self.current_level
         if self.randomize_level_generation:
             # Take the new level with a higher probability
-            if random() > 0.4:
+            if random() >= 0.0:
                 env_level = self.current_level
             else:  
                 env_level = randint(0, self.current_level)
