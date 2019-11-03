@@ -6,7 +6,7 @@ from flatland.envs.predictions import ShortestPathPredictorForRailEnv
 
 class RailObsBuilder(TreeObsForRailEnv):
     def __init__(self):
-        super().__init__(params.tree_depth, ShortestPathPredictorForRailEnv(40))
+        super().__init__(params.tree_depth, ShortestPathPredictorForRailEnv())
         self.last_obs = {}
         self.actor_rec_state = {}
         self.critic_rec_state = {}
