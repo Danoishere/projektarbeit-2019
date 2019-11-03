@@ -151,7 +151,7 @@ class AC_Network():
         local_vars = self.model.trainable_variables
         gradients_new = tape.gradient(tot_loss, local_vars)
         var_norms = tf.linalg.global_norm(local_vars)
-        _, grad_norms = tf.clip_by_global_norm(gradients_new, params.gradient_norm)
+        gradients_new, grad_norms = tf.clip_by_global_norm(gradients_new, params.gradient_norm)
 
         gradients_str = dill.dumps(gradients_new)
         gradients_str = zlib.compress(gradients_str)

@@ -306,7 +306,7 @@ class CustomTreeObsForRailEnv(ObservationBuilder):
                 if self.location_has_agent_communication[position] is not None and not found_closest_communication:
                     found_closest_communication = True,
                     communication = self.location_has_agent_communication[position]
-                                    
+
                 if tot_dist < other_agent_encountered:
                     other_agent_encountered = tot_dist
 
@@ -552,7 +552,7 @@ class CustomTreeObsForRailEnv(ObservationBuilder):
 
 class RailObsBuilder(CustomTreeObsForRailEnv):
     def __init__(self):
-        super().__init__(params.tree_depth, ShortestPathPredictorForRailEnv(20))
+        super().__init__(params.tree_depth, ShortestPathPredictorForRailEnv())
         self.last_obs = {}
         self.actor_rec_state = {}
         self.critic_rec_state = {}
@@ -592,13 +592,13 @@ class RailObsBuilder(CustomTreeObsForRailEnv):
             vec_obs = np.zeros(params.vec_state_size)
             comm_obs = np.zeros(params.comm_size)
 
-            if handle in self.actor_rec_state and handle in self.critic_rec_state:   
+            if handle in self.actor_rec_state and handle in self.critic_rec_state:
                 agent_actor_rec_state = self.actor_rec_state[handle]
                 agent_critic_rec_state = self.critic_rec_state[handle]
                 agent_comm_rec_state = self.comm_rec_state[handle]
             else:
                 agent_actor_rec_state = np.zeros((2,params.recurrent_size)).astype(np.float32)
-                agent_critic_rec_state = np.zeros((2,params.recurrent_size)).astype(np.float32) 
+                agent_critic_rec_state = np.zeros((2,params.recurrent_size)).astype(np.float32)
                 agent_comm_rec_state = np.zeros((2,params.recurrent_comm_size)).astype(np.float32)
 
             return tree_obs.astype(np.float32), vec_obs.astype(np.float32), comm_obs.astype(np.float32),  agent_actor_rec_state, agent_critic_rec_state, agent_comm_rec_state
@@ -628,7 +628,7 @@ class RailObsBuilder(CustomTreeObsForRailEnv):
             if len(sorted_children) > 1:
                 alt_node_1 = sorted_children[1]
                 alt_way_1 = get_shortest_way_from(alt_node_1[0], alt_node_1[1], params.tree_depth)
-            
+
             alt_way_2 = [None]*(params.tree_depth-1)
             # Try to take second best solution at second next intersection
             if fastest_way[1] != None:
@@ -646,7 +646,7 @@ class RailObsBuilder(CustomTreeObsForRailEnv):
                     tree_obs.append(node_obs)
                     agent_comm_obs = node_to_comm(node)
                     comm_obs.append(agent_comm_obs)
-                    
+
             tree_obs = np.concatenate(tree_obs)
             comm_obs = np.concatenate(comm_obs)
 
@@ -670,15 +670,15 @@ class RailObsBuilder(CustomTreeObsForRailEnv):
                 dist_y = np.abs(agent.target[1] - agent.position[1])
                 vec_obs[6] = normalize_field(dist_y)
 
-            vec_obs[7] = normalize_field(root_node.dist_min_to_target)   
+            vec_obs[7] = normalize_field(root_node.dist_min_to_target)
 
-            if handle in self.actor_rec_state and handle in self.critic_rec_state:   
+            if handle in self.actor_rec_state and handle in self.critic_rec_state:
                 agent_actor_rec_state = self.actor_rec_state[handle]
                 agent_critic_rec_state = self.critic_rec_state[handle]
                 agent_comm_rec_state = self.comm_rec_state[handle]
             else:
                 agent_actor_rec_state = np.zeros((2,params.recurrent_size)).astype(np.float32)
-                agent_critic_rec_state = np.zeros((2,params.recurrent_size)).astype(np.float32) 
+                agent_critic_rec_state = np.zeros((2,params.recurrent_size)).astype(np.float32)
                 agent_comm_rec_state = np.zeros((2,params.recurrent_comm_size)).astype(np.float32)
 
             return tree_obs.astype(np.float32), vec_obs.astype(np.float32), comm_obs.astype(np.float32),  agent_actor_rec_state, agent_critic_rec_state, agent_comm_rec_state
@@ -719,7 +719,7 @@ def buffer_to_obs_lists(episode_buffer):
 # |-|-|-|-|-|-|  <- 1.) Direct route to target
 #   |-|-|-|-|-|  <- 2.) Route to target with different decision at next intersection
 #     |-|-|-|-|  <- 3.) Route to target with different decision at second next intersection
-# 
+#
 # Put all in one vector
 
 
@@ -763,7 +763,7 @@ def get_ordered_children(node):
         child = node.childs[k]
         if child != -np.inf:
             children.append((k,child))
-    
+
     children = sorted(children, key=lambda t: np.min([t[1].dist_min_to_target, t[1].dist_own_target_encountered]))
     return children
 
@@ -778,7 +778,7 @@ def one_hot(field):
         return 0
     else:
         return 1.0
-    
+
 def node_to_comm(node_tuple):
     if node_tuple is None:
         return [0]*params.number_of_comm
@@ -843,13 +843,3 @@ def node_to_obs(node_tuple):
     ]
 
     return obs
-
-
-
-
-
-
-
-
-
-
