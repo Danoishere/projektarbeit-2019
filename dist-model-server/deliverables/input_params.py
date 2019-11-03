@@ -13,8 +13,10 @@ path_root = tree_depth + 1
 path_sec = tree_depth
 path_thrd = tree_depth - 1
 
-num_features = 16
-num_frames = 3
+recurrent_size = 64
+
+num_features = 20
+num_frames = 1
 
 # Root-node + n branches on m layers * l features + n features for later usage
 frame_size = (path_root + path_sec + path_thrd)*num_features

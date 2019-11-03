@@ -46,21 +46,23 @@ class AC_Network():
     def build_network(self):
         input_tree = layers.Input(shape=params.tree_state_size,dtype=tf.float32)
         input_vec = layers.Input(shape=params.vec_state_size,dtype=tf.float32)
+        input_actor_rec = layers.Input(shape=(2,params.recurrent_size),dtype=tf.float32)
+        input_critic_rec = layers.Input(shape=(2,params.recurrent_size),dtype=tf.float32)
 
-        actor_out = self.create_network(input_tree, input_vec)
-        critic_out = self.create_network(input_tree, input_vec)
+        actor_out, actor_out_rec = self.create_network(input_tree, input_vec, input_actor_rec)
+        critic_out, critic_out_rec = self.create_network(input_tree, input_vec, input_critic_rec)
 
         policy = layers.Dense(params.number_of_actions, activation='softmax')(actor_out)
         value = layers.Dense(1)(critic_out)
 
         model = Model(
-            inputs=[input_tree, input_vec],
-            outputs=[policy, value])
+            inputs=[input_tree, input_vec, input_actor_rec, input_critic_rec],
+            outputs=[policy, value, actor_out_rec, critic_out_rec])
 
         return model
 
 
-    def create_network(self, input_tree, input_vec):
+    def create_network(self, input_tree, input_vec, input_rec):
         conv = layers.Reshape((params.tree_state_size,1))(input_tree)
         conv = layers.Conv1D(filters = 40, kernel_size =(params.num_features), strides=(params.num_features), activation='relu')(conv)
         conv = layers.Flatten()(conv)
@@ -69,9 +71,12 @@ class AC_Network():
 
         hidden = layers.concatenate([conv, input_vec])
         hidden = layers.Dense(64, activation='relu')(hidden)
+        hidden = layers.Reshape((1,64))(hidden)
+        hidden, state_h, state_c = layers.LSTM(64, return_state=True, return_sequences=False)(hidden, initial_state=[input_rec[:,0], input_rec[:,1]])
+        hidden = layers.Dense(64, activation='relu')(hidden)
         hidden = layers.Dense(8, activation='relu')(hidden)
 
-        return hidden
+        return hidden, [state_h, state_c]
 
 
     def update_from_global_model(self):
@@ -120,7 +125,7 @@ class AC_Network():
     def train(self, target_v, advantages, actions, obs):
         # Value loss
         with tf.GradientTape() as tape:
-            policy,value = self.model(obs)
+            policy,value,_,_ = self.model(obs)
             v_loss = self.value_loss(target_v, value)
             p_loss, entropy = self.policy_loss(advantages, actions, policy)
             tot_loss = p_loss + v_loss
@@ -160,14 +165,22 @@ class AC_Network():
     def obs_dict_to_lists(self, obs):
         all_tree_obs = []
         all_vec_obs = []
+        all_rec_actor_obs = []
+        all_rec_critic_obs = []
+
         for handle in obs:
             agent_obs = obs[handle]
             tree_obs = agent_obs[0]
             vec_obs = agent_obs[1]
+            rec_actor_obs = agent_obs[2]
+            rec_critic_obs = agent_obs[3]
+
             all_tree_obs.append(tree_obs)
             all_vec_obs.append(vec_obs)
+            all_rec_actor_obs.append(rec_actor_obs)
+            all_rec_critic_obs.append(rec_critic_obs)
 
-        return [all_tree_obs, all_vec_obs]
+        return [all_tree_obs, all_vec_obs, all_rec_actor_obs, all_rec_critic_obs]
 
 
     def get_best_actions_and_values(self, obs):
@@ -183,18 +196,23 @@ class AC_Network():
         return actions, values_dict
 
 
-    def get_actions_and_values(self, obs):
+    def get_actions_and_values(self, obs, obs_builder):
         obs_list = self.obs_dict_to_lists(obs)
-        predcition, values = self.model.predict_on_batch(obs_list)
+        predcition, values, a_rec_h, a_rec_c, c_rec_h, c_rec_c = self.model.predict_on_batch(obs_list)
         actions = {}
         values_dict = {}
+        rec_act_dict = {}
+        rec_crit_dict = {}
+
         for handle in obs:
             a_dist = predcition[handle]
             a = np.random.choice([0,1,2,3,4], p = a_dist)
             actions[handle] = a
             values_dict[handle] = values[handle,0]
+            obs_builder.actor_rec_state[handle] = [a_rec_h[handle], a_rec_c[handle]]
+            obs_builder.critic_rec_state[handle]= [c_rec_h[handle], c_rec_c[handle]]
 
-        return actions, values_dict
+        return actions, values_dict, rec_act_dict, rec_crit_dict
 
 
     def get_actions(self, obs):

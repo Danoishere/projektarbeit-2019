@@ -8,9 +8,13 @@ class RailObsBuilder(TreeObsForRailEnv):
     def __init__(self):
         super().__init__(params.tree_depth, ShortestPathPredictorForRailEnv(40))
         self.last_obs = {}
+        self.actor_rec_state = {}
+        self.critic_rec_state = {}
 
     def reset(self):
         self.last_obs = {}
+        self.actor_rec_state = {}
+        self.critic_rec_state = {}
         return super().reset()
 
     def get_many(self, handles=None):
@@ -23,13 +27,13 @@ class RailObsBuilder(TreeObsForRailEnv):
                 last_agent_obs = self.last_obs[handle]
 
             next_agent_obs = obs[handle]
-            next_agent_tree_obs, vec_obs = self.reshape_agent_obs(handle, next_agent_obs, None)
+            next_agent_tree_obs, vec_obs, rec_actor, rec_critic = self.reshape_agent_obs(handle, next_agent_obs, None)
             # print(next_agent_tree_obs)
             augmented_tree_obs = self.augment_agent_tree_obs_with_frames(last_agent_obs, next_agent_tree_obs)
             self.last_obs[handle] = augmented_tree_obs
 
             # print(augmented_tree_obs)
-            all_augmented_obs[handle] = (augmented_tree_obs, vec_obs)
+            all_augmented_obs[handle] = (augmented_tree_obs, vec_obs, rec_actor, rec_critic)
 
         return all_augmented_obs
 
@@ -38,8 +42,15 @@ class RailObsBuilder(TreeObsForRailEnv):
             # New tree-obs is just the size of one frame
             tree_obs = np.zeros(params.frame_size)
             vec_obs = np.zeros(params.vec_state_size)
-            return tree_obs.astype(np.float32), vec_obs.astype(np.float32)
 
+            if handle in self.actor_rec_state and handle in self.critic_rec_state:   
+                agent_actor_rec_state = self.actor_rec_state[handle]
+                agent_critic_rec_state = self.critic_rec_state[handle]
+            else:
+                agent_actor_rec_state = np.zeros((2,params.recurrent_size)).astype(np.float32)
+                agent_critic_rec_state = np.zeros((2,params.recurrent_size)).astype(np.float32) 
+
+            return tree_obs.astype(np.float32), vec_obs.astype(np.float32), agent_actor_rec_state, agent_critic_rec_state
         else:
 
             root_node = agent_obs
@@ -104,9 +115,16 @@ class RailObsBuilder(TreeObsForRailEnv):
                 dist_y = np.abs(agent.target[1] - agent.position[1])
                 vec_obs[6] = normalize_field(dist_y)
 
-            vec_obs[7] = normalize_field(root_node.dist_min_to_target)             
+            vec_obs[7] = normalize_field(root_node.dist_min_to_target)   
 
-            return tree_obs.astype(np.float32), vec_obs.astype(np.float32)
+            if handle in self.actor_rec_state and handle in self.critic_rec_state:   
+                agent_actor_rec_state = self.actor_rec_state[handle]
+                agent_critic_rec_state = self.critic_rec_state[handle]
+            else:
+                agent_actor_rec_state = np.zeros((2,params.recurrent_size)).astype(np.float32)
+                agent_critic_rec_state = np.zeros((2,params.recurrent_size)).astype(np.float32) 
+
+            return tree_obs.astype(np.float32), vec_obs.astype(np.float32), agent_actor_rec_state,agent_critic_rec_state
 
 
     def augment_agent_tree_obs_with_frames(self, last_obs, next_obs):
@@ -130,7 +148,9 @@ class RailObsBuilder(TreeObsForRailEnv):
 def buffer_to_obs_lists(episode_buffer):
     tree_obs = np.asarray([row[0][0] for row in episode_buffer])
     vec_obs = np.asarray([row[0][1] for row in episode_buffer])
-    return tree_obs, vec_obs
+    a_rec_obs = np.asarray([row[0][2] for row in episode_buffer])
+    c_rec_obs = np.asarray([row[0][3] for row in episode_buffer])
+    return tree_obs, vec_obs, a_rec_obs, c_rec_obs
 
 
 # Observation-pattern
@@ -192,6 +212,12 @@ def normalize_field(field, norm_val=100):
         return 0
     else:
         return (field+1.0)/norm_val
+
+def one_hot(field):
+    if field == np.inf or field == -np.inf or field == 0.0:
+        return 0
+    else:
+        return 1.0
     
 
 def node_to_obs(node_tuple):
@@ -225,13 +251,17 @@ def node_to_obs(node_tuple):
         dir_num,
         normalize_field(node.dist_min_to_target),
         normalize_field(node.dist_other_agent_encountered),
+        one_hot(node.dist_other_agent_encountered),
         normalize_field(node.dist_other_target_encountered),
         normalize_field(node.dist_own_target_encountered),
         normalize_field(node.dist_potential_conflict),
+        one_hot(node.dist_potential_conflict),
         normalize_field(node.dist_to_next_branch),
         normalize_field(node.dist_unusable_switch),
+        one_hot(node.dist_unusable_switch),
         normalize_field(node.num_agents_malfunctioning,10),
         normalize_field(node.num_agents_opposite_direction, 10),
+        one_hot(node.num_agents_opposite_direction),
         normalize_field(node.num_agents_ready_to_depart, 20),
         normalize_field(node.num_agents_same_direction, 20),
         node.speed_min_fractional,

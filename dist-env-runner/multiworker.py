@@ -140,10 +140,11 @@ class Worker():
                 episode_reward = 0
                 episode_step_count = 0
                 
+                obs_builder = self.env.env.obs_builder
                 obs, info = self.env.reset()
 
                 while episode_done == False and episode_step_count < self.env.max_steps:
-                    actions, v = self.local_model.get_actions_and_values(obs)
+                    actions, v, rec_act, rec_crit = self.local_model.get_actions_and_values(obs, obs_builder)
                     next_obs, rewards, done, info = self.env.step(actions)
                     #self.punish_impossible_actions(obs, actions, rewards)
 
@@ -179,8 +180,8 @@ class Worker():
                     for i in range(self.env.num_agents):
                         # If agents could finish the level, 
                         # set final reward for all agents
-                        episode_buffer[i][-1][2] += 5
-                        episode_reward += 5
+                        episode_buffer[i][-1][2] += 10
+                        episode_reward += 10
                 else:
                     for i in range(self.env.num_agents):
                         if not done[i]:
