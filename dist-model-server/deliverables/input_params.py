@@ -8,7 +8,7 @@ gradient_norm = 40.0
 number_of_actions = 5
 num_of_obs = 2
 
-tree_depth = 5
+tree_depth = 3
 path_root = tree_depth + 1
 path_sec = tree_depth
 path_thrd = tree_depth - 1
