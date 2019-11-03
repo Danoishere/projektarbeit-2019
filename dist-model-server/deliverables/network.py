@@ -64,7 +64,7 @@ class AC_Network():
 
     def create_network(self, input_tree, input_vec, input_rec):
         conv = layers.Reshape((params.tree_state_size,1))(input_tree)
-        conv = layers.Conv1D(filters = 40, kernel_size =(params.num_features), strides=(params.num_features), activation='relu')(conv)
+        conv = layers.Conv1D(filters = 128, kernel_size =(params.num_features), strides=(params.num_features), activation='relu')(conv)
         conv = layers.Flatten()(conv)
         conv = layers.Dense(256, activation='relu')(conv)
         conv = layers.Dense(64, activation='relu')(conv)
@@ -212,7 +212,7 @@ class AC_Network():
             obs_builder.actor_rec_state[handle] = [a_rec_h[handle], a_rec_c[handle]]
             obs_builder.critic_rec_state[handle]= [c_rec_h[handle], c_rec_c[handle]]
 
-        return actions, values_dict, rec_act_dict, rec_crit_dict
+        return actions, values_dict
 
 
     def get_actions(self, obs):

@@ -29,11 +29,11 @@ class RailObsBuilder(TreeObsForRailEnv):
             next_agent_obs = obs[handle]
             next_agent_tree_obs, vec_obs, rec_actor, rec_critic = self.reshape_agent_obs(handle, next_agent_obs, None)
             # print(next_agent_tree_obs)
-            augmented_tree_obs = self.augment_agent_tree_obs_with_frames(last_agent_obs, next_agent_tree_obs)
-            self.last_obs[handle] = augmented_tree_obs
+            #augmented_tree_obs = self.augment_agent_tree_obs_with_frames(last_agent_obs, next_agent_tree_obs)
+            self.last_obs[handle] = next_agent_tree_obs# augmented_tree_obs
 
             # print(augmented_tree_obs)
-            all_augmented_obs[handle] = (augmented_tree_obs, vec_obs, rec_actor, rec_critic)
+            all_augmented_obs[handle] = (next_agent_tree_obs, vec_obs, rec_actor, rec_critic)
 
         return all_augmented_obs
 
