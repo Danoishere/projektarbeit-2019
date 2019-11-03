@@ -79,7 +79,6 @@ class Worker():
             if num_transitions == 1:
                 possible_actions = [0, 1, 0]
             else:
-                min_distances = []
                 possible_actions = []
                 for direction in [(agent.direction + i) % 4 for i in range(-1, 2)]:
                     if possible_transitions[direction]:
