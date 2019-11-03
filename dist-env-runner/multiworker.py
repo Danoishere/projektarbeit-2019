@@ -145,7 +145,7 @@ class Worker():
                 while episode_done == False and episode_step_count < self.env.max_steps:
                     actions, v = self.local_model.get_actions_and_values(obs, obs_builder)
                     next_obs, rewards, done, info = self.env.step(actions)
-                    self.punish_impossible_actions(obs, actions, rewards)
+                    # self.punish_impossible_actions(obs, actions, rewards)
 
                     episode_done = done['__all__']
                     if episode_done == True:
