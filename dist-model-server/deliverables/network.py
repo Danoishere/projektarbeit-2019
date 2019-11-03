@@ -77,7 +77,7 @@ class AC_Network():
         conv_comm = layers.Reshape((params.comm_size,1))(input_comm)
         conv_comm = layers.Conv1D(filters = 32, kernel_size =(params.number_of_comm), strides=(params.number_of_comm), activation='relu')(conv_comm)
         conv_comm = layers.Flatten()(conv_comm)
-        conv_obs = layers.Dense(32, activation='relu')(conv_comm)
+        conv_comm = layers.Dense(64, activation='relu')(conv_comm)
 
         hidden = layers.concatenate([conv_obs, conv_comm, input_vec])
         hidden = layers.Dense(64, activation='relu')(hidden)
