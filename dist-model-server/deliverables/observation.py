@@ -599,7 +599,7 @@ class RailObsBuilder(CustomTreeObsForRailEnv):
             else:
                 agent_actor_rec_state = np.zeros((2,params.recurrent_size)).astype(np.float32)
                 agent_critic_rec_state = np.zeros((2,params.recurrent_size)).astype(np.float32)
-                agent_comm_rec_state = np.zeros((2,params.recurrent_comm_size)).astype(np.float32)
+                agent_comm_rec_state = np.zeros((2,params.recurrent_size)).astype(np.float32)
 
             return tree_obs.astype(np.float32), vec_obs.astype(np.float32), comm_obs.astype(np.float32),  agent_actor_rec_state, agent_critic_rec_state, agent_comm_rec_state
         else:
@@ -679,7 +679,7 @@ class RailObsBuilder(CustomTreeObsForRailEnv):
             else:
                 agent_actor_rec_state = np.zeros((2,params.recurrent_size)).astype(np.float32)
                 agent_critic_rec_state = np.zeros((2,params.recurrent_size)).astype(np.float32)
-                agent_comm_rec_state = np.zeros((2,params.recurrent_comm_size)).astype(np.float32)
+                agent_comm_rec_state = np.zeros((2,params.recurrent_size)).astype(np.float32)
 
             return tree_obs.astype(np.float32), vec_obs.astype(np.float32), comm_obs.astype(np.float32),  agent_actor_rec_state, agent_critic_rec_state, agent_comm_rec_state
 
@@ -839,7 +839,15 @@ def node_to_obs(node_tuple):
         node.speed_min_fractional,
         dist_left,
         dist_right,
-        dist_forward
+        dist_forward,
+        0,
+        0,
+        0,
+        0,
+        0
     ]
+
+    if node.communication is not None:
+        obs[-5:] = node.communication
 
     return obs

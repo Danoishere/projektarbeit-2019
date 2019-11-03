@@ -50,14 +50,14 @@ class AC_Network():
 
         input_actor_rec = layers.Input(shape=(2,params.recurrent_size),dtype=tf.float32)
         input_critic_rec = layers.Input(shape=(2,params.recurrent_size),dtype=tf.float32)
-        input_comm_rec = layers.Input(shape=(2,params.recurrent_comm_size),dtype=tf.float32)
+        input_comm_rec = layers.Input(shape=(2,params.recurrent_size),dtype=tf.float32)
 
-        actor_out, actor_out_rec = self.create_network(input_tree, input_vec, input_actor_rec)
-        critic_out, critic_out_rec = self.create_network(input_tree, input_vec, input_critic_rec)
-        comm_out, comm_out_rec = self.create_comm_network(input_comm, input_comm_rec)
+        actor_out, actor_out_rec = self.create_network(input_tree, input_vec, input_comm, input_actor_rec)
+        critic_out, critic_out_rec = self.create_network(input_tree, input_vec, input_comm, input_critic_rec)
+        comm_out, comm_out_rec = self.create_network(input_tree, input_vec, input_comm, input_comm_rec)
 
         policy = layers.Dense(params.number_of_actions, activation='softmax')(actor_out)
-        comm = layers.Dense(params.number_of_comm, activation='softmax')(actor_out)
+        comm = layers.Dense(params.number_of_comm, activation='softmax')(comm_out)
         value = layers.Dense(1)(critic_out)
 
         model = Model(
@@ -67,30 +67,23 @@ class AC_Network():
         return model
 
 
-    def create_network(self, input_tree, input_vec, input_rec):
-        conv = layers.Reshape((params.tree_state_size,1))(input_tree)
-        conv = layers.Conv1D(filters = 128, kernel_size =(params.num_features), strides=(params.num_features), activation='relu')(conv)
-        conv = layers.Flatten()(conv)
-        conv = layers.Dense(256, activation='relu')(conv)
-        conv = layers.Dense(64, activation='relu')(conv)
+    def create_network(self, input_tree, input_vec, input_comm, input_rec):
+        conv_obs = layers.Reshape((params.tree_state_size,1))(input_tree)
+        conv_obs = layers.Conv1D(filters = 128, kernel_size =(params.num_features), strides=(params.num_features), activation='relu')(conv_obs)
+        conv_obs = layers.Flatten()(conv_obs)
+        conv_obs = layers.Dense(256, activation='relu')(conv_obs)
+        conv_obs = layers.Dense(32, activation='relu')(conv_obs)
 
-        hidden = layers.concatenate([conv, input_vec])
+        conv_comm = layers.Reshape((params.comm_size,1))(input_comm)
+        conv_comm = layers.Conv1D(filters = 32, kernel_size =(params.number_of_comm), strides=(params.number_of_comm), activation='relu')(conv_comm)
+        conv_comm = layers.Flatten()(conv_comm)
+        conv_obs = layers.Dense(32, activation='relu')(conv_comm)
+
+        hidden = layers.concatenate([conv_obs, conv_comm, input_vec])
         hidden = layers.Dense(64, activation='relu')(hidden)
         hidden = layers.Reshape((1,64))(hidden)
-        hidden, state_h, state_c = layers.LSTM(64, return_state=True, return_sequences=False)(hidden, initial_state=[input_rec[:,0], input_rec[:,1]])
+        hidden, state_h, state_c = layers.LSTM(64, activation='relu', return_state=True, return_sequences=False)(hidden, initial_state=[input_rec[:,0], input_rec[:,1]])
         hidden = layers.Dense(64, activation='relu')(hidden)
-        hidden = layers.Dense(8, activation='relu')(hidden)
-
-        return hidden, [state_h, state_c]
-
-    def create_comm_network(self, input_comm, input_rec):
-        conv = layers.Reshape((params.comm_size,1))(input_comm)
-        conv = layers.Conv1D(filters = 32, kernel_size =(params.number_of_comm), strides=(params.number_of_comm), activation='relu')(conv)
-        conv = layers.Flatten()(conv)
-        hidden = layers.Dense(32, activation='relu')(conv)
-        hidden = layers.Reshape((1,32))(hidden)
-        hidden, state_h, state_c = layers.LSTM(32, return_state=True, return_sequences=False)(hidden, initial_state=[input_rec[:,0], input_rec[:,1]])
-        hidden = layers.Dense(32, activation='relu')(hidden)
         hidden = layers.Dense(8, activation='relu')(hidden)
 
         return hidden, [state_h, state_c]
@@ -196,7 +189,6 @@ class AC_Network():
             rec_actor_obs = agent_obs[3]
             rec_critic_obs = agent_obs[4]
             rec_comm_obs = agent_obs[5]
-
 
             all_tree_obs.append(tree_obs)
             all_vec_obs.append(vec_obs)
