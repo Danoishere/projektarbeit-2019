@@ -46,18 +46,23 @@ class AC_Network():
     def build_network(self):
         input_tree = layers.Input(shape=params.tree_state_size,dtype=tf.float32)
         input_vec = layers.Input(shape=params.vec_state_size,dtype=tf.float32)
+        input_comm = layers.Input(shape=params.comm_size,dtype=tf.float32)
+
         input_actor_rec = layers.Input(shape=(2,params.recurrent_size),dtype=tf.float32)
         input_critic_rec = layers.Input(shape=(2,params.recurrent_size),dtype=tf.float32)
+        input_comm_rec = layers.Input(shape=(2,params.recurrent_comm_size),dtype=tf.float32)
 
         actor_out, actor_out_rec = self.create_network(input_tree, input_vec, input_actor_rec)
         critic_out, critic_out_rec = self.create_network(input_tree, input_vec, input_critic_rec)
+        comm_out, comm_out_rec = self.create_comm_network(input_comm, input_comm_rec)
 
         policy = layers.Dense(params.number_of_actions, activation='softmax')(actor_out)
+        comm = layers.Dense(params.number_of_comm, activation='softmax')(actor_out)
         value = layers.Dense(1)(critic_out)
 
         model = Model(
-            inputs=[input_tree, input_vec, input_actor_rec, input_critic_rec],
-            outputs=[policy, value, actor_out_rec, critic_out_rec])
+            inputs=[input_tree, input_vec, input_comm, input_actor_rec, input_critic_rec, input_comm_rec],
+            outputs=[policy, value, comm, actor_out_rec, critic_out_rec, comm_out_rec])
 
         return model
 
@@ -74,6 +79,18 @@ class AC_Network():
         hidden = layers.Reshape((1,64))(hidden)
         hidden, state_h, state_c = layers.LSTM(64, return_state=True, return_sequences=False)(hidden, initial_state=[input_rec[:,0], input_rec[:,1]])
         hidden = layers.Dense(64, activation='relu')(hidden)
+        hidden = layers.Dense(8, activation='relu')(hidden)
+
+        return hidden, [state_h, state_c]
+
+    def create_comm_network(self, input_comm, input_rec):
+        conv = layers.Reshape((params.comm_size,1))(input_comm)
+        conv = layers.Conv1D(filters = 32, kernel_size =(params.number_of_comm), strides=(params.number_of_comm), activation='relu')(conv)
+        conv = layers.Flatten()(conv)
+        hidden = layers.Dense(32, activation='relu')(conv)
+        hidden = layers.Reshape((1,32))(hidden)
+        hidden, state_h, state_c = layers.LSTM(32, return_state=True, return_sequences=False)(hidden, initial_state=[input_rec[:,0], input_rec[:,1]])
+        hidden = layers.Dense(32, activation='relu')(hidden)
         hidden = layers.Dense(8, activation='relu')(hidden)
 
         return hidden, [state_h, state_c]
@@ -125,10 +142,11 @@ class AC_Network():
     def train(self, target_v, advantages, actions, obs):
         # Value loss
         with tf.GradientTape() as tape:
-            policy,value,_,_ = self.model(obs)
+            policy,value,comm,_,_,_ = self.model(obs)
             v_loss = self.value_loss(target_v, value)
             p_loss, entropy = self.policy_loss(advantages, actions, policy)
-            tot_loss = p_loss + v_loss
+            c_loss, c_entropy = self.policy_loss(advantages, actions, comm)
+            tot_loss = p_loss + v_loss + c_loss
 
         local_vars = self.model.trainable_variables
         gradients_new = tape.gradient(tot_loss, local_vars)
@@ -165,22 +183,29 @@ class AC_Network():
     def obs_dict_to_lists(self, obs):
         all_tree_obs = []
         all_vec_obs = []
+        all_comm_obs = []
         all_rec_actor_obs = []
         all_rec_critic_obs = []
+        all_rec_comm_obs = []
 
         for handle in obs:
             agent_obs = obs[handle]
             tree_obs = agent_obs[0]
             vec_obs = agent_obs[1]
-            rec_actor_obs = agent_obs[2]
-            rec_critic_obs = agent_obs[3]
+            comm_obs = agent_obs[2]
+            rec_actor_obs = agent_obs[3]
+            rec_critic_obs = agent_obs[4]
+            rec_comm_obs = agent_obs[5]
+
 
             all_tree_obs.append(tree_obs)
             all_vec_obs.append(vec_obs)
+            all_comm_obs.append(comm_obs)
             all_rec_actor_obs.append(rec_actor_obs)
             all_rec_critic_obs.append(rec_critic_obs)
+            all_rec_comm_obs.append(rec_comm_obs)
 
-        return [all_tree_obs, all_vec_obs, all_rec_actor_obs, all_rec_critic_obs]
+        return [all_tree_obs, all_vec_obs, all_comm_obs, all_rec_actor_obs, all_rec_critic_obs, all_rec_comm_obs]
 
 
     def get_best_actions_and_values(self, obs):
@@ -198,21 +223,22 @@ class AC_Network():
 
     def get_actions_and_values(self, obs, obs_builder):
         obs_list = self.obs_dict_to_lists(obs)
-        predcition, values, a_rec_h, a_rec_c, c_rec_h, c_rec_c = self.model.predict_on_batch(obs_list)
+        predcition, values, comm, a_rec_h, a_rec_c, c_rec_h, c_rec_c, comm_rec_h, comm_rec_c = self.model.predict_on_batch(obs_list)
         actions = {}
         values_dict = {}
-        rec_act_dict = {}
-        rec_crit_dict = {}
+        comm_dict = {}
 
         for handle in obs:
             a_dist = predcition[handle]
             a = np.random.choice([0,1,2,3,4], p = a_dist)
             actions[handle] = a
+            comm_dict[handle] = comm[handle]
             values_dict[handle] = values[handle,0]
             obs_builder.actor_rec_state[handle] = [a_rec_h[handle], a_rec_c[handle]]
-            obs_builder.critic_rec_state[handle]= [c_rec_h[handle], c_rec_c[handle]]
+            obs_builder.critic_rec_state[handle] = [c_rec_h[handle], c_rec_c[handle]]
+            obs_builder.comm_rec_state[handle] = [comm_rec_h[handle], comm_rec_c[handle]]
 
-        return actions, values_dict
+        return actions, values_dict, comm_dict
 
 
     def get_actions(self, obs):

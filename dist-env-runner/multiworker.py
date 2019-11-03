@@ -143,8 +143,12 @@ class Worker():
                 obs, info = self.env.reset()
 
                 while episode_done == False and episode_step_count < self.env.max_steps:
-                    actions, v = self.local_model.get_actions_and_values(obs, obs_builder)
+                    actions, v, comm = self.local_model.get_actions_and_values(obs, obs_builder)
                     next_obs, rewards, done, info = self.env.step(actions)
+
+                    for handle in comm:
+                        self.env.env.agents[handle].communication = comm[handle]
+                        
                     # self.punish_impossible_actions(obs, actions, rewards)
 
                     episode_done = done['__all__']
