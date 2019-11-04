@@ -119,7 +119,7 @@ class AC_Network():
 
     def value_loss(self, rec_reward, est_reward):
         v_l = 0.5 * tf.reduce_sum(tf.square(rec_reward - tf.reshape(est_reward,[-1])))
-        return tf.clip_by_value(v_l, -100.0, 100.0)
+        return tf.clip_by_value(v_l, clip_value_min=0.0, clip_value_max=1000.0)
     
 
     def policy_loss(self, advantages, actions, policy):
@@ -203,15 +203,22 @@ class AC_Network():
 
     def get_best_actions_and_values(self, obs):
         obs_list = self.obs_dict_to_lists(obs)
-        predcition, values = self.model.predict_on_batch(obs_list)
+        predcition, values, comm, a_rec_h, a_rec_c, c_rec_h, c_rec_c, comm_rec_h, comm_rec_c = self.model.predict_on_batch(obs_list)
         actions = {}
         values_dict = {}
+        comm_dict = {}
+
         for handle in obs:
             a_dist = predcition[handle]
             actions[handle] = np.argmax(a_dist)
+            comm_dict[handle] = comm[handle]
             values_dict[handle] = values[handle,0]
 
-        return actions, values_dict
+            obs_builder.actor_rec_state[handle] = [a_rec_h[handle], a_rec_c[handle]]
+            obs_builder.critic_rec_state[handle] = [c_rec_h[handle], c_rec_c[handle]]
+            obs_builder.comm_rec_state[handle] = [comm_rec_h[handle], comm_rec_c[handle]]
+
+        return actions, values_dict, comm_dict
 
 
     def get_actions_and_values(self, obs, obs_builder):
@@ -232,18 +239,6 @@ class AC_Network():
             obs_builder.comm_rec_state[handle] = [comm_rec_h[handle], comm_rec_c[handle]]
 
         return actions, values_dict, comm_dict
-
-
-    def get_actions(self, obs):
-        obs_list = self.obs_dict_to_lists(obs)
-        predcition, _ = self.model.predict_on_batch(obs_list)
-        actions = {}
-        for handle in obs:
-            a_dist = predcition[handle]
-            a = np.random.choice([0,1,2,3,4], p = a_dist)
-            actions[handle] = a
-
-        return actions
 
 
     def get_values(self, obs):
