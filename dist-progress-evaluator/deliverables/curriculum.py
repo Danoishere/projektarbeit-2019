@@ -10,23 +10,23 @@ class Curriculum:
         self.curriculum = {
             0: {
                 'level_generator' : lambda env: self.change_grid_round0(env),
-                'switch_on_successrate': 0.95
+                'switch_on_successrate': 0.9
                 },
             1: {
                 'level_generator' : lambda env: self.change_grid_round1(env),
-                'switch_on_successrate': 0.95
+                'switch_on_successrate': 0.9
                 },
             2: {
                 'level_generator' : lambda env: self.change_grid_round2(env),
-                'switch_on_successrate': 0.95
+                'switch_on_successrate': 0.85
                 },
             3: {
                 'level_generator' : lambda env: self.change_grid_round3(env),
-                'switch_on_successrate': 0.95
+                'switch_on_successrate': 0.85
                 },
             4: {
                 'level_generator' : lambda env: self.change_grid_round4(env),
-                'switch_on_successrate': 0.95
+                'switch_on_successrate': 0.85
                 },
             5: {
                 'level_generator' : lambda env: self.change_grid_round5(env),
@@ -46,8 +46,7 @@ class Curriculum:
         env_level = self.current_level
         if self.randomize_level_generation:
             # Take the new level with a higher probability
-            # HINT: Temporarily disabled
-            if random() > 0.0:
+            if random() >= 0.0:
                 env_level = self.current_level
             else:  
                 env_level = randint(0, self.current_level)
@@ -70,8 +69,8 @@ class Curriculum:
         env.update_env_with_params(
             width=30,
             height=30,
-            num_agents=1,
-            max_steps = 150,
+            num_agents=2,
+            max_steps = 180,
             rail_type = 'sparse',
             rail_gen_params = {
                 'num_cities': 2,
@@ -84,10 +83,10 @@ class Curriculum:
 
     def change_grid_round1(self, env):
         env.update_env_with_params(
-            width=30,
-            height=30,
+            width=40,
+            height=40,
             num_agents=2,
-            max_steps = 200,
+            max_steps = 250,
             rail_type = 'sparse',
             rail_gen_params = {
                 'num_cities': 2,
@@ -125,7 +124,7 @@ class Curriculum:
             rail_gen_params = {
                 'num_cities': 4,
                 'grid_mode': False,
-                'max_rails_between_cities': 1,
+                'max_rails_between_cities': 2,
                 'max_rails_in_city' : 2
             },
             seed = self.seed   
