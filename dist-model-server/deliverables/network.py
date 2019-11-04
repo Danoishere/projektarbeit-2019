@@ -82,9 +82,8 @@ class AC_Network():
         hidden = layers.concatenate([conv_obs, conv_comm, input_vec])
         hidden = layers.Dense(64, activation='relu')(hidden)
         hidden = layers.Reshape((1,64))(hidden)
-        hidden, state_h, state_c = layers.LSTM(64, activation='relu', return_state=True, return_sequences=False)(hidden, initial_state=[input_rec[:,0], input_rec[:,1]])
+        hidden, state_h, state_c = layers.LSTM(64, activation='tanh', return_state=True, return_sequences=False)(hidden, initial_state=[input_rec[:,0], input_rec[:,1]])
         hidden = layers.Dense(64, activation='relu')(hidden)
-        hidden = layers.Dense(32, activation='tanh')(hidden)
         hidden = layers.Dense(8, activation='relu')(hidden)
 
         return hidden, [state_h, state_c]
@@ -126,10 +125,9 @@ class AC_Network():
     def policy_loss(self, advantages, actions, policy):
         actions_onehot = tf.one_hot(actions, params.number_of_actions)
         responsible_outputs = tf.reduce_sum(policy * actions_onehot, [1])
-        policy_log = tf.math.log(tf.clip_by_value(policy, 1e-10, 1.0))
+        policy_log = tf.math.log(tf.clip_by_value(policy, 1e-20, 1.0))
         entropy = -tf.reduce_sum(policy * policy_log, axis=1)
-        policy_loss = tf.math.log(responsible_outputs  + 1e-10)*advantages
-        policy_loss *= 0.5
+        policy_loss = tf.math.log(responsible_outputs  + 1e-20)*advantages
         policy_loss = -tf.reduce_sum(policy_loss + entropy * self.entropy_factor)
         return policy_loss, tf.reduce_mean(entropy)
 
@@ -138,9 +136,7 @@ class AC_Network():
         # Value loss
         with tf.GradientTape() as tape:
             policy,value,comm,_,_,_ = self.model(obs)
-            #print('target', target_v, 'actual', value.numpy())
             v_loss = self.value_loss(target_v, value)
-            #print('after', v_loss.numpy())
             p_loss, entropy = self.policy_loss(advantages, actions, policy)
             c_loss, c_entropy = self.policy_loss(advantages, actions, comm)
             tot_loss = p_loss + v_loss + c_loss
