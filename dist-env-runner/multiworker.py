@@ -149,8 +149,6 @@ class Worker():
                     for handle in comm:
                         self.env.env.agents[handle].communication = comm[handle]
 
-                    # self.punish_impossible_actions(obs, actions, rewards)
-
                     episode_done = done['__all__']
                     if episode_done == True:
                         next_obs = obs
@@ -183,13 +181,13 @@ class Worker():
                     for i in range(self.env.num_agents):
                         # If agents could finish the level, 
                         # set final reward for all agents
-                        episode_buffer[i][-1][2] += 10
-                        episode_reward += 10
+                        episode_buffer[i][-1][2] += 2
+                        episode_reward += 2
                 else:
                     for i in range(self.env.num_agents):
                         if not done[i]:
-                            episode_buffer[i][-1][2] -= 5
-                            episode_reward -= 5
+                            episode_buffer[i][-1][2] -= 1
+                            episode_reward -= 1
 
                 self.episode_rewards.append(episode_reward)
                 self.episode_lengths.append(episode_step_count)
