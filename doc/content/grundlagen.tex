@@ -32,9 +32,9 @@ The goal of this work is to apply an RL algorithm to the vehicle rescheduling pr
 
 \section{The flatland rail environment}\label{projektmanagement}
 The flatland environment is a virtual simulation environment provided by the Swiss Federal Railway SBB and the crowdsourcing platform for artificial intelligence projects AICrowd.
-The goal of this environment is to act as a simplified simulation of real train traffic. Using flatland, we can train RL algrithms to control the actions trains, based on observations on the grid. Flatland has a discrete structure in both its position system as well its timestep system. The whole rail grid is composed out of squares that can have connections to neighbouring squares. In certain squares, the rails splits into two rails. On those switches, the agent has to make a decision if it wants to go to the left or to the right. All rail parts, independent of if it is a switch also allow to take the actions to do nothing, to go forward or to brake.
+The goal of this environment is to act as a simplified simulation of real train traffic. Using flatland, we can train RL algrithms to control the actions trains, based on observations on the grid. Flatland has a discrete structure in both its position system as well its timestep system. The whole rail grid is composed out of squares that can have connections to neighbouring squares. In certain squares, the rails splits into two rails. On those switches, the agent has to make a decision if it wants to go to the left or to the right. All rail parts, independent of if it is a switch also allow to take the actions to do nothing, to go forward or to brake. The action space is therefore defined by:
 \begin{gather*}
-U = \{ \text{Do nothing, go left, go forward, go right, break} \}
+U = \{ \text{Do nothing, go left, go forward, go right, brake} \}
 \end{gather*}
 
 
