@@ -69,17 +69,20 @@ def get_curriculum_level():
 def get_entropy_factor():
     entropy_factor = 0.0
     if state.episode_count < 5000:
-        entropy_factor = 0.03
-    elif state.episode_count < 10000:
         entropy_factor = 0.02
-    elif state.episode_count < 20000:
+    elif state.episode_count < 10000:
+        entropy_factor = 0.015
+    else:
         entropy_factor = 0.01
+
+    '''
     elif state.episode_count < 30000:
         entropy_factor = 0.005
     elif state.episode_count < 50000:
         entropy_factor = 0.001
     elif state.episode_count < 100000:
         entropy_factor = 0.0001
+    '''
 
     data = { 'entropy_factor' : entropy_factor }
     return jsonify(data)

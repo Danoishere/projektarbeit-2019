@@ -820,12 +820,18 @@ def node_to_obs(node_tuple):
 
     dir_num = dir_dict[dir]
     obs = [
+        1 if dir == '.' else 0,
+        1 if dir == 'F' else 0,
+        1 if dir == 'L' else 0,
+        1 if dir == 'R' else 0,
         dir_num,
         normalize_field(node.dist_min_to_target),
         normalize_field(node.dist_other_agent_encountered),
         one_hot(node.dist_other_agent_encountered),
-        normalize_field(node.dist_other_target_encountered),
-        normalize_field(node.dist_own_target_encountered),
+        one_hot(node.dist_other_target_encountered),
+        #normalize_field(node.dist_other_target_encountered),
+        #normalize_field(node.dist_own_target_encountered),
+        one_hot(node.dist_own_target_encountered),
         normalize_field(node.dist_potential_conflict),
         one_hot(node.dist_potential_conflict),
         normalize_field(node.dist_to_next_branch),
