@@ -119,7 +119,7 @@ class AC_Network():
 
     def value_loss(self, rec_reward, est_reward):
         v_l = 0.5 * tf.reduce_sum(tf.square(rec_reward - tf.reshape(est_reward,[-1])))
-        return tf.clip_by_value(v_l, clip_value_min=0.0, clip_value_max=1000.0)
+        return v_l
     
 
     def policy_loss(self, advantages, actions, policy):
@@ -137,7 +137,9 @@ class AC_Network():
         # Value loss
         with tf.GradientTape() as tape:
             policy,value,comm,_,_,_ = self.model(obs)
+            #print('target', target_v, 'actual', value.numpy())
             v_loss = self.value_loss(target_v, value)
+            #print('after', v_loss.numpy())
             p_loss, entropy = self.policy_loss(advantages, actions, policy)
             c_loss, c_entropy = self.policy_loss(advantages, actions, comm)
             tot_loss = p_loss + v_loss + c_loss

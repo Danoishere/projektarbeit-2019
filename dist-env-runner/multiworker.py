@@ -148,7 +148,7 @@ class Worker():
 
                     for handle in comm:
                         self.env.env.agents[handle].communication = comm[handle]
-                        
+
                     # self.punish_impossible_actions(obs, actions, rewards)
 
                     episode_done = done['__all__']
