@@ -148,7 +148,7 @@ stochastic_data = {
 #observation_builder = GlobalObsForRailEnv()
 
 model = AC_Network()
-model.load_model('deliverables/model','checkpoint_lvl_0')
+model.load_model('deliverables/model','checkpoint_lvl_3')
 
 # Custom observation builder with predictor, uncomment line below if you want to try this one
 observation_builder = model.get_observation_builder()
@@ -181,6 +181,7 @@ while True:
     episode_step_count = 0
 
     obs, info = env.reset()
+    obs_builder = env.obs_builder
     #plot_graph(obs_helper.graph_list)
 
     env_renderer.set_new_rail()

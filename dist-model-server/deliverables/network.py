@@ -132,13 +132,13 @@ class AC_Network():
         return policy_loss, tf.reduce_mean(entropy)
 
 
-    def train(self, target_v, advantages, actions, obs):
+    def train(self, target_v, advantages, actions, comms_actions, obs):
         # Value loss
         with tf.GradientTape() as tape:
             policy,value,comm,_,_,_ = self.model(obs)
             v_loss = self.value_loss(target_v, value)
             p_loss, entropy = self.policy_loss(advantages, actions, policy)
-            c_loss, c_entropy = self.policy_loss(advantages, actions, comm)
+            c_loss, comm_entropy = self.policy_loss(advantages, comms_actions, comm)
             tot_loss = p_loss + v_loss + c_loss
 
         local_vars = self.model.trainable_variables
@@ -159,7 +159,7 @@ class AC_Network():
         weights = msgpack.loads(weights_str)
         self.model.set_weights(weights)
 
-        return v_loss, p_loss, entropy, grad_norms, var_norms
+        return v_loss, p_loss, entropy, comm_entropy, grad_norms, var_norms
 
 
     def get_best_actions(self, obs):
@@ -210,7 +210,7 @@ class AC_Network():
         for handle in obs:
             a_dist = predcition[handle]
             actions[handle] = np.argmax(a_dist)
-            comm_dict[handle] = comm[handle]
+            comm_dict[handle] = np.argmax(comm[handle])
             values_dict[handle] = values[handle,0]
 
             obs_builder.actor_rec_state[handle] = [a_rec_h[handle], a_rec_c[handle]]
@@ -229,9 +229,11 @@ class AC_Network():
 
         for handle in obs:
             a_dist = predcition[handle]
-            a = np.random.choice([0,1,2,3,4], p = a_dist)
-            actions[handle] = a
-            comm_dict[handle] = comm[handle]
+            actions[handle] = np.random.choice([0,1,2,3,4], p = a_dist)
+
+            comm_dist = comm[handle]
+            comm_dict[handle] = np.random.choice([0,1,2,3,4], p = comm_dist)
+            
             values_dict[handle] = values[handle,0]
             obs_builder.actor_rec_state[handle] = [a_rec_h[handle], a_rec_c[handle]]
             obs_builder.critic_rec_state[handle] = [c_rec_h[handle], c_rec_c[handle]]
