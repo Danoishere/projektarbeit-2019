@@ -68,12 +68,19 @@ def get_curriculum_level():
 @app.route('/entropy_factor')
 def get_entropy_factor():
     entropy_factor = 0.0
-    if state.episode_count < 100000:
+
+    if state.curriculum_level == 0:
         entropy_factor = 0.015
-    elif state.episode_count < 300000:
+    elif state.curriculum_level == 1:
         entropy_factor = 0.012
-    else:
+    elif state.curriculum_level == 2:
         entropy_factor = 0.01
+    elif state.curriculum_level == 3:
+        entropy_factor = 0.001
+    elif state.curriculum_level == 4:
+        entropy_factor = 0.0001
+    else:
+        entropy_factor = 0.0
 
     '''
     elif state.episode_count < 30000:
