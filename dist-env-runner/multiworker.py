@@ -255,7 +255,7 @@ class Worker():
                 tf.summary.scalar('Lvl '+ lvl+' - Losses/Value Loss', mean_value_loss, step=episode_count)
                 tf.summary.scalar('Lvl '+ lvl+' - Losses/Policy Loss', mean_policy_loss, step=episode_count)
                 tf.summary.scalar('Lvl '+ lvl+' - Losses/Entropy', mean_entropy_loss, step=episode_count)
-                tf.summary.scalar('Lvl '+ lvl+' - Losses/Comm-Entropy', mean_entropy_loss, step=episode_count)
+                tf.summary.scalar('Lvl '+ lvl+' - Losses/Comm-Entropy', mean_entropy_comm_loss, step=episode_count)
                 tf.summary.scalar('Lvl '+ lvl+' - Losses/Grad Norm', mean_gradient_norm, step=episode_count)
                 tf.summary.scalar('Lvl '+ lvl+' - Losses/Var Norm', mean_variable_norm, step=episode_count)
                 self.summary_writer.flush()
