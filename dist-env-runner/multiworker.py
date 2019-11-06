@@ -183,8 +183,8 @@ class Worker():
                 for i in range(self.env.num_agents):
                     # If agents could finish the level, 
                     # set final reward for all agents
-                    episode_buffer[i][-1][2] += 1
-                    episode_reward += 1
+                    episode_buffer[i][-1][2] += 1.0
+                    episode_reward += 1.0
 
                 # End of episode-loop
                 # Cooperative rewards
@@ -192,8 +192,8 @@ class Worker():
                     for i in range(self.env.num_agents):
                         # If agents could finish the level, 
                         # set final reward for all agents
-                        episode_buffer[i][-1][2] += 2
-                        episode_reward += 2
+                        episode_buffer[i][-1][2] += 1.0
+                        episode_reward += 1.0
                 else:
                     for i in range(self.env.num_agents):
                         if not done[i]:
