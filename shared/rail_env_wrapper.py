@@ -20,7 +20,7 @@ class RailEnvWrapper():
                 })
 
         self.stochastic_data = {
-                'prop_malfunction': 0.0,  # Percentage of defective agents
+                'prop_malfunction': 0.3,  # Percentage of defective agents
                 'malfunction_rate': 30,  # Rate of malfunction occurence
                 'min_duration': 3,  # Minimal duration of malfunction
                 'max_duration': 20  # Max duration of malfunction
