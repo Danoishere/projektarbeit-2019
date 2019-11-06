@@ -70,11 +70,11 @@ def get_entropy_factor():
     entropy_factor = 0.0
 
     if state.curriculum_level == 0:
-        entropy_factor = 0.015
+        entropy_factor = 0.005
     elif state.curriculum_level == 1:
-        entropy_factor = 0.012
+        entropy_factor = 0.003
     elif state.curriculum_level == 2:
-        entropy_factor = 0.01
+        entropy_factor = 0.0005
     elif state.curriculum_level == 3:
         entropy_factor = 0.000001
     elif state.curriculum_level == 4:
