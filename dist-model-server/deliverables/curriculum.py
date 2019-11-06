@@ -85,7 +85,7 @@ class Curriculum:
         env.update_env_with_params(
             width=40,
             height=40,
-            num_agents=2,
+            num_agents=4,
             max_steps = 250,
             rail_type = 'sparse',
             rail_gen_params = {
@@ -102,7 +102,7 @@ class Curriculum:
         env.update_env_with_params(
             width=40,
             height=40,
-            num_agents=3,
+            num_agents=10,
             max_steps = 300,
             rail_type = 'sparse',
             rail_gen_params = {
@@ -118,7 +118,7 @@ class Curriculum:
         env.update_env_with_params(
             width=50,
             height=50,
-            num_agents=4,
+            num_agents=20,
             max_steps = 450,
             rail_type = 'sparse',
             rail_gen_params = {
@@ -134,7 +134,7 @@ class Curriculum:
         env.update_env_with_params(
             width=70,
             height=70,
-            num_agents=10,
+            num_agents=30,
             max_steps = 450,
             rail_type = 'sparse',
             rail_gen_params = {
@@ -150,7 +150,7 @@ class Curriculum:
         env.update_env_with_params(
             width=100,
             height=100,
-            num_agents=20,
+            num_agents=50,
             max_steps = 500,
             rail_type = 'sparse',
             rail_gen_params = {

@@ -106,7 +106,7 @@ def punish_impossible_actions(env, obs, actions, rewards):
 
 width = 50  # With of map
 height = 50  # Height of map
-nr_trains = 4 # Number of trains that have an assigned task in the env
+nr_trains = 10 # Number of trains that have an assigned task in the env
 cities_in_map = 4  # Number of cities where agents can start or end
 seed = 14  # Random seed
 grid_distribution_of_cities = False  # Type of city distribution, if False cities are randomly placed

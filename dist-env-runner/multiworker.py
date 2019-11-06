@@ -179,7 +179,15 @@ class Worker():
                     steps_on_level += 1
                     done_last_step = dict(done)
 
+                # Individual rewards
+                for i in range(self.env.num_agents):
+                    # If agents could finish the level, 
+                    # set final reward for all agents
+                    episode_buffer[i][-1][2] += 1
+                    episode_reward += 1
+
                 # End of episode-loop
+                # Cooperative rewards
                 if episode_done:
                     for i in range(self.env.num_agents):
                         # If agents could finish the level, 
