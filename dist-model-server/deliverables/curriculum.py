@@ -10,23 +10,23 @@ class Curriculum:
         self.curriculum = {
             0: {
                 'level_generator' : lambda env: self.change_grid_round0(env),
-                'switch_on_successrate': 0.9
+                'switch_on_successrate': 0.95
                 },
             1: {
                 'level_generator' : lambda env: self.change_grid_round1(env),
-                'switch_on_successrate': 0.9
+                'switch_on_successrate': 0.95
                 },
             2: {
                 'level_generator' : lambda env: self.change_grid_round2(env),
-                'switch_on_successrate': 0.85
+                'switch_on_successrate': 0.95
                 },
             3: {
                 'level_generator' : lambda env: self.change_grid_round3(env),
-                'switch_on_successrate': 0.85
+                'switch_on_successrate': 0.95
                 },
             4: {
                 'level_generator' : lambda env: self.change_grid_round4(env),
-                'switch_on_successrate': 0.85
+                'switch_on_successrate': 0.95
                 },
             5: {
                 'level_generator' : lambda env: self.change_grid_round5(env),

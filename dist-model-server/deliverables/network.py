@@ -68,15 +68,17 @@ class AC_Network():
 
 
     def create_network(self, input_tree, input_vec, input_comm, input_rec):
-        conv_obs = layers.Reshape((params.tree_state_size,1))(input_tree)
-        conv_obs = layers.Conv1D(filters = 128, kernel_size =(params.num_features), strides=(params.num_features), activation='relu')(conv_obs)
-        conv_obs = layers.Flatten()(conv_obs)
+        conv_obs = layers.Dense(512, activation='relu')(input_tree)
+        #conv_obs = layers.Reshape((params.tree_state_size,1))(input_tree)
+        #conv_obs = layers.Conv1D(filters = 128, kernel_size =(params.num_features), strides=(params.num_features), activation='relu')(conv_obs)
+        #conv_obs = layers.Flatten()(conv_obs)
         conv_obs = layers.Dense(256, activation='relu')(conv_obs)
         conv_obs = layers.Dense(32, activation='relu')(conv_obs)
 
-        conv_comm = layers.Reshape((params.comm_size,1))(input_comm)
-        conv_comm = layers.Conv1D(filters = 32, kernel_size =(params.number_of_comm), strides=(params.number_of_comm), activation='relu')(conv_comm)
-        conv_comm = layers.Flatten()(conv_comm)
+        #conv_comm = layers.Reshape((params.comm_size,1))(input_comm)
+        #conv_comm = layers.Conv1D(filters = 32, kernel_size =(params.number_of_comm), strides=(params.number_of_comm), activation='relu')(conv_comm)
+        #conv_comm = layers.Flatten()(conv_comm)
+        conv_comm = layers.Dense(64, activation='relu')(input_comm)
         conv_comm = layers.Dense(64, activation='relu')(conv_comm)
 
         hidden = layers.concatenate([conv_obs, conv_comm, input_vec])
@@ -132,13 +134,23 @@ class AC_Network():
         return policy_loss, tf.reduce_mean(entropy)
 
 
+    def comm_loss(self, advantages, actions, policy):
+        actions_onehot = tf.one_hot(actions, params.number_of_actions)
+        responsible_outputs = tf.reduce_sum(policy * actions_onehot, [1])
+        comm_log = tf.math.log(tf.clip_by_value(policy, 1e-20, 1.0))
+        entropy = -tf.reduce_sum(policy * comm_log, axis=1)
+        comm_loss = tf.math.log(responsible_outputs  + 1e-20)*advantages
+        comm_loss = -tf.reduce_sum(comm_loss)
+        return comm_loss, tf.reduce_mean(entropy)
+
+
     def train(self, target_v, advantages, actions, comms_actions, obs):
         # Value loss
         with tf.GradientTape() as tape:
             policy,value,comm,_,_,_ = self.model(obs)
             v_loss = self.value_loss(target_v, value)
             p_loss, entropy = self.policy_loss(advantages, actions, policy)
-            c_loss, comm_entropy = self.policy_loss(advantages, comms_actions, comm)
+            c_loss, comm_entropy = self.comm_loss(advantages, comms_actions, comm)
             tot_loss = p_loss + v_loss + c_loss
 
         local_vars = self.model.trainable_variables
