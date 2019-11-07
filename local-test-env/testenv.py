@@ -174,6 +174,11 @@ env_renderer = RenderTool(env, gl="PILSVG",
 plt.ion()
 plt.show()
 
+succ_best = 1
+tries_best = 1
+succ_stoch = 1
+tries_stoch = 1
+use_best = False
 
 while True:
     episode_done = False
@@ -186,10 +191,16 @@ while True:
 
     env_renderer.set_new_rail()
 
+    
+
     while episode_done == False and episode_step_count < 200:
         # Usually, this part is handled in the network, but to get
         # the probabilities, we do it ourselfs
-        actions, values, comm = model.get_actions_and_values(obs, obs_builder)
+        if use_best:
+            actions, values, comm = model.get_best_actions_and_values(obs, obs_builder)
+        else:
+            actions, values, comm = model.get_actions_and_values(obs, obs_builder)
+
 
         '''
         obs_ = model.obs_dict_to_lists(obs)
@@ -225,3 +236,19 @@ while True:
         
         obs = next_obs               
         episode_step_count += 1
+
+        
+
+    if use_best:
+        if episode_done:
+            succ_best += 1
+        tries_best +=1
+    else:
+        if episode_done:
+            succ_stoch += 1
+        tries_stoch +=1
+
+    use_best = not use_best
+
+    print('Best - Succ:',succ_best, 'of', tries_best, ', Ratio =',succ_best/tries_best)
+    print('Stoch - Succ:',succ_stoch, 'of', tries_stoch, ', Ratio =',succ_stoch/tries_stoch)

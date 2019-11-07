@@ -85,7 +85,7 @@ def start_train(resume):
             obs_builder = env.env.obs_builder
 
             while episode_done == False and episode_step_count < env.max_steps:
-                actions,_,_ = model.get_actions_and_values(obs, obs_builder)
+                actions,_,_ = model.get_best_actions_and_values(obs, obs_builder)
                 next_obs, rewards, done, _ = env.step(actions)
                 #env_renderer.render_env(show=True)
 

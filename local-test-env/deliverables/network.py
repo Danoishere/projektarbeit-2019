@@ -200,7 +200,7 @@ class AC_Network():
         return [all_tree_obs, all_vec_obs, all_comm_obs, all_rec_actor_obs, all_rec_critic_obs, all_rec_comm_obs]
 
 
-    def get_best_actions_and_values(self, obs):
+    def get_best_actions_and_values(self, obs, obs_builder):
         obs_list = self.obs_dict_to_lists(obs)
         predcition, values, comm, a_rec_h, a_rec_c, c_rec_h, c_rec_c, comm_rec_h, comm_rec_c = self.model.predict_on_batch(obs_list)
         actions = {}

@@ -111,6 +111,7 @@ class Worker():
             self.local_model.update_entropy_factor()
             self.episode_count = 0
             self.curriculum.update_env_to_curriculum_level(self.env)
+            use_best_actions = False
 
             while not bool(self.should_stop.value):
                 # Check with server if there is a new curriculum level available
@@ -142,8 +143,14 @@ class Worker():
                 obs_builder = self.env.env.obs_builder
                 obs, info = self.env.reset()
 
+               
+
                 while episode_done == False and episode_step_count < self.env.max_steps:
-                    actions, v, comm = self.local_model.get_actions_and_values(obs, obs_builder)
+                    if use_best_actions:
+                        actions, v, comm = self.local_model.get_best_actions_and_values(obs, obs_builder)
+                    else:
+                        actions, v, comm = self.local_model.get_actions_and_values(obs, obs_builder)
+
                     next_obs, rewards, done, info = self.env.step(actions)
 
                     episode_done = done['__all__']
@@ -178,6 +185,7 @@ class Worker():
                     episode_step_count += 1
                     steps_on_level += 1
                     done_last_step = dict(done)
+                    
 
                 # Individual rewards
                 for i in range(self.env.num_agents):
@@ -211,8 +219,10 @@ class Worker():
                 # Save stats to Tensorboard every 5 episodes
                 self.log_in_tensorboard()
                 self.episode_count += 1
-                print('Episode', self.episode_count,'of',self.name,'with',episode_step_count,'steps, reward of',episode_reward, ', mean entropy of', np.mean([l[2] for l in self.stats[-1:]]), ', curriculum level ', self.curriculum.current_level)
-            
+                
+                print('Episode', self.episode_count,'of',self.name,'with',episode_step_count,'steps, reward of',episode_reward, ', mean entropy of', np.mean([l[2] for l in self.stats[-1:]]), ', curriculum level', self.curriculum.current_level, ', using best actions:', use_best_actions)
+                use_best_actions = not use_best_actions
+
             return self.episode_count
     
         except KeyboardInterrupt:
