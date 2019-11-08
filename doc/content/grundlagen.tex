@@ -16,4 +16,33 @@
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\chapter{(Theoretische Grundlagen)}\label{chap.grundlagen}
+\chapter{Technical foundation}\label{chap.grundlagen}
+\section{Reinforcement learning}\label{projektmanagement}
+\subsection*{Basic definitions}\label{basic_rl_definitions}
+In recent years, major progress has been achieved in the field of reinforcement learning (RL).
+In RL, an agent $\mathcal{A}$ learns to perform a task by interacting with an environment $\mathcal{E}$. On every discrete timestep $\mathcal{t}$ the agent needs to take an action $\mathcal{u}$. The selection of this action $\mathcal{u}$ is based on the current observation $\mathcal{s}$. The success of the agent is measured by reward $\mathcal{R}$ received. If the agent does well, it receives positive reward from the environment, if it does something bad, there is no or negative reward. The goal of the agent $\mathcal{A}$ is now to take an action that maximizes the expected future reward  $\EX[\mathcal{R}_{t+1}+\mathcal{R}_{t+1}+\mathcal{R}_{t+1}+...|\mathcal{s}_{t}]$ given the current observation $\mathcal{s}$.\\
+The current observation $\mathcal{s}_{t}$, also known as the current state is used to determine which action $\mathcal{u}$ to take next. An agent can observe its environment either fully or partially.
+\subsection*{Value based vs. policy based methods}\label{value_policy_based_methods}
+Reinforcement learning methods are categorized into value-based methods and policy-based methods. Those variants differ on how they select an action $\mathcal{u}$ from a state $\mathcal{s}$.
+Value-based reinforcement learning has its origins in dynamic programming. Through repeated rollouts of the environment, a value function $\mathcal{V(s)}$
+is aquired. $\mathcal{V(s)}$ aims to estimate the future expected reward for any given state $\mathcal{s}$ as precisely as possible. This estimation $\mathcal{V(s)}$ is achieved by either a lookup table for all possible states or a function approximator. In this work, we solely focus on the case that $\mathcal{V(s)}$ is implemented in form of a neural network as function approximator. Using this approximation $\mathcal{V(s)}$ we can now select the action $\mathcal{u}$ that takes the agent into the next state $\mathcal{s}_{t+1}$ with the highest expected reward \\
+The second category of reinfocement learning algrithms are the so called policy based methods. These methods aim to aquire a stochastic policy $\pi$ that maximizes the expected reward $\mathcal{R}$ by taking actions with certain probabilities. Taking actions based on probabilities solves an important issue of value based methods, which is, that by taking greedy actions with respect to state  $\mathcal{s}$, the agent might not explore the whole state space and misses out on better ways to solve the environment (source!!).
+\subsection*{Relation to this work}\label{rl_relation_work}
+The goal of this work is to apply an RL algorithm to the vehicle rescheduling problem. Based on the work of S. Hubacher (source!!!), we use a distributed RL algorithm that learns a policy to control the traffic of trains on a rail grid. To do so, we use the asynchronous advantage actor critic algorithm and expand its definiton to the use case of multiple agents.
+
+
+
+
+
+Mnih et al, DQN Atari
+https://www.cs.toronto.edu/~vmnih/docs/dqn.pdf
+
+Wu et al, A3C
+https://arxiv.org/abs/1602.01783
+
+Overview over MARL, Hernandez-Leal et al
+https://arxiv.org/pdf/1810.05587.pdf
+
+A3C in a multi agent environment, 
+https://arxiv.org/pdf/1903.01365.pdf
+

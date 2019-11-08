@@ -57,11 +57,13 @@ def start_train(resume):
     curriculum.seed = 12345
     num_repeat = 100
 
+    
     env_renderer = RenderTool(env.env, gl="PILSVG",
                           agent_render_variant=AgentRenderVariant.AGENT_SHOWS_OPTIONS_AND_BOX,
                           show_debug=False,
                           screen_height=800,  # Adjust these parameters to fit your resolution
                           screen_width=800)
+    
 
     while True:
 
@@ -81,7 +83,7 @@ def start_train(resume):
             env_renderer.set_new_rail()
 
             while episode_done == False and episode_step_count < env.max_steps:
-                actions = model.get_best_actions(obs)
+                actions = model.get_actions(obs)
                 next_obs, rewards, done, _ = env.step(actions)
                 env_renderer.render_env(show=True)
 

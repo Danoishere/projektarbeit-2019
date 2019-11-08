@@ -8,7 +8,7 @@
 \usepackage{color}
 \usepackage{fancyhdr}
 \usepackage{rotating}
-\usepackage{titlesec}
+%\usepackage{titlesec}
 \usepackage{mathptmx}
 % \usepackage{helvet}
 % \usepackage[scaled]{uarial} %TODO: check
@@ -21,6 +21,7 @@
 \usepackage{url}
 \usepackage{geometry}
 \usepackage[absolute]{textpos}
+\usepackage{amsmath}
 \usepackage{makeidx}
 \usepackage{colortbl}
 \usepackage{pdflscape}
@@ -34,6 +35,23 @@
 \usepackage[plainpages=false]{hyperref}
 \usepackage{wallpaper} %\ThisTileWallPaper{}
 \usepackage[super,square]{natbib} %für BibTeX Literaturverzeichnis
+
+
+% We need lowercase cursive font
+\usepackage{amsmath}
+\usepackage{fontspec}
+\usepackage{unicode-math}
+\setmainfont{TeX Gyre Pagella}
+
+% Any of the following work, and probably many more
+\setmathfont{TeX Gyre Pagella Math}
+%\setmathfont{TeX Gyre Termes Math}
+%\setmathfont{STIX}
+%\setmathfont{Asana Math}
+
+\DeclareRobustCommand{\bbone}{\text{\usefont{U}{bbold}{m}{n}1}}
+
+\DeclareMathOperator{\EX}{\mathbb{E}}% expected value
 
 
 
