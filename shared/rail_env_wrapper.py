@@ -6,7 +6,8 @@ import random
 
 
 class RailEnvWrapper():
-    initial_step_penalty = -0.05
+    initial_step_penalty = 0
+    global_reward = 0
     
     def __init__(self, observation_builder, width=12, height=12, num_agents=2):
         self.num_agents = num_agents
@@ -19,7 +20,7 @@ class RailEnvWrapper():
                 })
 
         self.stochastic_data = {
-                'prop_malfunction': 0.0,  # Percentage of defective agents
+                'prop_malfunction': 0.3,  # Percentage of defective agents
                 'malfunction_rate': 30,  # Rate of malfunction occurence
                 'min_duration': 3,  # Minimal duration of malfunction
                 'max_duration': 20  # Max duration of malfunction
@@ -48,7 +49,6 @@ class RailEnvWrapper():
         )
 
     def step(self, actions):
-        self.env.step_penalty = -0.1
         next_obs, rewards, done, info = self.env.step(actions)
         self.done_last_step = dict(done)
         self.episode_step_count += 1
@@ -68,6 +68,7 @@ class RailEnvWrapper():
 
         self.num_of_done_agents = 0
         self.env.step_penalty = self.initial_step_penalty
+        self.env.global_reward = self.global_reward
         self.episode_step_count = 0
         return obs,info
 
@@ -85,7 +86,7 @@ class RailEnvWrapper():
             obs_builder_object=self.observation_builder,
             remove_agents_at_target=True)
 
-        #self.env.global_reward = self.global_reward
+        self.env.global_reward = self.global_reward
         self.env.num_agents = self.num_agents
         self.env.step_penalty = self.initial_step_penalty
         return self.env

@@ -90,9 +90,10 @@ class Benchmark:
         episode_step_count = 0
         
         obs, info = self.env.reset()
+        obs_builder = self.env.env.obs_builder
 
         while episode_done == False and episode_step_count < self.env.max_steps:
-            actions = self.model.get_best_actions(obs)
+            actions,_,_ = self.model.get_best_actions_and_values(obs, obs_builder)
             next_obs, rewards, done, info = self.env.step(actions)
 
             episode_done = done['__all__']

@@ -1,5 +1,5 @@
 # Fdb version 3
-["pdflatex"] 1573217197 "/Users/ralph/Documents/workspaces/workspace_zhaw_pa_2019/projektarbeit-2019/doc/doc.tex" "/Users/ralph/Documents/workspaces/workspace_zhaw_pa_2019/projektarbeit-2019/doc/doc.pdf" "doc" 1573217197
+["pdflatex"] 1573217197 "/Users/ralph/Documents/workspaces/workspace_zhaw_pa_2019/projektarbeit-2019/doc/doc.tex" "/Users/ralph/Documents/workspaces/workspace_zhaw_pa_2019/projektarbeit-2019/doc/doc.pdf" "doc" 1573217292
   "/Users/ralph/Documents/workspaces/workspace_zhaw_pa_2019/projektarbeit-2019/doc/doc.aux" 1573217197 8 a94a2480d3289e625eea47cd1b285758 ""
   "/Users/ralph/Documents/workspaces/workspace_zhaw_pa_2019/projektarbeit-2019/doc/doc.tex" 1573217194 1414 6cb4c70550bf27000f2c62cb55284a12 ""
   "/usr/local/texlive/2018/texmf-dist/fonts/map/fontname/texfonts.map" 1511824771 3332 103109f5612ad95229751940c61aada0 ""
@@ -96,6 +96,6 @@
   "header.tex" 1573217194 4275 86a78b44496ff9f3e4806db756be3107 ""
   (generated)
   "/Users/ralph/Documents/workspaces/workspace_zhaw_pa_2019/projektarbeit-2019/doc/doc.log"
+  "doc.log"
   "header.aux"
   "/Users/ralph/Documents/workspaces/workspace_zhaw_pa_2019/projektarbeit-2019/doc/doc.pdf"
-  "doc.log"

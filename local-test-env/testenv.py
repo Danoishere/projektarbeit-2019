@@ -104,13 +104,13 @@ def punish_impossible_actions(env, obs, actions, rewards):
             print('right pen')
 
 
-width = 30  # With of map
-height = 30  # Height of map
-nr_trains = 1 # Number of trains that have an assigned task in the env
-cities_in_map = 2  # Number of cities where agents can start or end
+width = 20  # With of map
+height = 20  # Height of map
+nr_trains = 10 # Number of trains that have an assigned task in the env
+cities_in_map = 3  # Number of cities where agents can start or end
 seed = 14  # Random seed
 grid_distribution_of_cities = False  # Type of city distribution, if False cities are randomly placed
-max_rails_between_cities = 1  # Max number of tracks allowed between cities. This is number of entry point to a city
+max_rails_between_cities = 2  # Max number of tracks allowed between cities. This is number of entry point to a city
 max_rail_in_cities = 2  # Max number of parallel tracks within a city, representing a realistic trainstation
 
 rail_generator = sparse_rail_generator(max_num_cities=cities_in_map,
@@ -148,7 +148,7 @@ stochastic_data = {
 #observation_builder = GlobalObsForRailEnv()
 
 model = AC_Network()
-model.load_model('deliverables/model','checkpoint_lvl_0')
+model.load_model('deliverables/model','lstm_comm')
 
 # Custom observation builder with predictor, uncomment line below if you want to try this one
 observation_builder = model.get_observation_builder()
@@ -174,6 +174,11 @@ env_renderer = RenderTool(env, gl="PILSVG",
 plt.ion()
 plt.show()
 
+succ_best = 1
+tries_best = 1
+succ_stoch = 1
+tries_stoch = 1
+use_best = False
 
 while True:
     episode_done = False
@@ -181,13 +186,23 @@ while True:
     episode_step_count = 0
 
     obs, info = env.reset()
+    obs_builder = env.obs_builder
     #plot_graph(obs_helper.graph_list)
 
     env_renderer.set_new_rail()
 
+    
+
     while episode_done == False and episode_step_count < 200:
         # Usually, this part is handled in the network, but to get
         # the probabilities, we do it ourselfs
+        if use_best:
+            actions, values, comm = model.get_best_actions_and_values(obs, obs_builder)
+        else:
+            actions, values, comm = model.get_actions_and_values(obs, obs_builder)
+
+
+        '''
         obs_ = model.obs_dict_to_lists(obs)
         predcition, _ = model.model.predict_on_batch(obs_)
         actions = {}
@@ -195,14 +210,14 @@ while True:
         for i in range(nr_trains):
             a_dist = predcition[i]
             actions[i] = np.random.choice([0,1,2,3,4], p=a_dist) #np.argmax(a_dist)
-
-        plt.clf()
+        '''
+        #plt.clf()
         
-        plt.subplot(2,1,1)
-        plt.bar([0,1,2,3,4],predcition[0],tick_label=['do nothing', 'left', 'forward', 'right', 'stop'])
+        #plt.subplot(2,1,1)
+        #plt.bar([0,1,2,3,4],predcition[0],tick_label=['do nothing', 'left', 'forward', 'right', 'stop'])
         
         next_obs, rewards, done, info = env.step(actions)
-        punish_impossible_actions(env, obs, actions, rewards)
+        #punish_impossible_actions(env, obs, actions, rewards)
         #plt.subplot(2,1,2)
         
         #plot_graph(obs_helper.graph_list)
@@ -211,7 +226,7 @@ while True:
         #plt.ylim([-1.4,1.4])
 
         #plt.waitforbuttonpress()
-        plt.draw()
+        #plt.draw()
     
         env_renderer.render_env(show=True)
 
@@ -221,3 +236,19 @@ while True:
         
         obs = next_obs               
         episode_step_count += 1
+
+        
+
+    if use_best:
+        if episode_done:
+            succ_best += 1
+        tries_best +=1
+    else:
+        if episode_done:
+            succ_stoch += 1
+        tries_stoch +=1
+
+    use_best = not use_best
+
+    print('Best - Succ:',succ_best, 'of', tries_best, ', Ratio =',succ_best/tries_best)
+    print('Stoch - Succ:',succ_stoch, 'of', tries_stoch, ', Ratio =',succ_stoch/tries_stoch)

@@ -1,0 +1,23 @@
+Statusmeeting PA
+----------------
+- Problem: Entropy collapse if training on all servers
+	-> Change Entropy System (Dynamic entropy, entropy per step instead of sum)
+	-> Problem gelöst
+	
+- Inbetriebnahme DRAN
+	-> Relativ problemlos, verschnellert Training
+	
+- Test-Submission (alles verändert sich)
+	-> Resultat enttäuschend
+	-> Wir passen nun Training-Setup an, um besser mit den neuen Tatsachen klarzukommen
+	
+- Reduktion der Netzwerkgrösse
+	-> LSTMs statt mehrere Frames
+	-> Reduziert Input-Layer-Grösse und dadurch auch Netzwerkgrösse
+	-> Es kann auf mehr als nur die letzten drei Frames eingegangen werden
+
+- Kommunikation
+	-> Konvergiert aktuell noch zu schnell zu einer einzigen Action
+	-> Nächster Schritt: Entropie künstlich hoch halten und erst wenn kommunikation wirklich benötigt wird aktivieren
+	
+	
