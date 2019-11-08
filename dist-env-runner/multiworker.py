@@ -230,23 +230,23 @@ class Worker():
 
 
     def train(self, rollout):
-        #all_rollouts = []
-        #all_rewards = []
+        all_rollouts = []
+        all_rewards = []
 
         for i in range(self.env.num_agents):
             rewards = [row[2] for row in rollout[i]]
-            discounted_rewards = discount(rewards, self.params.gamma)
-            #all_rewards.append(rewards)
-            #all_rollouts += rollout[i]
+            rewards = discount(rewards, self.params.gamma)
+            all_rewards.append(rewards)
+            all_rollouts += rollout[i]
 
-            #discounted_rewards = np.concatenate(all_rewards)
-            actions = np.asarray([row[1] for row in rollout[i]]) 
-            comms = np.asarray([row[6] for row in rollout[i]]) 
-            values = np.asarray([row[5] for row in rollout[i]])
-            obs = self.obs_helper.buffer_to_obs_lists(rollout[i])
-            advantages = discounted_rewards - values
+        discounted_rewards = np.concatenate(all_rewards)
+        actions = np.asarray([row[1] for row in all_rollouts]) 
+        comms = np.asarray([row[6] for row in all_rollouts]) 
+        values = np.asarray([row[5] for row in all_rollouts])
+        obs = self.obs_helper.buffer_to_obs_lists(all_rollouts)
+        advantages = discounted_rewards - values
 
-            v_l,p_l,e_l,e_l_comm, g_n, v_n = self.local_model.train(discounted_rewards, advantages, actions, comms, obs)
+        v_l,p_l,e_l,e_l_comm, g_n, v_n = self.local_model.train(discounted_rewards, advantages, actions, comms, obs)
         return v_l, p_l, e_l, e_l_comm, g_n,  v_n
 
     def log_in_tensorboard(self):

@@ -1,0 +1,21 @@
+Experimente PA
+--------------
+
+1. Vergleich:
+Netzwerkarchitekturen für Lernfortschritt
+- Feed Forward
+- Convolutional
+- Recurrent
+
+-> Evtl verschiedene Netzwerkgrössen?
+
+2. Observations
+- Mit und ohne Kommunikation
+- Reduzierte Eingabeparameter?
+
+3. Reward shaping
+- Mit step-penalty
+- Ohne step-penalty
+
+4. Structure
+- Mit und ohne "best-action"-Selection 
