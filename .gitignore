@@ -125,3 +125,4 @@ dist-model-server/deliverables/model/model_global.h5
 dist-model-server/deliverables/weights.h5
 dist-model-server/deliverables/model/model_global.h5
 dist-model-server/deliverables/run_info.json
+.DS_Store
