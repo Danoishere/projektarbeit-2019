@@ -66,11 +66,10 @@ class AC_Network():
 
 
     def create_network(self, input, input_rec):
-        hidden = layers.Dense(512, activation='relu')(input)
-        hidden = layers.Dense(256, activation='relu')(hidden)
+        hidden = layers.Dense(256, activation='relu')(input)
         hidden = layers.Dense(64, activation='relu')(hidden)
         hidden = layers.Reshape((1,64))(hidden)
-        hidden, state_h, state_c = layers.LSTM(64, return_state=True, return_sequences=False)(hidden, initial_state=[input_rec[:,0], input_rec[:,1]])
+        hidden, state_h, state_c = layers.LSTM(64, activation='tanh', return_state=True, return_sequences=False)(hidden, initial_state=[input_rec[:,0], input_rec[:,1]])
         hidden = layers.Dense(64, activation='relu')(hidden)
         hidden = layers.Dense(8, activation='relu')(hidden)
 
@@ -126,7 +125,7 @@ class AC_Network():
         comm_log = tf.math.log(tf.clip_by_value(policy, 1e-20, 1.0))
         entropy = -tf.reduce_sum(policy * comm_log, axis=1)
         comm_loss = tf.math.log(responsible_outputs  + 1e-20)*advantages
-        comm_loss = -tf.reduce_sum(comm_loss + entropy * 0.015)
+        comm_loss = -tf.reduce_sum(comm_loss + entropy * 0.005)
         return comm_loss, tf.reduce_mean(entropy)
 
 

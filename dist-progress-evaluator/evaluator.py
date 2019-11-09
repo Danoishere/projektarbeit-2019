@@ -17,6 +17,7 @@ from ctypes import c_bool
 
 from time import sleep, time
 from rail_env_wrapper import RailEnvWrapper
+from flatland.envs.rail_env import RailEnvActions, RailAgentStatus
 
 import constant as const
 import urllib
@@ -80,13 +81,19 @@ def start_train(resume):
             episode_reward = 0
             episode_step_count = 0
             
-            obs, _ = env.reset()
+            obs, info = env.reset()
             # env_renderer.set_new_rail()
             obs_builder = env.env.obs_builder
 
             while episode_done == False and episode_step_count < env.max_steps:
-                actions,_,_ = model.get_best_actions_and_values(obs, obs_builder)
-                next_obs, rewards, done, _ = env.step(actions)
+                obs_dict = {}
+                for handle in range(len(env.env.agents)):
+                    if info['status'][handle] == RailAgentStatus.READY_TO_DEPART or (
+                        info['action_required'][handle] and info['malfunction'][handle] == 0):
+                        obs_dict[handle] = obs[handle] 
+
+                actions,_,_ = model.get_best_actions_and_values(obs_dict, env.env)
+                next_obs, rewards, done, info = env.step(actions)
                 #env_renderer.render_env(show=True)
 
                 episode_done = done['__all__']

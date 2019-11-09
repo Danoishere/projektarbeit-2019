@@ -140,7 +140,6 @@ class Worker():
                 episode_reward = 0
                 episode_step_count = 0
                 
-                obs_builder = self.env.env.obs_builder
                 obs, info = self.env.reset()
 
                 while episode_done == False and episode_step_count < self.env.max_steps:
@@ -185,29 +184,16 @@ class Worker():
                     episode_step_count += 1
                     steps_on_level += 1
                     done_last_step = dict(done)
-                    
-                print('soos')
+
 
                 # Individual rewards
                 for i in range(self.env.num_agents):
-                    # If agents could finish the level, 
-                    # set final reward for all agents
-                    episode_buffer[i][-1][2] += 1.0
-                    episode_reward += 1.0
-
-                # End of episode-loop
-                # Cooperative rewards
-                if episode_done:
-                    for i in range(self.env.num_agents):
+                    if done[i]:
                         # If agents could finish the level, 
                         # set final reward for all agents
                         episode_buffer[i][-1][2] += 1.0
                         episode_reward += 1.0
-                else:
-                    for i in range(self.env.num_agents):
-                        if not done[i]:
-                            episode_buffer[i][-1][2] -= 1
-                            episode_reward -= 1
+
 
                 self.episode_rewards.append(episode_reward)
                 self.episode_lengths.append(episode_step_count)
