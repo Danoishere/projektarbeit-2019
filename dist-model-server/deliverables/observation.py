@@ -567,7 +567,7 @@ class RailObsBuilder(CustomTreeObsForRailEnv):
 
     def get_many(self, handles=None):
         obs = super().get_many(handles=handles)
-        all_augmented_obs = {}
+        all_obs = {}
 
         for handle in obs:
             last_agent_obs = None
@@ -575,15 +575,11 @@ class RailObsBuilder(CustomTreeObsForRailEnv):
                 last_agent_obs = self.last_obs[handle]
 
             next_agent_obs = obs[handle]
-            next_agent_tree_obs, vec_obs, comm_obs, rec_actor, rec_critic, rec_comm = self.reshape_agent_obs(handle, next_agent_obs, None)
-            # print(next_agent_tree_obs)
-            #augmented_tree_obs = self.augment_agent_tree_obs_with_frames(last_agent_obs, next_agent_tree_obs)
-            self.last_obs[handle] = next_agent_tree_obs# augmented_tree_obs
+            agent_obs, rec_actor, rec_critic, rec_comm = self.reshape_agent_obs(handle, next_agent_obs, None)
+            all_obs[handle] = (agent_obs, rec_actor, rec_critic, rec_comm)
 
-            # print(augmented_tree_obs)
-            all_augmented_obs[handle] = (next_agent_tree_obs, vec_obs, comm_obs, rec_actor, rec_critic, rec_comm)
+        return all_obs
 
-        return all_augmented_obs
 
     def reshape_agent_obs(self, handle, agent_obs, info):
         if agent_obs is None:
@@ -601,7 +597,7 @@ class RailObsBuilder(CustomTreeObsForRailEnv):
                 agent_critic_rec_state = np.zeros((2,params.recurrent_size)).astype(np.float32)
                 agent_comm_rec_state = np.zeros((2,params.recurrent_size)).astype(np.float32)
 
-            return tree_obs.astype(np.float32), vec_obs.astype(np.float32), comm_obs.astype(np.float32),  agent_actor_rec_state, agent_critic_rec_state, agent_comm_rec_state
+            return np.concatenate([tree_obs, vec_obs, comm_obs]).astype(np.float32),  agent_actor_rec_state, agent_critic_rec_state, agent_comm_rec_state
         else:
 
             root_node = agent_obs
@@ -681,7 +677,7 @@ class RailObsBuilder(CustomTreeObsForRailEnv):
                 agent_critic_rec_state = np.zeros((2,params.recurrent_size)).astype(np.float32)
                 agent_comm_rec_state = np.zeros((2,params.recurrent_size)).astype(np.float32)
 
-            return tree_obs.astype(np.float32), vec_obs.astype(np.float32), comm_obs.astype(np.float32),  agent_actor_rec_state, agent_critic_rec_state, agent_comm_rec_state
+            return np.concatenate([tree_obs, vec_obs, comm_obs]),  agent_actor_rec_state, agent_critic_rec_state, agent_comm_rec_state
 
 
     def augment_agent_tree_obs_with_frames(self, last_obs, next_obs):
@@ -703,14 +699,12 @@ class RailObsBuilder(CustomTreeObsForRailEnv):
 
 
 def buffer_to_obs_lists(episode_buffer):
-    tree_obs = np.asarray([row[0][0] for row in episode_buffer])
-    vec_obs = np.asarray([row[0][1] for row in episode_buffer])
-    comm_obs = np.asarray([row[0][2] for row in episode_buffer])
-    a_rec_obs = np.asarray([row[0][3] for row in episode_buffer])
-    c_rec_obs = np.asarray([row[0][4] for row in episode_buffer])
-    comm_rec_obs = np.asarray([row[0][5] for row in episode_buffer])
+    vec_obs = np.asarray([row[0][0] for row in episode_buffer])
+    a_rec_obs = np.asarray([row[0][1] for row in episode_buffer])
+    c_rec_obs = np.asarray([row[0][2] for row in episode_buffer])
+    comm_rec_obs = np.asarray([row[0][3] for row in episode_buffer])
 
-    return tree_obs, vec_obs, comm_obs, a_rec_obs, c_rec_obs, comm_rec_obs
+    return vec_obs, a_rec_obs, c_rec_obs, comm_rec_obs
 
 
 # Observation-pattern
@@ -755,9 +749,6 @@ def get_shortest_way_from(entry_dir, start_node, length):
     return selected_nodes
 
 def get_ordered_children(node):
-    #if node is None:
-    #    return []
-
     children = []
     for k in node.childs:
         child = node.childs[k]
@@ -789,7 +780,10 @@ def node_to_comm(node_tuple):
     if node.communication is None:
         return [0]*params.number_of_comm
 
-    return node.communication
+    agent_comm_onehot = np.zeros(5)
+    agent_comm_onehot[np.arange(0,5) == node.communication] = 1
+
+    return agent_comm_onehot
 
 
 def node_to_obs(node_tuple):
@@ -854,6 +848,8 @@ def node_to_obs(node_tuple):
     ]
 
     if node.communication is not None:
-        obs[-5:] = node.communication
+        agent_comm_onehot = np.zeros(5)
+        agent_comm_onehot[np.arange(0,5) == node.communication] = 1
+        obs[-5:] = agent_comm_onehot
 
     return obs

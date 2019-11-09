@@ -23,5 +23,6 @@ num_frames = 1
 frame_size = (path_root + path_sec + path_thrd)*num_features
 comm_size = (path_root + path_sec + path_thrd)*number_of_comm
 tree_state_size = frame_size*num_frames
-
 vec_state_size = 10
+
+tot_obs_size = tree_state_size + vec_state_size + comm_size

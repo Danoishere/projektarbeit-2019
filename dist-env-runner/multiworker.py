@@ -17,7 +17,7 @@ import os
 cwd = os.getcwd()
 
 from rail_env_wrapper import RailEnvWrapper
-from flatland.envs.rail_env import RailEnvActions
+from flatland.envs.rail_env import RailEnvActions, RailAgentStatus
 
 import constant as const
 #import sys
@@ -143,13 +143,17 @@ class Worker():
                 obs_builder = self.env.env.obs_builder
                 obs, info = self.env.reset()
 
-               
-
                 while episode_done == False and episode_step_count < self.env.max_steps:
+                    obs_dict = {}
+                    for handle in range(len(self.env.env.agents)):
+                        if info['status'][handle] == RailAgentStatus.READY_TO_DEPART or (
+                            info['action_required'][handle] and info['malfunction'][handle] == 0):
+                            obs_dict[handle] = obs[handle] 
+
                     if use_best_actions:
-                        actions, v, comm = self.local_model.get_best_actions_and_values(obs, obs_builder)
+                        actions, v, comm = self.local_model.get_best_actions_and_values(obs_dict, self.env.env)
                     else:
-                        actions, v, comm = self.local_model.get_actions_and_values(obs, obs_builder)
+                        actions, v, comm = self.local_model.get_actions_and_values(obs_dict, self.env.env)
 
                     next_obs, rewards, done, info = self.env.step(actions)
 
@@ -157,16 +161,12 @@ class Worker():
                     if episode_done == True:
                         next_obs = obs
 
-                    for i in range(self.env.num_agents):
+                    for i in obs_dict:
                         agent_obs = obs[i]
                         agent_action = actions[i]
                         agent_comm = comm[i]
                         agent_reward = rewards[i]
                         agent_next_obs =  next_obs[i]
-
-                        agent_comm_onehot = np.zeros(5)
-                        agent_comm_onehot[np.arange(0,5) == agent_comm] = 1
-                        self.env.env.agents[i].communication = agent_comm_onehot
 
                         if not done_last_step[i]:
                             episode_buffer[i].append([
@@ -186,6 +186,7 @@ class Worker():
                     steps_on_level += 1
                     done_last_step = dict(done)
                     
+                print('soos')
 
                 # Individual rewards
                 for i in range(self.env.num_agents):
