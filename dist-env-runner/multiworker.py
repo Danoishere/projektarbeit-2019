@@ -9,7 +9,7 @@ import scipy.signal
 from tensorflow.keras.optimizers import RMSprop
 
 from datetime import datetime
-from random import choice,uniform
+from random import choice,uniform, random
 from time import sleep
 from time import time
 
@@ -141,20 +141,44 @@ class Worker():
                 episode_step_count = 0
                 
                 obs, info = self.env.reset()
+                all_handles = [i for i in range(len(self.env.env.agents))]
+                no_reward = {i:0 for i in range(len(self.env.env.agents))}
+
+                prep_steps = 0
+
+                use_best_actions = random() < 0.5
 
                 while episode_done == False and episode_step_count < self.env.max_steps:
+                    # Figure out, which agents can move
                     obs_dict = {}
                     for handle in range(len(self.env.env.agents)):
                         if info['status'][handle] == RailAgentStatus.READY_TO_DEPART or (
                             info['action_required'][handle] and info['malfunction'][handle] == 0):
-                            obs_dict[handle] = obs[handle] 
+                            obs_dict[handle] = obs[handle]
 
+                    # Get actions/values
                     if use_best_actions:
-                        actions, v, comm = self.local_model.get_best_actions_and_values(obs_dict, self.env.env)
+                        actions, v = self.local_model.get_best_actions_and_values(obs_dict, self.env.env)
                     else:
-                        actions, v, comm = self.local_model.get_actions_and_values(obs_dict, self.env.env)
+                        actions, v = self.local_model.get_actions_and_values(obs_dict, self.env.env)
 
-                    next_obs, rewards, done, info = self.env.step(actions)
+
+                    if prep_steps == 1:
+                        next_obs, rewards, done, info = self.env.step(actions)
+                        for agent in self.env.eng.agents:
+                            agent.last_action = 0
+
+                        prep_steps = 0
+                    else:
+                        prep_steps += 1
+                        next_obs = self.env.env.obs_builder.get_many(all_handles)
+                        rewards = dict(no_reward)
+
+                        try:
+                            done
+                        except:
+                            done = {i:False for i in range(len(self.env.env.agents))}
+                            done['__all__'] = False
 
                     episode_done = done['__all__']
                     if episode_done == True:
@@ -163,7 +187,6 @@ class Worker():
                     for i in obs_dict:
                         agent_obs = obs[i]
                         agent_action = actions[i]
-                        agent_comm = comm[i]
                         agent_reward = rewards[i]
                         agent_next_obs =  next_obs[i]
 
@@ -174,12 +197,11 @@ class Worker():
                                 agent_reward,
                                 agent_next_obs,
                                 episode_done,
-                                v[i],
-                                agent_comm])
+                                v[i]])
                             
                             episode_values.append(v[i])
                             episode_reward += agent_reward
-                    
+                
                     obs = next_obs              
                     episode_step_count += 1
                     steps_on_level += 1
@@ -200,15 +222,14 @@ class Worker():
                 self.episode_mean_values.append(np.mean(episode_values))
                 self.episode_success.append(episode_done)
 
-                v_l, p_l, e_l,e_l_comm, g_n, v_n = self.train(episode_buffer)
-                self.stats.append([v_l, p_l, e_l,e_l_comm, g_n, v_n])
+                v_l, p_l, e_l, g_n, v_n = self.train(episode_buffer)
+                self.stats.append([v_l, p_l, e_l, g_n, v_n])
 
                 # Save stats to Tensorboard every 5 episodes
                 self.log_in_tensorboard()
                 self.episode_count += 1
                 
                 print('Episode', self.episode_count,'of',self.name,'with',episode_step_count,'steps, reward of',episode_reward, ', mean entropy of', np.mean([l[2] for l in self.stats[-1:]]), ', curriculum level', self.curriculum.current_level, ', using best actions:', use_best_actions)
-                use_best_actions = not use_best_actions
 
             return self.episode_count
     
@@ -228,13 +249,12 @@ class Worker():
 
         discounted_rewards = np.concatenate(all_rewards)
         actions = np.asarray([row[1] for row in all_rollouts]) 
-        comms = np.asarray([row[6] for row in all_rollouts]) 
         values = np.asarray([row[5] for row in all_rollouts])
         obs = self.obs_helper.buffer_to_obs_lists(all_rollouts)
         advantages = discounted_rewards - values
 
-        v_l,p_l,e_l,e_l_comm, g_n, v_n = self.local_model.train(discounted_rewards, advantages, actions, comms, obs)
-        return v_l, p_l, e_l, e_l_comm, g_n,  v_n
+        v_l,p_l,e_l, g_n, v_n = self.local_model.train(discounted_rewards, advantages, actions, obs)
+        return v_l, p_l, e_l, g_n,  v_n
 
     def log_in_tensorboard(self):
         if self.episode_count % 5 == 0 and self.episode_count != 0:
@@ -246,9 +266,8 @@ class Worker():
             mean_value_loss = np.mean([l[0] for l in self.stats[-1:]])
             mean_policy_loss = np.mean([l[1] for l in self.stats[-1:]])
             mean_entropy_loss = np.mean([l[2] for l in self.stats[-1:]])
-            mean_entropy_comm_loss = np.mean([l[3] for l in self.stats[-1:]])
-            mean_gradient_norm = np.mean([l[4] for l in self.stats[-1:]])
-            mean_variable_norm = np.mean([l[5] for l in self.stats[-1:]])
+            mean_gradient_norm = np.mean([l[3] for l in self.stats[-1:]])
+            mean_variable_norm = np.mean([l[4] for l in self.stats[-1:]])
 
             with self.summary_writer.as_default():
                 episode_count = np.int32(self.episode_count)
@@ -260,7 +279,6 @@ class Worker():
                 tf.summary.scalar('Lvl '+ lvl+' - Losses/Value Loss', mean_value_loss, step=episode_count)
                 tf.summary.scalar('Lvl '+ lvl+' - Losses/Policy Loss', mean_policy_loss, step=episode_count)
                 tf.summary.scalar('Lvl '+ lvl+' - Losses/Entropy', mean_entropy_loss, step=episode_count)
-                tf.summary.scalar('Lvl '+ lvl+' - Losses/Comm-Entropy', mean_entropy_comm_loss, step=episode_count)
                 tf.summary.scalar('Lvl '+ lvl+' - Losses/Grad Norm', mean_gradient_norm, step=episode_count)
                 tf.summary.scalar('Lvl '+ lvl+' - Losses/Var Norm', mean_variable_norm, step=episode_count)
                 self.summary_writer.flush()

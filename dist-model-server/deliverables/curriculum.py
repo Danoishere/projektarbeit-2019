@@ -69,8 +69,8 @@ class Curriculum:
         env.update_env_with_params(
             width=30,
             height=30,
-            num_agents=2,
-            max_steps = 180,
+            num_agents=5,
+            max_steps = 180*2,
             rail_type = 'sparse',
             rail_gen_params = {
                 'num_cities': 2,
