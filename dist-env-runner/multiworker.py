@@ -60,43 +60,6 @@ class Worker():
         self.local_model = network_class(True,const.url, self.number)
         self.env = RailEnvWrapper(self.local_model.get_observation_builder())
         
-    def punish_impossible_actions(self, obs, actions, rewards):
-        env = self.env.env
-        for handle in obs:
-
-            agent = env.agents[handle]
-            if agent.old_position is None:
-                if actions[handle] != RailEnvActions.MOVE_FORWARD:
-                    rewards[handle] -= 0.1
-                return
-
-            possible_transitions = env.rail.get_transitions(*agent.old_position, agent.old_direction)
-            num_transitions = np.count_nonzero(possible_transitions)
-
-            # Start from the current orientation, and see which transitions are available;
-            # organize them as [left, forward, right], relative to the current orientation
-            # If only one transition is possible, the forward branch is aligned with it.
-            if num_transitions == 1:
-                possible_actions = [0, 1, 0]
-            else:
-                possible_actions = []
-                for direction in [(agent.direction + i) % 4 for i in range(-1, 2)]:
-                    if possible_transitions[direction]:
-                        possible_actions.append(1)
-                    else:
-                        possible_actions.append(0)
-
-            # Try left but its prohibited
-            if actions[handle] == RailEnvActions.MOVE_LEFT and possible_actions[0] == 0:
-                rewards[handle] -= 0.05
-                #print('left pen')
-            if actions[handle] == RailEnvActions.MOVE_FORWARD and possible_actions[1] == 0:
-                rewards[handle] -= 0.05
-                #print('forward pen')
-            if actions[handle] == RailEnvActions.MOVE_RIGHT and possible_actions[2] == 0:
-                rewards[handle] -= 0.05
-                #print('right pen')
-
 
     def work(self):
         try:
@@ -148,6 +111,9 @@ class Worker():
 
                 use_best_actions = random() < 0.5
 
+                done = {i:False for i in range(len(self.env.env.agents))}
+                done['__all__'] = False
+
                 while episode_done == False and episode_step_count < self.env.max_steps:
                     # Figure out, which agents can move
                     obs_dict = {}
@@ -165,7 +131,7 @@ class Worker():
 
                     if prep_steps == 1:
                         next_obs, rewards, done, info = self.env.step(actions)
-                        for agent in self.env.eng.agents:
+                        for agent in self.env.env.agents:
                             agent.last_action = 0
 
                         prep_steps = 0
@@ -173,12 +139,6 @@ class Worker():
                         prep_steps += 1
                         next_obs = self.env.env.obs_builder.get_many(all_handles)
                         rewards = dict(no_reward)
-
-                        try:
-                            done
-                        except:
-                            done = {i:False for i in range(len(self.env.env.agents))}
-                            done['__all__'] = False
 
                     episode_done = done['__all__']
                     if episode_done == True:
