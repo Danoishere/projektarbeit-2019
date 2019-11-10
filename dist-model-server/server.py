@@ -59,6 +59,12 @@ def increase_curriculum_level():
     state.curriculum_level += 1
 
 
+@app.route('/train_communication')
+def get_train_communication():
+    data = { 'train_communication' : int(state.episode_count / 300) % 2 == 1 }
+    return jsonify(data)
+
+
 @app.route('/curriculum_level')
 def get_curriculum_level():
     data = { 'curriculum_lvl' : state.curriculum_level }

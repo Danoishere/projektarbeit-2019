@@ -32,6 +32,7 @@ class AC_Network():
 
         self.gradient_update_interval = 10
         self.last_gradient_update = 0
+        self.update_no = 0
         
 
     def get_network_hash(self):
@@ -115,7 +116,7 @@ class AC_Network():
         policy_log = tf.math.log(tf.clip_by_value(policy, 1e-20, 1.0))
         entropy = -tf.reduce_sum(policy * policy_log, axis=1)
         policy_loss = tf.math.log(responsible_outputs  + 1e-20)*advantages
-        policy_loss = -tf.reduce_sum(policy_loss + entropy * self.entropy_factor)
+        policy_loss = -tf.reduce_sum(policy_loss * self.entropy_factor)
         return policy_loss, tf.reduce_mean(entropy)
 
 
@@ -125,18 +126,30 @@ class AC_Network():
         comm_log = tf.math.log(tf.clip_by_value(policy, 1e-20, 1.0))
         entropy = -tf.reduce_sum(policy * comm_log, axis=1)
         comm_loss = tf.math.log(responsible_outputs  + 1e-20)*advantages
-        comm_loss = -tf.reduce_sum(comm_loss + entropy * 0.005)
+        comm_loss = -tf.reduce_sum(comm_loss + entropy * 0.001)
         return comm_loss, tf.reduce_mean(entropy)
 
 
     def train(self, target_v, advantages, actions, comms_actions, obs):
-        # Value loss
+        '''
+        resp = requests.get(url=self.global_model_url + '/train_communication')
+        train_communication = resp.json()['train_communication']
+        print('Comm:', train_communication)
+        '''
+
+        train_communication = True
+
         with tf.GradientTape() as tape:
             policy,value,comm,_,_,_ = self.model(obs)
             v_loss = self.value_loss(target_v, value)
             p_loss, entropy = self.policy_loss(advantages, actions, policy)
             c_loss, comm_entropy = self.comm_loss(advantages, comms_actions, comm)
-            tot_loss = p_loss + v_loss + c_loss
+            
+            if train_communication:
+                tot_loss = c_loss
+            else:
+                tot_loss = p_loss + v_loss
+
 
         local_vars = self.model.trainable_variables
         gradients_new = tape.gradient(tot_loss, local_vars)
@@ -155,6 +168,8 @@ class AC_Network():
         weights_str = zlib.decompress(weights_str)
         weights = msgpack.loads(weights_str)
         self.model.set_weights(weights)
+
+        self.update_no += 1
 
         return v_loss, p_loss, entropy, comm_entropy, grad_norms, var_norms
 
@@ -220,7 +235,7 @@ class AC_Network():
             obs_builder.critic_rec_state[handle] = [c_rec_h[idx], c_rec_c[idx]]
             obs_builder.comm_rec_state[handle] = [comm_rec_h[idx], comm_rec_c[idx]]
 
-            env.agents[handle].communication = comm_dict[handle]
+            env.agents[handle].communication = comm[idx] # comm_dict[handle]
 
         return actions, values_dict, comm_dict
 
@@ -256,7 +271,7 @@ class AC_Network():
             obs_builder.critic_rec_state[handle] = [c_rec_h[idx], c_rec_c[idx]]
             obs_builder.comm_rec_state[handle] = [comm_rec_h[idx], comm_rec_c[idx]]
 
-            env.agents[handle].communication = comm_dict[handle]
+            env.agents[handle].communication = comm[idx] # comm_dict[handle]
 
         return actions, values_dict, comm_dict
 

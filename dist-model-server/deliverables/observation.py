@@ -755,7 +755,7 @@ def node_to_comm(node_tuple):
     agent_comm_onehot = np.zeros(5)
     agent_comm_onehot[np.arange(0,5) == node.communication] = 1
 
-    return agent_comm_onehot
+    return node.communication # agent_comm_onehot
 
 
 def node_to_obs(node_tuple):
@@ -814,6 +814,6 @@ def node_to_obs(node_tuple):
     if node.communication is not None:
         agent_comm_onehot = np.zeros(5)
         agent_comm_onehot[np.arange(0,5) == node.communication] = 1
-        obs[-5:] = agent_comm_onehot
+        obs[-5:] = node.communication # agent_comm_onehot
 
     return obs
