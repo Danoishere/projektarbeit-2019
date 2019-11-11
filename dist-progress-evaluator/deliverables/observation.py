@@ -42,7 +42,7 @@ class CustomTreeObsForRailEnv(ObservationBuilder):
                                           'num_agents_malfunctioning '
                                           'speed_min_fractional '
                                           'num_agents_ready_to_depart '
-                                          'communication '
+                                          'other_agents '
                                           'childs')
 
     tree_explored_actions_char = ['L', 'F', 'R', 'B']
@@ -178,22 +178,17 @@ class CustomTreeObsForRailEnv(ObservationBuilder):
         self.location_has_agent_speed = {}
         self.location_has_agent_malfunction = {}
         self.location_has_agent_ready_to_depart = {}
-        self.location_has_agent_communication = {}
+        self.location_has_agent_obj = {}
 
         for _agent in self.env.agents:
             if _agent.status in [RailAgentStatus.ACTIVE, RailAgentStatus.DONE] and \
                     _agent.position:
 
-                try:
-                    _agent.communication
-                except:
-                    _agent.communication = None
-
+                self.location_has_agent_obj[tuple(_agent.position)] = _agent
                 self.location_has_agent[tuple(_agent.position)] = 1
                 self.location_has_agent_direction[tuple(_agent.position)] = _agent.direction
                 self.location_has_agent_speed[tuple(_agent.position)] = _agent.speed_data['speed']
                 self.location_has_agent_malfunction[tuple(_agent.position)] = _agent.malfunction_data['malfunction']
-                self.location_has_agent_communication[tuple(_agent.position)] = _agent.communication
 
             if _agent.status in [RailAgentStatus.READY_TO_DEPART] and \
                     _agent.initial_position:
@@ -230,7 +225,7 @@ class CustomTreeObsForRailEnv(ObservationBuilder):
                                                        num_agents_malfunctioning=agent.malfunction_data['malfunction'],
                                                        speed_min_fractional=agent.speed_data['speed'],
                                                        num_agents_ready_to_depart=0,
-                                                       communication=np.zeros(5),
+                                                       other_agents=[],
                                                        childs={})
 
         visited = OrderedSet()
@@ -294,8 +289,7 @@ class CustomTreeObsForRailEnv(ObservationBuilder):
         min_fractional_speed = 1.
         num_steps = 1
         other_agent_ready_to_depart_encountered = 0
-        found_closest_communication = False
-        communication = None
+        other_agents_opposite_dir = []
 
         while exploring:
             # #############################
@@ -303,10 +297,6 @@ class CustomTreeObsForRailEnv(ObservationBuilder):
             # Modify here to compute any useful data required to build the end node's features. This code is called
             # for each cell visited between the previous branching node and the next switch / target / dead-end.
             if position in self.location_has_agent:
-                if self.location_has_agent_communication[position] is not None and not found_closest_communication:
-                    found_closest_communication = True,
-                    communication = self.location_has_agent_communication[position]
-
                 if tot_dist < other_agent_encountered:
                     other_agent_encountered = tot_dist
 
@@ -332,6 +322,7 @@ class CustomTreeObsForRailEnv(ObservationBuilder):
                                                                                                   0)
 
                 else:
+                    other_agents_opposite_dir.append(self.location_has_agent_obj[position])
                     # If no agent in the same direction was found all agents in that position are other direction
                     other_agent_opposite_direction += self.location_has_agent[position]
 
@@ -471,7 +462,7 @@ class CustomTreeObsForRailEnv(ObservationBuilder):
                                       num_agents_malfunctioning=malfunctioning_agent,
                                       speed_min_fractional=min_fractional_speed,
                                       num_agents_ready_to_depart=other_agent_ready_to_depart_encountered,
-                                      communication=communication,
+                                      other_agents=other_agents_opposite_dir,
                                       childs={})
 
         # #############################
@@ -556,12 +547,10 @@ class RailObsBuilder(CustomTreeObsForRailEnv):
         super().__init__(params.tree_depth, ShortestPathPredictorForRailEnv())
         self.actor_rec_state = {}
         self.critic_rec_state = {}
-        self.comm_rec_state = {}
 
     def reset(self):
         self.actor_rec_state = {}
         self.critic_rec_state = {}
-        self.comm_rec_state = {}
         return super().reset()
 
     def get_many(self, handles=None):
@@ -570,8 +559,8 @@ class RailObsBuilder(CustomTreeObsForRailEnv):
 
         for handle in obs:
             next_agent_obs = obs[handle]
-            agent_obs, rec_actor, rec_critic, rec_comm = self.reshape_agent_obs(handle, next_agent_obs, None)
-            all_obs[handle] = (agent_obs, rec_actor, rec_critic, rec_comm)
+            agent_obs, rec_actor, rec_critic = self.reshape_agent_obs(handle, next_agent_obs, None)
+            all_obs[handle] = (agent_obs, rec_actor, rec_critic)
 
         return all_obs
 
@@ -581,18 +570,15 @@ class RailObsBuilder(CustomTreeObsForRailEnv):
             # New tree-obs is just the size of one frame
             tree_obs = np.zeros(params.frame_size)
             vec_obs = np.zeros(params.vec_state_size)
-            comm_obs = np.zeros(params.comm_size)
 
             if handle in self.actor_rec_state and handle in self.critic_rec_state:
                 agent_actor_rec_state = self.actor_rec_state[handle]
                 agent_critic_rec_state = self.critic_rec_state[handle]
-                agent_comm_rec_state = self.comm_rec_state[handle]
             else:
                 agent_actor_rec_state = np.zeros((2,params.recurrent_size)).astype(np.float32)
                 agent_critic_rec_state = np.zeros((2,params.recurrent_size)).astype(np.float32)
-                agent_comm_rec_state = np.zeros((2,params.recurrent_size)).astype(np.float32)
 
-            return np.concatenate([tree_obs, vec_obs, comm_obs]).astype(np.float32),  agent_actor_rec_state, agent_critic_rec_state, agent_comm_rec_state
+            return np.concatenate([tree_obs, vec_obs]).astype(np.float32),  agent_actor_rec_state, agent_critic_rec_state
         else:
 
             root_node = agent_obs
@@ -630,16 +616,12 @@ class RailObsBuilder(CustomTreeObsForRailEnv):
 
             obs_layers = [fastest_way, alt_way_1, alt_way_2]
             tree_obs = []
-            comm_obs = []
             for layer in obs_layers:
                 for node in layer:
                     node_obs = node_to_obs(node)
                     tree_obs.append(node_obs)
-                    agent_comm_obs = node_to_comm(node)
-                    comm_obs.append(agent_comm_obs)
 
             tree_obs = np.concatenate(tree_obs)
-            comm_obs = np.concatenate(comm_obs)
 
             agent = self.env.agents[handle]
             # print(agent.position)
@@ -666,13 +648,11 @@ class RailObsBuilder(CustomTreeObsForRailEnv):
             if handle in self.actor_rec_state and handle in self.critic_rec_state:
                 agent_actor_rec_state = self.actor_rec_state[handle]
                 agent_critic_rec_state = self.critic_rec_state[handle]
-                agent_comm_rec_state = self.comm_rec_state[handle]
             else:
                 agent_actor_rec_state = np.zeros((2,params.recurrent_size)).astype(np.float32)
                 agent_critic_rec_state = np.zeros((2,params.recurrent_size)).astype(np.float32)
-                agent_comm_rec_state = np.zeros((2,params.recurrent_size)).astype(np.float32)
 
-            return np.concatenate([tree_obs, vec_obs, comm_obs]).astype(np.float32),  agent_actor_rec_state, agent_critic_rec_state, agent_comm_rec_state
+            return np.concatenate([tree_obs, vec_obs]).astype(np.float32),  agent_actor_rec_state, agent_critic_rec_state
 
 
 
@@ -680,9 +660,8 @@ def buffer_to_obs_lists(episode_buffer):
     vec_obs = np.asarray([row[0][0] for row in episode_buffer])
     a_rec_obs = np.asarray([row[0][1] for row in episode_buffer])
     c_rec_obs = np.asarray([row[0][2] for row in episode_buffer])
-    comm_rec_obs = np.asarray([row[0][3] for row in episode_buffer])
 
-    return vec_obs, a_rec_obs, c_rec_obs, comm_rec_obs
+    return vec_obs, a_rec_obs, c_rec_obs
 
 
 
@@ -743,21 +722,6 @@ def one_hot(field):
         return 1.0
 
 
-def node_to_comm(node_tuple):
-    if node_tuple is None:
-        return [0]*params.number_of_comm
-
-    node = node_tuple[1]
-
-    if node.communication is None:
-        return [0]*params.number_of_comm
-
-    agent_comm_onehot = np.zeros(5)
-    agent_comm_onehot[np.arange(0,5) == node.communication] = 1
-
-    return agent_comm_onehot
-
-
 def node_to_obs(node_tuple):
     if node_tuple is None:
         return [0]*params.num_features
@@ -811,9 +775,10 @@ def node_to_obs(node_tuple):
         0
     ]
 
-    if node.communication is not None:
-        agent_comm_onehot = np.zeros(5)
-        agent_comm_onehot[np.arange(0,5) == node.communication] = 1
-        obs[-5:] = agent_comm_onehot
+    if len(node.other_agents) > 0:
+        clostest_agent = node.other_agents[0]
+        agent_action_onehot = np.zeros(5)
+        agent_action_onehot[np.arange(0,5) == clostest_agent.last_action] = 1
+        obs[-5:] = agent_action_onehot
 
     return obs

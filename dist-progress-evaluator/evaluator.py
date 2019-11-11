@@ -73,6 +73,7 @@ def start_train(resume):
         episode_count = 0
         model.update_from_global_model()
         print('Model updated from server.')
+        prep_steps = 0
 
         for r in range(num_repeat):
             episode_done = False
@@ -85,6 +86,12 @@ def start_train(resume):
             # env_renderer.set_new_rail()
             obs_builder = env.env.obs_builder
 
+            prep_steps = 0
+            done = {i:False for i in range(len(env.env.agents))}
+            done['__all__'] = False
+            all_handles = [i for i in range(len(env.env.agents))]
+            no_reward = {i:0 for i in range(len(env.env.agents))}
+
             while episode_done == False and episode_step_count < env.max_steps:
                 obs_dict = {}
                 for handle in range(len(env.env.agents)):
@@ -92,8 +99,19 @@ def start_train(resume):
                         info['action_required'][handle] and info['malfunction'][handle] == 0):
                         obs_dict[handle] = obs[handle] 
 
-                actions,_,_ = model.get_best_actions_and_values(obs_dict, env.env)
-                next_obs, rewards, done, info = env.step(actions)
+                actions,_ = model.get_best_actions_and_values(obs_dict, env.env)
+
+                if prep_steps == 1:
+                    next_obs, rewards, done, info = env.step(actions)
+                    for agent in env.env.agents:
+                        agent.last_action = 0
+
+                    prep_steps = 0
+                else:
+                    prep_steps += 1
+                    next_obs = env.env.obs_builder.get_many(all_handles)
+                    rewards = dict(no_reward)
+
                 #env_renderer.render_env(show=True)
 
                 episode_done = done['__all__']

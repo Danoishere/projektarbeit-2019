@@ -10,23 +10,23 @@ class Curriculum:
         self.curriculum = {
             0: {
                 'level_generator' : lambda env: self.change_grid_round0(env),
-                'switch_on_successrate': 0.95
+                'switch_on_successrate': 0.85
                 },
             1: {
                 'level_generator' : lambda env: self.change_grid_round1(env),
-                'switch_on_successrate': 0.95
+                'switch_on_successrate': 0.80
                 },
             2: {
                 'level_generator' : lambda env: self.change_grid_round2(env),
-                'switch_on_successrate': 0.95
+                'switch_on_successrate': 0.75
                 },
             3: {
                 'level_generator' : lambda env: self.change_grid_round3(env),
-                'switch_on_successrate': 0.95
+                'switch_on_successrate': 0.70
                 },
             4: {
                 'level_generator' : lambda env: self.change_grid_round4(env),
-                'switch_on_successrate': 0.95
+                'switch_on_successrate': 0.65
                 },
             5: {
                 'level_generator' : lambda env: self.change_grid_round5(env),
@@ -85,8 +85,8 @@ class Curriculum:
         env.update_env_with_params(
             width=40,
             height=40,
-            num_agents=4,
-            max_steps = 250,
+            num_agents=12,
+            max_steps = 250*2,
             rail_type = 'sparse',
             rail_gen_params = {
                 'num_cities': 2,
@@ -102,8 +102,8 @@ class Curriculum:
         env.update_env_with_params(
             width=40,
             height=40,
-            num_agents=10,
-            max_steps = 300,
+            num_agents=20,
+            max_steps = 300*2,
             rail_type = 'sparse',
             rail_gen_params = {
                 'num_cities': 3,
@@ -118,8 +118,8 @@ class Curriculum:
         env.update_env_with_params(
             width=50,
             height=50,
-            num_agents=20,
-            max_steps = 450,
+            num_agents=50,
+            max_steps = 450*2,
             rail_type = 'sparse',
             rail_gen_params = {
                 'num_cities': 4,
@@ -134,8 +134,8 @@ class Curriculum:
         env.update_env_with_params(
             width=70,
             height=70,
-            num_agents=30,
-            max_steps = 450,
+            num_agents=100,
+            max_steps = 600*2,
             rail_type = 'sparse',
             rail_gen_params = {
                 'num_cities': 10,
@@ -150,8 +150,8 @@ class Curriculum:
         env.update_env_with_params(
             width=100,
             height=100,
-            num_agents=50,
-            max_steps = 500,
+            num_agents=200,
+            max_steps = 700*2,
             rail_type = 'sparse',
             rail_gen_params = {
                 'num_cities': 15,
