@@ -18,6 +18,7 @@ Statusmeeting PA
 
 - Kommunikation
 	-> Konvergiert aktuell noch zu schnell zu einer einzigen Action
-	-> Nächster Schritt: Entropie künstlich hoch halten und erst wenn kommunikation wirklich benötigt wird aktivieren
+	-> Nächster Schritt: Entropie künstlich hoch halten und erst wenn kommunikation wirklich benötigt wird aktivieren.
+	
 	
 	

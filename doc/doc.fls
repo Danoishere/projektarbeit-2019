@@ -88,6 +88,12 @@ INPUT C:\Program Files\MiKTeX 2.9\tex\latex\textpos\textpos.sty
 INPUT C:\Program Files\MiKTeX 2.9\tex\latex\textpos\textpos.sty
 INPUT C:\Program Files\MiKTeX 2.9\tex\latex\ms\everyshi.sty
 INPUT C:\Program Files\MiKTeX 2.9\tex\latex\ms\everyshi.sty
+INPUT C:\Program Files\MiKTeX 2.9\tex\latex\amsmath\amsmath.sty
+INPUT C:\Program Files\MiKTeX 2.9\tex\latex\amsmath\amsmath.sty
+INPUT C:\Program Files\MiKTeX 2.9\tex\latex\amsmath\amsbsy.sty
+INPUT C:\Program Files\MiKTeX 2.9\tex\latex\amsmath\amsbsy.sty
+INPUT C:\Program Files\MiKTeX 2.9\tex\latex\amsmath\amsopn.sty
+INPUT C:\Program Files\MiKTeX 2.9\tex\latex\amsmath\amsopn.sty
 INPUT C:\Program Files\MiKTeX 2.9\tex\latex\base\makeidx.sty
 INPUT C:\Program Files\MiKTeX 2.9\tex\latex\base\makeidx.sty
 INPUT C:\Program Files\MiKTeX 2.9\tex\latex\colortbl\colortbl.sty
@@ -181,153 +187,5 @@ INPUT C:\Program Files\MiKTeX 2.9\tex\latex\wallpaper\wallpaper.sty
 INPUT C:\Program Files\MiKTeX 2.9\tex\latex\wallpaper\wallpaper.sty
 INPUT C:\Program Files\MiKTeX 2.9\tex\latex\natbib\natbib.sty
 INPUT C:\Program Files\MiKTeX 2.9\tex\latex\natbib\natbib.sty
-OUTPUT c:\Users\Dano\Documents\ZHAW\projektarbeit-zhaw\projektarbeit-2019\projektarbeit-2019\doc\doc.idx
-INPUT C:\Program Files\MiKTeX 2.9\tex\latex\listings\lstlang1.sty
-INPUT C:\Program Files\MiKTeX 2.9\tex\latex\listings\lstlang1.sty
-INPUT c:\Users\Dano\Documents\ZHAW\projektarbeit-zhaw\projektarbeit-2019\projektarbeit-2019\doc\doc.aux
-INPUT c:\Users\Dano\Documents\ZHAW\projektarbeit-zhaw\projektarbeit-2019\projektarbeit-2019\doc\doc.aux
-OUTPUT c:\Users\Dano\Documents\ZHAW\projektarbeit-zhaw\projektarbeit-2019\projektarbeit-2019\doc\doc.aux
-INPUT C:\Program Files\MiKTeX 2.9\tex\latex\base\ts1cmr.fd
-INPUT C:\Program Files\MiKTeX 2.9\tex\latex\base\ts1cmr.fd
-INPUT C:\Program Files\MiKTeX 2.9\tex\latex\lm\t1lmss.fd
-INPUT C:\Program Files\MiKTeX 2.9\tex\latex\lm\t1lmss.fd
-INPUT C:\Program Files\MiKTeX 2.9\fonts\tfm\public\lm\ec-lmss10.tfm
-INPUT C:\Program Files\MiKTeX 2.9\tex\context\base\mkii\supp-pdf.mkii
-INPUT C:\Program Files\MiKTeX 2.9\tex\context\base\mkii\supp-pdf.mkii
-INPUT C:\Program Files\MiKTeX 2.9\tex\latex\oberdiek\epstopdf-base.sty
-INPUT C:\Program Files\MiKTeX 2.9\tex\latex\oberdiek\epstopdf-base.sty
-INPUT C:\Program Files\MiKTeX 2.9\tex\latex\oberdiek\grfext.sty
-INPUT C:\Program Files\MiKTeX 2.9\tex\latex\oberdiek\grfext.sty
-INPUT C:\Program Files\MiKTeX 2.9\tex\latex\hyperref\nameref.sty
-INPUT C:\Program Files\MiKTeX 2.9\tex\latex\hyperref\nameref.sty
-INPUT C:\Program Files\MiKTeX 2.9\tex\generic\oberdiek\gettitlestring.sty
-INPUT C:\Program Files\MiKTeX 2.9\tex\generic\oberdiek\gettitlestring.sty
-OUTPUT c:\Users\Dano\Documents\ZHAW\projektarbeit-zhaw\projektarbeit-2019\projektarbeit-2019\doc\doc.out
-OUTPUT c:\Users\Dano\Documents\ZHAW\projektarbeit-zhaw\projektarbeit-2019\projektarbeit-2019\doc\doc.pdf
-INPUT C:\Program Files\MiKTeX 2.9\tex\latex\oberdiek\bookmark.sty
-INPUT C:\Program Files\MiKTeX 2.9\tex\latex\oberdiek\bookmark.sty
-INPUT C:\Program Files\MiKTeX 2.9\tex\latex\oberdiek\bkm-pdftex.def
-INPUT C:\Program Files\MiKTeX 2.9\tex\latex\oberdiek\bkm-pdftex.def
-INPUT c:\Users\Dano\Documents\ZHAW\projektarbeit-zhaw\projektarbeit-2019\projektarbeit-2019\doc\content\titlepage.tex
-INPUT c:\Users\Dano\Documents\ZHAW\projektarbeit-zhaw\projektarbeit-2019\projektarbeit-2019\doc\content\titlepage.tex
-INPUT C:\Program Files\MiKTeX 2.9\fonts\tfm\public\lm\ec-lmss8.tfm
-INPUT C:\Program Files\MiKTeX 2.9\fonts\tfm\public\lm\ec-lmss17.tfm
-INPUT C:\Program Files\MiKTeX 2.9\fonts\tfm\public\lm\ec-lmssbx10.tfm
-INPUT C:\Program Files\MiKTeX 2.9\tex\latex\lm\ot1lmr.fd
-INPUT C:\Program Files\MiKTeX 2.9\tex\latex\lm\ot1lmr.fd
-INPUT C:\Program Files\MiKTeX 2.9\fonts\tfm\public\lm\rm-lmr17.tfm
-INPUT C:\Program Files\MiKTeX 2.9\fonts\tfm\public\lm\rm-lmr12.tfm
-INPUT C:\Program Files\MiKTeX 2.9\fonts\tfm\public\lm\rm-lmr12.tfm
-INPUT C:\Program Files\MiKTeX 2.9\tex\latex\lm\omllmm.fd
-INPUT C:\Program Files\MiKTeX 2.9\tex\latex\lm\omllmm.fd
-INPUT C:\Program Files\MiKTeX 2.9\fonts\tfm\public\lm\lmmi12.tfm
-INPUT C:\Program Files\MiKTeX 2.9\fonts\tfm\public\lm\lmmi12.tfm
-INPUT C:\Program Files\MiKTeX 2.9\fonts\tfm\public\lm\lmmi12.tfm
-INPUT C:\Program Files\MiKTeX 2.9\tex\latex\lm\omslmsy.fd
-INPUT C:\Program Files\MiKTeX 2.9\tex\latex\lm\omslmsy.fd
-INPUT C:\Program Files\MiKTeX 2.9\fonts\tfm\public\lm\lmsy10.tfm
-INPUT C:\Program Files\MiKTeX 2.9\fonts\tfm\public\lm\lmsy10.tfm
-INPUT C:\Program Files\MiKTeX 2.9\fonts\tfm\public\lm\lmsy10.tfm
-INPUT C:\Program Files\MiKTeX 2.9\tex\latex\lm\omxlmex.fd
-INPUT C:\Program Files\MiKTeX 2.9\tex\latex\lm\omxlmex.fd
-INPUT C:\Program Files\MiKTeX 2.9\fonts\tfm\public\lm\lmex10.tfm
-INPUT C:\Program Files\MiKTeX 2.9\tex\latex\psnfss\ot1ptm.fd
-INPUT C:\Program Files\MiKTeX 2.9\tex\latex\psnfss\ot1ptm.fd
-INPUT C:\Program Files\MiKTeX 2.9\fonts\tfm\adobe\times\ptmb7t.tfm
-INPUT C:\Program Files\MiKTeX 2.9\fonts\tfm\adobe\times\ptmb7t.tfm
-INPUT C:\Program Files\MiKTeX 2.9\fonts\tfm\adobe\times\ptmb7t.tfm
-INPUT C:\Program Files\MiKTeX 2.9\fonts\tfm\adobe\times\ptmri7t.tfm
-INPUT C:\Program Files\MiKTeX 2.9\fonts\tfm\adobe\times\ptmri7t.tfm
-INPUT C:\Program Files\MiKTeX 2.9\fonts\tfm\adobe\times\ptmri7t.tfm
-INPUT C:\Program Files\MiKTeX 2.9\fonts\tfm\public\amsfonts\euler\eurm10.tfm
-INPUT C:\Program Files\MiKTeX 2.9\fonts\tfm\public\amsfonts\euler\eurm10.tfm
-INPUT C:\Program Files\MiKTeX 2.9\fonts\tfm\public\amsfonts\euler\eurm10.tfm
-INPUT C:\Program Files\MiKTeX 2.9\fonts\tfm\public\lm\ec-lmssbx10.tfm
-INPUT c:\Users\Dano\Documents\ZHAW\projektarbeit-zhaw\projektarbeit-2019\projektarbeit-2019\doc\images\logos\InIT.pdf
-INPUT c:\Users\Dano\Documents\ZHAW\projektarbeit-zhaw\projektarbeit-2019\projektarbeit-2019\doc\images\logos\InIT.pdf
-INPUT c:\Users\Dano\Documents\ZHAW\projektarbeit-zhaw\projektarbeit-2019\projektarbeit-2019\doc\images\logos\InIT.pdf
-INPUT c:\Users\Dano\Documents\ZHAW\projektarbeit-zhaw\projektarbeit-2019\projektarbeit-2019\doc\images\logos\InIT.pdf
-INPUT C:\Users\Dano\AppData\Local\MiKTeX\2.9\pdftex\config\pdftex.map
-INPUT c:\Users\Dano\Documents\ZHAW\projektarbeit-zhaw\projektarbeit-2019\projektarbeit-2019\doc\content\abstract.tex
-INPUT c:\Users\Dano\Documents\ZHAW\projektarbeit-zhaw\projektarbeit-2019\projektarbeit-2019\doc\content\abstract.tex
-INPUT c:\Users\Dano\Documents\ZHAW\projektarbeit-zhaw\projektarbeit-2019\projektarbeit-2019\doc\images\Erklaerung_PA.pdf
-INPUT c:\Users\Dano\Documents\ZHAW\projektarbeit-zhaw\projektarbeit-2019\projektarbeit-2019\doc\images\Erklaerung_PA.pdf
-INPUT c:\Users\Dano\Documents\ZHAW\projektarbeit-zhaw\projektarbeit-2019\projektarbeit-2019\doc\images\Erklaerung_PA.pdf
-INPUT c:\Users\Dano\Documents\ZHAW\projektarbeit-zhaw\projektarbeit-2019\projektarbeit-2019\doc\images\Erklaerung_PA.pdf
-INPUT c:\Users\Dano\Documents\ZHAW\projektarbeit-zhaw\projektarbeit-2019\projektarbeit-2019\doc\images\Erklaerung_PA.pdf
-INPUT c:\Users\Dano\Documents\ZHAW\projektarbeit-zhaw\projektarbeit-2019\projektarbeit-2019\doc\images\Erklaerung_PA.pdf
-INPUT c:\Users\Dano\Documents\ZHAW\projektarbeit-zhaw\projektarbeit-2019\projektarbeit-2019\doc\images\Erklaerung_PA.pdf
-INPUT c:\Users\Dano\Documents\ZHAW\projektarbeit-zhaw\projektarbeit-2019\projektarbeit-2019\doc\images\Erklaerung_PA.pdf
-INPUT c:\Users\Dano\Documents\ZHAW\projektarbeit-zhaw\projektarbeit-2019\projektarbeit-2019\doc\images\Erklaerung_PA.pdf
-INPUT c:\Users\Dano\Documents\ZHAW\projektarbeit-zhaw\projektarbeit-2019\projektarbeit-2019\doc\images\Erklaerung_PA.pdf
-INPUT c:\Users\Dano\Documents\ZHAW\projektarbeit-zhaw\projektarbeit-2019\projektarbeit-2019\doc\images\Erklaerung_PA.pdf
-INPUT c:\Users\Dano\Documents\ZHAW\projektarbeit-zhaw\projektarbeit-2019\projektarbeit-2019\doc\images\Erklaerung_PA.pdf
-INPUT c:\Users\Dano\Documents\ZHAW\projektarbeit-zhaw\projektarbeit-2019\projektarbeit-2019\doc\images\Erklaerung_PA.pdf
-INPUT c:\Users\Dano\Documents\ZHAW\projektarbeit-zhaw\projektarbeit-2019\projektarbeit-2019\doc\images\Erklaerung_PA.pdf
-INPUT c:\Users\Dano\Documents\ZHAW\projektarbeit-zhaw\projektarbeit-2019\projektarbeit-2019\doc\images\Erklaerung_PA.pdf
-INPUT c:\Users\Dano\Documents\ZHAW\projektarbeit-zhaw\projektarbeit-2019\projektarbeit-2019\doc\images\Erklaerung_PA.pdf
-INPUT c:\Users\Dano\Documents\ZHAW\projektarbeit-zhaw\projektarbeit-2019\projektarbeit-2019\doc\images\Erklaerung_PA.pdf
-INPUT c:\Users\Dano\Documents\ZHAW\projektarbeit-zhaw\projektarbeit-2019\projektarbeit-2019\doc\images\Erklaerung_PA.pdf
-INPUT c:\Users\Dano\Documents\ZHAW\projektarbeit-zhaw\projektarbeit-2019\projektarbeit-2019\doc\images\Erklaerung_PA.pdf
-INPUT c:\Users\Dano\Documents\ZHAW\projektarbeit-zhaw\projektarbeit-2019\projektarbeit-2019\doc\images\Erklaerung_PA.pdf
-INPUT c:\Users\Dano\Documents\ZHAW\projektarbeit-zhaw\projektarbeit-2019\projektarbeit-2019\doc\images\Erklaerung_PA.pdf
-INPUT c:\Users\Dano\Documents\ZHAW\projektarbeit-zhaw\projektarbeit-2019\projektarbeit-2019\doc\images\Erklaerung_PA.pdf
-INPUT c:\Users\Dano\Documents\ZHAW\projektarbeit-zhaw\projektarbeit-2019\projektarbeit-2019\doc\images\Erklaerung_PA.pdf
-OUTPUT c:\Users\Dano\Documents\ZHAW\projektarbeit-zhaw\projektarbeit-2019\projektarbeit-2019\doc\doc.toc
-INPUT c:\Users\Dano\Documents\ZHAW\projektarbeit-zhaw\projektarbeit-2019\projektarbeit-2019\doc\content\einleitung.tex
-INPUT c:\Users\Dano\Documents\ZHAW\projektarbeit-zhaw\projektarbeit-2019\projektarbeit-2019\doc\content\einleitung.tex
-INPUT C:\Program Files\MiKTeX 2.9\fonts\tfm\public\lm\ec-lmssbx10.tfm
-INPUT C:\Program Files\MiKTeX 2.9\tex\latex\lm\ts1lmss.fd
-INPUT C:\Program Files\MiKTeX 2.9\tex\latex\lm\ts1lmss.fd
-INPUT C:\Program Files\MiKTeX 2.9\fonts\tfm\public\lm\ts1-lmss10.tfm
-INPUT c:\Users\Dano\Documents\ZHAW\projektarbeit-zhaw\projektarbeit-2019\projektarbeit-2019\doc\content\grundlagen.tex
-INPUT c:\Users\Dano\Documents\ZHAW\projektarbeit-zhaw\projektarbeit-2019\projektarbeit-2019\doc\content\grundlagen.tex
-INPUT C:\Program Files\MiKTeX 2.9\fonts\tfm\public\lm\rm-lmr10.tfm
-INPUT C:\Program Files\MiKTeX 2.9\fonts\tfm\public\lm\rm-lmr7.tfm
-INPUT C:\Program Files\MiKTeX 2.9\fonts\tfm\public\lm\rm-lmr6.tfm
-INPUT C:\Program Files\MiKTeX 2.9\fonts\tfm\public\lm\lmmi10.tfm
-INPUT C:\Program Files\MiKTeX 2.9\fonts\tfm\public\lm\lmmi7.tfm
-INPUT C:\Program Files\MiKTeX 2.9\fonts\tfm\public\lm\lmmi6.tfm
-INPUT C:\Program Files\MiKTeX 2.9\fonts\tfm\public\lm\lmsy10.tfm
-INPUT C:\Program Files\MiKTeX 2.9\fonts\tfm\public\lm\lmsy7.tfm
-INPUT C:\Program Files\MiKTeX 2.9\fonts\tfm\public\lm\lmsy6.tfm
-INPUT C:\Program Files\MiKTeX 2.9\fonts\tfm\adobe\times\ptmb7t.tfm
-INPUT C:\Program Files\MiKTeX 2.9\fonts\tfm\adobe\times\ptmb7t.tfm
-INPUT C:\Program Files\MiKTeX 2.9\fonts\tfm\adobe\times\ptmb7t.tfm
-INPUT C:\Program Files\MiKTeX 2.9\fonts\tfm\adobe\times\ptmri7t.tfm
-INPUT C:\Program Files\MiKTeX 2.9\fonts\tfm\adobe\times\ptmri7t.tfm
-INPUT C:\Program Files\MiKTeX 2.9\fonts\tfm\adobe\times\ptmri7t.tfm
-INPUT C:\Program Files\MiKTeX 2.9\fonts\tfm\public\amsfonts\euler\eurm10.tfm
-INPUT C:\Program Files\MiKTeX 2.9\fonts\tfm\public\amsfonts\euler\eurm7.tfm
-INPUT C:\Program Files\MiKTeX 2.9\fonts\tfm\public\amsfonts\euler\eurm6.tfm
-INPUT c:\Users\Dano\Documents\ZHAW\projektarbeit-zhaw\projektarbeit-2019\projektarbeit-2019\doc\content\vorgehen.tex
-INPUT c:\Users\Dano\Documents\ZHAW\projektarbeit-zhaw\projektarbeit-2019\projektarbeit-2019\doc\content\vorgehen.tex
-INPUT C:\Program Files\MiKTeX 2.9\fonts\tfm\public\lm\ec-lmssbx10.tfm
-INPUT c:\Users\Dano\Documents\ZHAW\projektarbeit-zhaw\projektarbeit-2019\projektarbeit-2019\doc\content\resultate.tex
-INPUT c:\Users\Dano\Documents\ZHAW\projektarbeit-zhaw\projektarbeit-2019\projektarbeit-2019\doc\content\resultate.tex
-INPUT c:\Users\Dano\Documents\ZHAW\projektarbeit-zhaw\projektarbeit-2019\projektarbeit-2019\doc\content\diskussion.tex
-INPUT c:\Users\Dano\Documents\ZHAW\projektarbeit-zhaw\projektarbeit-2019\projektarbeit-2019\doc\content\diskussion.tex
-OUTPUT c:\Users\Dano\Documents\ZHAW\projektarbeit-zhaw\projektarbeit-2019\projektarbeit-2019\doc\doc.lof
-OUTPUT c:\Users\Dano\Documents\ZHAW\projektarbeit-zhaw\projektarbeit-2019\projektarbeit-2019\doc\doc.lot
-INPUT c:\Users\Dano\Documents\ZHAW\projektarbeit-zhaw\projektarbeit-2019\projektarbeit-2019\doc\content\glossar.tex
-INPUT c:\Users\Dano\Documents\ZHAW\projektarbeit-zhaw\projektarbeit-2019\projektarbeit-2019\doc\content\glossar.tex
-INPUT c:\Users\Dano\Documents\ZHAW\projektarbeit-zhaw\projektarbeit-2019\projektarbeit-2019\doc\doc.lol
-OUTPUT c:\Users\Dano\Documents\ZHAW\projektarbeit-zhaw\projektarbeit-2019\projektarbeit-2019\doc\doc.lol
-INPUT c:\Users\Dano\Documents\ZHAW\projektarbeit-zhaw\projektarbeit-2019\projektarbeit-2019\doc\content\anhang.tex
-INPUT c:\Users\Dano\Documents\ZHAW\projektarbeit-zhaw\projektarbeit-2019\projektarbeit-2019\doc\content\anhang.tex
-INPUT c:\Users\Dano\Documents\ZHAW\projektarbeit-zhaw\projektarbeit-2019\projektarbeit-2019\doc\doc.aux
-INPUT c:\Users\Dano\Documents\ZHAW\projektarbeit-zhaw\projektarbeit-2019\projektarbeit-2019\doc\doc.out
-INPUT c:\Users\Dano\Documents\ZHAW\projektarbeit-zhaw\projektarbeit-2019\projektarbeit-2019\doc\doc.out
-INPUT C:\Program Files\MiKTeX 2.9\fonts\enc\dvips\lm\lm-mathit.enc
-INPUT C:\Program Files\MiKTeX 2.9\fonts\enc\dvips\lm\lm-ts1.enc
-INPUT C:\Program Files\MiKTeX 2.9\fonts\enc\dvips\lm\lm-ec.enc
-INPUT C:\Program Files\MiKTeX 2.9\fonts\type1\public\lm\lmmi10.pfb
-INPUT C:\Program Files\MiKTeX 2.9\fonts\type1\public\lm\lmmi10.pfb
-INPUT C:\Program Files\MiKTeX 2.9\fonts\type1\public\lm\lmss10.pfb
-INPUT C:\Program Files\MiKTeX 2.9\fonts\type1\public\lm\lmss10.pfb
-INPUT C:\Program Files\MiKTeX 2.9\fonts\type1\public\lm\lmss17.pfb
-INPUT C:\Program Files\MiKTeX 2.9\fonts\type1\public\lm\lmss17.pfb
-INPUT C:\Program Files\MiKTeX 2.9\fonts\type1\public\lm\lmss8.pfb
-INPUT C:\Program Files\MiKTeX 2.9\fonts\type1\public\lm\lmss8.pfb
-INPUT C:\Program Files\MiKTeX 2.9\fonts\type1\public\lm\lmssbx10.pfb
-INPUT C:\Program Files\MiKTeX 2.9\fonts\type1\public\lm\lmssbx10.pfb
+INPUT C:\Program Files\MiKTeX 2.9\tex\latex\fontspec\fontspec.sty
+INPUT C:\Program Files\MiKTeX 2.9\tex\latex\fontspec\fontspec.sty
