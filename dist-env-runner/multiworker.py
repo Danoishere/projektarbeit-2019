@@ -132,7 +132,7 @@ class Worker():
                     if prep_steps == 1:
                         next_obs, rewards, done, info = self.env.step(actions)
                         for agent in self.env.env.agents:
-                            agent.last_action = 0
+                            agent.last_action = np.ones(5)
 
                         prep_steps = 0
                     else:
