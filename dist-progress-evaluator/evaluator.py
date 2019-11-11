@@ -130,9 +130,6 @@ def start_train(resume):
 
             for i in range(env.num_agents):
                 if done[i]:
-                    # If agents could finish the level, 
-                    # set final reward for all agents
-                    episode_buffer[i][-1][2] += 1.0
                     episode_reward += 1.0
 
             print('Eval. episode', episode_count,'with',episode_step_count,'steps, reward of',episode_reward,', curriculum level', curriculum.current_level)
