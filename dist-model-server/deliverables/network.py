@@ -63,7 +63,8 @@ class AC_Network():
 
 
     def create_network(self, input, input_rec):
-        hidden = layers.Dense(512, activation='relu')(input)
+        hidden = layers.Dense(256, activation='relu')(input)
+        hidden = layers.Dense(128, activation='relu')(hidden)
         hidden = layers.Dense(64, activation='relu')(hidden)
         hidden = layers.Reshape((1,64))(hidden)
         hidden, state_h, state_c = layers.LSTM(64, activation='tanh', return_state=True, return_sequences=False)(hidden, initial_state=[input_rec[:,0], input_rec[:,1]])
