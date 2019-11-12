@@ -88,6 +88,7 @@ class Worker():
                     if self.curriculum.current_level != old_curriculum_level:
                         self.curriculum.update_env_to_curriculum_level(self.env)
                         self.episode_count = 0
+                        self.stats = []
                 
 
                 episode_done = False
