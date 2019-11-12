@@ -104,7 +104,7 @@ def start_train(resume):
                 if prep_steps == 1:
                     next_obs, rewards, done, info = env.step(actions)
                     for agent in env.env.agents:
-                        agent.last_action = 0
+                        agent.last_action = np.zeros(5)
 
                     prep_steps = 0
                 else:
