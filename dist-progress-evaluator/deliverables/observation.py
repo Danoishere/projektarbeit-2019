@@ -772,11 +772,14 @@ def node_to_obs(node_tuple):
         0,
         0,
         0,
+        0,
         0
     ]
 
     if len(node.other_agents) > 0:
         clostest_agent = node.other_agents[0]
-        obs[-5:] = clostest_agent.last_action
+        agent_action_onehot = np.zeros(6)
+        agent_action_onehot[np.arange(0,6) == clostest_agent.last_action] = 1
+        obs[-6:] = agent_action_onehot
 
     return obs

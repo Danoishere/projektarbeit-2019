@@ -71,6 +71,8 @@ def start_train(resume):
 
         num_success = 0
         episode_count = 0
+        agents_started = 0
+        agents_arrived = 0
         model.update_from_global_model()
         print('Model updated from server.')
         prep_steps = 0
@@ -124,6 +126,7 @@ def start_train(resume):
                 obs = next_obs               
                 episode_step_count += 1
 
+            agents_started += len(env.env.agents)
             episode_count += 1
             if episode_done:
                 num_success += 1
@@ -131,12 +134,14 @@ def start_train(resume):
             for i in range(env.num_agents):
                 if done[i]:
                     episode_reward += 1.0
+                    agents_arrived += 1
 
-            print('Eval. episode', episode_count,'with',episode_step_count,'steps, reward of',episode_reward,', curriculum level', curriculum.current_level)
+            current_successrate = agents_arrived/agents_started
+            print('Eval. episode', episode_count,'with',episode_step_count,'steps, reward of',episode_reward,', curriculum level', curriculum.current_level, ', agents arrived',current_successrate)
 
         successrate = num_success/num_repeat
-        print('Evaluation round finished. sucessrate:', successrate)
-        if curriculum.should_switch_level(successrate):
+        print('Evaluation round finished. sucessrate (agents arrived/agents started):', current_successrate)
+        if curriculum.should_switch_level(current_successrate):
             print('Curriculum level change triggered.')
             # Send new level & receive confirmation
             curriculum.increase_curriculum_level()

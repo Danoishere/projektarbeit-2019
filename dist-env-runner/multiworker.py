@@ -124,11 +124,11 @@ class Worker():
                             obs_dict[handle] = obs[handle]
 
                     # Get actions/values
-                    if use_best_actions or prep_steps == 0:
+                    if use_best_actions:
                         actions, v = self.local_model.get_best_actions_and_values(obs_dict, self.env.env)
                     else:
                         actions, v = self.local_model.get_actions_and_values(obs_dict, self.env.env)
-
+                        
 
                     if prep_steps == 1:
                         next_obs, rewards, done, info = self.env.step(actions)
