@@ -63,7 +63,8 @@ class AC_Network():
 
 
     def create_network(self, input, input_rec):
-        hidden = layers.Dense(256, activation='relu')(input)
+        hidden = layers.Dense(512, activation='relu')(input)
+        hidden = layers.Dense(128, activation='relu')(hidden)
         hidden = layers.Dense(64, activation='relu')(hidden)
         hidden = layers.Reshape((1,64))(hidden)
         hidden, state_h, state_c = layers.LSTM(64, activation='tanh', return_state=True, return_sequences=False)(hidden, initial_state=[input_rec[:,0], input_rec[:,1]])
@@ -200,7 +201,7 @@ class AC_Network():
             obs_builder.actor_rec_state[handle] = [a_rec_h[idx], a_rec_c[idx]]
             obs_builder.critic_rec_state[handle] = [c_rec_h[idx], c_rec_c[idx]]
 
-            env.agents[handle].last_action = a_dist #actions[handle]
+            env.agents[handle].last_action = actions[handle] + 1
 
         return actions, values_dict
 
@@ -231,7 +232,7 @@ class AC_Network():
             obs_builder.actor_rec_state[handle] = [a_rec_h[idx], a_rec_c[idx]]
             obs_builder.critic_rec_state[handle] = [c_rec_h[idx], c_rec_c[idx]]
 
-            env.agents[handle].last_action = a_dist # actions[handle]
+            env.agents[handle].last_action = actions[handle] + 1
 
         return actions, values_dict
 

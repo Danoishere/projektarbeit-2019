@@ -124,7 +124,7 @@ class Worker():
                             obs_dict[handle] = obs[handle]
 
                     # Get actions/values
-                    if use_best_actions:
+                    if use_best_actions or prep_steps == 0:
                         actions, v = self.local_model.get_best_actions_and_values(obs_dict, self.env.env)
                     else:
                         actions, v = self.local_model.get_actions_and_values(obs_dict, self.env.env)
@@ -133,7 +133,7 @@ class Worker():
                     if prep_steps == 1:
                         next_obs, rewards, done, info = self.env.step(actions)
                         for agent in self.env.env.agents:
-                            agent.last_action = np.ones(5)
+                            agent.last_action = 0
 
                         prep_steps = 0
                     else:
