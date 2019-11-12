@@ -85,7 +85,8 @@ class RailEnvWrapper():
             schedule_generator = self.schedule_gen,
             number_of_agents=self.num_agents,
             obs_builder_object=self.observation_builder,
-            remove_agents_at_target=True)
+            remove_agents_at_target=True,
+            random_seed=None)
 
         self.env.global_reward = self.global_reward
         self.env.num_agents = self.num_agents
