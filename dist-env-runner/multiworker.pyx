@@ -24,6 +24,7 @@ import constant as const
 
 #np.set_printoptions(threshold=sys.maxsize)
 
+
 class KeyboardInterruptError(Exception): pass
 
 def create_worker(name, should_stop):
@@ -68,6 +69,8 @@ class Worker():
             self.episode_rewards = []
             self.episode_lengths = []
             self.episode_success = []
+            self.episode_agents_arrived = []
+
             self.stats = []
             self.episode_mean_values = []
             self.local_model.update_from_global_model()
@@ -75,6 +78,8 @@ class Worker():
             self.episode_count = 0
             self.curriculum.update_env_to_curriculum_level(self.env)
             use_best_actions = False
+
+            time_start = time()
 
             while not bool(self.should_stop.value):
                 # Check with server if there is a new curriculum level available
@@ -115,6 +120,14 @@ class Worker():
                 done = {i:False for i in range(len(self.env.env.agents))}
                 done['__all__'] = False
 
+                tot_step = 0
+                tot_nn = 0
+                tot_env_s = 0
+                tot_just_obs = 0
+
+                episode_start = time()
+                obs_builder = self.env.env.obs_builder
+
                 while episode_done == False and episode_step_count < self.env.max_steps:
                     # Figure out, which agents can move
                     obs_dict = {}
@@ -123,23 +136,37 @@ class Worker():
                             info['action_required'][handle] and info['malfunction'][handle] == 0):
                             obs_dict[handle] = obs[handle]
 
+                    nn_call_start = time()
                     # Get actions/values
                     if use_best_actions:
                         actions, v = self.local_model.get_best_actions_and_values(obs_dict, self.env.env)
                     else:
                         actions, v = self.local_model.get_actions_and_values(obs_dict, self.env.env)
                         
+                    tot_nn += time() - nn_call_start
+                    step_call = time()
 
-                    if prep_steps == 1:
+                    # We use 3 lookahead steps
+                    if prep_steps == 2:
+                        start_env_s = time()
                         next_obs, rewards, done, info = self.env.step(actions)
+                        tot_env_s += time() - start_env_s
                         for agent in self.env.env.agents:
-                            agent.last_action = 0
+                            agent.last_action = np.ones(5)
 
                         prep_steps = 0
+                        obs_builder.prep_steps = prep_steps
+                        episode_step_count += 1
                     else:
                         prep_steps += 1
-                        next_obs = self.env.env.obs_builder.get_many(all_handles)
+                        obs_builder.prep_steps = prep_steps
+                        start_just_obs = time()
+                        next_obs = obs_builder.get_many(all_handles)
+                        tot_just_obs += time() - start_just_obs
                         rewards = dict(no_reward)
+
+                    step_end_call = time()
+                    tot_step += time() - step_call
 
                     episode_done = done['__all__']
                     if episode_done == True:
@@ -164,20 +191,32 @@ class Worker():
                             episode_reward += agent_reward
                 
                     obs = next_obs              
-                    episode_step_count += 1
                     steps_on_level += 1
                     done_last_step = dict(done)
 
+                num_agents_done = 0
 
                 # Individual rewards
                 for i in range(self.env.num_agents):
                     if done[i]:
+                        num_agents_done += 1
                         # If agents could finish the level, 
                         # set final reward for all agents
                         episode_buffer[i][-1][2] += 1.0
                         episode_reward += 1.0
 
+                episode_end = time()
+                episode_time = episode_end - episode_start
 
+                # print('Tot NN', tot_nn)
+                # print('Tot step', tot_step)
+                # print('Tot env step', tot_env_s)
+                # print('Tot just obs', tot_just_obs)
+
+                avg_episode_time = (time()- time_start)/(self.episode_count + 1)
+                agents_arrived = num_agents_done/self.env.num_agents
+
+                self.episode_agents_arrived.append(agents_arrived)
                 self.episode_rewards.append(episode_reward)
                 self.episode_lengths.append(episode_step_count)
                 self.episode_mean_values.append(np.mean(episode_values))
@@ -190,7 +229,7 @@ class Worker():
                 self.log_in_tensorboard()
                 self.episode_count += 1
                 
-                print('Episode', self.episode_count,'of',self.name,'with',episode_step_count,'steps, reward of',episode_reward, ', mean entropy of', np.mean([l[2] for l in self.stats[-1:]]), ', curriculum level', self.curriculum.current_level, ', using best actions:', use_best_actions)
+                print('Episode', self.episode_count,'of',self.name,'with',episode_step_count,'steps, reward of',episode_reward,', perc. arrived',agents_arrived, ', mean entropy of', np.mean([l[2] for l in self.stats[-1:]]), ', curriculum level', self.curriculum.current_level, ', using best actions:', use_best_actions, ', time', episode_time, ', Avg. time', avg_episode_time)
 
             return self.episode_count
     
@@ -222,6 +261,7 @@ class Worker():
             mean_length = np.mean(self.episode_lengths[-100:])
             mean_value = np.mean(self.episode_mean_values[-100:])
             mean_success_rate = np.mean(self.episode_success[-100:])
+            mean_agents_arrived = np.mean(self.episode_agents_arrived[-100:])
             mean_reward = np.mean(self.episode_rewards[-100:])
 
             mean_value_loss = np.mean([l[0] for l in self.stats[-1:]])
@@ -237,6 +277,7 @@ class Worker():
                 tf.summary.scalar('Lvl '+ lvl+' - Perf/Length', mean_length, step=episode_count)
                 tf.summary.scalar('Lvl '+ lvl+' - Perf/Value', mean_value, step=episode_count)
                 tf.summary.scalar('Lvl '+ lvl+' - Perf/Successrate', mean_success_rate, step=episode_count)
+                tf.summary.scalar('Lvl '+ lvl+' - Perf/Perc. agents arrived', mean_agents_arrived, step=episode_count)
                 tf.summary.scalar('Lvl '+ lvl+' - Losses/Value Loss', mean_value_loss, step=episode_count)
                 tf.summary.scalar('Lvl '+ lvl+' - Losses/Policy Loss', mean_policy_loss, step=episode_count)
                 tf.summary.scalar('Lvl '+ lvl+' - Losses/Entropy', mean_entropy_loss, step=episode_count)

@@ -1,5 +1,12 @@
 from flask import Flask, jsonify, send_from_directory,send_file, request, Response
+
+
+import os
+myCmd = 'python setup.py build_ext --inplace'
+os.system(myCmd)
+
 from model_server import Singleton
+import tensorflow as tf
 import numpy as np
 import pandas as pd
 import dill
@@ -11,6 +18,8 @@ import threading
 import json
 import msgpack
 import zlib
+
+
 
 app = Flask(__name__)
 lock = threading.RLock()
@@ -113,3 +122,7 @@ def get_config_file():
 @app.route('/observation_file')
 def get_observation_file():
     return send_from_directory('deliverables', 'observation.py')
+
+@app.route('/file/<string:filename>')
+def get_file(filename):
+    return send_from_directory('deliverables', filename)

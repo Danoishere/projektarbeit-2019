@@ -7,11 +7,14 @@
 #
 #  ##### Enable autocomplete
 
-
 import multiprocess as mp
 import numpy as np
 import tensorflow as tf
 from ctypes import c_bool
+
+import os
+myCmd = 'python setup.py build_ext --inplace'
+os.system(myCmd)
 
 # import shared directory
 import os, sys; sys.path.append(os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), os.pardir)) + os.sep + 'shared')
@@ -25,11 +28,10 @@ import urllib
 mp.set_start_method('spawn', True)
 
 def start_train(resume):
-    
-    urllib.request.urlretrieve(const.url + '/network_file', 'deliverables/network.py')
-    urllib.request.urlretrieve(const.url + '/config_file', 'deliverables/input_params.py')
-    urllib.request.urlretrieve(const.url + '/observation_file', 'deliverables/observation.py')
-    urllib.request.urlretrieve(const.url + '/curriculum_file', 'deliverables/curriculum.py')
+    urllib.request.urlretrieve(const.url + '/file/network.cp36-win_amd64.pyd', 'deliverables/network.cp36-win_amd64.pyd')
+    urllib.request.urlretrieve(const.url + '/file/input_params.py', 'deliverables/input_params.py')
+    urllib.request.urlretrieve(const.url + '/file/observation.cp36-win_amd64.pyd', 'deliverables/observation.cp36-win_amd64.pyd')
+    urllib.request.urlretrieve(const.url + '/file/curriculum.py', 'deliverables/curriculum.py')
 
     num_workers = mp.cpu_count() - 1
     should_stop = mp.Value(c_bool, False)
@@ -37,7 +39,7 @@ def start_train(resume):
     while True:
         worker_processes = []
 
-        # create_worker(0, should_stop)
+        create_worker(0, should_stop)
 
         # Start process 1 - n, running in other processes
         for w_num in range(0,num_workers):
