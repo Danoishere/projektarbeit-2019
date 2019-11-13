@@ -34,10 +34,15 @@ def get_curriculum_lvl():
 
 def start_train(resume):
     
-    urllib.request.urlretrieve(const.url + '/network_file', 'deliverables/network.py')
-    urllib.request.urlretrieve(const.url + '/config_file', 'deliverables/input_params.py')
-    urllib.request.urlretrieve(const.url + '/observation_file', 'deliverables/observation.py')
-    urllib.request.urlretrieve(const.url + '/curriculum_file', 'deliverables/curriculum.py')
+    if os.name == 'nt':
+        os_cython_desc = '.cp36-win_amd64.pyd'
+    else:
+        os_cython_desc = '.cpython-36m-x86_64-linux-gnu.so'
+
+    urllib.request.urlretrieve(const.url + '/file/network' + os_cython_desc, 'deliverables/network' + os_cython_desc)
+    urllib.request.urlretrieve(const.url + '/file/input_params.py', 'deliverables/input_params.py')
+    urllib.request.urlretrieve(const.url + '/file/observation' + os_cython_desc, 'deliverables/observation' + os_cython_desc)
+    urllib.request.urlretrieve(const.url + '/file/curriculum.py', 'deliverables/curriculum.py')
 
     curriculum_mod = __import__("deliverables.curriculum", fromlist=[''])
     curriculum_class =  getattr(curriculum_mod, 'Curriculum')
@@ -103,14 +108,18 @@ def start_train(resume):
 
                 actions,_ = model.get_best_actions_and_values(obs_dict, env.env)
 
-                if prep_steps == 1:
+                if prep_steps == 2:
                     next_obs, rewards, done, info = env.step(actions)
+                    episode_step_count += 1
+                    
                     for agent in env.env.agents:
                         agent.last_action = np.ones(5)
 
                     prep_steps = 0
+                    obs_builder.prep_steps = prep_steps
                 else:
                     prep_steps += 1
+                    obs_builder.prep_steps = prep_steps
                     next_obs = env.env.obs_builder.get_many(all_handles)
                     rewards = dict(no_reward)
 
@@ -124,7 +133,7 @@ def start_train(resume):
                     episode_reward += rewards[i]
                 
                 obs = next_obs               
-                episode_step_count += 1
+                
 
             agents_started += len(env.env.agents)
             episode_count += 1
