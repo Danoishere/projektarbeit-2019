@@ -126,5 +126,5 @@ dist-model-server/deliverables/weights.h5
 dist-model-server/deliverables/model/model_global.h5
 dist-model-server/deliverables/run_info.json
 dist-progress-evaluator/deliverables/*
-dist-model-server/deliverables/*
+dist-model-server/deliverables/model/*
 dist-benchmark-runner/deliverables/*
