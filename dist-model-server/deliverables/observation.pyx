@@ -1,6 +1,5 @@
 import numpy as np
 import deliverables.input_params as params
-from flatland.envs.predictions import ShortestPathPredictorForRailEnv
 
 """
 Collection of environment-specific ObservationBuilder.
@@ -559,13 +558,13 @@ class RailObsBuilder(CustomTreeObsForRailEnv):
         obs = super().get_many(handles=handles)
         
         all_obs = {}
-        #print('Get', time() - start)
+        
         start = time()
         for handle in obs:
             next_agent_obs = obs[handle]
             agent_obs, rec_actor, rec_critic = self.reshape_agent_obs(handle, next_agent_obs, None)
             all_obs[handle] = (agent_obs, rec_actor, rec_critic)
-        #print('Reshape', time() - start)
+
         return all_obs
 
 
@@ -626,9 +625,7 @@ class RailObsBuilder(CustomTreeObsForRailEnv):
                     tree_obs.append(node_obs)
 
             tree_obs = np.concatenate(tree_obs)
-
             agent = self.env.agents[handle]
-            # print(agent.position)
 
             # Current info about the train itself
             vec_obs = np.zeros(params.vec_state_size)
@@ -753,28 +750,22 @@ def node_to_obs(node_tuple):
         1.0 if dir == 'F' else 0,
         1.0 if dir == 'L' else 0,
         1.0 if dir == 'R' else 0,
-        normalize_field(node.dist_min_to_target),
-        normalize_field(node.dist_other_agent_encountered),
+        one_hot(node.dist_min_to_target),
         one_hot(node.dist_other_agent_encountered),
         one_hot(node.dist_other_target_encountered),
         one_hot(node.dist_own_target_encountered),
-        normalize_field(node.dist_potential_conflict),
         one_hot(node.dist_potential_conflict),
-        normalize_field(node.dist_to_next_branch),
-        normalize_field(node.dist_unusable_switch),
         one_hot(node.dist_unusable_switch),
-        normalize_field(node.num_agents_malfunctioning,10),
-        normalize_field(node.num_agents_opposite_direction, 10),
         one_hot(node.num_agents_opposite_direction),
-        normalize_field(node.num_agents_ready_to_depart, 20),
-        normalize_field(node.num_agents_same_direction, 20),
+        one_hot(node.num_agents_ready_to_depart),
+        one_hot(node.num_agents_same_direction),
         node.speed_min_fractional,
-        normalize_field(dist_left),
         one_hot(dist_left),
-        normalize_field(dist_right),
         one_hot(dist_right),
-        normalize_field(dist_forward),
         one_hot(dist_forward),
+        0,
+        0,
+        0,
         0,
         0,
         0,
@@ -784,6 +775,10 @@ def node_to_obs(node_tuple):
 
     if len(node.other_agents) > 0:
         clostest_agent = node.other_agents[0]
-        obs[-5:] = clostest_agent.last_action
+        obs[-7] = clostest_agent.status.value
+        obs[-6] = clostest_agent.speed_data['speed']
+        agent_action_onehot = np.zeros(5)
+        agent_action_onehot[np.arange(0,5) == clostest_agent.last_action] = 1
+        obs[-5:] =  agent_action_onehot
 
     return obs

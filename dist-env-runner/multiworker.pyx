@@ -147,12 +147,12 @@ class Worker():
                     step_call = time()
 
                     # We use 3 lookahead steps
-                    if prep_steps == 2:
+                    if prep_steps == 1:
                         start_env_s = time()
                         next_obs, rewards, done, info = self.env.step(actions)
                         tot_env_s += time() - start_env_s
                         for agent in self.env.env.agents:
-                            agent.last_action = np.ones(5)
+                            agent.last_action = 0
 
                         prep_steps = 0
                         obs_builder.prep_steps = prep_steps
