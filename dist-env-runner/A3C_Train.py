@@ -39,7 +39,7 @@ def start_train(resume):
     while True:
         worker_processes = []
 
-        create_worker(0, should_stop)
+        # create_worker(0, should_stop)
 
         # Start process 1 - n, running in other processes
         for w_num in range(0,num_workers):
