@@ -28,9 +28,14 @@ import urllib
 mp.set_start_method('spawn', True)
 
 def start_train(resume):
-    urllib.request.urlretrieve(const.url + '/file/network.cp36-win_amd64.pyd', 'deliverables/network.cp36-win_amd64.pyd')
+    if os.name == 'nt':
+        os_cython_desc = '.cp36-win_amd64.pyd'
+    else:
+        os_cython_desc = '.python-36m-x86_64-linux-gnu.so'
+
+    urllib.request.urlretrieve(const.url + '/file/network' + os_cython_desc, 'deliverables/network' + os_cython_desc)
     urllib.request.urlretrieve(const.url + '/file/input_params.py', 'deliverables/input_params.py')
-    urllib.request.urlretrieve(const.url + '/file/observation.cp36-win_amd64.pyd', 'deliverables/observation.cp36-win_amd64.pyd')
+    urllib.request.urlretrieve(const.url + '/file/observation' + os_cython_desc, 'deliverables/observation' + os_cython_desc)
     urllib.request.urlretrieve(const.url + '/file/curriculum.py', 'deliverables/curriculum.py')
 
     num_workers = mp.cpu_count() - 1
