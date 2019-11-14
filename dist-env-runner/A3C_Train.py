@@ -20,8 +20,6 @@ os.system(myCmd)
 import os, sys; sys.path.append(os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), os.pardir)) + os.sep + 'shared')
 
 from time import sleep, time
-from multiworker import create_worker
-
 import constant as const
 import urllib
 
@@ -33,10 +31,16 @@ def start_train(resume):
     else:
         os_cython_desc = '.cpython-36m-x86_64-linux-gnu.so'
 
-    urllib.request.urlretrieve(const.url + '/file/network' + os_cython_desc, 'deliverables/network' + os_cython_desc)
+    urllib.request.urlretrieve(const.url + '/file/network.pyx', 'deliverables/network.pyx')
     urllib.request.urlretrieve(const.url + '/file/input_params.py', 'deliverables/input_params.py')
-    urllib.request.urlretrieve(const.url + '/file/observation' + os_cython_desc, 'deliverables/observation' + os_cython_desc)
+    urllib.request.urlretrieve(const.url + '/file/observation.pyx', 'deliverables/observation.pyx')
     urllib.request.urlretrieve(const.url + '/file/curriculum.py', 'deliverables/curriculum.py')
+
+    myCmd = 'python setup_deliverables.py build_ext --inplace'
+    os.system(myCmd)
+
+    # Wait with this import until we compiled all required modules!
+    from multiworker import create_worker
 
     num_workers = mp.cpu_count() - 1
     should_stop = mp.Value(c_bool, False)
