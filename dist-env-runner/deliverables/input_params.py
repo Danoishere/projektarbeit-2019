@@ -9,7 +9,7 @@ number_of_actions = 5
 number_of_comm = 5
 num_of_obs = 2
 
-tree_depth = 3
+tree_depth = 4
 path_root = tree_depth + 1
 path_sec = tree_depth
 path_thrd = tree_depth - 1

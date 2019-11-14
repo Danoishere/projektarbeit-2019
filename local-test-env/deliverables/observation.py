@@ -571,7 +571,7 @@ class RailObsBuilder(CustomTreeObsForRailEnv):
         return super().reset()
 
     def get_many(self, handles=None):
-        print('-------------------')
+        #print('-------------------')
         obs = super().get_many(handles=handles)
         all_augmented_obs = {}
 
@@ -733,10 +733,10 @@ def print_node(node, dir, depth = 0):
     if node is None or node == np.inf or node == -np.inf or depth > 1:
         return
     
-    CustomTreeObsForRailEnv.print_node_features(node, dir,' ' * depth * 4)
+    # CustomTreeObsForRailEnv.print_node_features(node, dir,' ' * depth * 4)
     
-    for child_dir in node.childs:
-        print_node(node.childs[child_dir], child_dir, depth + 1)
+    #for child_dir in node.childs:
+    #    print_node(node.childs[child_dir], child_dir, depth + 1)
     
 
 
