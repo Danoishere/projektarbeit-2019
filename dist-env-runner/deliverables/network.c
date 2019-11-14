@@ -7353,7 +7353,7 @@ static PyObject *__pyx_pf_12deliverables_7network_10AC_Network_26get_best_action
  *             obs_builder.actor_rec_state[handle] = [a_rec_h[idx], a_rec_c[idx]]
  *             obs_builder.critic_rec_state[handle] = [c_rec_h[idx], c_rec_c[idx]]             # <<<<<<<<<<<<<<
  * 
- *             env.agents[handle].last_action = a_dist
+ *             env.agents[handle].last_action = actions[handle]
  */
     __pyx_t_9 = __Pyx_PyObject_GetItem(__pyx_v_c_rec_h, __pyx_v_idx); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 202, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_9);
@@ -7376,17 +7376,20 @@ static PyObject *__pyx_pf_12deliverables_7network_10AC_Network_26get_best_action
     /* "deliverables/network.pyx":204
  *             obs_builder.critic_rec_state[handle] = [c_rec_h[idx], c_rec_c[idx]]
  * 
- *             env.agents[handle].last_action = a_dist             # <<<<<<<<<<<<<<
+ *             env.agents[handle].last_action = actions[handle]             # <<<<<<<<<<<<<<
  * 
  *         return actions, values_dict
  */
-    __pyx_t_8 = __Pyx_PyObject_GetAttrStr(__pyx_v_env, __pyx_n_s_agents); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 204, __pyx_L1_error)
+    __pyx_t_8 = __Pyx_PyDict_GetItem(__pyx_v_actions, __pyx_v_handle); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 204, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_8);
-    __pyx_t_10 = __Pyx_PyObject_GetItem(__pyx_t_8, __pyx_v_handle); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 204, __pyx_L1_error)
+    __pyx_t_10 = __Pyx_PyObject_GetAttrStr(__pyx_v_env, __pyx_n_s_agents); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 204, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_10);
-    __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-    if (__Pyx_PyObject_SetAttrStr(__pyx_t_10, __pyx_n_s_last_action, __pyx_v_a_dist) < 0) __PYX_ERR(0, 204, __pyx_L1_error)
+    __pyx_t_9 = __Pyx_PyObject_GetItem(__pyx_t_10, __pyx_v_handle); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 204, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_9);
     __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
+    if (__Pyx_PyObject_SetAttrStr(__pyx_t_9, __pyx_n_s_last_action, __pyx_t_8) < 0) __PYX_ERR(0, 204, __pyx_L1_error)
+    __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
+    __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
 
     /* "deliverables/network.pyx":195
  *         obs_builder = env.obs_builder
@@ -7399,7 +7402,7 @@ static PyObject *__pyx_pf_12deliverables_7network_10AC_Network_26get_best_action
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
   /* "deliverables/network.pyx":206
- *             env.agents[handle].last_action = a_dist
+ *             env.agents[handle].last_action = actions[handle]
  * 
  *         return actions, values_dict             # <<<<<<<<<<<<<<
  * 
@@ -8056,7 +8059,7 @@ static PyObject *__pyx_pf_12deliverables_7network_10AC_Network_28get_actions_and
  *             obs_builder.actor_rec_state[handle] = [a_rec_h[idx], a_rec_c[idx]]
  *             obs_builder.critic_rec_state[handle] = [c_rec_h[idx], c_rec_c[idx]]             # <<<<<<<<<<<<<<
  * 
- *             env.agents[handle].last_action = a_dist
+ *             env.agents[handle].last_action = actions[handle]
  */
     __pyx_t_8 = __Pyx_PyObject_GetItem(__pyx_v_c_rec_h, __pyx_v_idx); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 233, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_8);
@@ -8079,17 +8082,20 @@ static PyObject *__pyx_pf_12deliverables_7network_10AC_Network_28get_actions_and
     /* "deliverables/network.pyx":235
  *             obs_builder.critic_rec_state[handle] = [c_rec_h[idx], c_rec_c[idx]]
  * 
- *             env.agents[handle].last_action = a_dist             # <<<<<<<<<<<<<<
+ *             env.agents[handle].last_action = actions[handle]             # <<<<<<<<<<<<<<
  * 
  *         return actions, values_dict
  */
-    __pyx_t_9 = __Pyx_PyObject_GetAttrStr(__pyx_v_env, __pyx_n_s_agents); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 235, __pyx_L1_error)
+    __pyx_t_9 = __Pyx_PyDict_GetItem(__pyx_v_actions, __pyx_v_handle); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 235, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_9);
-    __pyx_t_7 = __Pyx_PyObject_GetItem(__pyx_t_9, __pyx_v_handle); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 235, __pyx_L1_error)
+    __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_v_env, __pyx_n_s_agents); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 235, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_7);
-    __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
-    if (__Pyx_PyObject_SetAttrStr(__pyx_t_7, __pyx_n_s_last_action, __pyx_v_a_dist) < 0) __PYX_ERR(0, 235, __pyx_L1_error)
+    __pyx_t_8 = __Pyx_PyObject_GetItem(__pyx_t_7, __pyx_v_handle); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 235, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_8);
     __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
+    if (__Pyx_PyObject_SetAttrStr(__pyx_t_8, __pyx_n_s_last_action, __pyx_t_9) < 0) __PYX_ERR(0, 235, __pyx_L1_error)
+    __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
+    __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
 
     /* "deliverables/network.pyx":226
  *         obs_builder = env.obs_builder
@@ -8102,7 +8108,7 @@ static PyObject *__pyx_pf_12deliverables_7network_10AC_Network_28get_actions_and
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
   /* "deliverables/network.pyx":237
- *             env.agents[handle].last_action = a_dist
+ *             env.agents[handle].last_action = actions[handle]
  * 
  *         return actions, values_dict             # <<<<<<<<<<<<<<
  * 

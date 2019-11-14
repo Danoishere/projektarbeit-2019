@@ -201,7 +201,7 @@ class AC_Network():
             obs_builder.actor_rec_state[handle] = [a_rec_h[idx], a_rec_c[idx]]
             obs_builder.critic_rec_state[handle] = [c_rec_h[idx], c_rec_c[idx]]
 
-            env.agents[handle].last_action = a_dist
+            env.agents[handle].last_action = actions[handle]
 
         return actions, values_dict
 
@@ -232,7 +232,7 @@ class AC_Network():
             obs_builder.actor_rec_state[handle] = [a_rec_h[idx], a_rec_c[idx]]
             obs_builder.critic_rec_state[handle] = [c_rec_h[idx], c_rec_c[idx]]
 
-            env.agents[handle].last_action = a_dist
+            env.agents[handle].last_action = actions[handle]
 
         return actions, values_dict
 

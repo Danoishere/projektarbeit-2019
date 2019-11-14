@@ -1434,9 +1434,9 @@ static const char __pyx_k__4[] = "\t";
 static const char __pyx_k__5[] = ": ";
 static const char __pyx_k__6[] = ", ";
 static const char __pyx_k__8[] = ".";
-static const char __pyx_k__9[] = "*";
 static const char __pyx_k_ca[] = "ca";
 static const char __pyx_k_np[] = "np";
+static const char __pyx_k__10[] = "*";
 static const char __pyx_k_abs[] = "abs";
 static const char __pyx_k_add[] = "add";
 static const char __pyx_k_bin[] = "bin";
@@ -1493,6 +1493,7 @@ static const char __pyx_k_zeros[] = "zeros";
 static const char __pyx_k_ACTIVE[] = "ACTIVE";
 static const char __pyx_k_agents[] = "agents";
 static const char __pyx_k_append[] = "append";
+static const char __pyx_k_arange[] = "arange";
 static const char __pyx_k_argmax[] = "argmax";
 static const char __pyx_k_astype[] = "astype";
 static const char __pyx_k_childs[] = "childs";
@@ -1645,6 +1646,7 @@ static const char __pyx_k_cline_in_traceback[] = "cline_in_traceback";
 static const char __pyx_k_dist_min_to_target[] = "dist_min_to_target";
 static const char __pyx_k_location_has_agent[] = "location_has_agent";
 static const char __pyx_k_potential_conflict[] = "potential_conflict";
+static const char __pyx_k_agent_action_onehot[] = "agent_action_onehot";
 static const char __pyx_k_buffer_to_obs_lists[] = "buffer_to_obs_lists";
 static const char __pyx_k_dist_to_next_branch[] = "dist_to_next_branch";
 static const char __pyx_k_location_has_target[] = "location_has_target";
@@ -1763,12 +1765,12 @@ static PyObject *__pyx_n_s_Tuple;
 static PyObject *__pyx_n_s_ValueError;
 static PyObject *__pyx_kp_s_WRONG_CELL_TYPE_detected_in_tree;
 static PyObject *__pyx_kp_s_Well_looks_like_it_s_not_always;
+static PyObject *__pyx_n_s__10;
 static PyObject *__pyx_kp_s__3;
 static PyObject *__pyx_kp_s__4;
 static PyObject *__pyx_kp_s__5;
 static PyObject *__pyx_kp_s__6;
 static PyObject *__pyx_kp_s__8;
-static PyObject *__pyx_n_s__9;
 static PyObject *__pyx_n_s_a;
 static PyObject *__pyx_n_s_a_rec_obs;
 static PyObject *__pyx_n_s_abs;
@@ -1776,6 +1778,7 @@ static PyObject *__pyx_n_s_actor_rec_state;
 static PyObject *__pyx_n_s_add;
 static PyObject *__pyx_n_s_agent;
 static PyObject *__pyx_n_s_agent_2;
+static PyObject *__pyx_n_s_agent_action_onehot;
 static PyObject *__pyx_n_s_agent_actor_rec_state;
 static PyObject *__pyx_n_s_agent_critic_rec_state;
 static PyObject *__pyx_n_s_agent_obs;
@@ -1787,6 +1790,7 @@ static PyObject *__pyx_n_s_alt_node_2;
 static PyObject *__pyx_n_s_alt_way_1;
 static PyObject *__pyx_n_s_alt_way_2;
 static PyObject *__pyx_n_s_append;
+static PyObject *__pyx_n_s_arange;
 static PyObject *__pyx_n_s_argmax;
 static PyObject *__pyx_n_s_array_equal;
 static PyObject *__pyx_n_s_asarray;
@@ -2057,51 +2061,52 @@ static PyObject *__pyx_int_1000;
 static PyObject *__pyx_slice_;
 static PyObject *__pyx_tuple__2;
 static PyObject *__pyx_tuple__7;
-static PyObject *__pyx_tuple__10;
+static PyObject *__pyx_tuple__9;
 static PyObject *__pyx_tuple__11;
-static PyObject *__pyx_tuple__13;
+static PyObject *__pyx_tuple__12;
 static PyObject *__pyx_tuple__14;
-static PyObject *__pyx_tuple__16;
-static PyObject *__pyx_tuple__18;
+static PyObject *__pyx_tuple__15;
+static PyObject *__pyx_tuple__17;
 static PyObject *__pyx_tuple__19;
-static PyObject *__pyx_tuple__21;
+static PyObject *__pyx_tuple__20;
 static PyObject *__pyx_tuple__22;
-static PyObject *__pyx_tuple__24;
-static PyObject *__pyx_tuple__26;
-static PyObject *__pyx_tuple__28;
-static PyObject *__pyx_tuple__30;
-static PyObject *__pyx_tuple__32;
-static PyObject *__pyx_tuple__34;
-static PyObject *__pyx_tuple__36;
-static PyObject *__pyx_tuple__38;
-static PyObject *__pyx_tuple__40;
+static PyObject *__pyx_tuple__23;
+static PyObject *__pyx_tuple__25;
+static PyObject *__pyx_tuple__27;
+static PyObject *__pyx_tuple__29;
+static PyObject *__pyx_tuple__31;
+static PyObject *__pyx_tuple__33;
+static PyObject *__pyx_tuple__35;
+static PyObject *__pyx_tuple__37;
+static PyObject *__pyx_tuple__39;
 static PyObject *__pyx_tuple__41;
-static PyObject *__pyx_tuple__43;
-static PyObject *__pyx_tuple__45;
-static PyObject *__pyx_tuple__47;
-static PyObject *__pyx_tuple__49;
-static PyObject *__pyx_tuple__51;
-static PyObject *__pyx_tuple__53;
-static PyObject *__pyx_codeobj__12;
-static PyObject *__pyx_codeobj__15;
-static PyObject *__pyx_codeobj__17;
-static PyObject *__pyx_codeobj__20;
-static PyObject *__pyx_codeobj__23;
-static PyObject *__pyx_codeobj__25;
-static PyObject *__pyx_codeobj__27;
-static PyObject *__pyx_codeobj__29;
-static PyObject *__pyx_codeobj__31;
-static PyObject *__pyx_codeobj__33;
-static PyObject *__pyx_codeobj__35;
-static PyObject *__pyx_codeobj__37;
-static PyObject *__pyx_codeobj__39;
-static PyObject *__pyx_codeobj__42;
-static PyObject *__pyx_codeobj__44;
-static PyObject *__pyx_codeobj__46;
-static PyObject *__pyx_codeobj__48;
-static PyObject *__pyx_codeobj__50;
-static PyObject *__pyx_codeobj__52;
-static PyObject *__pyx_codeobj__54;
+static PyObject *__pyx_tuple__42;
+static PyObject *__pyx_tuple__44;
+static PyObject *__pyx_tuple__46;
+static PyObject *__pyx_tuple__48;
+static PyObject *__pyx_tuple__50;
+static PyObject *__pyx_tuple__52;
+static PyObject *__pyx_tuple__54;
+static PyObject *__pyx_codeobj__13;
+static PyObject *__pyx_codeobj__16;
+static PyObject *__pyx_codeobj__18;
+static PyObject *__pyx_codeobj__21;
+static PyObject *__pyx_codeobj__24;
+static PyObject *__pyx_codeobj__26;
+static PyObject *__pyx_codeobj__28;
+static PyObject *__pyx_codeobj__30;
+static PyObject *__pyx_codeobj__32;
+static PyObject *__pyx_codeobj__34;
+static PyObject *__pyx_codeobj__36;
+static PyObject *__pyx_codeobj__38;
+static PyObject *__pyx_codeobj__40;
+static PyObject *__pyx_codeobj__43;
+static PyObject *__pyx_codeobj__45;
+static PyObject *__pyx_codeobj__47;
+static PyObject *__pyx_codeobj__49;
+static PyObject *__pyx_codeobj__51;
+static PyObject *__pyx_codeobj__53;
+static PyObject *__pyx_codeobj__55;
 /* Late includes */
 
 /* "deliverables/observation.pyx":50
@@ -14959,6 +14964,7 @@ static PyObject *__pyx_pf_12deliverables_11observation_10node_to_obs(CYTHON_UNUS
   PyObject *__pyx_v_dist_forward = NULL;
   PyObject *__pyx_v_obs = NULL;
   PyObject *__pyx_v_clostest_agent = NULL;
+  PyObject *__pyx_v_agent_action_onehot = NULL;
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   int __pyx_t_1;
@@ -16174,7 +16180,7 @@ static PyObject *__pyx_pf_12deliverables_11observation_10node_to_obs(CYTHON_UNUS
  * 
  *     if len(node.other_agents) > 0:             # <<<<<<<<<<<<<<
  *         clostest_agent = node.other_agents[0]
- *         obs[-5:] = clostest_agent.last_action
+ *         agent_action_onehot = np.zeros(5)
  */
   __pyx_t_31 = __Pyx_PyObject_GetAttrStr(__pyx_v_node, __pyx_n_s_other_agents); if (unlikely(!__pyx_t_31)) __PYX_ERR(0, 785, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_31);
@@ -16187,8 +16193,8 @@ static PyObject *__pyx_pf_12deliverables_11observation_10node_to_obs(CYTHON_UNUS
  * 
  *     if len(node.other_agents) > 0:
  *         clostest_agent = node.other_agents[0]             # <<<<<<<<<<<<<<
- *         obs[-5:] = clostest_agent.last_action
- * 
+ *         agent_action_onehot = np.zeros(5)
+ *         agent_action_onehot[np.arange(0,5) == clostest_agent.last_action] = 1
  */
     __pyx_t_31 = __Pyx_PyObject_GetAttrStr(__pyx_v_node, __pyx_n_s_other_agents); if (unlikely(!__pyx_t_31)) __PYX_ERR(0, 786, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_31);
@@ -16201,26 +16207,76 @@ static PyObject *__pyx_pf_12deliverables_11observation_10node_to_obs(CYTHON_UNUS
     /* "deliverables/observation.pyx":787
  *     if len(node.other_agents) > 0:
  *         clostest_agent = node.other_agents[0]
- *         obs[-5:] = clostest_agent.last_action             # <<<<<<<<<<<<<<
+ *         agent_action_onehot = np.zeros(5)             # <<<<<<<<<<<<<<
+ *         agent_action_onehot[np.arange(0,5) == clostest_agent.last_action] = 1
+ *         obs[-5:] = agent_action_onehot
+ */
+    __Pyx_GetModuleGlobalName(__pyx_t_31, __pyx_n_s_np); if (unlikely(!__pyx_t_31)) __PYX_ERR(0, 787, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_31);
+    __pyx_t_29 = __Pyx_PyObject_GetAttrStr(__pyx_t_31, __pyx_n_s_zeros); if (unlikely(!__pyx_t_29)) __PYX_ERR(0, 787, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_29);
+    __Pyx_DECREF(__pyx_t_31); __pyx_t_31 = 0;
+    __pyx_t_31 = NULL;
+    if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_29))) {
+      __pyx_t_31 = PyMethod_GET_SELF(__pyx_t_29);
+      if (likely(__pyx_t_31)) {
+        PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_29);
+        __Pyx_INCREF(__pyx_t_31);
+        __Pyx_INCREF(function);
+        __Pyx_DECREF_SET(__pyx_t_29, function);
+      }
+    }
+    __pyx_t_30 = (__pyx_t_31) ? __Pyx_PyObject_Call2Args(__pyx_t_29, __pyx_t_31, __pyx_int_5) : __Pyx_PyObject_CallOneArg(__pyx_t_29, __pyx_int_5);
+    __Pyx_XDECREF(__pyx_t_31); __pyx_t_31 = 0;
+    if (unlikely(!__pyx_t_30)) __PYX_ERR(0, 787, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_30);
+    __Pyx_DECREF(__pyx_t_29); __pyx_t_29 = 0;
+    __pyx_v_agent_action_onehot = __pyx_t_30;
+    __pyx_t_30 = 0;
+
+    /* "deliverables/observation.pyx":788
+ *         clostest_agent = node.other_agents[0]
+ *         agent_action_onehot = np.zeros(5)
+ *         agent_action_onehot[np.arange(0,5) == clostest_agent.last_action] = 1             # <<<<<<<<<<<<<<
+ *         obs[-5:] = agent_action_onehot
+ * 
+ */
+    __Pyx_GetModuleGlobalName(__pyx_t_30, __pyx_n_s_np); if (unlikely(!__pyx_t_30)) __PYX_ERR(0, 788, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_30);
+    __pyx_t_29 = __Pyx_PyObject_GetAttrStr(__pyx_t_30, __pyx_n_s_arange); if (unlikely(!__pyx_t_29)) __PYX_ERR(0, 788, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_29);
+    __Pyx_DECREF(__pyx_t_30); __pyx_t_30 = 0;
+    __pyx_t_30 = __Pyx_PyObject_Call(__pyx_t_29, __pyx_tuple__9, NULL); if (unlikely(!__pyx_t_30)) __PYX_ERR(0, 788, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_30);
+    __Pyx_DECREF(__pyx_t_29); __pyx_t_29 = 0;
+    __pyx_t_29 = __Pyx_PyObject_GetAttrStr(__pyx_v_clostest_agent, __pyx_n_s_last_action); if (unlikely(!__pyx_t_29)) __PYX_ERR(0, 788, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_29);
+    __pyx_t_31 = PyObject_RichCompare(__pyx_t_30, __pyx_t_29, Py_EQ); __Pyx_XGOTREF(__pyx_t_31); if (unlikely(!__pyx_t_31)) __PYX_ERR(0, 788, __pyx_L1_error)
+    __Pyx_DECREF(__pyx_t_30); __pyx_t_30 = 0;
+    __Pyx_DECREF(__pyx_t_29); __pyx_t_29 = 0;
+    if (unlikely(PyObject_SetItem(__pyx_v_agent_action_onehot, __pyx_t_31, __pyx_int_1) < 0)) __PYX_ERR(0, 788, __pyx_L1_error)
+    __Pyx_DECREF(__pyx_t_31); __pyx_t_31 = 0;
+
+    /* "deliverables/observation.pyx":789
+ *         agent_action_onehot = np.zeros(5)
+ *         agent_action_onehot[np.arange(0,5) == clostest_agent.last_action] = 1
+ *         obs[-5:] = agent_action_onehot             # <<<<<<<<<<<<<<
  * 
  *     return obs
  */
-    __pyx_t_30 = __Pyx_PyObject_GetAttrStr(__pyx_v_clostest_agent, __pyx_n_s_last_action); if (unlikely(!__pyx_t_30)) __PYX_ERR(0, 787, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_30);
-    if (__Pyx_PyObject_SetSlice(__pyx_v_obs, __pyx_t_30, -5L, 0, NULL, NULL, NULL, 1, 0, 1) < 0) __PYX_ERR(0, 787, __pyx_L1_error)
-    __Pyx_DECREF(__pyx_t_30); __pyx_t_30 = 0;
+    if (__Pyx_PyObject_SetSlice(__pyx_v_obs, __pyx_v_agent_action_onehot, -5L, 0, NULL, NULL, NULL, 1, 0, 1) < 0) __PYX_ERR(0, 789, __pyx_L1_error)
 
     /* "deliverables/observation.pyx":785
  *     ]
  * 
  *     if len(node.other_agents) > 0:             # <<<<<<<<<<<<<<
  *         clostest_agent = node.other_agents[0]
- *         obs[-5:] = clostest_agent.last_action
+ *         agent_action_onehot = np.zeros(5)
  */
   }
 
-  /* "deliverables/observation.pyx":789
- *         obs[-5:] = clostest_agent.last_action
+  /* "deliverables/observation.pyx":791
+ *         obs[-5:] = agent_action_onehot
  * 
  *     return obs             # <<<<<<<<<<<<<<
  */
@@ -16277,6 +16333,7 @@ static PyObject *__pyx_pf_12deliverables_11observation_10node_to_obs(CYTHON_UNUS
   __Pyx_XDECREF(__pyx_v_dist_forward);
   __Pyx_XDECREF(__pyx_v_obs);
   __Pyx_XDECREF(__pyx_v_clostest_agent);
+  __Pyx_XDECREF(__pyx_v_agent_action_onehot);
   __Pyx_XGIVEREF(__pyx_r);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
@@ -16373,12 +16430,12 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_ValueError, __pyx_k_ValueError, sizeof(__pyx_k_ValueError), 0, 0, 1, 1},
   {&__pyx_kp_s_WRONG_CELL_TYPE_detected_in_tree, __pyx_k_WRONG_CELL_TYPE_detected_in_tree, sizeof(__pyx_k_WRONG_CELL_TYPE_detected_in_tree), 0, 0, 1, 0},
   {&__pyx_kp_s_Well_looks_like_it_s_not_always, __pyx_k_Well_looks_like_it_s_not_always, sizeof(__pyx_k_Well_looks_like_it_s_not_always), 0, 0, 1, 0},
+  {&__pyx_n_s__10, __pyx_k__10, sizeof(__pyx_k__10), 0, 0, 1, 1},
   {&__pyx_kp_s__3, __pyx_k__3, sizeof(__pyx_k__3), 0, 0, 1, 0},
   {&__pyx_kp_s__4, __pyx_k__4, sizeof(__pyx_k__4), 0, 0, 1, 0},
   {&__pyx_kp_s__5, __pyx_k__5, sizeof(__pyx_k__5), 0, 0, 1, 0},
   {&__pyx_kp_s__6, __pyx_k__6, sizeof(__pyx_k__6), 0, 0, 1, 0},
   {&__pyx_kp_s__8, __pyx_k__8, sizeof(__pyx_k__8), 0, 0, 1, 0},
-  {&__pyx_n_s__9, __pyx_k__9, sizeof(__pyx_k__9), 0, 0, 1, 1},
   {&__pyx_n_s_a, __pyx_k_a, sizeof(__pyx_k_a), 0, 0, 1, 1},
   {&__pyx_n_s_a_rec_obs, __pyx_k_a_rec_obs, sizeof(__pyx_k_a_rec_obs), 0, 0, 1, 1},
   {&__pyx_n_s_abs, __pyx_k_abs, sizeof(__pyx_k_abs), 0, 0, 1, 1},
@@ -16386,6 +16443,7 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_add, __pyx_k_add, sizeof(__pyx_k_add), 0, 0, 1, 1},
   {&__pyx_n_s_agent, __pyx_k_agent, sizeof(__pyx_k_agent), 0, 0, 1, 1},
   {&__pyx_n_s_agent_2, __pyx_k_agent_2, sizeof(__pyx_k_agent_2), 0, 0, 1, 1},
+  {&__pyx_n_s_agent_action_onehot, __pyx_k_agent_action_onehot, sizeof(__pyx_k_agent_action_onehot), 0, 0, 1, 1},
   {&__pyx_n_s_agent_actor_rec_state, __pyx_k_agent_actor_rec_state, sizeof(__pyx_k_agent_actor_rec_state), 0, 0, 1, 1},
   {&__pyx_n_s_agent_critic_rec_state, __pyx_k_agent_critic_rec_state, sizeof(__pyx_k_agent_critic_rec_state), 0, 0, 1, 1},
   {&__pyx_n_s_agent_obs, __pyx_k_agent_obs, sizeof(__pyx_k_agent_obs), 0, 0, 1, 1},
@@ -16397,6 +16455,7 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_alt_way_1, __pyx_k_alt_way_1, sizeof(__pyx_k_alt_way_1), 0, 0, 1, 1},
   {&__pyx_n_s_alt_way_2, __pyx_k_alt_way_2, sizeof(__pyx_k_alt_way_2), 0, 0, 1, 1},
   {&__pyx_n_s_append, __pyx_k_append, sizeof(__pyx_k_append), 0, 0, 1, 1},
+  {&__pyx_n_s_arange, __pyx_k_arange, sizeof(__pyx_k_arange), 0, 0, 1, 1},
   {&__pyx_n_s_argmax, __pyx_k_argmax, sizeof(__pyx_k_argmax), 0, 0, 1, 1},
   {&__pyx_n_s_array_equal, __pyx_k_array_equal, sizeof(__pyx_k_array_equal), 0, 0, 1, 1},
   {&__pyx_n_s_asarray, __pyx_k_asarray, sizeof(__pyx_k_asarray), 0, 0, 1, 1},
@@ -16680,6 +16739,17 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
   __Pyx_GOTREF(__pyx_tuple__7);
   __Pyx_GIVEREF(__pyx_tuple__7);
 
+  /* "deliverables/observation.pyx":788
+ *         clostest_agent = node.other_agents[0]
+ *         agent_action_onehot = np.zeros(5)
+ *         agent_action_onehot[np.arange(0,5) == clostest_agent.last_action] = 1             # <<<<<<<<<<<<<<
+ *         obs[-5:] = agent_action_onehot
+ * 
+ */
+  __pyx_tuple__9 = PyTuple_Pack(2, __pyx_int_0, __pyx_int_5); if (unlikely(!__pyx_tuple__9)) __PYX_ERR(0, 788, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__9);
+  __Pyx_GIVEREF(__pyx_tuple__9);
+
   /* "deliverables/observation.pyx":33
  *     For details about the features in the tree observation see the get() function.
  *     """
@@ -16687,9 +16757,9 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
  *                                           'dist_other_target_encountered '
  *                                           'dist_other_agent_encountered '
  */
-  __pyx_tuple__10 = PyTuple_Pack(2, __pyx_n_s_Node, __pyx_kp_s_dist_own_target_encountered_dist); if (unlikely(!__pyx_tuple__10)) __PYX_ERR(0, 33, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__10);
-  __Pyx_GIVEREF(__pyx_tuple__10);
+  __pyx_tuple__11 = PyTuple_Pack(2, __pyx_n_s_Node, __pyx_kp_s_dist_own_target_encountered_dist); if (unlikely(!__pyx_tuple__11)) __PYX_ERR(0, 33, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__11);
+  __Pyx_GIVEREF(__pyx_tuple__11);
 
   /* "deliverables/observation.pyx":50
  *     tree_explored_actions_char = ['L', 'F', 'R', 'B']
@@ -16698,13 +16768,13 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
  *         super().__init__()
  *         self.max_depth = max_depth
  */
-  __pyx_tuple__11 = PyTuple_Pack(3, __pyx_n_s_self, __pyx_n_s_max_depth, __pyx_n_s_predictor); if (unlikely(!__pyx_tuple__11)) __PYX_ERR(0, 50, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__11);
-  __Pyx_GIVEREF(__pyx_tuple__11);
-  __pyx_codeobj__12 = (PyObject*)__Pyx_PyCode_New(3, 0, 3, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__11, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_deliverables_observation_pyx, __pyx_n_s_init, 50, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__12)) __PYX_ERR(0, 50, __pyx_L1_error)
-  __pyx_tuple__13 = PyTuple_Pack(1, ((PyObject *)Py_None)); if (unlikely(!__pyx_tuple__13)) __PYX_ERR(0, 50, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__13);
-  __Pyx_GIVEREF(__pyx_tuple__13);
+  __pyx_tuple__12 = PyTuple_Pack(3, __pyx_n_s_self, __pyx_n_s_max_depth, __pyx_n_s_predictor); if (unlikely(!__pyx_tuple__12)) __PYX_ERR(0, 50, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__12);
+  __Pyx_GIVEREF(__pyx_tuple__12);
+  __pyx_codeobj__13 = (PyObject*)__Pyx_PyCode_New(3, 0, 3, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__12, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_deliverables_observation_pyx, __pyx_n_s_init, 50, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__13)) __PYX_ERR(0, 50, __pyx_L1_error)
+  __pyx_tuple__14 = PyTuple_Pack(1, ((PyObject *)Py_None)); if (unlikely(!__pyx_tuple__14)) __PYX_ERR(0, 50, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__14);
+  __Pyx_GIVEREF(__pyx_tuple__14);
 
   /* "deliverables/observation.pyx":59
  *         self.location_has_target = None
@@ -16713,10 +16783,10 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
  *         self.location_has_target = {tuple(agent.target): 1 for agent in self.env.agents}
  * 
  */
-  __pyx_tuple__14 = PyTuple_Pack(2, __pyx_n_s_self, __pyx_n_s_agent); if (unlikely(!__pyx_tuple__14)) __PYX_ERR(0, 59, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__14);
-  __Pyx_GIVEREF(__pyx_tuple__14);
-  __pyx_codeobj__15 = (PyObject*)__Pyx_PyCode_New(1, 0, 2, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__14, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_deliverables_observation_pyx, __pyx_n_s_reset, 59, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__15)) __PYX_ERR(0, 59, __pyx_L1_error)
+  __pyx_tuple__15 = PyTuple_Pack(2, __pyx_n_s_self, __pyx_n_s_agent); if (unlikely(!__pyx_tuple__15)) __PYX_ERR(0, 59, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__15);
+  __Pyx_GIVEREF(__pyx_tuple__15);
+  __pyx_codeobj__16 = (PyObject*)__Pyx_PyCode_New(1, 0, 2, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__15, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_deliverables_observation_pyx, __pyx_n_s_reset, 59, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__16)) __PYX_ERR(0, 59, __pyx_L1_error)
 
   /* "deliverables/observation.pyx":62
  *         self.location_has_target = {tuple(agent.target): 1 for agent in self.env.agents}
@@ -16725,13 +16795,13 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
  *         """
  *         Called whenever an observation has to be computed for the `env` environment, for each agent with handle
  */
-  __pyx_tuple__16 = PyTuple_Pack(7, __pyx_n_s_self, __pyx_n_s_handles, __pyx_n_s_t, __pyx_n_s_pos_list, __pyx_n_s_dir_list, __pyx_n_s_a, __pyx_n_s_observations); if (unlikely(!__pyx_tuple__16)) __PYX_ERR(0, 62, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__16);
-  __Pyx_GIVEREF(__pyx_tuple__16);
-  __pyx_codeobj__17 = (PyObject*)__Pyx_PyCode_New(2, 0, 7, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__16, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_deliverables_observation_pyx, __pyx_n_s_get_many, 62, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__17)) __PYX_ERR(0, 62, __pyx_L1_error)
-  __pyx_tuple__18 = PyTuple_Pack(1, ((PyObject *)Py_None)); if (unlikely(!__pyx_tuple__18)) __PYX_ERR(0, 62, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__18);
-  __Pyx_GIVEREF(__pyx_tuple__18);
+  __pyx_tuple__17 = PyTuple_Pack(7, __pyx_n_s_self, __pyx_n_s_handles, __pyx_n_s_t, __pyx_n_s_pos_list, __pyx_n_s_dir_list, __pyx_n_s_a, __pyx_n_s_observations); if (unlikely(!__pyx_tuple__17)) __PYX_ERR(0, 62, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__17);
+  __Pyx_GIVEREF(__pyx_tuple__17);
+  __pyx_codeobj__18 = (PyObject*)__Pyx_PyCode_New(2, 0, 7, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__17, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_deliverables_observation_pyx, __pyx_n_s_get_many, 62, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__18)) __PYX_ERR(0, 62, __pyx_L1_error)
+  __pyx_tuple__19 = PyTuple_Pack(1, ((PyObject *)Py_None)); if (unlikely(!__pyx_tuple__19)) __PYX_ERR(0, 62, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__19);
+  __Pyx_GIVEREF(__pyx_tuple__19);
 
   /* "deliverables/observation.pyx":92
  *         return observations
@@ -16740,13 +16810,13 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
  *         """
  *         Computes the current observation for agent `handle` in env
  */
-  __pyx_tuple__19 = PyTuple_Pack(16, __pyx_n_s_self, __pyx_n_s_handle, __pyx_n_s_agent_2, __pyx_n_s_agent, __pyx_n_s_agent_virtual_position, __pyx_n_s_possible_transitions, __pyx_n_s_num_transitions, __pyx_n_s_distance_map, __pyx_n_s_root_node_observation, __pyx_n_s_visited, __pyx_n_s_orientation, __pyx_n_s_i, __pyx_n_s_branch_direction, __pyx_n_s_new_cell, __pyx_n_s_branch_observation, __pyx_n_s_branch_visited); if (unlikely(!__pyx_tuple__19)) __PYX_ERR(0, 92, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__19);
-  __Pyx_GIVEREF(__pyx_tuple__19);
-  __pyx_codeobj__20 = (PyObject*)__Pyx_PyCode_New(2, 0, 16, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__19, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_deliverables_observation_pyx, __pyx_n_s_get, 92, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__20)) __PYX_ERR(0, 92, __pyx_L1_error)
-  __pyx_tuple__21 = PyTuple_Pack(1, ((PyObject *)__pyx_int_0)); if (unlikely(!__pyx_tuple__21)) __PYX_ERR(0, 92, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__21);
-  __Pyx_GIVEREF(__pyx_tuple__21);
+  __pyx_tuple__20 = PyTuple_Pack(16, __pyx_n_s_self, __pyx_n_s_handle, __pyx_n_s_agent_2, __pyx_n_s_agent, __pyx_n_s_agent_virtual_position, __pyx_n_s_possible_transitions, __pyx_n_s_num_transitions, __pyx_n_s_distance_map, __pyx_n_s_root_node_observation, __pyx_n_s_visited, __pyx_n_s_orientation, __pyx_n_s_i, __pyx_n_s_branch_direction, __pyx_n_s_new_cell, __pyx_n_s_branch_observation, __pyx_n_s_branch_visited); if (unlikely(!__pyx_tuple__20)) __PYX_ERR(0, 92, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__20);
+  __Pyx_GIVEREF(__pyx_tuple__20);
+  __pyx_codeobj__21 = (PyObject*)__Pyx_PyCode_New(2, 0, 16, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__20, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_deliverables_observation_pyx, __pyx_n_s_get, 92, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__21)) __PYX_ERR(0, 92, __pyx_L1_error)
+  __pyx_tuple__22 = PyTuple_Pack(1, ((PyObject *)__pyx_int_0)); if (unlikely(!__pyx_tuple__22)) __PYX_ERR(0, 92, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__22);
+  __Pyx_GIVEREF(__pyx_tuple__22);
 
   /* "deliverables/observation.pyx":257
  *         return root_node_observation
@@ -16755,10 +16825,10 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
  *         """
  *         Utility function to compute tree-based observations.
  */
-  __pyx_tuple__22 = PyTuple_Pack(48, __pyx_n_s_self, __pyx_n_s_handle, __pyx_n_s_position, __pyx_n_s_direction, __pyx_n_s_tot_dist, __pyx_n_s_depth, __pyx_n_s_exploring, __pyx_n_s_last_is_switch, __pyx_n_s_last_is_dead_end, __pyx_n_s_last_is_terminal, __pyx_n_s_last_is_target, __pyx_n_s_visited, __pyx_n_s_agent, __pyx_n_s_time_per_cell, __pyx_n_s_own_target_encountered, __pyx_n_s_other_agent_encountered, __pyx_n_s_other_target_encountered, __pyx_n_s_potential_conflict, __pyx_n_s_unusable_switch, __pyx_n_s_other_agent_same_direction, __pyx_n_s_other_agent_opposite_direction, __pyx_n_s_malfunctioning_agent, __pyx_n_s_min_fractional_speed, __pyx_n_s_num_steps, __pyx_n_s_other_agent_ready_to_depart_enco, __pyx_n_s_other_agents_opposite_dir, __pyx_n_s_current_fractional_speed, __pyx_n_s_cell_transitions, __pyx_n_s_transition_bit, __pyx_n_s_total_transitions, __pyx_n_s_crossing_found, __pyx_n_s_predicted_time, __pyx_n_s_int_position, __pyx_n_s_pre_step, __pyx_n_s_post_step, __pyx_n_s_conflicting_agent, __pyx_n_s_ca, __pyx_n_s_num_transitions, __pyx_n_s_nbits, __pyx_n_s_dist_to_next_branch, __pyx_n_s_dist_min_to_target, __pyx_n_s_node, __pyx_n_s_possible_transitions, __pyx_n_s_i, __pyx_n_s_branch_direction, __pyx_n_s_new_cell, __pyx_n_s_branch_observation, __pyx_n_s_branch_visited); if (unlikely(!__pyx_tuple__22)) __PYX_ERR(0, 257, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__22);
-  __Pyx_GIVEREF(__pyx_tuple__22);
-  __pyx_codeobj__23 = (PyObject*)__Pyx_PyCode_New(6, 0, 48, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__22, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_deliverables_observation_pyx, __pyx_n_s_explore_branch, 257, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__23)) __PYX_ERR(0, 257, __pyx_L1_error)
+  __pyx_tuple__23 = PyTuple_Pack(48, __pyx_n_s_self, __pyx_n_s_handle, __pyx_n_s_position, __pyx_n_s_direction, __pyx_n_s_tot_dist, __pyx_n_s_depth, __pyx_n_s_exploring, __pyx_n_s_last_is_switch, __pyx_n_s_last_is_dead_end, __pyx_n_s_last_is_terminal, __pyx_n_s_last_is_target, __pyx_n_s_visited, __pyx_n_s_agent, __pyx_n_s_time_per_cell, __pyx_n_s_own_target_encountered, __pyx_n_s_other_agent_encountered, __pyx_n_s_other_target_encountered, __pyx_n_s_potential_conflict, __pyx_n_s_unusable_switch, __pyx_n_s_other_agent_same_direction, __pyx_n_s_other_agent_opposite_direction, __pyx_n_s_malfunctioning_agent, __pyx_n_s_min_fractional_speed, __pyx_n_s_num_steps, __pyx_n_s_other_agent_ready_to_depart_enco, __pyx_n_s_other_agents_opposite_dir, __pyx_n_s_current_fractional_speed, __pyx_n_s_cell_transitions, __pyx_n_s_transition_bit, __pyx_n_s_total_transitions, __pyx_n_s_crossing_found, __pyx_n_s_predicted_time, __pyx_n_s_int_position, __pyx_n_s_pre_step, __pyx_n_s_post_step, __pyx_n_s_conflicting_agent, __pyx_n_s_ca, __pyx_n_s_num_transitions, __pyx_n_s_nbits, __pyx_n_s_dist_to_next_branch, __pyx_n_s_dist_min_to_target, __pyx_n_s_node, __pyx_n_s_possible_transitions, __pyx_n_s_i, __pyx_n_s_branch_direction, __pyx_n_s_new_cell, __pyx_n_s_branch_observation, __pyx_n_s_branch_visited); if (unlikely(!__pyx_tuple__23)) __PYX_ERR(0, 257, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__23);
+  __Pyx_GIVEREF(__pyx_tuple__23);
+  __pyx_codeobj__24 = (PyObject*)__Pyx_PyCode_New(6, 0, 48, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__23, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_deliverables_observation_pyx, __pyx_n_s_explore_branch, 257, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__24)) __PYX_ERR(0, 257, __pyx_L1_error)
 
   /* "deliverables/observation.pyx":505
  *         return node, visited
@@ -16767,10 +16837,10 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
  *         """
  *         Utility function to print tree observations returned by this object.
  */
-  __pyx_tuple__24 = PyTuple_Pack(3, __pyx_n_s_self, __pyx_n_s_tree, __pyx_n_s_direction); if (unlikely(!__pyx_tuple__24)) __PYX_ERR(0, 505, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__24);
-  __Pyx_GIVEREF(__pyx_tuple__24);
-  __pyx_codeobj__25 = (PyObject*)__Pyx_PyCode_New(2, 0, 3, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__24, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_deliverables_observation_pyx, __pyx_n_s_util_print_obs_subtree, 505, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__25)) __PYX_ERR(0, 505, __pyx_L1_error)
+  __pyx_tuple__25 = PyTuple_Pack(3, __pyx_n_s_self, __pyx_n_s_tree, __pyx_n_s_direction); if (unlikely(!__pyx_tuple__25)) __PYX_ERR(0, 505, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__25);
+  __Pyx_GIVEREF(__pyx_tuple__25);
+  __pyx_codeobj__26 = (PyObject*)__Pyx_PyCode_New(2, 0, 3, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__25, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_deliverables_observation_pyx, __pyx_n_s_util_print_obs_subtree, 505, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__26)) __PYX_ERR(0, 505, __pyx_L1_error)
 
   /* "deliverables/observation.pyx":514
  * 
@@ -16779,10 +16849,10 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
  *         print(indent, "Direction ", label, ": ", node.dist_own_target_encountered, ", ",
  *               node.dist_other_target_encountered, ", ", node.dist_other_agent_encountered, ", ",
  */
-  __pyx_tuple__26 = PyTuple_Pack(3, __pyx_n_s_node, __pyx_n_s_label, __pyx_n_s_indent); if (unlikely(!__pyx_tuple__26)) __PYX_ERR(0, 514, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__26);
-  __Pyx_GIVEREF(__pyx_tuple__26);
-  __pyx_codeobj__27 = (PyObject*)__Pyx_PyCode_New(3, 0, 3, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__26, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_deliverables_observation_pyx, __pyx_n_s_print_node_features, 514, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__27)) __PYX_ERR(0, 514, __pyx_L1_error)
+  __pyx_tuple__27 = PyTuple_Pack(3, __pyx_n_s_node, __pyx_n_s_label, __pyx_n_s_indent); if (unlikely(!__pyx_tuple__27)) __PYX_ERR(0, 514, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__27);
+  __Pyx_GIVEREF(__pyx_tuple__27);
+  __pyx_codeobj__28 = (PyObject*)__Pyx_PyCode_New(3, 0, 3, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__27, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_deliverables_observation_pyx, __pyx_n_s_print_node_features, 514, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__28)) __PYX_ERR(0, 514, __pyx_L1_error)
 
   /* "deliverables/observation.pyx":522
  *               node.num_agents_ready_to_depart)
@@ -16791,10 +16861,10 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
  *         if node == -np.inf or not node:
  *             print(indent, "Direction ", label, ": -np.inf")
  */
-  __pyx_tuple__28 = PyTuple_Pack(5, __pyx_n_s_self, __pyx_n_s_node, __pyx_n_s_label, __pyx_n_s_indent, __pyx_n_s_direction); if (unlikely(!__pyx_tuple__28)) __PYX_ERR(0, 522, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__28);
-  __Pyx_GIVEREF(__pyx_tuple__28);
-  __pyx_codeobj__29 = (PyObject*)__Pyx_PyCode_New(4, 0, 5, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__28, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_deliverables_observation_pyx, __pyx_n_s_print_subtree, 522, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__29)) __PYX_ERR(0, 522, __pyx_L1_error)
+  __pyx_tuple__29 = PyTuple_Pack(5, __pyx_n_s_self, __pyx_n_s_node, __pyx_n_s_label, __pyx_n_s_indent, __pyx_n_s_direction); if (unlikely(!__pyx_tuple__29)) __PYX_ERR(0, 522, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__29);
+  __Pyx_GIVEREF(__pyx_tuple__29);
+  __pyx_codeobj__30 = (PyObject*)__Pyx_PyCode_New(4, 0, 5, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__29, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_deliverables_observation_pyx, __pyx_n_s_print_subtree, 522, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__30)) __PYX_ERR(0, 522, __pyx_L1_error)
 
   /* "deliverables/observation.pyx":535
  *             self.print_subtree(node.childs[direction], direction, indent + "\t")
@@ -16803,10 +16873,10 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
  *         super().set_env(env)
  *         if self.predictor:
  */
-  __pyx_tuple__30 = PyTuple_Pack(2, __pyx_n_s_self, __pyx_n_s_env); if (unlikely(!__pyx_tuple__30)) __PYX_ERR(0, 535, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__30);
-  __Pyx_GIVEREF(__pyx_tuple__30);
-  __pyx_codeobj__31 = (PyObject*)__Pyx_PyCode_New(2, 0, 2, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__30, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_deliverables_observation_pyx, __pyx_n_s_set_env, 535, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__31)) __PYX_ERR(0, 535, __pyx_L1_error)
+  __pyx_tuple__31 = PyTuple_Pack(2, __pyx_n_s_self, __pyx_n_s_env); if (unlikely(!__pyx_tuple__31)) __PYX_ERR(0, 535, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__31);
+  __Pyx_GIVEREF(__pyx_tuple__31);
+  __pyx_codeobj__32 = (PyObject*)__Pyx_PyCode_New(2, 0, 2, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__31, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_deliverables_observation_pyx, __pyx_n_s_set_env, 535, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__32)) __PYX_ERR(0, 535, __pyx_L1_error)
 
   /* "deliverables/observation.pyx":540
  *             self.predictor.set_env(self.env)
@@ -16815,10 +16885,10 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
  *         return int((direction + 2) % 4)
  * 
  */
-  __pyx_tuple__32 = PyTuple_Pack(2, __pyx_n_s_self, __pyx_n_s_direction); if (unlikely(!__pyx_tuple__32)) __PYX_ERR(0, 540, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__32);
-  __Pyx_GIVEREF(__pyx_tuple__32);
-  __pyx_codeobj__33 = (PyObject*)__Pyx_PyCode_New(2, 0, 2, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__32, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_deliverables_observation_pyx, __pyx_n_s_reverse_dir, 540, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__33)) __PYX_ERR(0, 540, __pyx_L1_error)
+  __pyx_tuple__33 = PyTuple_Pack(2, __pyx_n_s_self, __pyx_n_s_direction); if (unlikely(!__pyx_tuple__33)) __PYX_ERR(0, 540, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__33);
+  __Pyx_GIVEREF(__pyx_tuple__33);
+  __pyx_codeobj__34 = (PyObject*)__Pyx_PyCode_New(2, 0, 2, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__33, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_deliverables_observation_pyx, __pyx_n_s_reverse_dir, 540, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__34)) __PYX_ERR(0, 540, __pyx_L1_error)
 
   /* "deliverables/observation.pyx":545
  * 
@@ -16827,10 +16897,10 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
  *         super().__init__(params.tree_depth)
  *         self.actor_rec_state = {}
  */
-  __pyx_tuple__34 = PyTuple_Pack(1, __pyx_n_s_self); if (unlikely(!__pyx_tuple__34)) __PYX_ERR(0, 545, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__34);
-  __Pyx_GIVEREF(__pyx_tuple__34);
-  __pyx_codeobj__35 = (PyObject*)__Pyx_PyCode_New(1, 0, 1, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__34, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_deliverables_observation_pyx, __pyx_n_s_init, 545, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__35)) __PYX_ERR(0, 545, __pyx_L1_error)
+  __pyx_tuple__35 = PyTuple_Pack(1, __pyx_n_s_self); if (unlikely(!__pyx_tuple__35)) __PYX_ERR(0, 545, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__35);
+  __Pyx_GIVEREF(__pyx_tuple__35);
+  __pyx_codeobj__36 = (PyObject*)__Pyx_PyCode_New(1, 0, 1, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__35, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_deliverables_observation_pyx, __pyx_n_s_init, 545, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__36)) __PYX_ERR(0, 545, __pyx_L1_error)
 
   /* "deliverables/observation.pyx":551
  *         self.prep_step = 0
@@ -16839,10 +16909,10 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
  *         self.actor_rec_state = {}
  *         self.critic_rec_state = {}
  */
-  __pyx_tuple__36 = PyTuple_Pack(1, __pyx_n_s_self); if (unlikely(!__pyx_tuple__36)) __PYX_ERR(0, 551, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__36);
-  __Pyx_GIVEREF(__pyx_tuple__36);
-  __pyx_codeobj__37 = (PyObject*)__Pyx_PyCode_New(1, 0, 1, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__36, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_deliverables_observation_pyx, __pyx_n_s_reset, 551, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__37)) __PYX_ERR(0, 551, __pyx_L1_error)
+  __pyx_tuple__37 = PyTuple_Pack(1, __pyx_n_s_self); if (unlikely(!__pyx_tuple__37)) __PYX_ERR(0, 551, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__37);
+  __Pyx_GIVEREF(__pyx_tuple__37);
+  __pyx_codeobj__38 = (PyObject*)__Pyx_PyCode_New(1, 0, 1, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__37, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_deliverables_observation_pyx, __pyx_n_s_reset, 551, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__38)) __PYX_ERR(0, 551, __pyx_L1_error)
 
   /* "deliverables/observation.pyx":557
  *         return super().reset()
@@ -16851,13 +16921,13 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
  *         start = time()
  *         obs = super().get_many(handles=handles)
  */
-  __pyx_tuple__38 = PyTuple_Pack(10, __pyx_n_s_self, __pyx_n_s_handles, __pyx_n_s_start, __pyx_n_s_obs, __pyx_n_s_all_obs, __pyx_n_s_handle, __pyx_n_s_next_agent_obs, __pyx_n_s_agent_obs, __pyx_n_s_rec_actor, __pyx_n_s_rec_critic); if (unlikely(!__pyx_tuple__38)) __PYX_ERR(0, 557, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__38);
-  __Pyx_GIVEREF(__pyx_tuple__38);
-  __pyx_codeobj__39 = (PyObject*)__Pyx_PyCode_New(2, 0, 10, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__38, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_deliverables_observation_pyx, __pyx_n_s_get_many, 557, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__39)) __PYX_ERR(0, 557, __pyx_L1_error)
-  __pyx_tuple__40 = PyTuple_Pack(1, ((PyObject *)Py_None)); if (unlikely(!__pyx_tuple__40)) __PYX_ERR(0, 557, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__40);
-  __Pyx_GIVEREF(__pyx_tuple__40);
+  __pyx_tuple__39 = PyTuple_Pack(10, __pyx_n_s_self, __pyx_n_s_handles, __pyx_n_s_start, __pyx_n_s_obs, __pyx_n_s_all_obs, __pyx_n_s_handle, __pyx_n_s_next_agent_obs, __pyx_n_s_agent_obs, __pyx_n_s_rec_actor, __pyx_n_s_rec_critic); if (unlikely(!__pyx_tuple__39)) __PYX_ERR(0, 557, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__39);
+  __Pyx_GIVEREF(__pyx_tuple__39);
+  __pyx_codeobj__40 = (PyObject*)__Pyx_PyCode_New(2, 0, 10, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__39, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_deliverables_observation_pyx, __pyx_n_s_get_many, 557, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__40)) __PYX_ERR(0, 557, __pyx_L1_error)
+  __pyx_tuple__41 = PyTuple_Pack(1, ((PyObject *)Py_None)); if (unlikely(!__pyx_tuple__41)) __PYX_ERR(0, 557, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__41);
+  __Pyx_GIVEREF(__pyx_tuple__41);
 
   /* "deliverables/observation.pyx":572
  * 
@@ -16866,10 +16936,10 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
  *         if agent_obs is None:
  *             # New tree-obs is just the size of one frame
  */
-  __pyx_tuple__41 = PyTuple_Pack(24, __pyx_n_s_self, __pyx_n_s_handle, __pyx_n_s_agent_obs, __pyx_n_s_info, __pyx_n_s_tree_obs, __pyx_n_s_vec_obs, __pyx_n_s_agent_actor_rec_state, __pyx_n_s_agent_critic_rec_state, __pyx_n_s_root_node, __pyx_n_s_num_root_children, __pyx_n_s_turn, __pyx_n_s_fastest_way, __pyx_n_s_sorted_children, __pyx_n_s_alt_way_1, __pyx_n_s_alt_node_1, __pyx_n_s_alt_way_2, __pyx_n_s_alt_node_2, __pyx_n_s_obs_layers, __pyx_n_s_layer, __pyx_n_s_node, __pyx_n_s_node_obs, __pyx_n_s_agent, __pyx_n_s_dist_x, __pyx_n_s_dist_y); if (unlikely(!__pyx_tuple__41)) __PYX_ERR(0, 572, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__41);
-  __Pyx_GIVEREF(__pyx_tuple__41);
-  __pyx_codeobj__42 = (PyObject*)__Pyx_PyCode_New(4, 0, 24, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__41, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_deliverables_observation_pyx, __pyx_n_s_reshape_agent_obs, 572, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__42)) __PYX_ERR(0, 572, __pyx_L1_error)
+  __pyx_tuple__42 = PyTuple_Pack(24, __pyx_n_s_self, __pyx_n_s_handle, __pyx_n_s_agent_obs, __pyx_n_s_info, __pyx_n_s_tree_obs, __pyx_n_s_vec_obs, __pyx_n_s_agent_actor_rec_state, __pyx_n_s_agent_critic_rec_state, __pyx_n_s_root_node, __pyx_n_s_num_root_children, __pyx_n_s_turn, __pyx_n_s_fastest_way, __pyx_n_s_sorted_children, __pyx_n_s_alt_way_1, __pyx_n_s_alt_node_1, __pyx_n_s_alt_way_2, __pyx_n_s_alt_node_2, __pyx_n_s_obs_layers, __pyx_n_s_layer, __pyx_n_s_node, __pyx_n_s_node_obs, __pyx_n_s_agent, __pyx_n_s_dist_x, __pyx_n_s_dist_y); if (unlikely(!__pyx_tuple__42)) __PYX_ERR(0, 572, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__42);
+  __Pyx_GIVEREF(__pyx_tuple__42);
+  __pyx_codeobj__43 = (PyObject*)__Pyx_PyCode_New(4, 0, 24, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__42, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_deliverables_observation_pyx, __pyx_n_s_reshape_agent_obs, 572, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__43)) __PYX_ERR(0, 572, __pyx_L1_error)
 
   /* "deliverables/observation.pyx":666
  * 
@@ -16878,10 +16948,10 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
  *     vec_obs = np.asarray([row[0][0] for row in episode_buffer])
  *     a_rec_obs = np.asarray([row[0][1] for row in episode_buffer])
  */
-  __pyx_tuple__43 = PyTuple_Pack(5, __pyx_n_s_episode_buffer, __pyx_n_s_vec_obs, __pyx_n_s_a_rec_obs, __pyx_n_s_c_rec_obs, __pyx_n_s_row); if (unlikely(!__pyx_tuple__43)) __PYX_ERR(0, 666, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__43);
-  __Pyx_GIVEREF(__pyx_tuple__43);
-  __pyx_codeobj__44 = (PyObject*)__Pyx_PyCode_New(1, 0, 5, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__43, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_deliverables_observation_pyx, __pyx_n_s_buffer_to_obs_lists, 666, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__44)) __PYX_ERR(0, 666, __pyx_L1_error)
+  __pyx_tuple__44 = PyTuple_Pack(5, __pyx_n_s_episode_buffer, __pyx_n_s_vec_obs, __pyx_n_s_a_rec_obs, __pyx_n_s_c_rec_obs, __pyx_n_s_row); if (unlikely(!__pyx_tuple__44)) __PYX_ERR(0, 666, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__44);
+  __Pyx_GIVEREF(__pyx_tuple__44);
+  __pyx_codeobj__45 = (PyObject*)__Pyx_PyCode_New(1, 0, 5, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__44, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_deliverables_observation_pyx, __pyx_n_s_buffer_to_obs_lists, 666, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__45)) __PYX_ERR(0, 666, __pyx_L1_error)
 
   /* "deliverables/observation.pyx":675
  * 
@@ -16890,10 +16960,10 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
  *     selected_nodes = []
  *     selected_nodes.append((entry_dir,start_node)) # Root
  */
-  __pyx_tuple__45 = PyTuple_Pack(12, __pyx_n_s_entry_dir, __pyx_n_s_start_node, __pyx_n_s_length, __pyx_n_s_selected_nodes, __pyx_n_s_shortest_way_idx, __pyx_n_s_shortest_way, __pyx_n_s_found_target, __pyx_n_s_current_node, __pyx_n_s_k, __pyx_n_s_child, __pyx_n_s_next_node, __pyx_n_s_j); if (unlikely(!__pyx_tuple__45)) __PYX_ERR(0, 675, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__45);
-  __Pyx_GIVEREF(__pyx_tuple__45);
-  __pyx_codeobj__46 = (PyObject*)__Pyx_PyCode_New(3, 0, 12, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__45, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_deliverables_observation_pyx, __pyx_n_s_get_shortest_way_from, 675, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__46)) __PYX_ERR(0, 675, __pyx_L1_error)
+  __pyx_tuple__46 = PyTuple_Pack(12, __pyx_n_s_entry_dir, __pyx_n_s_start_node, __pyx_n_s_length, __pyx_n_s_selected_nodes, __pyx_n_s_shortest_way_idx, __pyx_n_s_shortest_way, __pyx_n_s_found_target, __pyx_n_s_current_node, __pyx_n_s_k, __pyx_n_s_child, __pyx_n_s_next_node, __pyx_n_s_j); if (unlikely(!__pyx_tuple__46)) __PYX_ERR(0, 675, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__46);
+  __Pyx_GIVEREF(__pyx_tuple__46);
+  __pyx_codeobj__47 = (PyObject*)__Pyx_PyCode_New(3, 0, 12, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__46, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_deliverables_observation_pyx, __pyx_n_s_get_shortest_way_from, 675, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__47)) __PYX_ERR(0, 675, __pyx_L1_error)
 
   /* "deliverables/observation.pyx":707
  * 
@@ -16902,10 +16972,10 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
  *     children = []
  *     for k in node.childs:
  */
-  __pyx_tuple__47 = PyTuple_Pack(4, __pyx_n_s_node, __pyx_n_s_children, __pyx_n_s_k, __pyx_n_s_child); if (unlikely(!__pyx_tuple__47)) __PYX_ERR(0, 707, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__47);
-  __Pyx_GIVEREF(__pyx_tuple__47);
-  __pyx_codeobj__48 = (PyObject*)__Pyx_PyCode_New(1, 0, 4, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__47, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_deliverables_observation_pyx, __pyx_n_s_get_ordered_children, 707, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__48)) __PYX_ERR(0, 707, __pyx_L1_error)
+  __pyx_tuple__48 = PyTuple_Pack(4, __pyx_n_s_node, __pyx_n_s_children, __pyx_n_s_k, __pyx_n_s_child); if (unlikely(!__pyx_tuple__48)) __PYX_ERR(0, 707, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__48);
+  __Pyx_GIVEREF(__pyx_tuple__48);
+  __pyx_codeobj__49 = (PyObject*)__Pyx_PyCode_New(1, 0, 4, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__48, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_deliverables_observation_pyx, __pyx_n_s_get_ordered_children, 707, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__49)) __PYX_ERR(0, 707, __pyx_L1_error)
 
   /* "deliverables/observation.pyx":718
  * 
@@ -16914,10 +16984,10 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
  *     if field == np.inf or field == -np.inf:
  *         return 0
  */
-  __pyx_tuple__49 = PyTuple_Pack(2, __pyx_n_s_field, __pyx_n_s_norm_val); if (unlikely(!__pyx_tuple__49)) __PYX_ERR(0, 718, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__49);
-  __Pyx_GIVEREF(__pyx_tuple__49);
-  __pyx_codeobj__50 = (PyObject*)__Pyx_PyCode_New(2, 0, 2, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__49, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_deliverables_observation_pyx, __pyx_n_s_normalize_field, 718, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__50)) __PYX_ERR(0, 718, __pyx_L1_error)
+  __pyx_tuple__50 = PyTuple_Pack(2, __pyx_n_s_field, __pyx_n_s_norm_val); if (unlikely(!__pyx_tuple__50)) __PYX_ERR(0, 718, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__50);
+  __Pyx_GIVEREF(__pyx_tuple__50);
+  __pyx_codeobj__51 = (PyObject*)__Pyx_PyCode_New(2, 0, 2, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__50, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_deliverables_observation_pyx, __pyx_n_s_normalize_field, 718, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__51)) __PYX_ERR(0, 718, __pyx_L1_error)
 
   /* "deliverables/observation.pyx":725
  * 
@@ -16926,10 +16996,10 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
  *     if field == np.inf or field == -np.inf or field == 0.0:
  *         return 0
  */
-  __pyx_tuple__51 = PyTuple_Pack(1, __pyx_n_s_field); if (unlikely(!__pyx_tuple__51)) __PYX_ERR(0, 725, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__51);
-  __Pyx_GIVEREF(__pyx_tuple__51);
-  __pyx_codeobj__52 = (PyObject*)__Pyx_PyCode_New(1, 0, 1, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__51, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_deliverables_observation_pyx, __pyx_n_s_one_hot, 725, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__52)) __PYX_ERR(0, 725, __pyx_L1_error)
+  __pyx_tuple__52 = PyTuple_Pack(1, __pyx_n_s_field); if (unlikely(!__pyx_tuple__52)) __PYX_ERR(0, 725, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__52);
+  __Pyx_GIVEREF(__pyx_tuple__52);
+  __pyx_codeobj__53 = (PyObject*)__Pyx_PyCode_New(1, 0, 1, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__52, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_deliverables_observation_pyx, __pyx_n_s_one_hot, 725, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__53)) __PYX_ERR(0, 725, __pyx_L1_error)
 
   /* "deliverables/observation.pyx":732
  * 
@@ -16938,10 +17008,10 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
  *     if node_tuple is None:
  *         return [0]*params.num_features
  */
-  __pyx_tuple__53 = PyTuple_Pack(8, __pyx_n_s_node_tuple, __pyx_n_s_dir, __pyx_n_s_node, __pyx_n_s_dist_left, __pyx_n_s_dist_right, __pyx_n_s_dist_forward, __pyx_n_s_obs, __pyx_n_s_clostest_agent); if (unlikely(!__pyx_tuple__53)) __PYX_ERR(0, 732, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__53);
-  __Pyx_GIVEREF(__pyx_tuple__53);
-  __pyx_codeobj__54 = (PyObject*)__Pyx_PyCode_New(1, 0, 8, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__53, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_deliverables_observation_pyx, __pyx_n_s_node_to_obs, 732, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__54)) __PYX_ERR(0, 732, __pyx_L1_error)
+  __pyx_tuple__54 = PyTuple_Pack(9, __pyx_n_s_node_tuple, __pyx_n_s_dir, __pyx_n_s_node, __pyx_n_s_dist_left, __pyx_n_s_dist_right, __pyx_n_s_dist_forward, __pyx_n_s_obs, __pyx_n_s_clostest_agent, __pyx_n_s_agent_action_onehot); if (unlikely(!__pyx_tuple__54)) __PYX_ERR(0, 732, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__54);
+  __Pyx_GIVEREF(__pyx_tuple__54);
+  __pyx_codeobj__55 = (PyObject*)__Pyx_PyCode_New(1, 0, 9, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__54, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_deliverables_observation_pyx, __pyx_n_s_node_to_obs, 732, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__55)) __PYX_ERR(0, 732, __pyx_L1_error)
   __Pyx_RefNannyFinishContext();
   return 0;
   __pyx_L1_error:;
@@ -17257,9 +17327,9 @@ if (!__Pyx_RefNanny) {
  */
   __pyx_t_1 = PyList_New(1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 2, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __Pyx_INCREF(__pyx_n_s__9);
-  __Pyx_GIVEREF(__pyx_n_s__9);
-  PyList_SET_ITEM(__pyx_t_1, 0, __pyx_n_s__9);
+  __Pyx_INCREF(__pyx_n_s__10);
+  __Pyx_GIVEREF(__pyx_n_s__10);
+  PyList_SET_ITEM(__pyx_t_1, 0, __pyx_n_s__10);
   __pyx_t_2 = __Pyx_Import(__pyx_n_s_deliverables_input_params, __pyx_t_1, -1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 2, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
@@ -17561,7 +17631,7 @@ if (!__Pyx_RefNanny) {
   __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_n_s_namedtuple); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 33, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_6);
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-  __pyx_t_5 = __Pyx_PyObject_Call(__pyx_t_6, __pyx_tuple__10, NULL); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 33, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyObject_Call(__pyx_t_6, __pyx_tuple__11, NULL); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 33, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
   if (__Pyx_SetNameInClass(__pyx_t_3, __pyx_n_s_Node, __pyx_t_5) < 0) __PYX_ERR(0, 33, __pyx_L1_error)
@@ -17605,12 +17675,12 @@ if (!__Pyx_RefNanny) {
   __Pyx_GOTREF(__pyx_t_6);
   if (PyDict_SetItem(__pyx_t_5, __pyx_n_s_predictor, __pyx_t_6) < 0) __PYX_ERR(0, 50, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-  __pyx_t_6 = __Pyx_CyFunction_NewEx(&__pyx_mdef_12deliverables_11observation_23CustomTreeObsForRailEnv_1__init__, 0, __pyx_n_s_CustomTreeObsForRailEnv___init, NULL, __pyx_n_s_deliverables_observation, __pyx_d, ((PyObject *)__pyx_codeobj__12)); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 50, __pyx_L1_error)
+  __pyx_t_6 = __Pyx_CyFunction_NewEx(&__pyx_mdef_12deliverables_11observation_23CustomTreeObsForRailEnv_1__init__, 0, __pyx_n_s_CustomTreeObsForRailEnv___init, NULL, __pyx_n_s_deliverables_observation, __pyx_d, ((PyObject *)__pyx_codeobj__13)); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 50, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_6);
   __Pyx_INCREF(__pyx_t_6);
   PyList_Append(__pyx_t_4, __pyx_t_6);
   __Pyx_GIVEREF(__pyx_t_6);
-  __Pyx_CyFunction_SetDefaultsTuple(__pyx_t_6, __pyx_tuple__13);
+  __Pyx_CyFunction_SetDefaultsTuple(__pyx_t_6, __pyx_tuple__14);
   __Pyx_CyFunction_SetAnnotationsDict(__pyx_t_6, __pyx_t_5);
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
   if (__Pyx_SetNameInClass(__pyx_t_3, __pyx_n_s_init, __pyx_t_6) < 0) __PYX_ERR(0, 50, __pyx_L1_error)
@@ -17623,7 +17693,7 @@ if (!__Pyx_RefNanny) {
  *         self.location_has_target = {tuple(agent.target): 1 for agent in self.env.agents}
  * 
  */
-  __pyx_t_6 = __Pyx_CyFunction_NewEx(&__pyx_mdef_12deliverables_11observation_23CustomTreeObsForRailEnv_3reset, 0, __pyx_n_s_CustomTreeObsForRailEnv_reset, NULL, __pyx_n_s_deliverables_observation, __pyx_d, ((PyObject *)__pyx_codeobj__15)); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 59, __pyx_L1_error)
+  __pyx_t_6 = __Pyx_CyFunction_NewEx(&__pyx_mdef_12deliverables_11observation_23CustomTreeObsForRailEnv_3reset, 0, __pyx_n_s_CustomTreeObsForRailEnv_reset, NULL, __pyx_n_s_deliverables_observation, __pyx_d, ((PyObject *)__pyx_codeobj__16)); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 59, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_6);
   if (__Pyx_SetNameInClass(__pyx_t_3, __pyx_n_s_reset, __pyx_t_6) < 0) __PYX_ERR(0, 59, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
@@ -17673,12 +17743,12 @@ if (!__Pyx_RefNanny) {
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
   if (PyDict_SetItem(__pyx_t_6, __pyx_n_s_return, __pyx_t_8) < 0) __PYX_ERR(0, 62, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-  __pyx_t_8 = __Pyx_CyFunction_NewEx(&__pyx_mdef_12deliverables_11observation_23CustomTreeObsForRailEnv_5get_many, 0, __pyx_n_s_CustomTreeObsForRailEnv_get_many, NULL, __pyx_n_s_deliverables_observation, __pyx_d, ((PyObject *)__pyx_codeobj__17)); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 62, __pyx_L1_error)
+  __pyx_t_8 = __Pyx_CyFunction_NewEx(&__pyx_mdef_12deliverables_11observation_23CustomTreeObsForRailEnv_5get_many, 0, __pyx_n_s_CustomTreeObsForRailEnv_get_many, NULL, __pyx_n_s_deliverables_observation, __pyx_d, ((PyObject *)__pyx_codeobj__18)); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 62, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_8);
   __Pyx_INCREF(__pyx_t_8);
   PyList_Append(__pyx_t_4, __pyx_t_8);
   __Pyx_GIVEREF(__pyx_t_8);
-  __Pyx_CyFunction_SetDefaultsTuple(__pyx_t_8, __pyx_tuple__18);
+  __Pyx_CyFunction_SetDefaultsTuple(__pyx_t_8, __pyx_tuple__19);
   __Pyx_CyFunction_SetAnnotationsDict(__pyx_t_8, __pyx_t_6);
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
   if (__Pyx_SetNameInClass(__pyx_t_3, __pyx_n_s_get_many, __pyx_t_8) < 0) __PYX_ERR(0, 62, __pyx_L1_error)
@@ -17703,9 +17773,9 @@ if (!__Pyx_RefNanny) {
   __Pyx_GOTREF(__pyx_t_6);
   if (PyDict_SetItem(__pyx_t_8, __pyx_n_s_return, __pyx_t_6) < 0) __PYX_ERR(0, 92, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-  __pyx_t_6 = __Pyx_CyFunction_NewEx(&__pyx_mdef_12deliverables_11observation_23CustomTreeObsForRailEnv_7get, 0, __pyx_n_s_CustomTreeObsForRailEnv_get, NULL, __pyx_n_s_deliverables_observation, __pyx_d, ((PyObject *)__pyx_codeobj__20)); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 92, __pyx_L1_error)
+  __pyx_t_6 = __Pyx_CyFunction_NewEx(&__pyx_mdef_12deliverables_11observation_23CustomTreeObsForRailEnv_7get, 0, __pyx_n_s_CustomTreeObsForRailEnv_get, NULL, __pyx_n_s_deliverables_observation, __pyx_d, ((PyObject *)__pyx_codeobj__21)); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 92, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_6);
-  __Pyx_CyFunction_SetDefaultsTuple(__pyx_t_6, __pyx_tuple__21);
+  __Pyx_CyFunction_SetDefaultsTuple(__pyx_t_6, __pyx_tuple__22);
   __Pyx_CyFunction_SetAnnotationsDict(__pyx_t_6, __pyx_t_8);
   __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
   if (__Pyx_SetNameInClass(__pyx_t_3, __pyx_n_s_get, __pyx_t_6) < 0) __PYX_ERR(0, 92, __pyx_L1_error)
@@ -17718,7 +17788,7 @@ if (!__Pyx_RefNanny) {
  *         """
  *         Utility function to compute tree-based observations.
  */
-  __pyx_t_6 = __Pyx_CyFunction_NewEx(&__pyx_mdef_12deliverables_11observation_23CustomTreeObsForRailEnv_9_explore_branch, 0, __pyx_n_s_CustomTreeObsForRailEnv__explore, NULL, __pyx_n_s_deliverables_observation, __pyx_d, ((PyObject *)__pyx_codeobj__23)); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 257, __pyx_L1_error)
+  __pyx_t_6 = __Pyx_CyFunction_NewEx(&__pyx_mdef_12deliverables_11observation_23CustomTreeObsForRailEnv_9_explore_branch, 0, __pyx_n_s_CustomTreeObsForRailEnv__explore, NULL, __pyx_n_s_deliverables_observation, __pyx_d, ((PyObject *)__pyx_codeobj__24)); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 257, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_6);
   if (__Pyx_SetNameInClass(__pyx_t_3, __pyx_n_s_explore_branch, __pyx_t_6) < 0) __PYX_ERR(0, 257, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
@@ -17741,7 +17811,7 @@ if (!__Pyx_RefNanny) {
   __Pyx_GOTREF(__pyx_t_8);
   if (PyDict_SetItem(__pyx_t_6, __pyx_n_s_tree, __pyx_t_8) < 0) __PYX_ERR(0, 505, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-  __pyx_t_8 = __Pyx_CyFunction_NewEx(&__pyx_mdef_12deliverables_11observation_23CustomTreeObsForRailEnv_11util_print_obs_subtree, 0, __pyx_n_s_CustomTreeObsForRailEnv_util_pri, NULL, __pyx_n_s_deliverables_observation, __pyx_d, ((PyObject *)__pyx_codeobj__25)); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 505, __pyx_L1_error)
+  __pyx_t_8 = __Pyx_CyFunction_NewEx(&__pyx_mdef_12deliverables_11observation_23CustomTreeObsForRailEnv_11util_print_obs_subtree, 0, __pyx_n_s_CustomTreeObsForRailEnv_util_pri, NULL, __pyx_n_s_deliverables_observation, __pyx_d, ((PyObject *)__pyx_codeobj__26)); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 505, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_8);
   __Pyx_CyFunction_SetAnnotationsDict(__pyx_t_8, __pyx_t_6);
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
@@ -17766,7 +17836,7 @@ if (!__Pyx_RefNanny) {
   __Pyx_GOTREF(__pyx_t_6);
   if (PyDict_SetItem(__pyx_t_8, __pyx_n_s_node, __pyx_t_6) < 0) __PYX_ERR(0, 514, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-  __pyx_t_6 = __Pyx_CyFunction_NewEx(&__pyx_mdef_12deliverables_11observation_23CustomTreeObsForRailEnv_13print_node_features, __Pyx_CYFUNCTION_STATICMETHOD, __pyx_n_s_CustomTreeObsForRailEnv_print_no, NULL, __pyx_n_s_deliverables_observation, __pyx_d, ((PyObject *)__pyx_codeobj__27)); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 514, __pyx_L1_error)
+  __pyx_t_6 = __Pyx_CyFunction_NewEx(&__pyx_mdef_12deliverables_11observation_23CustomTreeObsForRailEnv_13print_node_features, __Pyx_CYFUNCTION_STATICMETHOD, __pyx_n_s_CustomTreeObsForRailEnv_print_no, NULL, __pyx_n_s_deliverables_observation, __pyx_d, ((PyObject *)__pyx_codeobj__28)); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 514, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_6);
   __Pyx_CyFunction_SetAnnotationsDict(__pyx_t_6, __pyx_t_8);
   __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
@@ -17791,7 +17861,7 @@ if (!__Pyx_RefNanny) {
  *         if node == -np.inf or not node:
  *             print(indent, "Direction ", label, ": -np.inf")
  */
-  __pyx_t_8 = __Pyx_CyFunction_NewEx(&__pyx_mdef_12deliverables_11observation_23CustomTreeObsForRailEnv_15print_subtree, 0, __pyx_n_s_CustomTreeObsForRailEnv_print_su, NULL, __pyx_n_s_deliverables_observation, __pyx_d, ((PyObject *)__pyx_codeobj__29)); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 522, __pyx_L1_error)
+  __pyx_t_8 = __Pyx_CyFunction_NewEx(&__pyx_mdef_12deliverables_11observation_23CustomTreeObsForRailEnv_15print_subtree, 0, __pyx_n_s_CustomTreeObsForRailEnv_print_su, NULL, __pyx_n_s_deliverables_observation, __pyx_d, ((PyObject *)__pyx_codeobj__30)); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 522, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_8);
   if (__Pyx_SetNameInClass(__pyx_t_3, __pyx_n_s_print_subtree, __pyx_t_8) < 0) __PYX_ERR(0, 522, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
@@ -17809,7 +17879,7 @@ if (!__Pyx_RefNanny) {
   __Pyx_GOTREF(__pyx_t_6);
   if (PyDict_SetItem(__pyx_t_8, __pyx_n_s_env, __pyx_t_6) < 0) __PYX_ERR(0, 535, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-  __pyx_t_6 = __Pyx_CyFunction_NewEx(&__pyx_mdef_12deliverables_11observation_23CustomTreeObsForRailEnv_17set_env, 0, __pyx_n_s_CustomTreeObsForRailEnv_set_env, NULL, __pyx_n_s_deliverables_observation, __pyx_d, ((PyObject *)__pyx_codeobj__31)); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 535, __pyx_L1_error)
+  __pyx_t_6 = __Pyx_CyFunction_NewEx(&__pyx_mdef_12deliverables_11observation_23CustomTreeObsForRailEnv_17set_env, 0, __pyx_n_s_CustomTreeObsForRailEnv_set_env, NULL, __pyx_n_s_deliverables_observation, __pyx_d, ((PyObject *)__pyx_codeobj__32)); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 535, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_6);
   __Pyx_INCREF(__pyx_t_6);
   PyList_Append(__pyx_t_4, __pyx_t_6);
@@ -17826,7 +17896,7 @@ if (!__Pyx_RefNanny) {
  *         return int((direction + 2) % 4)
  * 
  */
-  __pyx_t_6 = __Pyx_CyFunction_NewEx(&__pyx_mdef_12deliverables_11observation_23CustomTreeObsForRailEnv_19_reverse_dir, 0, __pyx_n_s_CustomTreeObsForRailEnv__reverse, NULL, __pyx_n_s_deliverables_observation, __pyx_d, ((PyObject *)__pyx_codeobj__33)); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 540, __pyx_L1_error)
+  __pyx_t_6 = __Pyx_CyFunction_NewEx(&__pyx_mdef_12deliverables_11observation_23CustomTreeObsForRailEnv_19_reverse_dir, 0, __pyx_n_s_CustomTreeObsForRailEnv__reverse, NULL, __pyx_n_s_deliverables_observation, __pyx_d, ((PyObject *)__pyx_codeobj__34)); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 540, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_6);
   if (__Pyx_SetNameInClass(__pyx_t_3, __pyx_n_s_reverse_dir, __pyx_t_6) < 0) __PYX_ERR(0, 540, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
@@ -17876,7 +17946,7 @@ if (!__Pyx_RefNanny) {
  *         super().__init__(params.tree_depth)
  *         self.actor_rec_state = {}
  */
-  __pyx_t_8 = __Pyx_CyFunction_NewEx(&__pyx_mdef_12deliverables_11observation_14RailObsBuilder_1__init__, 0, __pyx_n_s_RailObsBuilder___init, NULL, __pyx_n_s_deliverables_observation, __pyx_d, ((PyObject *)__pyx_codeobj__35)); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 545, __pyx_L1_error)
+  __pyx_t_8 = __Pyx_CyFunction_NewEx(&__pyx_mdef_12deliverables_11observation_14RailObsBuilder_1__init__, 0, __pyx_n_s_RailObsBuilder___init, NULL, __pyx_n_s_deliverables_observation, __pyx_d, ((PyObject *)__pyx_codeobj__36)); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 545, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_8);
   __Pyx_INCREF(__pyx_t_8);
   PyList_Append(__pyx_t_6, __pyx_t_8);
@@ -17891,7 +17961,7 @@ if (!__Pyx_RefNanny) {
  *         self.actor_rec_state = {}
  *         self.critic_rec_state = {}
  */
-  __pyx_t_8 = __Pyx_CyFunction_NewEx(&__pyx_mdef_12deliverables_11observation_14RailObsBuilder_3reset, 0, __pyx_n_s_RailObsBuilder_reset, NULL, __pyx_n_s_deliverables_observation, __pyx_d, ((PyObject *)__pyx_codeobj__37)); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 551, __pyx_L1_error)
+  __pyx_t_8 = __Pyx_CyFunction_NewEx(&__pyx_mdef_12deliverables_11observation_14RailObsBuilder_3reset, 0, __pyx_n_s_RailObsBuilder_reset, NULL, __pyx_n_s_deliverables_observation, __pyx_d, ((PyObject *)__pyx_codeobj__38)); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 551, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_8);
   __Pyx_INCREF(__pyx_t_8);
   PyList_Append(__pyx_t_6, __pyx_t_8);
@@ -17906,12 +17976,12 @@ if (!__Pyx_RefNanny) {
  *         start = time()
  *         obs = super().get_many(handles=handles)
  */
-  __pyx_t_8 = __Pyx_CyFunction_NewEx(&__pyx_mdef_12deliverables_11observation_14RailObsBuilder_5get_many, 0, __pyx_n_s_RailObsBuilder_get_many, NULL, __pyx_n_s_deliverables_observation, __pyx_d, ((PyObject *)__pyx_codeobj__39)); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 557, __pyx_L1_error)
+  __pyx_t_8 = __Pyx_CyFunction_NewEx(&__pyx_mdef_12deliverables_11observation_14RailObsBuilder_5get_many, 0, __pyx_n_s_RailObsBuilder_get_many, NULL, __pyx_n_s_deliverables_observation, __pyx_d, ((PyObject *)__pyx_codeobj__40)); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 557, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_8);
   __Pyx_INCREF(__pyx_t_8);
   PyList_Append(__pyx_t_6, __pyx_t_8);
   __Pyx_GIVEREF(__pyx_t_8);
-  __Pyx_CyFunction_SetDefaultsTuple(__pyx_t_8, __pyx_tuple__40);
+  __Pyx_CyFunction_SetDefaultsTuple(__pyx_t_8, __pyx_tuple__41);
   if (__Pyx_SetNameInClass(__pyx_t_3, __pyx_n_s_get_many, __pyx_t_8) < 0) __PYX_ERR(0, 557, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
 
@@ -17922,7 +17992,7 @@ if (!__Pyx_RefNanny) {
  *         if agent_obs is None:
  *             # New tree-obs is just the size of one frame
  */
-  __pyx_t_8 = __Pyx_CyFunction_NewEx(&__pyx_mdef_12deliverables_11observation_14RailObsBuilder_7reshape_agent_obs, 0, __pyx_n_s_RailObsBuilder_reshape_agent_obs, NULL, __pyx_n_s_deliverables_observation, __pyx_d, ((PyObject *)__pyx_codeobj__42)); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 572, __pyx_L1_error)
+  __pyx_t_8 = __Pyx_CyFunction_NewEx(&__pyx_mdef_12deliverables_11observation_14RailObsBuilder_7reshape_agent_obs, 0, __pyx_n_s_RailObsBuilder_reshape_agent_obs, NULL, __pyx_n_s_deliverables_observation, __pyx_d, ((PyObject *)__pyx_codeobj__43)); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 572, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_8);
   if (__Pyx_SetNameInClass(__pyx_t_3, __pyx_n_s_reshape_agent_obs, __pyx_t_8) < 0) __PYX_ERR(0, 572, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
