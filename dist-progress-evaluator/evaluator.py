@@ -33,17 +33,14 @@ def get_curriculum_lvl():
 
 
 def start_train(resume):
-    
-    if os.name == 'nt':
-        os_cython_desc = '.cp36-win_amd64.pyd'
-    else:
-        os_cython_desc = '.cpython-36m-x86_64-linux-gnu.so'
-
-    urllib.request.urlretrieve(const.url + '/file/network' + os_cython_desc, 'deliverables/network' + os_cython_desc)
+    urllib.request.urlretrieve(const.url + '/file/network.pyx', 'deliverables/network.pyx')
     urllib.request.urlretrieve(const.url + '/file/input_params.py', 'deliverables/input_params.py')
-    urllib.request.urlretrieve(const.url + '/file/observation' + os_cython_desc, 'deliverables/observation' + os_cython_desc)
+    urllib.request.urlretrieve(const.url + '/file/observation.pyx', 'deliverables/observation.pyx')
     urllib.request.urlretrieve(const.url + '/file/curriculum.py', 'deliverables/curriculum.py')
 
+    myCmd = 'python setup_deliverables.py build_ext --inplace'
+    os.system(myCmd)
+    
     curriculum_mod = __import__("deliverables.curriculum", fromlist=[''])
     curriculum_class =  getattr(curriculum_mod, 'Curriculum')
     curriculum = curriculum_class()

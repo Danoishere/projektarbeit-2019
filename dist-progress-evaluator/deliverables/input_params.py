@@ -16,7 +16,7 @@ path_thrd = tree_depth - 1
 
 recurrent_size = 64
 
-num_features = 31
+num_features = 25
 num_frames = 1
 
 # Root-node + n branches on m layers * l features + n features for later usage

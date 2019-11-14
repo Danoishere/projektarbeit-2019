@@ -26,11 +26,6 @@ import urllib
 mp.set_start_method('spawn', True)
 
 def start_train(resume):
-    if os.name == 'nt':
-        os_cython_desc = '.cp36-win_amd64.pyd'
-    else:
-        os_cython_desc = '.cpython-36m-x86_64-linux-gnu.so'
-
     urllib.request.urlretrieve(const.url + '/file/network.pyx', 'deliverables/network.pyx')
     urllib.request.urlretrieve(const.url + '/file/input_params.py', 'deliverables/input_params.py')
     urllib.request.urlretrieve(const.url + '/file/observation.pyx', 'deliverables/observation.pyx')

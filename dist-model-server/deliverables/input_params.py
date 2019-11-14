@@ -16,7 +16,7 @@ path_thrd = tree_depth - 1
 
 recurrent_size = 64
 
-num_features = 25
+num_features = 31
 num_frames = 1
 
 # Root-node + n branches on m layers * l features + n features for later usage
@@ -26,3 +26,4 @@ tree_state_size = frame_size*num_frames
 vec_state_size = 11
 
 tot_obs_size = tree_state_size + vec_state_size
+print(tot_obs_size)
