@@ -80,6 +80,7 @@ class Worker():
             use_best_actions = False
 
             time_start = time()
+            a = 0
 
             while not bool(self.should_stop.value):
                 # Check with server if there is a new curriculum level available

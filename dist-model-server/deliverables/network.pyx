@@ -88,7 +88,7 @@ class AC_Network():
         ''' Updates the local copy of the global model 
         '''
         resp = requests.get(url=self.global_model_url + '/entropy_factor').json()
-        new_entropy_factor = resp['entropy_factor']  * 0.0
+        new_entropy_factor = resp['entropy_factor']  * 0.1
         if new_entropy_factor != self.entropy_factor:
             print('New entropy factor aquired:', new_entropy_factor)
             self.entropy_factor = new_entropy_factor
