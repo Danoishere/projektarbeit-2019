@@ -1571,7 +1571,6 @@ static const char __pyx_k_root_node[] = "root_node";
 static const char __pyx_k_OrderedSet[] = "OrderedSet";
 static const char __pyx_k_depth_list[] = "depth_list";
 static const char __pyx_k_dist_right[] = "dist_right";
-static const char __pyx_k_frame_size[] = "frame_size";
 static const char __pyx_k_len_agents[] = " len(agents)";
 static const char __pyx_k_namedtuple[] = "namedtuple";
 static const char __pyx_k_node_tuple[] = "node_tuple";
@@ -1635,6 +1634,7 @@ static const char __pyx_k_is_right_closer[] = "is_right_closer";
 static const char __pyx_k_normalize_field[] = "normalize_field";
 static const char __pyx_k_num_transitions[] = "num_transitions";
 static const char __pyx_k_observation_dim[] = "observation_dim";
+static const char __pyx_k_tree_state_size[] = "tree_state_size";
 static const char __pyx_k_unusable_switch[] = "unusable_switch";
 static const char __pyx_k_1000010000100001[] = "1000010000100001";
 static const char __pyx_k_branch_direction[] = "branch_direction";
@@ -1879,7 +1879,6 @@ static PyObject *__pyx_n_s_flatland_utils_ordered_set;
 static PyObject *__pyx_n_s_float32;
 static PyObject *__pyx_n_s_forward;
 static PyObject *__pyx_n_s_found_target;
-static PyObject *__pyx_n_s_frame_size;
 static PyObject *__pyx_n_s_get;
 static PyObject *__pyx_n_s_get_closer_turn;
 static PyObject *__pyx_n_s_get_full_transitions;
@@ -2044,6 +2043,7 @@ static PyObject *__pyx_n_s_tree;
 static PyObject *__pyx_n_s_tree_depth;
 static PyObject *__pyx_n_s_tree_explored_actions_char;
 static PyObject *__pyx_n_s_tree_obs;
+static PyObject *__pyx_n_s_tree_state_size;
 static PyObject *__pyx_n_s_turn;
 static PyObject *__pyx_n_s_typing;
 static PyObject *__pyx_n_s_unusable_switch;
@@ -12973,7 +12973,7 @@ static PyObject *__pyx_pf_12deliverables_11observation_14RailObsBuilder_12reshap
  *     def reshape_agent_obs(self, handle, agent_obs, info):
  *         if agent_obs is None:             # <<<<<<<<<<<<<<
  *             # New tree-obs is just the size of one frame
- *             tree_obs = np.zeros(params.frame_size)
+ *             tree_obs = np.zeros(params.tree_state_size)
  */
   __pyx_t_1 = (__pyx_v_agent_obs == Py_None);
   __pyx_t_2 = (__pyx_t_1 != 0);
@@ -12982,7 +12982,7 @@ static PyObject *__pyx_pf_12deliverables_11observation_14RailObsBuilder_12reshap
     /* "deliverables/observation.pyx":676
  *         if agent_obs is None:
  *             # New tree-obs is just the size of one frame
- *             tree_obs = np.zeros(params.frame_size)             # <<<<<<<<<<<<<<
+ *             tree_obs = np.zeros(params.tree_state_size)             # <<<<<<<<<<<<<<
  *             vec_obs = np.zeros(params.vec_state_size)
  * 
  */
@@ -12993,7 +12993,7 @@ static PyObject *__pyx_pf_12deliverables_11observation_14RailObsBuilder_12reshap
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_params); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 676, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
-    __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_frame_size); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 676, __pyx_L1_error)
+    __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_tree_state_size); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 676, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_6);
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     __pyx_t_4 = NULL;
@@ -13017,7 +13017,7 @@ static PyObject *__pyx_pf_12deliverables_11observation_14RailObsBuilder_12reshap
 
     /* "deliverables/observation.pyx":677
  *             # New tree-obs is just the size of one frame
- *             tree_obs = np.zeros(params.frame_size)
+ *             tree_obs = np.zeros(params.tree_state_size)
  *             vec_obs = np.zeros(params.vec_state_size)             # <<<<<<<<<<<<<<
  * 
  *             if handle in self.actor_rec_state and handle in self.critic_rec_state:
@@ -13337,7 +13337,7 @@ static PyObject *__pyx_pf_12deliverables_11observation_14RailObsBuilder_12reshap
  *     def reshape_agent_obs(self, handle, agent_obs, info):
  *         if agent_obs is None:             # <<<<<<<<<<<<<<
  *             # New tree-obs is just the size of one frame
- *             tree_obs = np.zeros(params.frame_size)
+ *             tree_obs = np.zeros(params.tree_state_size)
  */
   }
 
@@ -17879,7 +17879,6 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_float32, __pyx_k_float32, sizeof(__pyx_k_float32), 0, 0, 1, 1},
   {&__pyx_n_s_forward, __pyx_k_forward, sizeof(__pyx_k_forward), 0, 0, 1, 1},
   {&__pyx_n_s_found_target, __pyx_k_found_target, sizeof(__pyx_k_found_target), 0, 0, 1, 1},
-  {&__pyx_n_s_frame_size, __pyx_k_frame_size, sizeof(__pyx_k_frame_size), 0, 0, 1, 1},
   {&__pyx_n_s_get, __pyx_k_get, sizeof(__pyx_k_get), 0, 0, 1, 1},
   {&__pyx_n_s_get_closer_turn, __pyx_k_get_closer_turn, sizeof(__pyx_k_get_closer_turn), 0, 0, 1, 1},
   {&__pyx_n_s_get_full_transitions, __pyx_k_get_full_transitions, sizeof(__pyx_k_get_full_transitions), 0, 0, 1, 1},
@@ -18044,6 +18043,7 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_tree_depth, __pyx_k_tree_depth, sizeof(__pyx_k_tree_depth), 0, 0, 1, 1},
   {&__pyx_n_s_tree_explored_actions_char, __pyx_k_tree_explored_actions_char, sizeof(__pyx_k_tree_explored_actions_char), 0, 0, 1, 1},
   {&__pyx_n_s_tree_obs, __pyx_k_tree_obs, sizeof(__pyx_k_tree_obs), 0, 0, 1, 1},
+  {&__pyx_n_s_tree_state_size, __pyx_k_tree_state_size, sizeof(__pyx_k_tree_state_size), 0, 0, 1, 1},
   {&__pyx_n_s_turn, __pyx_k_turn, sizeof(__pyx_k_turn), 0, 0, 1, 1},
   {&__pyx_n_s_typing, __pyx_k_typing, sizeof(__pyx_k_typing), 0, 0, 1, 1},
   {&__pyx_n_s_unusable_switch, __pyx_k_unusable_switch, sizeof(__pyx_k_unusable_switch), 0, 0, 1, 1},
