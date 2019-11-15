@@ -1,9 +1,12 @@
 from flask import Flask, jsonify, send_from_directory,send_file, request, Response
 
+from flatland.envs.observations import TreeObsForRailEnv
 
 import os
 myCmd = 'python setup.py build_ext --inplace'
-os.system(myCmd)
+#os.system(myCmd)
+
+
 
 from model_server import Singleton
 import tensorflow as tf

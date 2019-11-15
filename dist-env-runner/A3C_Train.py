@@ -17,7 +17,8 @@ myCmd = 'python setup.py build_ext --inplace'
 os.system(myCmd)
 
 # import shared directory
-import os, sys; sys.path.append(os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), os.pardir)) + os.sep + 'shared')
+import os, sys; 
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), os.pardir)) + os.sep + 'shared')
 
 from time import sleep, time
 import constant as const
@@ -26,6 +27,9 @@ import urllib
 mp.set_start_method('spawn', True)
 
 def start_train(resume):
+
+
+
     urllib.request.urlretrieve(const.url + '/file/network.pyx', 'deliverables/network.pyx')
     urllib.request.urlretrieve(const.url + '/file/input_params.py', 'deliverables/input_params.py')
     urllib.request.urlretrieve(const.url + '/file/observation.pyx', 'deliverables/observation.pyx')

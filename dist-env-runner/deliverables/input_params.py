@@ -9,7 +9,7 @@ number_of_actions = 5
 number_of_comm = 5
 num_of_obs = 2
 
-tree_depth = 4
+tree_depth = 3
 path_root = tree_depth + 1
 path_sec = tree_depth
 path_thrd = tree_depth - 1
@@ -23,6 +23,12 @@ num_frames = 1
 frame_size = (path_root + path_sec + path_thrd)*num_features
 comm_size = (path_root + path_sec + path_thrd)*number_of_comm
 tree_state_size = frame_size*num_frames
+
+tree_state_size = 0
+for d in range(tree_depth):
+    tree_state_size += 2**d
+
+tree_state_size *= num_features
 vec_state_size = 11
 
 tot_obs_size = tree_state_size + vec_state_size
