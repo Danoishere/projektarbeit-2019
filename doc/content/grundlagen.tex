@@ -40,7 +40,9 @@ The goal of this work is to apply an RL algorithm to the vehicle rescheduling pr
 
 \section{The Flatland Rail Environment}\label{projektmanagement}
 The flatland environment is a virtual simulation environment provided by the Swiss Federal Railway SBB and the crowdsourcing platform AICrowd.
-The goal of this environment is to act as a simplified simulation of real train traffic. Using flatland, we can train RL algrithms to control the actions of trains, based on observations on the grid. Flatland has a discrete structure in both its positions and its timesteps.The whole rail grid is composed out of squares that can have connections to neighbouring squares. In certain squares, the rails splits into two rails. On those switches, the agent has to make a decision which action it wants to take. Dependent on the type of switch, there are different actions available. All rail parts, independent of if it is a switch also allow to take the actions to do nothing (remain halted, or keep driving), to go forward or to brake. The action space is therefore defined by:
+The goal of this environment is to act as a simplified simulation of real train traffic. Using flatland, we can train RL algrithms to control the actions of trains, based on observations on the grid. Flatland has a discrete structure in both its positions and its timesteps.The whole rail grid is composed out of squares that can have connections to neighbouring squares. In certain squares, the rails splits into two rails. On those switches, the agent has to make a decision which action it wants to take. Dependent on the type of switch, there are different actions available. All rail parts, independent of if it is a switch also allow to take the actions to do nothing (remain halted, or keep driving), to go forward or to brake. 
+\includegraphics[width=0.7\textwidth, height=30px]{images/transition_nips_proposal.png}
+The action space is therefore defined by:
 \begin{gather*}
 U = \{ \text{Do nothing, go left, go forward, go right, brake} \}
 \end{gather*}
@@ -59,8 +61,6 @@ All submissions to the flatland challenge are getting graded by the percentage o
 \subsection*{Observations}\label{observations}
 The flatland environment allows to create observation builders to observe the environment for each agent. While it is possible to observe the whole grid, this does usually not make sense due to the fact that many parts of the rail grid are not relevant to a single train. Flatland offers by default two different observation builders.\\
 \textbf{GlobalObsForRailEnv} creates three arrays with the dimensions of the rectangular rail grid. The first array contains the transition information of the rail grid. For each cells, there are 16 bit values, 4 for each possible direction a train is facing.
-
-
 \textbf{TreeObsForRailEnv} creates a graph with sections of the grid as nodes from the perspective of the train.
-
+This means, only the switches which the train is actually able to take define a single node.
 

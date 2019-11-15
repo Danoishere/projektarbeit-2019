@@ -127,6 +127,9 @@ dist-model-server/deliverables/model/model_global.h5
 dist-model-server/deliverables/weights.h5
 dist-model-server/deliverables/model/model_global.h5
 dist-model-server/deliverables/run_info.json
-dist-progress-evaluator/deliverables/*
+dist-progress-evaluator/deliverables/network.pyx
+dist-progress-evaluator/deliverables/observation.pyx
+dist-progress-evaluator/deliverables/input_params.py
+dist-progress-evaluator/deliverables/model/*
 dist-model-server/deliverables/model/*
 dist-benchmark-runner/deliverables/*
