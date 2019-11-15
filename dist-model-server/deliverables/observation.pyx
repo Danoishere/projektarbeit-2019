@@ -673,7 +673,7 @@ class RailObsBuilder(CustomTreeObsForRailEnv):
     def reshape_agent_obs(self, handle, agent_obs, info):
         if agent_obs is None:
             # New tree-obs is just the size of one frame
-            tree_obs = np.zeros(params.frame_size)
+            tree_obs = np.zeros(params.tree_state_size)
             vec_obs = np.zeros(params.vec_state_size)
 
             if handle in self.actor_rec_state and handle in self.critic_rec_state:
