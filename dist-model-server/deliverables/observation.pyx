@@ -574,26 +574,29 @@ class RailObsBuilder(CustomTreeObsForRailEnv):
         node_info = {
             'is_root' : True,
             'closer' : True,
-            'dist' : root_node.dist_to_next_branch + root_node.dist_min_to_target
+            'dist' : root_node.dist_to_next_branch + root_node.dist_min_to_target,
+            'turn' : '.'
         }
 
         depth_list = [[(node_info, root_node)]]
         for d in range(depth):
             depth_list.append([])
             for n in depth_list[d]:
-                left, right = self.get_turns(n)
+                left,left_turn, right, right_turn = self.get_turns(n)
                 is_left_closer, is_right_closer, dist_left, dist_right = self.get_closer_turn(left, right)
 
                 left_info = {
                     'is_root' : False,
                     'closer' : is_left_closer,
-                    'dist' : dist_left
+                    'dist' : dist_left,
+                    'turn' : left_turn
                 }
 
                 right_info = {
                     'is_root' : False,
                     'closer' : is_right_closer,
-                    'dist' : dist_right
+                    'dist' : dist_right,
+                    'turn' : right_turn
                 }
 
                 depth_list[d+1].append((left_info, left))
@@ -612,8 +615,10 @@ class RailObsBuilder(CustomTreeObsForRailEnv):
             return None, None
 
         left = node.childs['L']
+        left_dir = 'L'
         forward = node.childs['F']
         right = node.childs['R']
+        right_dir = 'R'
 
         left_node = None
         right_node = None
@@ -627,13 +632,15 @@ class RailObsBuilder(CustomTreeObsForRailEnv):
         if forward != -np.inf:
             if right_node == None:
                 right_node = forward
+                right_dir = 'F'
             elif left_node == None:
                 left_node = forward
+                left_dir = 'F'
 
         # left_node = left or forward
         # right_node = right or forward
 
-        return left_node, right_node
+        return left_node, left_dir, right_node, right_dir
 
 
 
@@ -821,11 +828,15 @@ def node_to_obs(node_tuple):
 
     target_encountered = node.dist_own_target_encountered != np.inf and node.dist_own_target_encountered != 0
 
+    node_dir = node_info['turn']
     obs = [
-        1.0 if dir == '.' else 0,
-        1.0 if dir == 'F' else 0,
-        1.0 if dir == 'L' else 0,
-        1.0 if dir == 'R' else 0,
+        1.0,
+        1.0 if node_dir == '.' else 0,
+        1.0 if node_dir == 'F' else 0,
+        1.0 if node_dir == 'L' else 0,
+        1.0 if node_dir == 'R' else 0,
+        1.0 if node_info['closer'] else 0,
+        np.tanh(node_info['dist']*0.02),
         normalize_field(node.dist_min_to_target),
         normalize_field(node.dist_other_agent_encountered),
         one_hot(node.dist_other_agent_encountered),

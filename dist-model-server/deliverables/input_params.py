@@ -16,13 +16,7 @@ path_thrd = tree_depth - 1
 
 recurrent_size = 64
 
-num_features = 31
-num_frames = 1
-
-# Root-node + n branches on m layers * l features + n features for later usage
-frame_size = (path_root + path_sec + path_thrd)*num_features
-comm_size = (path_root + path_sec + path_thrd)*number_of_comm
-tree_state_size = frame_size*num_frames
+num_features = 34
 
 tree_state_size = 0
 for d in range(tree_depth):

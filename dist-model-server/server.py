@@ -4,7 +4,7 @@ from flatland.envs.observations import TreeObsForRailEnv
 
 import os
 myCmd = 'python setup.py build_ext --inplace'
-#os.system(myCmd)
+os.system(myCmd)
 
 
 
