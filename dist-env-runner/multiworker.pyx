@@ -135,7 +135,7 @@ class Worker():
                         if info['status'][handle] == RailAgentStatus.READY_TO_DEPART or (
                             info['action_required'][handle] and info['malfunction'][handle] == 0):
                             obs_dict[handle] = obs[handle]
-
+                    
                     nn_call_start = time()
                     # Get actions/values
                     if use_best_actions:
@@ -151,8 +151,9 @@ class Worker():
                         start_env_s = time()
                         next_obs, rewards, done, info = self.env.step(actions)
                         tot_env_s += time() - start_env_s
-                        for agent in self.env.env.agents:
-                            agent.last_action = 0
+
+                        #for agent in self.env.env.agents:
+                        #    agent.last_action = 0
 
                         prep_steps = 0
                         obs_builder.prep_steps = prep_steps
