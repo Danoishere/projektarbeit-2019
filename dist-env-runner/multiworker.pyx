@@ -221,6 +221,10 @@ class Worker():
                         # set final reward for all agents
                         episode_buffer[i][-1][2] += 1.0
                         episode_reward += 1.0
+                    elif cancel_episode:
+                        episode_buffer[i][-1][2] -= 1.0
+                        episode_reward -= 1.0
+
 
                 episode_end = time()
                 episode_time = episode_end - episode_start
