@@ -127,7 +127,7 @@ class AC_Network():
 
         gradient_norm = params.gradient_norm
         if episode_done:
-            gradient_norm *= 20
+            gradient_norm *= 2
 
         local_vars = self.model.trainable_variables
         gradients_new = tape.gradient(tot_loss, local_vars)
