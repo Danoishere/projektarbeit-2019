@@ -7,29 +7,39 @@
 #
 #  ##### Enable autocomplete
 
-
 import multiprocess as mp
 import numpy as np
 import tensorflow as tf
 from ctypes import c_bool
 
+import os
+myCmd = 'python setup.py build_ext --inplace'
+os.system(myCmd)
+
 # import shared directory
-import os, sys; sys.path.append(os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), os.pardir)) + os.sep + 'shared')
+import os, sys; 
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), os.pardir)) + os.sep + 'shared')
 
 from time import sleep, time
-from multiworker import create_worker
-
 import constant as const
 import urllib
 
 mp.set_start_method('spawn', True)
 
 def start_train(resume):
-    
-    urllib.request.urlretrieve(const.url + '/network_file', 'deliverables/network.py')
-    urllib.request.urlretrieve(const.url + '/config_file', 'deliverables/input_params.py')
-    urllib.request.urlretrieve(const.url + '/observation_file', 'deliverables/observation.py')
-    urllib.request.urlretrieve(const.url + '/curriculum_file', 'deliverables/curriculum.py')
+
+
+
+    urllib.request.urlretrieve(const.url + '/file/network.pyx', 'deliverables/network.pyx')
+    urllib.request.urlretrieve(const.url + '/file/input_params.py', 'deliverables/input_params.py')
+    urllib.request.urlretrieve(const.url + '/file/observation.pyx', 'deliverables/observation.pyx')
+    urllib.request.urlretrieve(const.url + '/file/curriculum.py', 'deliverables/curriculum.py')
+
+    myCmd = 'python setup_deliverables.py build_ext --inplace'
+    os.system(myCmd)
+
+    # Wait with this import until we compiled all required modules!
+    from multiworker import create_worker
 
     num_workers = mp.cpu_count() - 1
     should_stop = mp.Value(c_bool, False)

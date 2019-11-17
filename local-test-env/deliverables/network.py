@@ -200,12 +200,17 @@ class AC_Network():
         return [all_tree_obs, all_vec_obs, all_comm_obs, all_rec_actor_obs, all_rec_critic_obs, all_rec_comm_obs]
 
 
-    def get_best_actions_and_values(self, obs, obs_builder):
+    def get_best_actions_and_values(self, obs, env):
+        if len(obs) == 0:
+            return {}
+
         obs_list = self.obs_dict_to_lists(obs)
         predcition, values, comm, a_rec_h, a_rec_c, c_rec_h, c_rec_c, comm_rec_h, comm_rec_c = self.model.predict_on_batch(obs_list)
         actions = {}
         values_dict = {}
         comm_dict = {}
+
+        obs_builder = env.obs_builder
 
         for handle in obs:
             a_dist = predcition[handle]
@@ -217,27 +222,45 @@ class AC_Network():
             obs_builder.critic_rec_state[handle] = [c_rec_h[handle], c_rec_c[handle]]
             obs_builder.comm_rec_state[handle] = [comm_rec_h[handle], comm_rec_c[handle]]
 
+            env.agents[handle].communication = comm_dict[handle]
+
         return actions, values_dict, comm_dict
 
 
-    def get_actions_and_values(self, obs, obs_builder):
+    def get_actions_and_values(self, obs, env):
+        if len(obs) == 0:
+            return {},{},{}
+
+        mapping = {}
+        idx = 0
+        for handle in obs:
+            mapping[handle] = idx
+            idx += 1
+
         obs_list = self.obs_dict_to_lists(obs)
         predcition, values, comm, a_rec_h, a_rec_c, c_rec_h, c_rec_c, comm_rec_h, comm_rec_c = self.model.predict_on_batch(obs_list)
         actions = {}
         values_dict = {}
         comm_dict = {}
 
-        for handle in obs:
-            a_dist = predcition[handle]
-            actions[handle] = np.random.choice([0,1,2,3,4], p = a_dist)
+        obs_builder = env.obs_builder
 
-            comm_dist = comm[handle]
-            comm_dict[handle] = np.random.choice([0,1,2,3,4], p = comm_dist)
+        for handle in obs:
+            idx = mapping[handle]
+            a_dist = predcition[idx]
+            actions[idx] = np.random.choice([0,1,2,3,4], p = a_dist)
+
+            comm_dist = comm[idx]
+            comm_dict[idx] = np.random.choice([0,1,2,3,4], p = comm_dist)
             
-            values_dict[handle] = values[handle,0]
-            obs_builder.actor_rec_state[handle] = [a_rec_h[handle], a_rec_c[handle]]
-            obs_builder.critic_rec_state[handle] = [c_rec_h[handle], c_rec_c[handle]]
-            obs_builder.comm_rec_state[handle] = [comm_rec_h[handle], comm_rec_c[handle]]
+            values_dict[idx] = values[idx,0]
+            obs_builder.actor_rec_state[idx] = [a_rec_h[idx], a_rec_c[idx]]
+            obs_builder.critic_rec_state[idx] = [c_rec_h[idx], c_rec_c[idx]]
+            obs_builder.comm_rec_state[idx] = [comm_rec_h[idx], comm_rec_c[idx]]
+
+            agent_comm_onehot = np.zeros(5)
+            agent_comm_onehot[np.arange(0,5) == comm_dict[idx]] = 1
+            env.agents[idx].communication = agent_comm_onehot
 
         return actions, values_dict, comm_dict
 

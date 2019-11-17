@@ -2,7 +2,7 @@
 import numpy as np
 import deliverables.input_params as params
 from flatland.envs.predictions import ShortestPathPredictorForRailEnv
-
+from pprint import pprint
 """
 Collection of environment-specific ObservationBuilder.
 """
@@ -220,18 +220,23 @@ class CustomTreeObsForRailEnv(ObservationBuilder):
         distance_map = self.env.distance_map.get()
 
 
-        root_node_observation = CustomTreeObsForRailEnv.Node(dist_own_target_encountered=0, dist_other_target_encountered=0,
-                                                       dist_other_agent_encountered=0, dist_potential_conflict=0,
-                                                       dist_unusable_switch=0, dist_to_next_branch=0,
-                                                       dist_min_to_target=distance_map[
+        root_node_observation = CustomTreeObsForRailEnv.Node(
+                                                    dist_own_target_encountered=0, 
+                                                    dist_other_target_encountered=0,
+                                                    dist_other_agent_encountered=0, 
+                                                    dist_potential_conflict=0,
+                                                    dist_unusable_switch=0, 
+                                                    dist_to_next_branch=0,
+                                                    dist_min_to_target=distance_map[
                                                            (handle, *agent_virtual_position,
                                                             agent.direction)],
-                                                       num_agents_same_direction=0, num_agents_opposite_direction=0,
-                                                       num_agents_malfunctioning=agent.malfunction_data['malfunction'],
-                                                       speed_min_fractional=agent.speed_data['speed'],
-                                                       num_agents_ready_to_depart=0,
-                                                       communication=np.zeros(5),
-                                                       childs={})
+                                                    num_agents_same_direction=0, 
+                                                    num_agents_opposite_direction=0,
+                                                    num_agents_malfunctioning=agent.malfunction_data['malfunction'],
+                                                    speed_min_fractional=agent.speed_data['speed'],
+                                                    num_agents_ready_to_depart=0,
+                                                    communication=np.zeros(5),
+                                                    childs={})
 
         visited = OrderedSet()
 
@@ -566,6 +571,7 @@ class RailObsBuilder(CustomTreeObsForRailEnv):
         return super().reset()
 
     def get_many(self, handles=None):
+        #print('-------------------')
         obs = super().get_many(handles=handles)
         all_augmented_obs = {}
 
@@ -614,8 +620,7 @@ class RailObsBuilder(CustomTreeObsForRailEnv):
 
             if num_root_children == 1:
                 agent_obs = agent_obs.childs['F']
-                if agent_obs == -np.inf:
-                    raise ValueError('Well, looks like it\'s not always s straight')
+
 
             # Fastest way from root
             # fastest way: tree-depth + 1 (root)
@@ -636,6 +641,8 @@ class RailObsBuilder(CustomTreeObsForRailEnv):
                 if len(sorted_children) > 1:
                     alt_node_2 = sorted_children[1]
                     alt_way_2 = get_shortest_way_from(alt_node_2[0],alt_node_2[1], params.tree_depth-1)
+
+            print_node(fastest_way[0][1], fastest_way[0][0])
 
             obs_layers = [fastest_way, alt_way_1, alt_way_2]
             tree_obs = []
@@ -722,6 +729,16 @@ def buffer_to_obs_lists(episode_buffer):
 #
 # Put all in one vector
 
+def print_node(node, dir, depth = 0):
+    if node is None or node == np.inf or node == -np.inf or depth > 1:
+        return
+    
+    # CustomTreeObsForRailEnv.print_node_features(node, dir,' ' * depth * 4)
+    
+    #for child_dir in node.childs:
+    #    print_node(node.childs[child_dir], child_dir, depth + 1)
+    
+
 
 def get_shortest_way_from(entry_dir, start_node, length):
     selected_nodes = []
@@ -789,7 +806,10 @@ def node_to_comm(node_tuple):
     if node.communication is None:
         return [0]*params.number_of_comm
 
-    return node.communication
+    agent_comm_onehot = np.zeros(5)
+    agent_comm_onehot[np.arange(0,5) == node.communication] = 1
+
+    return agent_comm_onehot
 
 
 def node_to_obs(node_tuple):
@@ -853,7 +873,10 @@ def node_to_obs(node_tuple):
         0
     ]
 
+
     if node.communication is not None:
-        obs[-5:] = node.communication
+        agent_comm_onehot = np.zeros(5)
+        agent_comm_onehot[np.arange(0,5) == node.communication] = 1
+        obs[-5:] = agent_comm_onehot
 
     return obs

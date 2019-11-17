@@ -1,4 +1,3 @@
-
 import numpy as np
 import deliverables.input_params as params
 from flatland.envs.predictions import ShortestPathPredictorForRailEnv
@@ -10,6 +9,7 @@ import collections
 from typing import Optional, List, Dict, Tuple
 
 import numpy as np
+from time import time
 
 from flatland.core.env import Environment
 from flatland.core.env_observation_builder import ObservationBuilder
@@ -42,7 +42,7 @@ class CustomTreeObsForRailEnv(ObservationBuilder):
                                           'num_agents_malfunctioning '
                                           'speed_min_fractional '
                                           'num_agents_ready_to_depart '
-                                          'communication '
+                                          'other_agents '
                                           'childs')
 
     tree_explored_actions_char = ['L', 'F', 'R', 'B']
@@ -178,22 +178,17 @@ class CustomTreeObsForRailEnv(ObservationBuilder):
         self.location_has_agent_speed = {}
         self.location_has_agent_malfunction = {}
         self.location_has_agent_ready_to_depart = {}
-        self.location_has_agent_communication = {}
+        self.location_has_agent_obj = {}
 
         for _agent in self.env.agents:
             if _agent.status in [RailAgentStatus.ACTIVE, RailAgentStatus.DONE] and \
                     _agent.position:
 
-                try:
-                    _agent.communication
-                except:
-                    _agent.communication = None
-
+                self.location_has_agent_obj[tuple(_agent.position)] = _agent
                 self.location_has_agent[tuple(_agent.position)] = 1
                 self.location_has_agent_direction[tuple(_agent.position)] = _agent.direction
                 self.location_has_agent_speed[tuple(_agent.position)] = _agent.speed_data['speed']
                 self.location_has_agent_malfunction[tuple(_agent.position)] = _agent.malfunction_data['malfunction']
-                self.location_has_agent_communication[tuple(_agent.position)] = _agent.communication
 
             if _agent.status in [RailAgentStatus.READY_TO_DEPART] and \
                     _agent.initial_position:
@@ -219,7 +214,6 @@ class CustomTreeObsForRailEnv(ObservationBuilder):
         # Here information about the agent itself is stored
         distance_map = self.env.distance_map.get()
 
-
         root_node_observation = CustomTreeObsForRailEnv.Node(dist_own_target_encountered=0, dist_other_target_encountered=0,
                                                        dist_other_agent_encountered=0, dist_potential_conflict=0,
                                                        dist_unusable_switch=0, dist_to_next_branch=0,
@@ -230,7 +224,7 @@ class CustomTreeObsForRailEnv(ObservationBuilder):
                                                        num_agents_malfunctioning=agent.malfunction_data['malfunction'],
                                                        speed_min_fractional=agent.speed_data['speed'],
                                                        num_agents_ready_to_depart=0,
-                                                       communication=np.zeros(5),
+                                                       other_agents=[],
                                                        childs={})
 
         visited = OrderedSet()
@@ -294,8 +288,7 @@ class CustomTreeObsForRailEnv(ObservationBuilder):
         min_fractional_speed = 1.
         num_steps = 1
         other_agent_ready_to_depart_encountered = 0
-        found_closest_communication = False
-        communication = None
+        other_agents_opposite_dir = []
 
         while exploring:
             # #############################
@@ -303,10 +296,6 @@ class CustomTreeObsForRailEnv(ObservationBuilder):
             # Modify here to compute any useful data required to build the end node's features. This code is called
             # for each cell visited between the previous branching node and the next switch / target / dead-end.
             if position in self.location_has_agent:
-                if self.location_has_agent_communication[position] is not None and not found_closest_communication:
-                    found_closest_communication = True,
-                    communication = self.location_has_agent_communication[position]
-
                 if tot_dist < other_agent_encountered:
                     other_agent_encountered = tot_dist
 
@@ -332,6 +321,7 @@ class CustomTreeObsForRailEnv(ObservationBuilder):
                                                                                                   0)
 
                 else:
+                    other_agents_opposite_dir.append(self.location_has_agent_obj[position])
                     # If no agent in the same direction was found all agents in that position are other direction
                     other_agent_opposite_direction += self.location_has_agent[position]
 
@@ -471,7 +461,7 @@ class CustomTreeObsForRailEnv(ObservationBuilder):
                                       num_agents_malfunctioning=malfunctioning_agent,
                                       speed_min_fractional=min_fractional_speed,
                                       num_agents_ready_to_depart=other_agent_ready_to_depart_encountered,
-                                      communication=communication,
+                                      other_agents=other_agents_opposite_dir,
                                       childs={})
 
         # #############################
@@ -550,58 +540,150 @@ class CustomTreeObsForRailEnv(ObservationBuilder):
     def _reverse_dir(self, direction):
         return int((direction + 2) % 4)
 
+
 class RailObsBuilder(CustomTreeObsForRailEnv):
     def __init__(self):
-        super().__init__(params.tree_depth, ShortestPathPredictorForRailEnv())
-        self.last_obs = {}
+        super().__init__(params.tree_depth)
         self.actor_rec_state = {}
         self.critic_rec_state = {}
-        self.comm_rec_state = {}
+        self.prep_step = 0
 
     def reset(self):
-        self.last_obs = {}
         self.actor_rec_state = {}
         self.critic_rec_state = {}
-        self.comm_rec_state = {}
+        self.prep_step = 0
         return super().reset()
 
     def get_many(self, handles=None):
+        start = time()
         obs = super().get_many(handles=handles)
-        all_augmented_obs = {}
-
+        
+        all_obs = {}
+        #print('Get', time() - start)
+        start = time()
         for handle in obs:
-            last_agent_obs = None
-            if handle in self.last_obs:
-                last_agent_obs = self.last_obs[handle]
-
             next_agent_obs = obs[handle]
-            next_agent_tree_obs, vec_obs, comm_obs, rec_actor, rec_critic, rec_comm = self.reshape_agent_obs(handle, next_agent_obs, None)
-            # print(next_agent_tree_obs)
-            #augmented_tree_obs = self.augment_agent_tree_obs_with_frames(last_agent_obs, next_agent_tree_obs)
-            self.last_obs[handle] = next_agent_tree_obs# augmented_tree_obs
+            agent_obs, rec_actor, rec_critic = self.reshape_agent_obs(handle, next_agent_obs, None)
+            all_obs[handle] = (agent_obs, rec_actor, rec_critic)
+        #print('Reshape', time() - start)
+        return all_obs
 
-            # print(augmented_tree_obs)
-            all_augmented_obs[handle] = (next_agent_tree_obs, vec_obs, comm_obs, rec_actor, rec_critic, rec_comm)
+    def binary_tree(self, root_node):
+        depth = params.tree_depth - 1
 
-        return all_augmented_obs
+        node_info = {
+            'is_root' : True,
+            'closer' : True,
+            'dist' : root_node.dist_to_next_branch + root_node.dist_min_to_target,
+            'turn' : '.'
+        }
+
+        depth_list = [[(node_info, root_node)]]
+        for d in range(depth):
+            depth_list.append([])
+            for n in depth_list[d]:
+                left,left_turn, right, right_turn = self.get_turns(n)
+                is_left_closer, is_right_closer, dist_left, dist_right = self.get_closer_turn(left, right)
+
+                left_info = {
+                    'is_root' : False,
+                    'closer' : is_left_closer,
+                    'dist' : dist_left,
+                    'turn' : left_turn
+                }
+
+                right_info = {
+                    'is_root' : False,
+                    'closer' : is_right_closer,
+                    'dist' : dist_right,
+                    'turn' : right_turn
+                }
+
+                depth_list[d+1].append((left_info, left))
+                depth_list[d+1].append((right_info, right))
+
+        return depth_list
+
+    def get_turns(self, node_tuple):
+        if node_tuple is None:
+            return None, None
+
+        node_info = node_tuple[0]
+        node = node_tuple[1]
+
+        if len(node.childs) == 0:
+            return None, None
+
+        left = node.childs['L']
+        left_dir = 'L'
+        forward = node.childs['F']
+        right = node.childs['R']
+        right_dir = 'R'
+
+        left_node = None
+        right_node = None
+
+        if left != -np.inf:
+            left_node = left
+
+        if right != -np.inf:
+            right_node = right
+
+        if forward != -np.inf:
+            if right_node == None:
+                right_node = forward
+                right_dir = 'F'
+            elif left_node == None:
+                left_node = forward
+                left_dir = 'F'
+
+        # left_node = left or forward
+        # right_node = right or forward
+
+        return left_node, left_dir, right_node, right_dir
+
+
+
+    def get_closer_turn(self, left, right):
+        is_left_closer = False
+        is_right_closer = False
+
+        dist_left = np.inf
+        dist_right = np.inf
+    
+        if left is not None and right is not None:
+            dist_left = left.dist_to_next_branch + left.dist_min_to_target
+            dist_right = right.dist_to_next_branch + right.dist_min_to_target
+            if dist_left < dist_right:
+                is_left_closer = True
+            elif dist_left > dist_right:
+                is_right_closer = True
+            else:
+                is_left_closer = True
+                is_right_closer = True
+
+        elif left is None:
+            is_right_closer = True
+        elif right is None:
+            is_left_closer = True
+
+        return is_left_closer, is_right_closer, dist_left, dist_right
+        
 
     def reshape_agent_obs(self, handle, agent_obs, info):
         if agent_obs is None:
             # New tree-obs is just the size of one frame
-            tree_obs = np.zeros(params.frame_size)
+            tree_obs = np.zeros(params.tree_state_size)
             vec_obs = np.zeros(params.vec_state_size)
-            comm_obs = np.zeros(params.comm_size)
 
             if handle in self.actor_rec_state and handle in self.critic_rec_state:
                 agent_actor_rec_state = self.actor_rec_state[handle]
                 agent_critic_rec_state = self.critic_rec_state[handle]
-                agent_comm_rec_state = self.comm_rec_state[handle]
             else:
                 agent_actor_rec_state = np.zeros((2,params.recurrent_size)).astype(np.float32)
                 agent_critic_rec_state = np.zeros((2,params.recurrent_size)).astype(np.float32)
-                agent_comm_rec_state = np.zeros((2,params.recurrent_size)).astype(np.float32)
 
-            return tree_obs.astype(np.float32), vec_obs.astype(np.float32), comm_obs.astype(np.float32),  agent_actor_rec_state, agent_critic_rec_state, agent_comm_rec_state
+            return np.concatenate([tree_obs, vec_obs]).astype(np.float32),  agent_actor_rec_state, agent_critic_rec_state
         else:
 
             root_node = agent_obs
@@ -614,44 +696,17 @@ class RailObsBuilder(CustomTreeObsForRailEnv):
 
             if num_root_children == 1:
                 agent_obs = agent_obs.childs['F']
-                if agent_obs == -np.inf:
-                    raise ValueError('Well, looks like it\'s not always s straight')
 
-            # Fastest way from root
-            # fastest way: tree-depth + 1 (root)
-            fastest_way = get_shortest_way_from('.',agent_obs, params.tree_depth +1)
-            sorted_children = get_ordered_children(agent_obs)
+            tree = self.binary_tree(agent_obs)
 
-            # second fastest way: tree-depth
-            alt_way_1 = [None]* params.tree_depth
-            # Try to take second best solution at next intersection
-            if len(sorted_children) > 1:
-                alt_node_1 = sorted_children[1]
-                alt_way_1 = get_shortest_way_from(alt_node_1[0], alt_node_1[1], params.tree_depth)
-
-            alt_way_2 = [None]*(params.tree_depth-1)
-            # Try to take second best solution at second next intersection
-            if fastest_way[1] != None:
-                sorted_children = get_ordered_children(fastest_way[1][1])
-                if len(sorted_children) > 1:
-                    alt_node_2 = sorted_children[1]
-                    alt_way_2 = get_shortest_way_from(alt_node_2[0],alt_node_2[1], params.tree_depth-1)
-
-            obs_layers = [fastest_way, alt_way_1, alt_way_2]
             tree_obs = []
-            comm_obs = []
-            for layer in obs_layers:
+            for layer in tree:
                 for node in layer:
                     node_obs = node_to_obs(node)
                     tree_obs.append(node_obs)
-                    agent_comm_obs = node_to_comm(node)
-                    comm_obs.append(agent_comm_obs)
 
             tree_obs = np.concatenate(tree_obs)
-            comm_obs = np.concatenate(comm_obs)
-
             agent = self.env.agents[handle]
-            # print(agent.position)
 
             # Current info about the train itself
             vec_obs = np.zeros(params.vec_state_size)
@@ -671,56 +726,28 @@ class RailObsBuilder(CustomTreeObsForRailEnv):
                 vec_obs[6] = normalize_field(dist_y)
 
             vec_obs[7] = normalize_field(root_node.dist_min_to_target)
+            vec_obs[8] = 1 if self.prep_step == 0 else 0
+            vec_obs[9] = 1 if self.prep_step == 1 else 0
+            vec_obs[10] = 1 if self.prep_step == 2 else 0
 
             if handle in self.actor_rec_state and handle in self.critic_rec_state:
                 agent_actor_rec_state = self.actor_rec_state[handle]
                 agent_critic_rec_state = self.critic_rec_state[handle]
-                agent_comm_rec_state = self.comm_rec_state[handle]
             else:
                 agent_actor_rec_state = np.zeros((2,params.recurrent_size)).astype(np.float32)
                 agent_critic_rec_state = np.zeros((2,params.recurrent_size)).astype(np.float32)
-                agent_comm_rec_state = np.zeros((2,params.recurrent_size)).astype(np.float32)
 
-            return tree_obs.astype(np.float32), vec_obs.astype(np.float32), comm_obs.astype(np.float32),  agent_actor_rec_state, agent_critic_rec_state, agent_comm_rec_state
+            return np.concatenate([tree_obs, vec_obs]).astype(np.float32),  agent_actor_rec_state, agent_critic_rec_state
 
-
-    def augment_agent_tree_obs_with_frames(self, last_obs, next_obs):
-        single_obs_len = params.frame_size
-        full_obs_len = params.tree_state_size
-
-        if last_obs is None:
-            last_obs = np.zeros(full_obs_len)
-
-        last_multi_frame_obs = last_obs[:-single_obs_len]
-        multi_frame_obs = np.zeros(full_obs_len)
-
-        # Start = new obs
-        multi_frame_obs[:single_obs_len] = next_obs
-
-        # Fill remaining n-1 slots with last obs
-        multi_frame_obs[single_obs_len:single_obs_len+len(last_multi_frame_obs)] = last_multi_frame_obs
-        return multi_frame_obs.astype(np.float32)
 
 
 def buffer_to_obs_lists(episode_buffer):
-    tree_obs = np.asarray([row[0][0] for row in episode_buffer])
-    vec_obs = np.asarray([row[0][1] for row in episode_buffer])
-    comm_obs = np.asarray([row[0][2] for row in episode_buffer])
-    a_rec_obs = np.asarray([row[0][3] for row in episode_buffer])
-    c_rec_obs = np.asarray([row[0][4] for row in episode_buffer])
-    comm_rec_obs = np.asarray([row[0][5] for row in episode_buffer])
+    vec_obs = np.asarray([row[0][0] for row in episode_buffer])
+    a_rec_obs = np.asarray([row[0][1] for row in episode_buffer])
+    c_rec_obs = np.asarray([row[0][2] for row in episode_buffer])
 
-    return tree_obs, vec_obs, comm_obs, a_rec_obs, c_rec_obs, comm_rec_obs
+    return vec_obs, a_rec_obs, c_rec_obs
 
-
-# Observation-pattern
-# ####################
-#
-# |-|-|-|-|-|-|  <- 1.) Direct route to target
-#   |-|-|-|-|-|  <- 2.) Route to target with different decision at next intersection
-#     |-|-|-|-|  <- 3.) Route to target with different decision at second next intersection
-#
-# Put all in one vector
 
 
 def get_shortest_way_from(entry_dir, start_node, length):
@@ -754,10 +781,8 @@ def get_shortest_way_from(entry_dir, start_node, length):
 
     return selected_nodes
 
-def get_ordered_children(node):
-    #if node is None:
-    #    return []
 
+def get_ordered_children(node):
     children = []
     for k in node.childs:
         child = node.childs[k]
@@ -767,11 +792,13 @@ def get_ordered_children(node):
     children = sorted(children, key=lambda t: np.min([t[1].dist_min_to_target, t[1].dist_own_target_encountered]))
     return children
 
+
 def normalize_field(field, norm_val=100):
     if field == np.inf or field == -np.inf:
         return 0
     else:
         return (field+1.0)/norm_val
+
 
 def one_hot(field):
     if field == np.inf or field == -np.inf or field == 0.0:
@@ -779,32 +806,13 @@ def one_hot(field):
     else:
         return 1.0
 
-def node_to_comm(node_tuple):
-    if node_tuple is None:
-        return [0]*params.number_of_comm
-
-    dir = node_tuple[0]
-    node = node_tuple[1]
-
-    if node.communication is None:
-        return [0]*params.number_of_comm
-
-    return node.communication
-
 
 def node_to_obs(node_tuple):
-    if node_tuple is None:
+    if node_tuple[1] is None:
         return [0]*params.num_features
 
-    dir = node_tuple[0]
+    node_info = node_tuple[0]
     node = node_tuple[1]
-
-    dir_dict = {
-        '.' : 0.1,
-        'F': 0.4,
-        'L': 0.6,
-        'R': 0.7,
-    }
 
     dist_left = 0
     dist_right = 0
@@ -812,26 +820,28 @@ def node_to_obs(node_tuple):
 
     # Is there a way that goes left and goes to the target at the end of
     if 'L' in node.childs and node.childs['L'] != -np.inf:
-        dist_left = normalize_field(node.childs['L'].dist_min_to_target)
+        dist_left = node.childs['L'].dist_min_to_target
     if 'R' in node.childs and node.childs['R'] != -np.inf:
-        dist_right = normalize_field(node.childs['R'].dist_min_to_target)
+        dist_right = node.childs['R'].dist_min_to_target
     if 'F' in node.childs and node.childs['F'] != -np.inf:
-        dist_forward = normalize_field(node.childs['F'].dist_min_to_target)
+        dist_forward = node.childs['F'].dist_min_to_target
 
-    dir_num = dir_dict[dir]
+    target_encountered = node.dist_own_target_encountered != np.inf and node.dist_own_target_encountered != 0
+
+    node_dir = node_info['turn']
     obs = [
-        1 if dir == '.' else 0,
-        1 if dir == 'F' else 0,
-        1 if dir == 'L' else 0,
-        1 if dir == 'R' else 0,
-        dir_num,
+        1.0,
+        1.0 if node_dir == '.' else 0,
+        1.0 if node_dir == 'F' else 0,
+        1.0 if node_dir == 'L' else 0,
+        1.0 if node_dir == 'R' else 0,
+        1.0 if node_info['closer'] else 0,
+        np.tanh(node_info['dist']*0.02),
         normalize_field(node.dist_min_to_target),
         normalize_field(node.dist_other_agent_encountered),
         one_hot(node.dist_other_agent_encountered),
         one_hot(node.dist_other_target_encountered),
-        #normalize_field(node.dist_other_target_encountered),
-        #normalize_field(node.dist_own_target_encountered),
-        one_hot(node.dist_own_target_encountered),
+        1.0 if target_encountered else 0,
         normalize_field(node.dist_potential_conflict),
         one_hot(node.dist_potential_conflict),
         normalize_field(node.dist_to_next_branch),
@@ -843,9 +853,12 @@ def node_to_obs(node_tuple):
         normalize_field(node.num_agents_ready_to_depart, 20),
         normalize_field(node.num_agents_same_direction, 20),
         node.speed_min_fractional,
-        dist_left,
-        dist_right,
-        dist_forward,
+        normalize_field(dist_left),
+        one_hot(dist_left),
+        normalize_field(dist_right),
+        one_hot(dist_right),
+        normalize_field(dist_forward),
+        one_hot(dist_forward),
         0,
         0,
         0,
@@ -853,7 +866,10 @@ def node_to_obs(node_tuple):
         0
     ]
 
-    if node.communication is not None:
-        obs[-5:] = node.communication
+    if len(node.other_agents) > 0:
+        clostest_agent = node.other_agents[0]
+        agent_action_onehot = np.zeros(5)
+        agent_action_onehot[np.arange(0,5) == clostest_agent.last_action] = 1
+        obs[-5:] = agent_action_onehot
 
     return obs

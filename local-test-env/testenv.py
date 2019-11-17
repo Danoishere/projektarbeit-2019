@@ -6,6 +6,7 @@ from flatland.envs.rail_generators import sparse_rail_generator
 from flatland.envs.schedule_generators import sparse_schedule_generator
 # We also include a renderer because we want to visualize what is going on in the environment
 from flatland.utils.rendertools import RenderTool, AgentRenderVariant
+from flatland.envs.malfunction_generators import malfunction_from_params
 
 import numpy as np
 import time
@@ -106,11 +107,11 @@ def punish_impossible_actions(env, obs, actions, rewards):
 
 width = 20  # With of map
 height = 20  # Height of map
-nr_trains = 10 # Number of trains that have an assigned task in the env
-cities_in_map = 3  # Number of cities where agents can start or end
+nr_trains = 5 # Number of trains that have an assigned task in the env
+cities_in_map = 2  # Number of cities where agents can start or end
 seed = 14  # Random seed
 grid_distribution_of_cities = False  # Type of city distribution, if False cities are randomly placed
-max_rails_between_cities = 2  # Max number of tracks allowed between cities. This is number of entry point to a city
+max_rails_between_cities = 1  # Max number of tracks allowed between cities. This is number of entry point to a city
 max_rail_in_cities = 2  # Max number of parallel tracks within a city, representing a realistic trainstation
 
 rail_generator = sparse_rail_generator(max_num_cities=cities_in_map,
@@ -159,10 +160,10 @@ env = RailEnv(width=width,
               rail_generator=rail_generator,
               schedule_generator=schedule_generator,
               number_of_agents=nr_trains,
-              stochastic_data=stochastic_data,  # Malfunction data generator
+              malfunction_generator_and_process_data=malfunction_from_params(stochastic_data),  # Malfunction data generator
               obs_builder_object=observation_builder,
-              remove_agents_at_target=True  # Removes agents at the end of their journey to make space for others
-              )
+              remove_agents_at_target=True,  # Removes agents at the end of their journey to make space for others
+              random_seed=None)
 
 # Initiate the renderer
 env_renderer = RenderTool(env, gl="PILSVG",
@@ -191,16 +192,21 @@ while True:
 
     env_renderer.set_new_rail()
 
-    
+    while episode_done == False and episode_step_count < 180:
+        print(episode_step_count)
+        obs_dict = {}
+        for handle in obs:
+            if info['action_required'][handle] and info['malfunction'][handle] == 0:
+                obs_dict[handle] = obs[handle]
 
-    while episode_done == False and episode_step_count < 200:
         # Usually, this part is handled in the network, but to get
         # the probabilities, we do it ourselfs
-        if use_best:
-            actions, values, comm = model.get_best_actions_and_values(obs, obs_builder)
-        else:
-            actions, values, comm = model.get_actions_and_values(obs, obs_builder)
+        #if use_best:
+        #    actions, values, comm = model.get_best_actions_and_values(obs_dict, env)
+        #else:
+        actions, values, comm = model.get_actions_and_values(obs_dict, env)
 
+        
 
         '''
         obs_ = model.obs_dict_to_lists(obs)

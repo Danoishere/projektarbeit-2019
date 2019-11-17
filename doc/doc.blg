@@ -1,0 +1,14 @@
+This is BibTeX, Version 0.99dThe top-level auxiliary file: doc.aux
+The style file: ieeetran.bst
+Database file #1: BibTeX-Literaturverzeichnis/literatur.bib
+You're missing a field name---line 120 of file BibTeX-Literaturverzeichnis/literatur.bib
+ :  date = {2018}, 
+ :                 % based on submissiondate
+I'm skipping whatever remains of this entry
+-- IEEEtran.bst version 1.14 (2015/08/26) by Michael Shell.
+-- http://www.michaelshell.org/tex/ieeetran/bibtex/
+-- See the "IEEEtran_bst_HOWTO.pdf" manual for usage information.
+Warning--empty journal in a3c
+
+Done.
+(There was 1 error message)

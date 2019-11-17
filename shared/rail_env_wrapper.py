@@ -2,6 +2,7 @@
 from flatland.envs.rail_env import RailEnv
 from flatland.envs.rail_generators import sparse_rail_generator, complex_rail_generator 
 from flatland.envs.schedule_generators import sparse_schedule_generator
+from flatland.envs.malfunction_generators import malfunction_from_params
 import random
 
 
@@ -80,11 +81,12 @@ class RailEnvWrapper():
             width, 
             height, 
             rail_generator=self.rail_gen,
-            stochastic_data=self.stochastic_data,
+            malfunction_generator_and_process_data=malfunction_from_params(self.stochastic_data),
             schedule_generator = self.schedule_gen,
             number_of_agents=self.num_agents,
             obs_builder_object=self.observation_builder,
-            remove_agents_at_target=True)
+            remove_agents_at_target=True,
+            random_seed=None)
 
         self.env.global_reward = self.global_reward
         self.env.num_agents = self.num_agents

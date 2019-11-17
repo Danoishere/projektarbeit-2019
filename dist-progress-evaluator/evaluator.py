@@ -17,6 +17,7 @@ from ctypes import c_bool
 
 from time import sleep, time
 from rail_env_wrapper import RailEnvWrapper
+from flatland.envs.rail_env import RailEnvActions, RailAgentStatus
 
 import constant as const
 import urllib
@@ -32,12 +33,14 @@ def get_curriculum_lvl():
 
 
 def start_train(resume):
-    
-    urllib.request.urlretrieve(const.url + '/network_file', 'deliverables/network.py')
-    urllib.request.urlretrieve(const.url + '/config_file', 'deliverables/input_params.py')
-    urllib.request.urlretrieve(const.url + '/observation_file', 'deliverables/observation.py')
-    urllib.request.urlretrieve(const.url + '/curriculum_file', 'deliverables/curriculum.py')
+    urllib.request.urlretrieve(const.url + '/file/network.pyx', 'deliverables/network.pyx')
+    urllib.request.urlretrieve(const.url + '/file/input_params.py', 'deliverables/input_params.py')
+    urllib.request.urlretrieve(const.url + '/file/observation.pyx', 'deliverables/observation.pyx')
+    urllib.request.urlretrieve(const.url + '/file/curriculum.py', 'deliverables/curriculum.py')
 
+    myCmd = 'python setup_deliverables.py build_ext --inplace'
+    os.system(myCmd)
+    
     curriculum_mod = __import__("deliverables.curriculum", fromlist=[''])
     curriculum_class =  getattr(curriculum_mod, 'Curriculum')
     curriculum = curriculum_class()
@@ -70,8 +73,11 @@ def start_train(resume):
 
         num_success = 0
         episode_count = 0
+        agents_started = 0
+        agents_arrived = 0
         model.update_from_global_model()
         print('Model updated from server.')
+        prep_steps = 0
 
         for r in range(num_repeat):
             episode_done = False
@@ -80,13 +86,40 @@ def start_train(resume):
             episode_reward = 0
             episode_step_count = 0
             
-            obs, _ = env.reset()
+            obs, info = env.reset()
             # env_renderer.set_new_rail()
             obs_builder = env.env.obs_builder
 
+            prep_steps = 0
+            done = {i:False for i in range(len(env.env.agents))}
+            done['__all__'] = False
+            all_handles = [i for i in range(len(env.env.agents))]
+            no_reward = {i:0 for i in range(len(env.env.agents))}
+
             while episode_done == False and episode_step_count < env.max_steps:
-                actions,_,_ = model.get_best_actions_and_values(obs, obs_builder)
-                next_obs, rewards, done, _ = env.step(actions)
+                obs_dict = {}
+                for handle in range(len(env.env.agents)):
+                    if info['status'][handle] == RailAgentStatus.READY_TO_DEPART or (
+                        info['action_required'][handle] and info['malfunction'][handle] == 0):
+                        obs_dict[handle] = obs[handle] 
+
+                actions,_ = model.get_best_actions_and_values(obs_dict, env.env)
+
+                if prep_steps == 2:
+                    next_obs, rewards, done, info = env.step(actions)
+                    episode_step_count += 1
+                    
+                    for agent in env.env.agents:
+                        agent.last_action = np.ones(5)
+
+                    prep_steps = 0
+                    obs_builder.prep_steps = prep_steps
+                else:
+                    prep_steps += 1
+                    obs_builder.prep_steps = prep_steps
+                    next_obs = env.env.obs_builder.get_many(all_handles)
+                    rewards = dict(no_reward)
+
                 #env_renderer.render_env(show=True)
 
                 episode_done = done['__all__']
@@ -97,17 +130,24 @@ def start_train(resume):
                     episode_reward += rewards[i]
                 
                 obs = next_obs               
-                episode_step_count += 1
+                
 
+            agents_started += len(env.env.agents)
             episode_count += 1
             if episode_done:
                 num_success += 1
 
-            print('Eval. episode', episode_count,'with',episode_step_count,'steps, reward of',episode_reward,', curriculum level', curriculum.current_level)
+            for i in range(env.num_agents):
+                if done[i]:
+                    episode_reward += 1.0
+                    agents_arrived += 1
+
+            current_successrate = agents_arrived/agents_started
+            print('Eval. episode', episode_count,'with',episode_step_count,'steps, reward of',episode_reward,', curriculum level', curriculum.current_level, ', agents arrived',current_successrate)
 
         successrate = num_success/num_repeat
-        print('Evaluation round finished. sucessrate:', successrate)
-        if curriculum.should_switch_level(successrate):
+        print('Evaluation round finished. sucessrate (agents arrived/agents started):', current_successrate)
+        if curriculum.should_switch_level(current_successrate):
             print('Curriculum level change triggered.')
             # Send new level & receive confirmation
             curriculum.increase_curriculum_level()
