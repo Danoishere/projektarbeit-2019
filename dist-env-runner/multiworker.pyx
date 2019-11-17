@@ -165,7 +165,7 @@ class Worker():
 
                         max_pos_repeation = max(agent_pos.values())
                         if max_pos_repeation > 9:
-                            print(agent_pos)
+                            #print(agent_pos)
                             cancel_episode = True
 
                         #for agent in self.env.env.agents:
