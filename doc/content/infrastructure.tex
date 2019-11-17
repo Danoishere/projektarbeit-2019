@@ -1,0 +1,14 @@
+\chapter{Infrastructure}\label{chap.infrastruktur}
+
+\section{Infrastructure}\label{infrastructure}
+We used various computers and servers to train our model. Most of the time was a test environment server of the ZHAW School of Engineering used
+with 56 CPU cores and 721Gb memory in addition 3 Openstack machines with 8 CPU cores each. \\
+The flatland environment was running on each cpu core and the results where sent to a webserver which updated the model and sent the new neuronal network weights back to the client. \\
+The reason why we used CPU cores over GPU performance is that the reinforcement algorithm A3C which we used performs better on CPUs instead of GPUs. \\
+
+%TODO: Architektur Bild Server
+
+\section{Used Software}\label{used_software}
+%Python 3, Tensorboard, Keras, Cython
+Towards the end we decided to convert our Python code into C code, to get a performance boost in training our model. Cython was used in this case.\\
+
