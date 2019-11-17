@@ -133,3 +133,4 @@ dist-progress-evaluator/deliverables/input_params.py
 dist-progress-evaluator/deliverables/model/*
 dist-model-server/deliverables/model/*
 dist-benchmark-runner/deliverables/*
+*.c
