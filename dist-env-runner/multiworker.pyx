@@ -135,7 +135,7 @@ class Worker():
                         if info['status'][handle] == RailAgentStatus.READY_TO_DEPART or (
                             info['action_required'][handle] and info['malfunction'][handle] == 0):
                             obs_dict[handle] = obs[handle]
-                    
+
                     nn_call_start = time()
                     # Get actions/values
                     if use_best_actions:
@@ -223,7 +223,7 @@ class Worker():
                 self.episode_mean_values.append(np.mean(episode_values))
                 self.episode_success.append(episode_done)
 
-                v_l, p_l, e_l, g_n, v_n = self.train(episode_buffer)
+                v_l, p_l, e_l, g_n, v_n = self.train(episode_buffer, episode_done)
                 self.stats.append([v_l, p_l, e_l, g_n, v_n])
 
                 # Save stats to Tensorboard every 5 episodes
@@ -238,7 +238,7 @@ class Worker():
             raise KeyboardInterruptError()
 
 
-    def train(self, rollout):
+    def train(self, rollout, episode_done):
         all_rollouts = []
         all_rewards = []
 
@@ -254,7 +254,7 @@ class Worker():
         obs = self.obs_helper.buffer_to_obs_lists(all_rollouts)
         advantages = discounted_rewards - values
 
-        v_l,p_l,e_l, g_n, v_n = self.local_model.train(discounted_rewards, advantages, actions, obs)
+        v_l,p_l,e_l, g_n, v_n = self.local_model.train(discounted_rewards, advantages, actions, obs, episode_done)
         return v_l, p_l, e_l, g_n,  v_n
 
     def log_in_tensorboard(self):

@@ -117,7 +117,7 @@ class AC_Network():
         return policy_loss, tf.reduce_mean(entropy)
 
 
-    def train(self, target_v, advantages, actions,  obs):
+    def train(self, target_v, advantages, actions,  obs, episode_done):
         # Value loss
         with tf.GradientTape() as tape:
             policy,value,_,_ = self.model(obs)
@@ -125,10 +125,14 @@ class AC_Network():
             p_loss, entropy = self.policy_loss(advantages, actions, policy)
             tot_loss = p_loss + v_loss
 
+        gradient_norm = params.gradient_norm
+        if episode_done:
+            gradient_norm *= 20
+
         local_vars = self.model.trainable_variables
         gradients_new = tape.gradient(tot_loss, local_vars)
         var_norms = tf.linalg.global_norm(local_vars)
-        gradients_new, grad_norms = tf.clip_by_global_norm(gradients_new, params.gradient_norm)
+        gradients_new, grad_norms = tf.clip_by_global_norm(gradients_new, gradient_norm)
 
         gradients_str = dill.dumps(gradients_new)
         gradients_str = zlib.compress(gradients_str)
