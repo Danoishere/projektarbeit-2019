@@ -46,23 +46,29 @@ def start_train(resume):
     myCmd = 'python setup_deliverables.py build_ext --inplace'
     os.system(myCmd)
 
+    params = __import__("deliverables.input_params", fromlist=[''])
+
     # Wait with this import until we compiled all required modules!
     from multiworker import create_worker
 
     num_workers = mp.cpu_count() - 1
     should_stop = mp.Value(c_bool, False)
-    round = 0
+
+    resp = requests.get(url=const.url + '/round').json()
+    round = resp['round']
+
 
     while True:
         worker_processes = []
         print('----------------------')
         print('Round ', round)
         print('----------------------')
-        # create_worker(0, 0, should_stop)
+        #create_worker(0, round, should_stop, round*params.ev_episodes)
 
+        
         # Start process 1 - n, running in other processes
         for w_num in range(0,num_workers):
-            process = mp.Process(target=create_worker, args=(w_num, round, should_stop, round*200))
+            process = mp.Process(target=create_worker, args=(w_num, round, should_stop, round*params.ev_episodes))
             process.start()
             sleep(0.5)
             worker_processes.append(process)
@@ -71,6 +77,7 @@ def start_train(resume):
                 p.join()
         except KeyboardInterrupt:
             should_stop.value = True
+        
 
         resp = requests.post(url=const.url + '/finish_round')
         round += 1

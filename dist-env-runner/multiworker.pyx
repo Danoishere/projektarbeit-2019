@@ -40,7 +40,7 @@ class Worker():
         self.number = name        
         self.summary_writer = tf.summary.create_file_writer('tensorboard/train_' + str(name))
         self.round = round
-        self.episode_count = start_episode
+        self.start_episode = start_episode
         
         network_mod = __import__("deliverables.network", fromlist=[''])
         network_class = getattr(network_mod, 'AC_Network')
@@ -68,7 +68,7 @@ class Worker():
             self.episode_lengths = []
             self.episode_success = []
             self.episode_agents_arrived = []
-
+            self.episode_count = 0
             self.stats = []
             self.episode_mean_values = []
 
@@ -81,7 +81,7 @@ class Worker():
 
             time_start = time()
 
-            while not bool(self.should_stop.value) and self.episode_count < 200:
+            while not bool(self.should_stop.value) and self.episode_count < self.params.ev_episodes:
                 # Check with server if there is a new curriculum level available
                 '''
                 if self.episode_count % 50 == 0:
@@ -254,9 +254,11 @@ class Worker():
                 print('Episode', self.episode_count,'of',self.name,'with',episode_step_count,'steps, reward of',episode_reward,', perc. arrived',agents_arrived, ', mean entropy of', np.mean([l[2] for l in self.stats[-1:]]), ', curriculum level', self.curriculum.current_level, ', using best actions:', use_best_actions,', cancel episode:', cancel_episode, ', time', episode_time, ', Avg. time', avg_episode_time)
 
             if not bool(self.should_stop.value):
+                print('Submit arrived')
                 mean_success_rate = np.mean(self.episode_agents_arrived[-50:])
                 self.local_model.send_model(mean_success_rate)
             
+            self.summary_writer.close()
             return self.episode_count
     
         except KeyboardInterrupt:
@@ -299,7 +301,7 @@ class Worker():
             mean_variable_norm = np.mean([l[4] for l in self.stats[-1:]])
 
             with self.summary_writer.as_default():
-                episode_count = np.int32(self.episode_count)
+                episode_count = np.int32( self.start_episode + self.episode_count)
                 lvl = str(self.curriculum.active_level)
                 tf.summary.scalar('Lvl '+ lvl+' - Perf/Reward', mean_reward, step=episode_count)
                 tf.summary.scalar('Lvl '+ lvl+' - Perf/Length', mean_length, step=episode_count)

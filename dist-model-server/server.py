@@ -86,7 +86,7 @@ def finish_round():
     model_dict = {}
     round += 1
 
-    model.model.save_model(const.model_path, const.suffix_best +'_round_'+ round)
+    model.save_model(const.model_path, const.suffix_best +'_round_'+ round)
 
     return 'OK'
 
@@ -119,6 +119,11 @@ def increase_curriculum_level():
 @app.route('/curriculum_level')
 def get_curriculum_level():
     data = { 'curriculum_lvl' : state.curriculum_level }
+    return jsonify(data)
+
+@app.route('/round')
+def get_round():
+    data = { 'round' : round }
     return jsonify(data)
 
 

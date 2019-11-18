@@ -18,6 +18,8 @@ recurrent_size = 64
 
 num_features = 34
 
+ev_episodes = 200
+
 tree_state_size = 0
 for d in range(tree_depth):
     tree_state_size += 2**d
