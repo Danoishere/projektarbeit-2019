@@ -15,7 +15,7 @@ import requests
 
 import os
 myCmd = 'python setup.py build_ext --inplace'
-#os.system(myCmd)
+os.system(myCmd)
 
 # import shared directory
 import os, sys; 
@@ -35,12 +35,12 @@ def start_train(resume):
     urllib.request.urlretrieve(const.url + '/file/curriculum.py', 'deliverables/curriculum.py')
 
     myCmd = 'python setup_deliverables.py build_ext --inplace'
-    #os.system(myCmd)
+    os.system(myCmd)
 
     # Wait with this import until we compiled all required modules!
     from multiworker import create_worker
 
-    num_workers = mp.cpu_count() - 1
+    num_workers = int(mp.cpu_count()/2 - 1)
     should_stop = mp.Value(c_bool, False)
     round = 0
 

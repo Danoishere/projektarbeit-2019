@@ -32,7 +32,7 @@ def discount(x, gamma):
 
 
 class Worker():
-    def __init__(self, round, name, should_stop):
+    def __init__(self, name,round,  should_stop):
         self.should_stop = should_stop
         self.name = "worker_" + str(name)
         self.number = name        
@@ -251,9 +251,9 @@ class Worker():
                 
                 print('Episode', self.episode_count,'of',self.name,'with',episode_step_count,'steps, reward of',episode_reward,', perc. arrived',agents_arrived, ', mean entropy of', np.mean([l[2] for l in self.stats[-1:]]), ', curriculum level', self.curriculum.current_level, ', using best actions:', use_best_actions,', cancel episode:', cancel_episode, ', time', episode_time, ', Avg. time', avg_episode_time)
 
-
-            mean_success_rate = np.mean(self.episode_agents_arrived[-50:])
-            self.local_model.send_model(mean_success_rate)
+            if not bool(self.should_stop.value):
+                mean_success_rate = np.mean(self.episode_agents_arrived[-50:])
+                self.local_model.send_model(mean_success_rate)
             
             return self.episode_count
     
