@@ -1,13 +1,23 @@
+import os
+dir_name = "deliverables"
+test = os.listdir(dir_name)
+
+for item in test:
+    if item.endswith(".pyd"):
+        os.remove(os.path.join(dir_name, item))
+    if item.endswith(".c"):
+        os.remove(os.path.join(dir_name, item))
+
+
 from flask import Flask, jsonify, send_from_directory,send_file, request, Response
 
-from flatland.envs.observations import TreeObsForRailEnv
-from deliverables.network import AC_Network
-import os
 myCmd = 'python setup.py build_ext --inplace'
 os.system(myCmd)
 
-import code_util.constants as const
+from flatland.envs.observations import TreeObsForRailEnv
+from deliverables.network import AC_Network
 
+import code_util.constants as const
 
 
 from model_server import Singleton
@@ -35,6 +45,7 @@ model_dict = {}
 update_cnt = 0
 round = 0
 model = AC_Network()
+
 
 @app.route('/send_model/<float:successrate>', methods=['POST'])
 def send_model(successrate):

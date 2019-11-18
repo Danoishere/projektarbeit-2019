@@ -21,6 +21,8 @@ import constant as const
 
 class KeyboardInterruptError(Exception): pass
 
+
+
 def create_worker(name, round, should_stop):
     worker = Worker(name, round, should_stop)
     return worker.work()
@@ -70,7 +72,7 @@ class Worker():
             self.episode_mean_values = []
 
             if self.round > 0:
-                self.local_model.update_from_global_model()
+                self.local_model.update _from_global_model()
                 #self.local_model.update_entropy_factor()
 
             self.episode_count = 0

@@ -14,6 +14,7 @@ from flatland.envs.observations import TreeObsForRailEnv
 from deliverables.observation import RailObsBuilder
 from flatland.envs.predictions import ShortestPathPredictorForRailEnv
 from tensorflow.keras.optimizers import RMSprop
+from random import random
 
 import base64
 import hashlib
@@ -92,6 +93,7 @@ class AC_Network():
         resp = requests.get(url=self.global_model_url + '/entropy_factor').json()
         new_entropy_factor = resp['entropy_factor']
         if new_entropy_factor != self.entropy_factor:
+            new_entropy_factor *= random() 
             print('New entropy factor aquired:', new_entropy_factor)
             self.entropy_factor = new_entropy_factor
 

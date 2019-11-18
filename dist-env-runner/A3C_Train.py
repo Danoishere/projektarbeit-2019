@@ -29,6 +29,15 @@ mp.set_start_method('spawn', True)
 
 def start_train(resume):
 
+    dir_name = "deliverables"
+    test = os.listdir(dir_name)
+
+    for item in test:
+        if item.endswith(".pyd"):
+            os.remove(os.path.join(dir_name, item))
+        if item.endswith(".c"):
+            os.remove(os.path.join(dir_name, item))
+
     urllib.request.urlretrieve(const.url + '/file/network.pyx', 'deliverables/network.pyx')
     urllib.request.urlretrieve(const.url + '/file/input_params.py', 'deliverables/input_params.py')
     urllib.request.urlretrieve(const.url + '/file/observation.pyx', 'deliverables/observation.pyx')
@@ -40,7 +49,7 @@ def start_train(resume):
     # Wait with this import until we compiled all required modules!
     from multiworker import create_worker
 
-    num_workers = int(mp.cpu_count()/2 - 1)
+    num_workers = int(mp.cpu_count()/2)
     should_stop = mp.Value(c_bool, False)
     round = 0
 

@@ -3,7 +3,7 @@ gamma = 0.99
 entropy_factor = 0.05
 learning_rate = 1e-4
 
-gradient_norm = 0.5
+gradient_norm = 2.0
 
 number_of_actions = 5
 number_of_comm = 5
