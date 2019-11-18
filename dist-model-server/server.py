@@ -86,7 +86,7 @@ def finish_round():
     model_dict = {}
     round += 1
 
-    model.save_model(const.model_path, const.suffix_best +'_round_'+ round)
+    model.save_model(const.model_path, const.suffix_best +'_round_'+ str(round))
 
     return 'OK'
 
