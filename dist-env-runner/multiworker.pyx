@@ -23,8 +23,8 @@ class KeyboardInterruptError(Exception): pass
 
 
 
-def create_worker(name, round, should_stop):
-    worker = Worker(name, round, should_stop)
+def create_worker(name, round, should_stop, start_episode):
+    worker = Worker(name, round, should_stop, start_episode)
     return worker.work()
 
 
@@ -34,12 +34,13 @@ def discount(x, gamma):
 
 
 class Worker():
-    def __init__(self, name,round,  should_stop):
+    def __init__(self, name,round,  should_stop, start_episode):
         self.should_stop = should_stop
         self.name = "worker_" + str(name)
         self.number = name        
         self.summary_writer = tf.summary.create_file_writer('tensorboard/train_' + str(name))
         self.round = round
+        self.episode_count = start_episode
         
         network_mod = __import__("deliverables.network", fromlist=[''])
         network_class = getattr(network_mod, 'AC_Network')
@@ -72,10 +73,9 @@ class Worker():
             self.episode_mean_values = []
 
             if self.round > 0:
-                self.local_model.update _from_global_model()
-                #self.local_model.update_entropy_factor()
-
-            self.episode_count = 0
+                self.local_model.update_from_global_model()
+            
+            self.local_model.update_entropy_factor()
             self.curriculum.update_env_to_curriculum_level(self.env)
             use_best_actions = False
 

@@ -49,7 +49,7 @@ def start_train(resume):
     # Wait with this import until we compiled all required modules!
     from multiworker import create_worker
 
-    num_workers = int(mp.cpu_count()/2)
+    num_workers = mp.cpu_count() - 1
     should_stop = mp.Value(c_bool, False)
     round = 0
 
@@ -62,7 +62,7 @@ def start_train(resume):
 
         # Start process 1 - n, running in other processes
         for w_num in range(0,num_workers):
-            process = mp.Process(target=create_worker, args=(w_num, round, should_stop))
+            process = mp.Process(target=create_worker, args=(w_num, round, should_stop, round*200))
             process.start()
             sleep(0.5)
             worker_processes.append(process)
