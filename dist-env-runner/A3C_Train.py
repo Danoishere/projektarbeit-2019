@@ -11,10 +11,11 @@ import multiprocess as mp
 import numpy as np
 import tensorflow as tf
 from ctypes import c_bool
+import requests
 
 import os
 myCmd = 'python setup.py build_ext --inplace'
-os.system(myCmd)
+#os.system(myCmd)
 
 # import shared directory
 import os, sys; 
@@ -28,39 +29,42 @@ mp.set_start_method('spawn', True)
 
 def start_train(resume):
 
-
-
     urllib.request.urlretrieve(const.url + '/file/network.pyx', 'deliverables/network.pyx')
     urllib.request.urlretrieve(const.url + '/file/input_params.py', 'deliverables/input_params.py')
     urllib.request.urlretrieve(const.url + '/file/observation.pyx', 'deliverables/observation.pyx')
     urllib.request.urlretrieve(const.url + '/file/curriculum.py', 'deliverables/curriculum.py')
 
     myCmd = 'python setup_deliverables.py build_ext --inplace'
-    os.system(myCmd)
+    #os.system(myCmd)
 
     # Wait with this import until we compiled all required modules!
     from multiworker import create_worker
 
     num_workers = mp.cpu_count() - 1
     should_stop = mp.Value(c_bool, False)
+    round = 0
 
     while True:
         worker_processes = []
-
-        # create_worker(0, should_stop)
+        print('----------------------')
+        print('Round ', round)
+        print('----------------------')
+        # create_worker(0, 0, should_stop)
 
         # Start process 1 - n, running in other processes
         for w_num in range(0,num_workers):
-            process = mp.Process(target=create_worker, args=(w_num, should_stop))
+            process = mp.Process(target=create_worker, args=(w_num, round, should_stop))
             process.start()
             sleep(0.5)
             worker_processes.append(process)
-
         try:
             for p in worker_processes:
                 p.join()
         except KeyboardInterrupt:
             should_stop.value = True
+
+        resp = requests.post(url=const.url + '/finish_round')
+        round += 1
 
     print ("Looks like we're done")
 

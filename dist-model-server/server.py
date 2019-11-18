@@ -1,10 +1,12 @@
 from flask import Flask, jsonify, send_from_directory,send_file, request, Response
 
 from flatland.envs.observations import TreeObsForRailEnv
-
+from deliverables.network import AC_Network
 import os
 myCmd = 'python setup.py build_ext --inplace'
 os.system(myCmd)
+
+import code_util.constants as const
 
 
 
@@ -29,22 +31,54 @@ lock = threading.RLock()
 state = Singleton.get_instance()
 network_hash = state.global_model.network_hash
 
-@app.route('/send_gradient', methods=['POST'])
-def post_update_weights():
+model_dict = {}
+update_cnt = 0
+round = 0
+model = AC_Network()
 
-    state.episode_count += 1
-    print('Update Nr. ',state.episode_count)
-    gradient_str = request.stream.read()
-    gradient_str = zlib.decompress(gradient_str)
-    gradients = dill.loads(gradient_str)
+@app.route('/send_model/<float:successrate>', methods=['POST'])
+def send_model(successrate):
+    global update_cnt
+
+    weights_str = request.stream.read()
+    weights = msgpack.loads(weights_str)
 
     lock.acquire()
-    state.ckpt_manager.try_save_model(state.episode_count, 0)
-    global_vars = state.global_model.model.trainable_variables
-    state.trainer.apply_gradients(zip(gradients, global_vars))
+    model_dict[update_cnt] = {
+        'successrate' : successrate,
+        'weights' : weights
+    }
+
+    update_cnt += 1
+
     lock.release()
 
-    return get_global_weights()
+    return 'OK'
+
+@app.route('/finish_round', methods=['POST'])
+def finish_round():
+    global model_dict
+    global round
+
+    best_rate = 0
+    best_key = None
+    for k in model_dict:
+        if model_dict[k]['successrate'] >= best_rate:
+            best_rate = model_dict[k]['successrate']
+            best_key = k
+    
+    if best_key is None:
+        raise ValueError('Something went wrong. No models submitted')
+
+    print('Select model', k, ' with successrate of ', best_rate)
+    model.model.set_weights(model_dict[best_key]['weights'])
+    model_dict = {}
+    round += 1
+
+    model.model.save_model(const.model_path, const.suffix_best +'_round_'+ round)
+
+    return 'OK'
+
 
 
 @app.route('/send_benchmark_report', methods=['POST'])
@@ -59,7 +93,7 @@ def post_send_benchmark_report():
 @app.route('/get_global_weights')
 def get_global_weights():
     lock.acquire()
-    weights = state.global_model.model.get_weights()
+    weights = model.model.get_weights()
     lock.release()
     weights_str = msgpack.dumps(weights)
     weights_str = zlib.compress(weights_str)

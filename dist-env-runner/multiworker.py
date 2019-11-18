@@ -13,22 +13,16 @@ from random import choice,uniform, random
 from time import sleep
 from time import time
 
-import os
-cwd = os.getcwd()
 
 from rail_env_wrapper import RailEnvWrapper
 from flatland.envs.rail_env import RailEnvActions, RailAgentStatus
 
 import constant as const
-#import sys
-
-#np.set_printoptions(threshold=sys.maxsize)
-
 
 class KeyboardInterruptError(Exception): pass
 
-def create_worker(name, should_stop):
-    worker = Worker(name, should_stop)
+def create_worker(name, round, should_stop):
+    worker = Worker(name, round, should_stop)
     return worker.work()
 
 
@@ -38,11 +32,12 @@ def discount(x, gamma):
 
 
 class Worker():
-    def __init__(self, name, should_stop):
+    def __init__(self, round, name, should_stop):
         self.should_stop = should_stop
         self.name = "worker_" + str(name)
         self.number = name        
         self.summary_writer = tf.summary.create_file_writer('tensorboard/train_' + str(name))
+        self.round = round
         
         network_mod = __import__("deliverables.network", fromlist=[''])
         network_class = getattr(network_mod, 'AC_Network')
@@ -73,16 +68,20 @@ class Worker():
 
             self.stats = []
             self.episode_mean_values = []
-            self.local_model.update_from_global_model()
-            self.local_model.update_entropy_factor()
+
+            if self.round > 0:
+                self.local_model.update_from_global_model()
+                #self.local_model.update_entropy_factor()
+
             self.episode_count = 0
             self.curriculum.update_env_to_curriculum_level(self.env)
             use_best_actions = False
 
             time_start = time()
 
-            while not bool(self.should_stop.value):
+            while not bool(self.should_stop.value) and self.episode_count < 200:
                 # Check with server if there is a new curriculum level available
+                '''
                 if self.episode_count % 50 == 0:
                     self.local_model.update_entropy_factor()
                     old_curriculum_level = self.curriculum.current_level
@@ -94,7 +93,7 @@ class Worker():
                         self.curriculum.update_env_to_curriculum_level(self.env)
                         self.episode_count = 0
                         self.stats = []
-                
+                '''
 
                 episode_done = False
 
@@ -252,10 +251,16 @@ class Worker():
                 
                 print('Episode', self.episode_count,'of',self.name,'with',episode_step_count,'steps, reward of',episode_reward,', perc. arrived',agents_arrived, ', mean entropy of', np.mean([l[2] for l in self.stats[-1:]]), ', curriculum level', self.curriculum.current_level, ', using best actions:', use_best_actions,', cancel episode:', cancel_episode, ', time', episode_time, ', Avg. time', avg_episode_time)
 
+
+            mean_success_rate = np.mean(self.episode_agents_arrived[-50:])
+            self.local_model.send_model(mean_success_rate)
+            
             return self.episode_count
     
         except KeyboardInterrupt:
             raise KeyboardInterruptError()
+
+        
 
 
     def train(self, rollout, episode_done):

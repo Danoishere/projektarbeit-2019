@@ -13,6 +13,7 @@ from io import StringIO
 from flatland.envs.observations import TreeObsForRailEnv
 from deliverables.observation import RailObsBuilder
 from flatland.envs.predictions import ShortestPathPredictorForRailEnv
+from tensorflow.keras.optimizers import RMSprop
 
 import base64
 import hashlib
@@ -29,6 +30,7 @@ class AC_Network():
         self.model = self.build_network()
         self.network_hash = self.get_network_hash()
         self.entropy_factor = 0.1
+        self.rmsprop = RMSprop(learning_rate=1e-4)
 
         self.gradient_update_interval = 10
         self.last_gradient_update = 0
@@ -133,22 +135,23 @@ class AC_Network():
         gradients_new = tape.gradient(tot_loss, local_vars)
         var_norms = tf.linalg.global_norm(local_vars)
         gradients_new, grad_norms = tf.clip_by_global_norm(gradients_new, gradient_norm)
+        self.rmsprop.apply_gradients(zip(gradients_new, local_vars))
 
-        gradients_str = dill.dumps(gradients_new)
-        gradients_str = zlib.compress(gradients_str)
-
-        # Send gradient update and receive new global weights
-        resp = requests.post(
-            url=self.global_model_url + '/send_gradient', 
-            data=gradients_str)
-
-        weights_str = resp.content
-        weights_str = zlib.decompress(weights_str)
-        weights = msgpack.loads(weights_str)
-        self.model.set_weights(weights)
+        '''
+        
+        '''
 
         return v_loss, p_loss, entropy, grad_norms, var_norms
 
+
+    def send_model(self, successrate):
+        weights = self.model.get_weights()
+        weights_str = msgpack.dumps(weights)
+
+        resp = requests.post(
+            url=self.global_model_url + '/send_model/' + str(successrate), 
+            data=weights_str)
+        
 
     def get_best_actions(self, obs):
         obs_list = self.obs_dict_to_lists(obs)
