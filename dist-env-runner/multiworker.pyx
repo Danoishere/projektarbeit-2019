@@ -132,7 +132,7 @@ class Worker():
                 agent_pos = {}
                 cancel_episode = False
 
-                while not episode_done and not cancel_episode and episode_step_count < self.env.max_steps*5:
+                while not episode_done and not cancel_episode and episode_step_count < self.env.max_steps:
                     # Figure out, which agents can move
                     obs_dict = {}
                     handles = []
@@ -217,6 +217,9 @@ class Worker():
 
                 # Individual rewards
                 for i in range(self.env.num_agents):
+                    if self.env.env.agents[i].status == RailAgentStatus.READY_TO_DEPART:
+                        episode_buffer[i][-1][2] -= 1.0
+                        episode_reward -= 1.0
                     if done[i]:
                         num_agents_done += 1
                         # If agents could finish the level, 
