@@ -125,8 +125,7 @@ class AC_Network():
             p_loss, entropy = self.policy_loss(advantages, actions, policy)
             tot_loss = p_loss + v_loss
 
-        gradient_norm = params.gradient_norm
-        gradient_norm = 2 ** num_agents_done          
+        gradient_norm = params.gradient_norm    
 
         local_vars = self.model.trainable_variables
         gradients_new = tape.gradient(tot_loss, local_vars)
