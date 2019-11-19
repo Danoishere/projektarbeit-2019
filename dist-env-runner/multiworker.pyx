@@ -28,6 +28,7 @@ import constant as const
 class KeyboardInterruptError(Exception): pass
 
 def create_worker(name, should_stop):
+    print('Create worker', name)
     worker = Worker(name, should_stop)
     return worker.work()
 
@@ -44,6 +45,8 @@ class Worker():
         self.number = name        
         self.summary_writer = tf.summary.create_file_writer('tensorboard/train_' + str(name))
         
+        print('Create', self.name)
+
         network_mod = __import__("deliverables.network", fromlist=[''])
         network_class = getattr(network_mod, 'AC_Network')
 
@@ -166,8 +169,7 @@ class Worker():
                             agent_pos[agent_pos_key] = 0
 
                         max_pos_repeation = max(agent_pos.values())
-                        if max_pos_repeation > 9:
-                            #print(agent_pos)
+                        if max_pos_repeation > 5:
                             cancel_episode = True
 
                         #for agent in self.env.env.agents:

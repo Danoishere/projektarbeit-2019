@@ -70,7 +70,7 @@ class Curriculum:
             width=30,
             height=30,
             num_agents=5,
-            max_steps = 180,
+            max_steps = 250,
             rail_type = 'sparse',
             rail_gen_params = {
                 'num_cities': 2,

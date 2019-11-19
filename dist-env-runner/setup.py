@@ -2,5 +2,8 @@ from distutils.core import setup
 from Cython.Build import cythonize
 
 setup(
-    ext_modules=cythonize("multiworker.pyx"),
+    ext_modules=cythonize([
+        "multiworker.pyx",
+        "deliverables/*.pyx"
+    ]),
 )

@@ -13,8 +13,7 @@ import tensorflow as tf
 from ctypes import c_bool
 
 import os
-myCmd = 'python setup.py build_ext --inplace'
-os.system(myCmd)
+
 
 # import shared directory
 import os, sys; 
@@ -26,17 +25,30 @@ import urllib
 
 mp.set_start_method('spawn', True)
 
+def delete_files(dir_name, extensions):
+    test = os.listdir(dir_name)
+    for item in test:
+        for ext in extensions:
+            if item.endswith(ext):
+                os.remove(os.path.join(dir_name, item))
+                print('Delete file', os.path.join(dir_name, item))
+
+
 def start_train(resume):
 
-
+    delete_files('./deliverables', ['.c', '.pyd', '.so','.o'])
+    delete_files('.', ['.c', '.pyd', '.so','.o'])
 
     urllib.request.urlretrieve(const.url + '/file/network.pyx', 'deliverables/network.pyx')
     urllib.request.urlretrieve(const.url + '/file/input_params.py', 'deliverables/input_params.py')
     urllib.request.urlretrieve(const.url + '/file/observation.pyx', 'deliverables/observation.pyx')
     urllib.request.urlretrieve(const.url + '/file/curriculum.py', 'deliverables/curriculum.py')
 
-    myCmd = 'python setup_deliverables.py build_ext --inplace'
+    myCmd = 'python setup.py build_ext --inplace'
     os.system(myCmd)
+
+    # myCmd = 'python setup_deliverables.py build_ext --inplace'
+    # s.system(myCmd)
 
     # Wait with this import until we compiled all required modules!
     from multiworker import create_worker
@@ -51,6 +63,7 @@ def start_train(resume):
 
         # Start process 1 - n, running in other processes
         for w_num in range(0,num_workers):
+            print('Start')
             process = mp.Process(target=create_worker, args=(w_num, should_stop))
             process.start()
             sleep(0.5)
