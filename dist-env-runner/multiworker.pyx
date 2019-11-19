@@ -172,6 +172,7 @@ class Worker():
                         if max_pos_repeation > 10:
                             cancel_episode = True
 
+
                         prep_steps = 0
                         obs_builder.prep_steps = prep_steps
                         episode_step_count += 1

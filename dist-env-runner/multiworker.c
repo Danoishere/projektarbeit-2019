@@ -1962,7 +1962,7 @@ static PyObject *__pyx_float_1_0;
 static PyObject *__pyx_int_0;
 static PyObject *__pyx_int_1;
 static PyObject *__pyx_int_5;
-static PyObject *__pyx_int_9;
+static PyObject *__pyx_int_10;
 static PyObject *__pyx_int_50;
 static PyObject *__pyx_int_neg_1;
 static PyObject *__pyx_int_neg_100;
@@ -4770,8 +4770,8 @@ static PyObject *__pyx_pf_11multiworker_6Worker_2work(CYTHON_UNUSED PyObject *__
  *                             agent_pos[agent_pos_key] = 0
  * 
  *                         max_pos_repeation = max(agent_pos.values())             # <<<<<<<<<<<<<<
- *                         if max_pos_repeation > 9:
- *                             #print(agent_pos)
+ *                         if max_pos_repeation > 10:
+ *                             cancel_episode = True
  */
             __pyx_t_6 = __Pyx_PyDict_Values(__pyx_v_agent_pos); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 171, __pyx_L3_error)
             __Pyx_GOTREF(__pyx_t_6);
@@ -4784,35 +4784,35 @@ static PyObject *__pyx_pf_11multiworker_6Worker_2work(CYTHON_UNUSED PyObject *__
             /* "multiworker.pyx":172
  * 
  *                         max_pos_repeation = max(agent_pos.values())
- *                         if max_pos_repeation > 9:             # <<<<<<<<<<<<<<
- *                             #print(agent_pos)
+ *                         if max_pos_repeation > 10:             # <<<<<<<<<<<<<<
  *                             cancel_episode = True
+ * 
  */
-            __pyx_t_15 = PyObject_RichCompare(__pyx_v_max_pos_repeation, __pyx_int_9, Py_GT); __Pyx_XGOTREF(__pyx_t_15); if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 172, __pyx_L3_error)
+            __pyx_t_15 = PyObject_RichCompare(__pyx_v_max_pos_repeation, __pyx_int_10, Py_GT); __Pyx_XGOTREF(__pyx_t_15); if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 172, __pyx_L3_error)
             __pyx_t_16 = __Pyx_PyObject_IsTrue(__pyx_t_15); if (unlikely(__pyx_t_16 < 0)) __PYX_ERR(0, 172, __pyx_L3_error)
             __Pyx_DECREF(__pyx_t_15); __pyx_t_15 = 0;
             if (__pyx_t_16) {
 
-              /* "multiworker.pyx":174
- *                         if max_pos_repeation > 9:
- *                             #print(agent_pos)
+              /* "multiworker.pyx":173
+ *                         max_pos_repeation = max(agent_pos.values())
+ *                         if max_pos_repeation > 10:
  *                             cancel_episode = True             # <<<<<<<<<<<<<<
  * 
- *                         #for agent in self.env.env.agents:
+ *                         prep_steps = 0
  */
               __pyx_v_cancel_episode = 1;
 
               /* "multiworker.pyx":172
  * 
  *                         max_pos_repeation = max(agent_pos.values())
- *                         if max_pos_repeation > 9:             # <<<<<<<<<<<<<<
- *                             #print(agent_pos)
+ *                         if max_pos_repeation > 10:             # <<<<<<<<<<<<<<
  *                             cancel_episode = True
+ * 
  */
             }
 
-            /* "multiworker.pyx":179
- *                         #    agent.last_action = 0
+            /* "multiworker.pyx":175
+ *                             cancel_episode = True
  * 
  *                         prep_steps = 0             # <<<<<<<<<<<<<<
  *                         obs_builder.prep_steps = prep_steps
@@ -4821,23 +4821,23 @@ static PyObject *__pyx_pf_11multiworker_6Worker_2work(CYTHON_UNUSED PyObject *__
             __Pyx_INCREF(__pyx_int_0);
             __Pyx_DECREF_SET(__pyx_v_prep_steps, __pyx_int_0);
 
-            /* "multiworker.pyx":180
+            /* "multiworker.pyx":176
  * 
  *                         prep_steps = 0
  *                         obs_builder.prep_steps = prep_steps             # <<<<<<<<<<<<<<
  *                         episode_step_count += 1
  *                     else:
  */
-            if (__Pyx_PyObject_SetAttrStr(__pyx_v_obs_builder, __pyx_n_s_prep_steps, __pyx_v_prep_steps) < 0) __PYX_ERR(0, 180, __pyx_L3_error)
+            if (__Pyx_PyObject_SetAttrStr(__pyx_v_obs_builder, __pyx_n_s_prep_steps, __pyx_v_prep_steps) < 0) __PYX_ERR(0, 176, __pyx_L3_error)
 
-            /* "multiworker.pyx":181
+            /* "multiworker.pyx":177
  *                         prep_steps = 0
  *                         obs_builder.prep_steps = prep_steps
  *                         episode_step_count += 1             # <<<<<<<<<<<<<<
  *                     else:
  *                         prep_steps += 1
  */
-            __pyx_t_15 = __Pyx_PyInt_AddObjC(__pyx_v_episode_step_count, __pyx_int_1, 1, 1, 0); if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 181, __pyx_L3_error)
+            __pyx_t_15 = __Pyx_PyInt_AddObjC(__pyx_v_episode_step_count, __pyx_int_1, 1, 1, 0); if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 177, __pyx_L3_error)
             __Pyx_GOTREF(__pyx_t_15);
             __Pyx_DECREF_SET(__pyx_v_episode_step_count, __pyx_t_15);
             __pyx_t_15 = 0;
@@ -4852,7 +4852,7 @@ static PyObject *__pyx_pf_11multiworker_6Worker_2work(CYTHON_UNUSED PyObject *__
             goto __pyx_L45;
           }
 
-          /* "multiworker.pyx":183
+          /* "multiworker.pyx":179
  *                         episode_step_count += 1
  *                     else:
  *                         prep_steps += 1             # <<<<<<<<<<<<<<
@@ -4860,28 +4860,28 @@ static PyObject *__pyx_pf_11multiworker_6Worker_2work(CYTHON_UNUSED PyObject *__
  *                         start_just_obs = time()
  */
           /*else*/ {
-            __pyx_t_15 = __Pyx_PyInt_AddObjC(__pyx_v_prep_steps, __pyx_int_1, 1, 1, 0); if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 183, __pyx_L3_error)
+            __pyx_t_15 = __Pyx_PyInt_AddObjC(__pyx_v_prep_steps, __pyx_int_1, 1, 1, 0); if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 179, __pyx_L3_error)
             __Pyx_GOTREF(__pyx_t_15);
             __Pyx_DECREF_SET(__pyx_v_prep_steps, __pyx_t_15);
             __pyx_t_15 = 0;
 
-            /* "multiworker.pyx":184
+            /* "multiworker.pyx":180
  *                     else:
  *                         prep_steps += 1
  *                         obs_builder.prep_steps = prep_steps             # <<<<<<<<<<<<<<
  *                         start_just_obs = time()
  *                         next_obs = obs_builder.get_many(all_handles)
  */
-            if (__Pyx_PyObject_SetAttrStr(__pyx_v_obs_builder, __pyx_n_s_prep_steps, __pyx_v_prep_steps) < 0) __PYX_ERR(0, 184, __pyx_L3_error)
+            if (__Pyx_PyObject_SetAttrStr(__pyx_v_obs_builder, __pyx_n_s_prep_steps, __pyx_v_prep_steps) < 0) __PYX_ERR(0, 180, __pyx_L3_error)
 
-            /* "multiworker.pyx":185
+            /* "multiworker.pyx":181
  *                         prep_steps += 1
  *                         obs_builder.prep_steps = prep_steps
  *                         start_just_obs = time()             # <<<<<<<<<<<<<<
  *                         next_obs = obs_builder.get_many(all_handles)
  *                         tot_just_obs += time() - start_just_obs
  */
-            __Pyx_GetModuleGlobalName(__pyx_t_6, __pyx_n_s_time); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 185, __pyx_L3_error)
+            __Pyx_GetModuleGlobalName(__pyx_t_6, __pyx_n_s_time); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 181, __pyx_L3_error)
             __Pyx_GOTREF(__pyx_t_6);
             __pyx_t_7 = NULL;
             if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_6))) {
@@ -4895,20 +4895,20 @@ static PyObject *__pyx_pf_11multiworker_6Worker_2work(CYTHON_UNUSED PyObject *__
             }
             __pyx_t_15 = (__pyx_t_7) ? __Pyx_PyObject_CallOneArg(__pyx_t_6, __pyx_t_7) : __Pyx_PyObject_CallNoArg(__pyx_t_6);
             __Pyx_XDECREF(__pyx_t_7); __pyx_t_7 = 0;
-            if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 185, __pyx_L3_error)
+            if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 181, __pyx_L3_error)
             __Pyx_GOTREF(__pyx_t_15);
             __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
             __Pyx_XDECREF_SET(__pyx_v_start_just_obs, __pyx_t_15);
             __pyx_t_15 = 0;
 
-            /* "multiworker.pyx":186
+            /* "multiworker.pyx":182
  *                         obs_builder.prep_steps = prep_steps
  *                         start_just_obs = time()
  *                         next_obs = obs_builder.get_many(all_handles)             # <<<<<<<<<<<<<<
  *                         tot_just_obs += time() - start_just_obs
  *                         rewards = dict(no_reward)
  */
-            __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_v_obs_builder, __pyx_n_s_get_many); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 186, __pyx_L3_error)
+            __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_v_obs_builder, __pyx_n_s_get_many); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 182, __pyx_L3_error)
             __Pyx_GOTREF(__pyx_t_6);
             __pyx_t_7 = NULL;
             if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_6))) {
@@ -4922,20 +4922,20 @@ static PyObject *__pyx_pf_11multiworker_6Worker_2work(CYTHON_UNUSED PyObject *__
             }
             __pyx_t_15 = (__pyx_t_7) ? __Pyx_PyObject_Call2Args(__pyx_t_6, __pyx_t_7, __pyx_v_all_handles) : __Pyx_PyObject_CallOneArg(__pyx_t_6, __pyx_v_all_handles);
             __Pyx_XDECREF(__pyx_t_7); __pyx_t_7 = 0;
-            if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 186, __pyx_L3_error)
+            if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 182, __pyx_L3_error)
             __Pyx_GOTREF(__pyx_t_15);
             __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
             __Pyx_XDECREF_SET(__pyx_v_next_obs, __pyx_t_15);
             __pyx_t_15 = 0;
 
-            /* "multiworker.pyx":187
+            /* "multiworker.pyx":183
  *                         start_just_obs = time()
  *                         next_obs = obs_builder.get_many(all_handles)
  *                         tot_just_obs += time() - start_just_obs             # <<<<<<<<<<<<<<
  *                         rewards = dict(no_reward)
  * 
  */
-            __Pyx_GetModuleGlobalName(__pyx_t_6, __pyx_n_s_time); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 187, __pyx_L3_error)
+            __Pyx_GetModuleGlobalName(__pyx_t_6, __pyx_n_s_time); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 183, __pyx_L3_error)
             __Pyx_GOTREF(__pyx_t_6);
             __pyx_t_7 = NULL;
             if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_6))) {
@@ -4949,40 +4949,40 @@ static PyObject *__pyx_pf_11multiworker_6Worker_2work(CYTHON_UNUSED PyObject *__
             }
             __pyx_t_15 = (__pyx_t_7) ? __Pyx_PyObject_CallOneArg(__pyx_t_6, __pyx_t_7) : __Pyx_PyObject_CallNoArg(__pyx_t_6);
             __Pyx_XDECREF(__pyx_t_7); __pyx_t_7 = 0;
-            if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 187, __pyx_L3_error)
+            if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 183, __pyx_L3_error)
             __Pyx_GOTREF(__pyx_t_15);
             __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-            __pyx_t_6 = PyNumber_Subtract(__pyx_t_15, __pyx_v_start_just_obs); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 187, __pyx_L3_error)
+            __pyx_t_6 = PyNumber_Subtract(__pyx_t_15, __pyx_v_start_just_obs); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 183, __pyx_L3_error)
             __Pyx_GOTREF(__pyx_t_6);
             __Pyx_DECREF(__pyx_t_15); __pyx_t_15 = 0;
-            __pyx_t_15 = PyNumber_InPlaceAdd(__pyx_v_tot_just_obs, __pyx_t_6); if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 187, __pyx_L3_error)
+            __pyx_t_15 = PyNumber_InPlaceAdd(__pyx_v_tot_just_obs, __pyx_t_6); if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 183, __pyx_L3_error)
             __Pyx_GOTREF(__pyx_t_15);
             __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
             __Pyx_DECREF_SET(__pyx_v_tot_just_obs, __pyx_t_15);
             __pyx_t_15 = 0;
 
-            /* "multiworker.pyx":188
+            /* "multiworker.pyx":184
  *                         next_obs = obs_builder.get_many(all_handles)
  *                         tot_just_obs += time() - start_just_obs
  *                         rewards = dict(no_reward)             # <<<<<<<<<<<<<<
  * 
  *                     step_end_call = time()
  */
-            __pyx_t_15 = PyDict_Copy(__pyx_v_no_reward); if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 188, __pyx_L3_error)
+            __pyx_t_15 = PyDict_Copy(__pyx_v_no_reward); if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 184, __pyx_L3_error)
             __Pyx_GOTREF(__pyx_t_15);
             __Pyx_XDECREF_SET(__pyx_v_rewards, __pyx_t_15);
             __pyx_t_15 = 0;
           }
           __pyx_L45:;
 
-          /* "multiworker.pyx":190
+          /* "multiworker.pyx":186
  *                         rewards = dict(no_reward)
  * 
  *                     step_end_call = time()             # <<<<<<<<<<<<<<
  *                     tot_step += time() - step_call
  * 
  */
-          __Pyx_GetModuleGlobalName(__pyx_t_6, __pyx_n_s_time); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 190, __pyx_L3_error)
+          __Pyx_GetModuleGlobalName(__pyx_t_6, __pyx_n_s_time); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 186, __pyx_L3_error)
           __Pyx_GOTREF(__pyx_t_6);
           __pyx_t_7 = NULL;
           if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_6))) {
@@ -4996,20 +4996,20 @@ static PyObject *__pyx_pf_11multiworker_6Worker_2work(CYTHON_UNUSED PyObject *__
           }
           __pyx_t_15 = (__pyx_t_7) ? __Pyx_PyObject_CallOneArg(__pyx_t_6, __pyx_t_7) : __Pyx_PyObject_CallNoArg(__pyx_t_6);
           __Pyx_XDECREF(__pyx_t_7); __pyx_t_7 = 0;
-          if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 190, __pyx_L3_error)
+          if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 186, __pyx_L3_error)
           __Pyx_GOTREF(__pyx_t_15);
           __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
           __Pyx_XDECREF_SET(__pyx_v_step_end_call, __pyx_t_15);
           __pyx_t_15 = 0;
 
-          /* "multiworker.pyx":191
+          /* "multiworker.pyx":187
  * 
  *                     step_end_call = time()
  *                     tot_step += time() - step_call             # <<<<<<<<<<<<<<
  * 
  *                     episode_done = done['__all__']
  */
-          __Pyx_GetModuleGlobalName(__pyx_t_6, __pyx_n_s_time); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 191, __pyx_L3_error)
+          __Pyx_GetModuleGlobalName(__pyx_t_6, __pyx_n_s_time); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 187, __pyx_L3_error)
           __Pyx_GOTREF(__pyx_t_6);
           __pyx_t_7 = NULL;
           if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_6))) {
@@ -5023,43 +5023,43 @@ static PyObject *__pyx_pf_11multiworker_6Worker_2work(CYTHON_UNUSED PyObject *__
           }
           __pyx_t_15 = (__pyx_t_7) ? __Pyx_PyObject_CallOneArg(__pyx_t_6, __pyx_t_7) : __Pyx_PyObject_CallNoArg(__pyx_t_6);
           __Pyx_XDECREF(__pyx_t_7); __pyx_t_7 = 0;
-          if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 191, __pyx_L3_error)
+          if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 187, __pyx_L3_error)
           __Pyx_GOTREF(__pyx_t_15);
           __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-          __pyx_t_6 = PyNumber_Subtract(__pyx_t_15, __pyx_v_step_call); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 191, __pyx_L3_error)
+          __pyx_t_6 = PyNumber_Subtract(__pyx_t_15, __pyx_v_step_call); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 187, __pyx_L3_error)
           __Pyx_GOTREF(__pyx_t_6);
           __Pyx_DECREF(__pyx_t_15); __pyx_t_15 = 0;
-          __pyx_t_15 = PyNumber_InPlaceAdd(__pyx_v_tot_step, __pyx_t_6); if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 191, __pyx_L3_error)
+          __pyx_t_15 = PyNumber_InPlaceAdd(__pyx_v_tot_step, __pyx_t_6); if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 187, __pyx_L3_error)
           __Pyx_GOTREF(__pyx_t_15);
           __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
           __Pyx_DECREF_SET(__pyx_v_tot_step, __pyx_t_15);
           __pyx_t_15 = 0;
 
-          /* "multiworker.pyx":193
+          /* "multiworker.pyx":189
  *                     tot_step += time() - step_call
  * 
  *                     episode_done = done['__all__']             # <<<<<<<<<<<<<<
  *                     if episode_done == True:
  *                         next_obs = obs
  */
-          __pyx_t_15 = __Pyx_PyObject_Dict_GetItem(__pyx_v_done, __pyx_n_s_all); if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 193, __pyx_L3_error)
+          __pyx_t_15 = __Pyx_PyObject_Dict_GetItem(__pyx_v_done, __pyx_n_s_all); if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 189, __pyx_L3_error)
           __Pyx_GOTREF(__pyx_t_15);
           __Pyx_DECREF_SET(__pyx_v_episode_done, __pyx_t_15);
           __pyx_t_15 = 0;
 
-          /* "multiworker.pyx":194
+          /* "multiworker.pyx":190
  * 
  *                     episode_done = done['__all__']
  *                     if episode_done == True:             # <<<<<<<<<<<<<<
  *                         next_obs = obs
  * 
  */
-          __pyx_t_15 = PyObject_RichCompare(__pyx_v_episode_done, Py_True, Py_EQ); __Pyx_XGOTREF(__pyx_t_15); if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 194, __pyx_L3_error)
-          __pyx_t_16 = __Pyx_PyObject_IsTrue(__pyx_t_15); if (unlikely(__pyx_t_16 < 0)) __PYX_ERR(0, 194, __pyx_L3_error)
+          __pyx_t_15 = PyObject_RichCompare(__pyx_v_episode_done, Py_True, Py_EQ); __Pyx_XGOTREF(__pyx_t_15); if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 190, __pyx_L3_error)
+          __pyx_t_16 = __Pyx_PyObject_IsTrue(__pyx_t_15); if (unlikely(__pyx_t_16 < 0)) __PYX_ERR(0, 190, __pyx_L3_error)
           __Pyx_DECREF(__pyx_t_15); __pyx_t_15 = 0;
           if (__pyx_t_16) {
 
-            /* "multiworker.pyx":195
+            /* "multiworker.pyx":191
  *                     episode_done = done['__all__']
  *                     if episode_done == True:
  *                         next_obs = obs             # <<<<<<<<<<<<<<
@@ -5069,7 +5069,7 @@ static PyObject *__pyx_pf_11multiworker_6Worker_2work(CYTHON_UNUSED PyObject *__
             __Pyx_INCREF(__pyx_v_obs);
             __Pyx_DECREF_SET(__pyx_v_next_obs, __pyx_v_obs);
 
-            /* "multiworker.pyx":194
+            /* "multiworker.pyx":190
  * 
  *                     episode_done = done['__all__']
  *                     if episode_done == True:             # <<<<<<<<<<<<<<
@@ -5078,7 +5078,7 @@ static PyObject *__pyx_pf_11multiworker_6Worker_2work(CYTHON_UNUSED PyObject *__
  */
           }
 
-          /* "multiworker.pyx":197
+          /* "multiworker.pyx":193
  *                         next_obs = obs
  * 
  *                     for i in obs_dict:             # <<<<<<<<<<<<<<
@@ -5086,7 +5086,7 @@ static PyObject *__pyx_pf_11multiworker_6Worker_2work(CYTHON_UNUSED PyObject *__
  *                         agent_action = actions[i]
  */
           __pyx_t_10 = 0;
-          __pyx_t_6 = __Pyx_dict_iterator(__pyx_v_obs_dict, 1, ((PyObject *)NULL), (&__pyx_t_13), (&__pyx_t_18)); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 197, __pyx_L3_error)
+          __pyx_t_6 = __Pyx_dict_iterator(__pyx_v_obs_dict, 1, ((PyObject *)NULL), (&__pyx_t_13), (&__pyx_t_18)); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 193, __pyx_L3_error)
           __Pyx_GOTREF(__pyx_t_6);
           __Pyx_XDECREF(__pyx_t_15);
           __pyx_t_15 = __pyx_t_6;
@@ -5094,101 +5094,101 @@ static PyObject *__pyx_pf_11multiworker_6Worker_2work(CYTHON_UNUSED PyObject *__
           while (1) {
             __pyx_t_21 = __Pyx_dict_iter_next(__pyx_t_15, __pyx_t_13, &__pyx_t_10, &__pyx_t_6, NULL, NULL, __pyx_t_18);
             if (unlikely(__pyx_t_21 == 0)) break;
-            if (unlikely(__pyx_t_21 == -1)) __PYX_ERR(0, 197, __pyx_L3_error)
+            if (unlikely(__pyx_t_21 == -1)) __PYX_ERR(0, 193, __pyx_L3_error)
             __Pyx_GOTREF(__pyx_t_6);
             __Pyx_XDECREF_SET(__pyx_v_i, __pyx_t_6);
             __pyx_t_6 = 0;
 
-            /* "multiworker.pyx":198
+            /* "multiworker.pyx":194
  * 
  *                     for i in obs_dict:
  *                         agent_obs = obs[i]             # <<<<<<<<<<<<<<
  *                         agent_action = actions[i]
  *                         agent_reward = rewards[i]
  */
-            __pyx_t_6 = __Pyx_PyObject_GetItem(__pyx_v_obs, __pyx_v_i); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 198, __pyx_L3_error)
+            __pyx_t_6 = __Pyx_PyObject_GetItem(__pyx_v_obs, __pyx_v_i); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 194, __pyx_L3_error)
             __Pyx_GOTREF(__pyx_t_6);
             __Pyx_XDECREF_SET(__pyx_v_agent_obs, __pyx_t_6);
             __pyx_t_6 = 0;
 
-            /* "multiworker.pyx":199
+            /* "multiworker.pyx":195
  *                     for i in obs_dict:
  *                         agent_obs = obs[i]
  *                         agent_action = actions[i]             # <<<<<<<<<<<<<<
  *                         agent_reward = rewards[i]
  *                         agent_next_obs =  next_obs[i]
  */
-            __pyx_t_6 = __Pyx_PyObject_GetItem(__pyx_v_actions, __pyx_v_i); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 199, __pyx_L3_error)
+            __pyx_t_6 = __Pyx_PyObject_GetItem(__pyx_v_actions, __pyx_v_i); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 195, __pyx_L3_error)
             __Pyx_GOTREF(__pyx_t_6);
             __Pyx_XDECREF_SET(__pyx_v_agent_action, __pyx_t_6);
             __pyx_t_6 = 0;
 
-            /* "multiworker.pyx":200
+            /* "multiworker.pyx":196
  *                         agent_obs = obs[i]
  *                         agent_action = actions[i]
  *                         agent_reward = rewards[i]             # <<<<<<<<<<<<<<
  *                         agent_next_obs =  next_obs[i]
  * 
  */
-            __pyx_t_6 = __Pyx_PyObject_GetItem(__pyx_v_rewards, __pyx_v_i); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 200, __pyx_L3_error)
+            __pyx_t_6 = __Pyx_PyObject_GetItem(__pyx_v_rewards, __pyx_v_i); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 196, __pyx_L3_error)
             __Pyx_GOTREF(__pyx_t_6);
             __Pyx_XDECREF_SET(__pyx_v_agent_reward, __pyx_t_6);
             __pyx_t_6 = 0;
 
-            /* "multiworker.pyx":201
+            /* "multiworker.pyx":197
  *                         agent_action = actions[i]
  *                         agent_reward = rewards[i]
  *                         agent_next_obs =  next_obs[i]             # <<<<<<<<<<<<<<
  * 
  *                         if not done_last_step[i]:
  */
-            __pyx_t_6 = __Pyx_PyObject_GetItem(__pyx_v_next_obs, __pyx_v_i); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 201, __pyx_L3_error)
+            __pyx_t_6 = __Pyx_PyObject_GetItem(__pyx_v_next_obs, __pyx_v_i); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 197, __pyx_L3_error)
             __Pyx_GOTREF(__pyx_t_6);
             __Pyx_XDECREF_SET(__pyx_v_agent_next_obs, __pyx_t_6);
             __pyx_t_6 = 0;
 
-            /* "multiworker.pyx":203
+            /* "multiworker.pyx":199
  *                         agent_next_obs =  next_obs[i]
  * 
  *                         if not done_last_step[i]:             # <<<<<<<<<<<<<<
  *                             episode_buffer[i].append([
  *                                 agent_obs,
  */
-            __pyx_t_6 = __Pyx_PyDict_GetItem(__pyx_v_done_last_step, __pyx_v_i); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 203, __pyx_L3_error)
+            __pyx_t_6 = __Pyx_PyDict_GetItem(__pyx_v_done_last_step, __pyx_v_i); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 199, __pyx_L3_error)
             __Pyx_GOTREF(__pyx_t_6);
-            __pyx_t_16 = __Pyx_PyObject_IsTrue(__pyx_t_6); if (unlikely(__pyx_t_16 < 0)) __PYX_ERR(0, 203, __pyx_L3_error)
+            __pyx_t_16 = __Pyx_PyObject_IsTrue(__pyx_t_6); if (unlikely(__pyx_t_16 < 0)) __PYX_ERR(0, 199, __pyx_L3_error)
             __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
             __pyx_t_9 = ((!__pyx_t_16) != 0);
             if (__pyx_t_9) {
 
-              /* "multiworker.pyx":204
+              /* "multiworker.pyx":200
  * 
  *                         if not done_last_step[i]:
  *                             episode_buffer[i].append([             # <<<<<<<<<<<<<<
  *                                 agent_obs,
  *                                 agent_action,
  */
-              __pyx_t_6 = __Pyx_PyObject_GetItem(__pyx_v_episode_buffer, __pyx_v_i); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 204, __pyx_L3_error)
+              __pyx_t_6 = __Pyx_PyObject_GetItem(__pyx_v_episode_buffer, __pyx_v_i); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 200, __pyx_L3_error)
               __Pyx_GOTREF(__pyx_t_6);
 
-              /* "multiworker.pyx":210
+              /* "multiworker.pyx":206
  *                                 agent_next_obs,
  *                                 episode_done,
  *                                 v[i]])             # <<<<<<<<<<<<<<
  * 
  *                             episode_values.append(v[i])
  */
-              __pyx_t_7 = __Pyx_PyObject_GetItem(__pyx_v_v, __pyx_v_i); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 210, __pyx_L3_error)
+              __pyx_t_7 = __Pyx_PyObject_GetItem(__pyx_v_v, __pyx_v_i); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 206, __pyx_L3_error)
               __Pyx_GOTREF(__pyx_t_7);
 
-              /* "multiworker.pyx":204
+              /* "multiworker.pyx":200
  * 
  *                         if not done_last_step[i]:
  *                             episode_buffer[i].append([             # <<<<<<<<<<<<<<
  *                                 agent_obs,
  *                                 agent_action,
  */
-              __pyx_t_5 = PyList_New(6); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 204, __pyx_L3_error)
+              __pyx_t_5 = PyList_New(6); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 200, __pyx_L3_error)
               __Pyx_GOTREF(__pyx_t_5);
               __Pyx_INCREF(__pyx_v_agent_obs);
               __Pyx_GIVEREF(__pyx_v_agent_obs);
@@ -5208,35 +5208,35 @@ static PyObject *__pyx_pf_11multiworker_6Worker_2work(CYTHON_UNUSED PyObject *__
               __Pyx_GIVEREF(__pyx_t_7);
               PyList_SET_ITEM(__pyx_t_5, 5, __pyx_t_7);
               __pyx_t_7 = 0;
-              __pyx_t_17 = __Pyx_PyObject_Append(__pyx_t_6, __pyx_t_5); if (unlikely(__pyx_t_17 == ((int)-1))) __PYX_ERR(0, 204, __pyx_L3_error)
+              __pyx_t_17 = __Pyx_PyObject_Append(__pyx_t_6, __pyx_t_5); if (unlikely(__pyx_t_17 == ((int)-1))) __PYX_ERR(0, 200, __pyx_L3_error)
               __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
               __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-              /* "multiworker.pyx":212
+              /* "multiworker.pyx":208
  *                                 v[i]])
  * 
  *                             episode_values.append(v[i])             # <<<<<<<<<<<<<<
  *                             episode_reward += agent_reward
  * 
  */
-              __pyx_t_5 = __Pyx_PyObject_GetItem(__pyx_v_v, __pyx_v_i); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 212, __pyx_L3_error)
+              __pyx_t_5 = __Pyx_PyObject_GetItem(__pyx_v_v, __pyx_v_i); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 208, __pyx_L3_error)
               __Pyx_GOTREF(__pyx_t_5);
-              __pyx_t_17 = __Pyx_PyList_Append(__pyx_v_episode_values, __pyx_t_5); if (unlikely(__pyx_t_17 == ((int)-1))) __PYX_ERR(0, 212, __pyx_L3_error)
+              __pyx_t_17 = __Pyx_PyList_Append(__pyx_v_episode_values, __pyx_t_5); if (unlikely(__pyx_t_17 == ((int)-1))) __PYX_ERR(0, 208, __pyx_L3_error)
               __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-              /* "multiworker.pyx":213
+              /* "multiworker.pyx":209
  * 
  *                             episode_values.append(v[i])
  *                             episode_reward += agent_reward             # <<<<<<<<<<<<<<
  * 
  *                     obs = next_obs
  */
-              __pyx_t_5 = PyNumber_InPlaceAdd(__pyx_v_episode_reward, __pyx_v_agent_reward); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 213, __pyx_L3_error)
+              __pyx_t_5 = PyNumber_InPlaceAdd(__pyx_v_episode_reward, __pyx_v_agent_reward); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 209, __pyx_L3_error)
               __Pyx_GOTREF(__pyx_t_5);
               __Pyx_DECREF_SET(__pyx_v_episode_reward, __pyx_t_5);
               __pyx_t_5 = 0;
 
-              /* "multiworker.pyx":203
+              /* "multiworker.pyx":199
  *                         agent_next_obs =  next_obs[i]
  * 
  *                         if not done_last_step[i]:             # <<<<<<<<<<<<<<
@@ -5247,7 +5247,7 @@ static PyObject *__pyx_pf_11multiworker_6Worker_2work(CYTHON_UNUSED PyObject *__
           }
           __Pyx_DECREF(__pyx_t_15); __pyx_t_15 = 0;
 
-          /* "multiworker.pyx":215
+          /* "multiworker.pyx":211
  *                             episode_reward += agent_reward
  * 
  *                     obs = next_obs             # <<<<<<<<<<<<<<
@@ -5257,32 +5257,32 @@ static PyObject *__pyx_pf_11multiworker_6Worker_2work(CYTHON_UNUSED PyObject *__
           __Pyx_INCREF(__pyx_v_next_obs);
           __Pyx_DECREF_SET(__pyx_v_obs, __pyx_v_next_obs);
 
-          /* "multiworker.pyx":216
+          /* "multiworker.pyx":212
  * 
  *                     obs = next_obs
  *                     steps_on_level += 1             # <<<<<<<<<<<<<<
  *                     done_last_step = dict(done)
  * 
  */
-          __pyx_t_15 = __Pyx_PyInt_AddObjC(__pyx_v_steps_on_level, __pyx_int_1, 1, 1, 0); if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 216, __pyx_L3_error)
+          __pyx_t_15 = __Pyx_PyInt_AddObjC(__pyx_v_steps_on_level, __pyx_int_1, 1, 1, 0); if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 212, __pyx_L3_error)
           __Pyx_GOTREF(__pyx_t_15);
           __Pyx_DECREF_SET(__pyx_v_steps_on_level, __pyx_t_15);
           __pyx_t_15 = 0;
 
-          /* "multiworker.pyx":217
+          /* "multiworker.pyx":213
  *                     obs = next_obs
  *                     steps_on_level += 1
  *                     done_last_step = dict(done)             # <<<<<<<<<<<<<<
  * 
  *                 num_agents_done = 0
  */
-          __pyx_t_15 = __Pyx_PyObject_CallOneArg(((PyObject *)(&PyDict_Type)), __pyx_v_done); if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 217, __pyx_L3_error)
+          __pyx_t_15 = __Pyx_PyObject_CallOneArg(((PyObject *)(&PyDict_Type)), __pyx_v_done); if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 213, __pyx_L3_error)
           __Pyx_GOTREF(__pyx_t_15);
           __Pyx_DECREF_SET(__pyx_v_done_last_step, ((PyObject*)__pyx_t_15));
           __pyx_t_15 = 0;
         }
 
-        /* "multiworker.pyx":219
+        /* "multiworker.pyx":215
  *                     done_last_step = dict(done)
  * 
  *                 num_agents_done = 0             # <<<<<<<<<<<<<<
@@ -5292,28 +5292,28 @@ static PyObject *__pyx_pf_11multiworker_6Worker_2work(CYTHON_UNUSED PyObject *__
         __Pyx_INCREF(__pyx_int_0);
         __Pyx_XDECREF_SET(__pyx_v_num_agents_done, __pyx_int_0);
 
-        /* "multiworker.pyx":222
+        /* "multiworker.pyx":218
  * 
  *                 # Individual rewards
  *                 for i in range(self.env.num_agents):             # <<<<<<<<<<<<<<
  *                     if self.env.env.agents[i].status == RailAgentStatus.READY_TO_DEPART:
  *                         episode_buffer[i][-1][2] -= 1.0
  */
-        __pyx_t_15 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_env); if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 222, __pyx_L3_error)
+        __pyx_t_15 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_env); if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 218, __pyx_L3_error)
         __Pyx_GOTREF(__pyx_t_15);
-        __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_15, __pyx_n_s_num_agents); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 222, __pyx_L3_error)
+        __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_15, __pyx_n_s_num_agents); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 218, __pyx_L3_error)
         __Pyx_GOTREF(__pyx_t_5);
         __Pyx_DECREF(__pyx_t_15); __pyx_t_15 = 0;
-        __pyx_t_15 = __Pyx_PyObject_CallOneArg(__pyx_builtin_range, __pyx_t_5); if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 222, __pyx_L3_error)
+        __pyx_t_15 = __Pyx_PyObject_CallOneArg(__pyx_builtin_range, __pyx_t_5); if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 218, __pyx_L3_error)
         __Pyx_GOTREF(__pyx_t_15);
         __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
         if (likely(PyList_CheckExact(__pyx_t_15)) || PyTuple_CheckExact(__pyx_t_15)) {
           __pyx_t_5 = __pyx_t_15; __Pyx_INCREF(__pyx_t_5); __pyx_t_13 = 0;
           __pyx_t_11 = NULL;
         } else {
-          __pyx_t_13 = -1; __pyx_t_5 = PyObject_GetIter(__pyx_t_15); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 222, __pyx_L3_error)
+          __pyx_t_13 = -1; __pyx_t_5 = PyObject_GetIter(__pyx_t_15); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 218, __pyx_L3_error)
           __Pyx_GOTREF(__pyx_t_5);
-          __pyx_t_11 = Py_TYPE(__pyx_t_5)->tp_iternext; if (unlikely(!__pyx_t_11)) __PYX_ERR(0, 222, __pyx_L3_error)
+          __pyx_t_11 = Py_TYPE(__pyx_t_5)->tp_iternext; if (unlikely(!__pyx_t_11)) __PYX_ERR(0, 218, __pyx_L3_error)
         }
         __Pyx_DECREF(__pyx_t_15); __pyx_t_15 = 0;
         for (;;) {
@@ -5321,17 +5321,17 @@ static PyObject *__pyx_pf_11multiworker_6Worker_2work(CYTHON_UNUSED PyObject *__
             if (likely(PyList_CheckExact(__pyx_t_5))) {
               if (__pyx_t_13 >= PyList_GET_SIZE(__pyx_t_5)) break;
               #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-              __pyx_t_15 = PyList_GET_ITEM(__pyx_t_5, __pyx_t_13); __Pyx_INCREF(__pyx_t_15); __pyx_t_13++; if (unlikely(0 < 0)) __PYX_ERR(0, 222, __pyx_L3_error)
+              __pyx_t_15 = PyList_GET_ITEM(__pyx_t_5, __pyx_t_13); __Pyx_INCREF(__pyx_t_15); __pyx_t_13++; if (unlikely(0 < 0)) __PYX_ERR(0, 218, __pyx_L3_error)
               #else
-              __pyx_t_15 = PySequence_ITEM(__pyx_t_5, __pyx_t_13); __pyx_t_13++; if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 222, __pyx_L3_error)
+              __pyx_t_15 = PySequence_ITEM(__pyx_t_5, __pyx_t_13); __pyx_t_13++; if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 218, __pyx_L3_error)
               __Pyx_GOTREF(__pyx_t_15);
               #endif
             } else {
               if (__pyx_t_13 >= PyTuple_GET_SIZE(__pyx_t_5)) break;
               #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-              __pyx_t_15 = PyTuple_GET_ITEM(__pyx_t_5, __pyx_t_13); __Pyx_INCREF(__pyx_t_15); __pyx_t_13++; if (unlikely(0 < 0)) __PYX_ERR(0, 222, __pyx_L3_error)
+              __pyx_t_15 = PyTuple_GET_ITEM(__pyx_t_5, __pyx_t_13); __Pyx_INCREF(__pyx_t_15); __pyx_t_13++; if (unlikely(0 < 0)) __PYX_ERR(0, 218, __pyx_L3_error)
               #else
-              __pyx_t_15 = PySequence_ITEM(__pyx_t_5, __pyx_t_13); __pyx_t_13++; if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 222, __pyx_L3_error)
+              __pyx_t_15 = PySequence_ITEM(__pyx_t_5, __pyx_t_13); __pyx_t_13++; if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 218, __pyx_L3_error)
               __Pyx_GOTREF(__pyx_t_15);
               #endif
             }
@@ -5341,7 +5341,7 @@ static PyObject *__pyx_pf_11multiworker_6Worker_2work(CYTHON_UNUSED PyObject *__
               PyObject* exc_type = PyErr_Occurred();
               if (exc_type) {
                 if (likely(__Pyx_PyErr_GivenExceptionMatches(exc_type, PyExc_StopIteration))) PyErr_Clear();
-                else __PYX_ERR(0, 222, __pyx_L3_error)
+                else __PYX_ERR(0, 218, __pyx_L3_error)
               }
               break;
             }
@@ -5350,74 +5350,74 @@ static PyObject *__pyx_pf_11multiworker_6Worker_2work(CYTHON_UNUSED PyObject *__
           __Pyx_XDECREF_SET(__pyx_v_i, __pyx_t_15);
           __pyx_t_15 = 0;
 
-          /* "multiworker.pyx":223
+          /* "multiworker.pyx":219
  *                 # Individual rewards
  *                 for i in range(self.env.num_agents):
  *                     if self.env.env.agents[i].status == RailAgentStatus.READY_TO_DEPART:             # <<<<<<<<<<<<<<
  *                         episode_buffer[i][-1][2] -= 1.0
  *                         episode_reward -= 1.0
  */
-          __pyx_t_15 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_env); if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 223, __pyx_L3_error)
+          __pyx_t_15 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_env); if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 219, __pyx_L3_error)
           __Pyx_GOTREF(__pyx_t_15);
-          __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_t_15, __pyx_n_s_env); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 223, __pyx_L3_error)
+          __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_t_15, __pyx_n_s_env); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 219, __pyx_L3_error)
           __Pyx_GOTREF(__pyx_t_6);
           __Pyx_DECREF(__pyx_t_15); __pyx_t_15 = 0;
-          __pyx_t_15 = __Pyx_PyObject_GetAttrStr(__pyx_t_6, __pyx_n_s_agents); if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 223, __pyx_L3_error)
+          __pyx_t_15 = __Pyx_PyObject_GetAttrStr(__pyx_t_6, __pyx_n_s_agents); if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 219, __pyx_L3_error)
           __Pyx_GOTREF(__pyx_t_15);
           __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-          __pyx_t_6 = __Pyx_PyObject_GetItem(__pyx_t_15, __pyx_v_i); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 223, __pyx_L3_error)
+          __pyx_t_6 = __Pyx_PyObject_GetItem(__pyx_t_15, __pyx_v_i); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 219, __pyx_L3_error)
           __Pyx_GOTREF(__pyx_t_6);
           __Pyx_DECREF(__pyx_t_15); __pyx_t_15 = 0;
-          __pyx_t_15 = __Pyx_PyObject_GetAttrStr(__pyx_t_6, __pyx_n_s_status); if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 223, __pyx_L3_error)
+          __pyx_t_15 = __Pyx_PyObject_GetAttrStr(__pyx_t_6, __pyx_n_s_status); if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 219, __pyx_L3_error)
           __Pyx_GOTREF(__pyx_t_15);
           __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-          __Pyx_GetModuleGlobalName(__pyx_t_6, __pyx_n_s_RailAgentStatus); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 223, __pyx_L3_error)
+          __Pyx_GetModuleGlobalName(__pyx_t_6, __pyx_n_s_RailAgentStatus); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 219, __pyx_L3_error)
           __Pyx_GOTREF(__pyx_t_6);
-          __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_t_6, __pyx_n_s_READY_TO_DEPART); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 223, __pyx_L3_error)
+          __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_t_6, __pyx_n_s_READY_TO_DEPART); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 219, __pyx_L3_error)
           __Pyx_GOTREF(__pyx_t_7);
           __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-          __pyx_t_6 = PyObject_RichCompare(__pyx_t_15, __pyx_t_7, Py_EQ); __Pyx_XGOTREF(__pyx_t_6); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 223, __pyx_L3_error)
+          __pyx_t_6 = PyObject_RichCompare(__pyx_t_15, __pyx_t_7, Py_EQ); __Pyx_XGOTREF(__pyx_t_6); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 219, __pyx_L3_error)
           __Pyx_DECREF(__pyx_t_15); __pyx_t_15 = 0;
           __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-          __pyx_t_9 = __Pyx_PyObject_IsTrue(__pyx_t_6); if (unlikely(__pyx_t_9 < 0)) __PYX_ERR(0, 223, __pyx_L3_error)
+          __pyx_t_9 = __Pyx_PyObject_IsTrue(__pyx_t_6); if (unlikely(__pyx_t_9 < 0)) __PYX_ERR(0, 219, __pyx_L3_error)
           __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
           if (__pyx_t_9) {
 
-            /* "multiworker.pyx":224
+            /* "multiworker.pyx":220
  *                 for i in range(self.env.num_agents):
  *                     if self.env.env.agents[i].status == RailAgentStatus.READY_TO_DEPART:
  *                         episode_buffer[i][-1][2] -= 1.0             # <<<<<<<<<<<<<<
  *                         episode_reward -= 1.0
  *                     if done[i]:
  */
-            __pyx_t_6 = __Pyx_PyObject_GetItem(__pyx_v_episode_buffer, __pyx_v_i); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 224, __pyx_L3_error)
+            __pyx_t_6 = __Pyx_PyObject_GetItem(__pyx_v_episode_buffer, __pyx_v_i); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 220, __pyx_L3_error)
             __Pyx_GOTREF(__pyx_t_6);
-            __pyx_t_7 = __Pyx_GetItemInt(__pyx_t_6, -1L, long, 1, __Pyx_PyInt_From_long, 0, 1, 1); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 224, __pyx_L3_error)
+            __pyx_t_7 = __Pyx_GetItemInt(__pyx_t_6, -1L, long, 1, __Pyx_PyInt_From_long, 0, 1, 1); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 220, __pyx_L3_error)
             __Pyx_GOTREF(__pyx_t_7);
             __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
             __pyx_t_10 = 2;
-            __pyx_t_6 = __Pyx_GetItemInt(__pyx_t_7, __pyx_t_10, Py_ssize_t, 1, PyInt_FromSsize_t, 0, 1, 1); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 224, __pyx_L3_error)
+            __pyx_t_6 = __Pyx_GetItemInt(__pyx_t_7, __pyx_t_10, Py_ssize_t, 1, PyInt_FromSsize_t, 0, 1, 1); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 220, __pyx_L3_error)
             __Pyx_GOTREF(__pyx_t_6);
-            __pyx_t_15 = __Pyx_PyFloat_SubtractObjC(__pyx_t_6, __pyx_float_1_0, 1.0, 1, 0); if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 224, __pyx_L3_error)
+            __pyx_t_15 = __Pyx_PyFloat_SubtractObjC(__pyx_t_6, __pyx_float_1_0, 1.0, 1, 0); if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 220, __pyx_L3_error)
             __Pyx_GOTREF(__pyx_t_15);
             __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-            if (unlikely(__Pyx_SetItemInt(__pyx_t_7, __pyx_t_10, __pyx_t_15, Py_ssize_t, 1, PyInt_FromSsize_t, 0, 1, 1) < 0)) __PYX_ERR(0, 224, __pyx_L3_error)
+            if (unlikely(__Pyx_SetItemInt(__pyx_t_7, __pyx_t_10, __pyx_t_15, Py_ssize_t, 1, PyInt_FromSsize_t, 0, 1, 1) < 0)) __PYX_ERR(0, 220, __pyx_L3_error)
             __Pyx_DECREF(__pyx_t_15); __pyx_t_15 = 0;
             __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
 
-            /* "multiworker.pyx":225
+            /* "multiworker.pyx":221
  *                     if self.env.env.agents[i].status == RailAgentStatus.READY_TO_DEPART:
  *                         episode_buffer[i][-1][2] -= 1.0
  *                         episode_reward -= 1.0             # <<<<<<<<<<<<<<
  *                     if done[i]:
  *                         num_agents_done += 1
  */
-            __pyx_t_7 = __Pyx_PyFloat_SubtractObjC(__pyx_v_episode_reward, __pyx_float_1_0, 1.0, 1, 0); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 225, __pyx_L3_error)
+            __pyx_t_7 = __Pyx_PyFloat_SubtractObjC(__pyx_v_episode_reward, __pyx_float_1_0, 1.0, 1, 0); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 221, __pyx_L3_error)
             __Pyx_GOTREF(__pyx_t_7);
             __Pyx_DECREF_SET(__pyx_v_episode_reward, __pyx_t_7);
             __pyx_t_7 = 0;
 
-            /* "multiworker.pyx":223
+            /* "multiworker.pyx":219
  *                 # Individual rewards
  *                 for i in range(self.env.num_agents):
  *                     if self.env.env.agents[i].status == RailAgentStatus.READY_TO_DEPART:             # <<<<<<<<<<<<<<
@@ -5426,66 +5426,66 @@ static PyObject *__pyx_pf_11multiworker_6Worker_2work(CYTHON_UNUSED PyObject *__
  */
           }
 
-          /* "multiworker.pyx":226
+          /* "multiworker.pyx":222
  *                         episode_buffer[i][-1][2] -= 1.0
  *                         episode_reward -= 1.0
  *                     if done[i]:             # <<<<<<<<<<<<<<
  *                         num_agents_done += 1
  *                         # If agents could finish the level,
  */
-          __pyx_t_7 = __Pyx_PyObject_GetItem(__pyx_v_done, __pyx_v_i); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 226, __pyx_L3_error)
+          __pyx_t_7 = __Pyx_PyObject_GetItem(__pyx_v_done, __pyx_v_i); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 222, __pyx_L3_error)
           __Pyx_GOTREF(__pyx_t_7);
-          __pyx_t_9 = __Pyx_PyObject_IsTrue(__pyx_t_7); if (unlikely(__pyx_t_9 < 0)) __PYX_ERR(0, 226, __pyx_L3_error)
+          __pyx_t_9 = __Pyx_PyObject_IsTrue(__pyx_t_7); if (unlikely(__pyx_t_9 < 0)) __PYX_ERR(0, 222, __pyx_L3_error)
           __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
           if (__pyx_t_9) {
 
-            /* "multiworker.pyx":227
+            /* "multiworker.pyx":223
  *                         episode_reward -= 1.0
  *                     if done[i]:
  *                         num_agents_done += 1             # <<<<<<<<<<<<<<
  *                         # If agents could finish the level,
  *                         # set final reward for all agents
  */
-            __pyx_t_7 = __Pyx_PyInt_AddObjC(__pyx_v_num_agents_done, __pyx_int_1, 1, 1, 0); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 227, __pyx_L3_error)
+            __pyx_t_7 = __Pyx_PyInt_AddObjC(__pyx_v_num_agents_done, __pyx_int_1, 1, 1, 0); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 223, __pyx_L3_error)
             __Pyx_GOTREF(__pyx_t_7);
             __Pyx_DECREF_SET(__pyx_v_num_agents_done, __pyx_t_7);
             __pyx_t_7 = 0;
 
-            /* "multiworker.pyx":230
+            /* "multiworker.pyx":226
  *                         # If agents could finish the level,
  *                         # set final reward for all agents
  *                         episode_buffer[i][-1][2] += 1.0             # <<<<<<<<<<<<<<
  *                         episode_reward += 1.0
  *                     elif cancel_episode:
  */
-            __pyx_t_7 = __Pyx_PyObject_GetItem(__pyx_v_episode_buffer, __pyx_v_i); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 230, __pyx_L3_error)
+            __pyx_t_7 = __Pyx_PyObject_GetItem(__pyx_v_episode_buffer, __pyx_v_i); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 226, __pyx_L3_error)
             __Pyx_GOTREF(__pyx_t_7);
-            __pyx_t_15 = __Pyx_GetItemInt(__pyx_t_7, -1L, long, 1, __Pyx_PyInt_From_long, 0, 1, 1); if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 230, __pyx_L3_error)
+            __pyx_t_15 = __Pyx_GetItemInt(__pyx_t_7, -1L, long, 1, __Pyx_PyInt_From_long, 0, 1, 1); if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 226, __pyx_L3_error)
             __Pyx_GOTREF(__pyx_t_15);
             __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
             __pyx_t_10 = 2;
-            __pyx_t_7 = __Pyx_GetItemInt(__pyx_t_15, __pyx_t_10, Py_ssize_t, 1, PyInt_FromSsize_t, 0, 1, 1); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 230, __pyx_L3_error)
+            __pyx_t_7 = __Pyx_GetItemInt(__pyx_t_15, __pyx_t_10, Py_ssize_t, 1, PyInt_FromSsize_t, 0, 1, 1); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 226, __pyx_L3_error)
             __Pyx_GOTREF(__pyx_t_7);
-            __pyx_t_6 = __Pyx_PyFloat_AddObjC(__pyx_t_7, __pyx_float_1_0, 1.0, 1, 0); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 230, __pyx_L3_error)
+            __pyx_t_6 = __Pyx_PyFloat_AddObjC(__pyx_t_7, __pyx_float_1_0, 1.0, 1, 0); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 226, __pyx_L3_error)
             __Pyx_GOTREF(__pyx_t_6);
             __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-            if (unlikely(__Pyx_SetItemInt(__pyx_t_15, __pyx_t_10, __pyx_t_6, Py_ssize_t, 1, PyInt_FromSsize_t, 0, 1, 1) < 0)) __PYX_ERR(0, 230, __pyx_L3_error)
+            if (unlikely(__Pyx_SetItemInt(__pyx_t_15, __pyx_t_10, __pyx_t_6, Py_ssize_t, 1, PyInt_FromSsize_t, 0, 1, 1) < 0)) __PYX_ERR(0, 226, __pyx_L3_error)
             __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
             __Pyx_DECREF(__pyx_t_15); __pyx_t_15 = 0;
 
-            /* "multiworker.pyx":231
+            /* "multiworker.pyx":227
  *                         # set final reward for all agents
  *                         episode_buffer[i][-1][2] += 1.0
  *                         episode_reward += 1.0             # <<<<<<<<<<<<<<
  *                     elif cancel_episode:
  *                         episode_buffer[i][-1][2] -= 1.0
  */
-            __pyx_t_15 = __Pyx_PyFloat_AddObjC(__pyx_v_episode_reward, __pyx_float_1_0, 1.0, 1, 0); if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 231, __pyx_L3_error)
+            __pyx_t_15 = __Pyx_PyFloat_AddObjC(__pyx_v_episode_reward, __pyx_float_1_0, 1.0, 1, 0); if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 227, __pyx_L3_error)
             __Pyx_GOTREF(__pyx_t_15);
             __Pyx_DECREF_SET(__pyx_v_episode_reward, __pyx_t_15);
             __pyx_t_15 = 0;
 
-            /* "multiworker.pyx":226
+            /* "multiworker.pyx":222
  *                         episode_buffer[i][-1][2] -= 1.0
  *                         episode_reward -= 1.0
  *                     if done[i]:             # <<<<<<<<<<<<<<
@@ -5495,7 +5495,7 @@ static PyObject *__pyx_pf_11multiworker_6Worker_2work(CYTHON_UNUSED PyObject *__
             goto __pyx_L57;
           }
 
-          /* "multiworker.pyx":232
+          /* "multiworker.pyx":228
  *                         episode_buffer[i][-1][2] += 1.0
  *                         episode_reward += 1.0
  *                     elif cancel_episode:             # <<<<<<<<<<<<<<
@@ -5505,41 +5505,41 @@ static PyObject *__pyx_pf_11multiworker_6Worker_2work(CYTHON_UNUSED PyObject *__
           __pyx_t_9 = (__pyx_v_cancel_episode != 0);
           if (__pyx_t_9) {
 
-            /* "multiworker.pyx":233
+            /* "multiworker.pyx":229
  *                         episode_reward += 1.0
  *                     elif cancel_episode:
  *                         episode_buffer[i][-1][2] -= 1.0             # <<<<<<<<<<<<<<
  *                         episode_reward -= 1.0
  * 
  */
-            __pyx_t_15 = __Pyx_PyObject_GetItem(__pyx_v_episode_buffer, __pyx_v_i); if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 233, __pyx_L3_error)
+            __pyx_t_15 = __Pyx_PyObject_GetItem(__pyx_v_episode_buffer, __pyx_v_i); if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 229, __pyx_L3_error)
             __Pyx_GOTREF(__pyx_t_15);
-            __pyx_t_6 = __Pyx_GetItemInt(__pyx_t_15, -1L, long, 1, __Pyx_PyInt_From_long, 0, 1, 1); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 233, __pyx_L3_error)
+            __pyx_t_6 = __Pyx_GetItemInt(__pyx_t_15, -1L, long, 1, __Pyx_PyInt_From_long, 0, 1, 1); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 229, __pyx_L3_error)
             __Pyx_GOTREF(__pyx_t_6);
             __Pyx_DECREF(__pyx_t_15); __pyx_t_15 = 0;
             __pyx_t_10 = 2;
-            __pyx_t_15 = __Pyx_GetItemInt(__pyx_t_6, __pyx_t_10, Py_ssize_t, 1, PyInt_FromSsize_t, 0, 1, 1); if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 233, __pyx_L3_error)
+            __pyx_t_15 = __Pyx_GetItemInt(__pyx_t_6, __pyx_t_10, Py_ssize_t, 1, PyInt_FromSsize_t, 0, 1, 1); if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 229, __pyx_L3_error)
             __Pyx_GOTREF(__pyx_t_15);
-            __pyx_t_7 = __Pyx_PyFloat_SubtractObjC(__pyx_t_15, __pyx_float_1_0, 1.0, 1, 0); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 233, __pyx_L3_error)
+            __pyx_t_7 = __Pyx_PyFloat_SubtractObjC(__pyx_t_15, __pyx_float_1_0, 1.0, 1, 0); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 229, __pyx_L3_error)
             __Pyx_GOTREF(__pyx_t_7);
             __Pyx_DECREF(__pyx_t_15); __pyx_t_15 = 0;
-            if (unlikely(__Pyx_SetItemInt(__pyx_t_6, __pyx_t_10, __pyx_t_7, Py_ssize_t, 1, PyInt_FromSsize_t, 0, 1, 1) < 0)) __PYX_ERR(0, 233, __pyx_L3_error)
+            if (unlikely(__Pyx_SetItemInt(__pyx_t_6, __pyx_t_10, __pyx_t_7, Py_ssize_t, 1, PyInt_FromSsize_t, 0, 1, 1) < 0)) __PYX_ERR(0, 229, __pyx_L3_error)
             __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
             __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
 
-            /* "multiworker.pyx":234
+            /* "multiworker.pyx":230
  *                     elif cancel_episode:
  *                         episode_buffer[i][-1][2] -= 1.0
  *                         episode_reward -= 1.0             # <<<<<<<<<<<<<<
  * 
  * 
  */
-            __pyx_t_6 = __Pyx_PyFloat_SubtractObjC(__pyx_v_episode_reward, __pyx_float_1_0, 1.0, 1, 0); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 234, __pyx_L3_error)
+            __pyx_t_6 = __Pyx_PyFloat_SubtractObjC(__pyx_v_episode_reward, __pyx_float_1_0, 1.0, 1, 0); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 230, __pyx_L3_error)
             __Pyx_GOTREF(__pyx_t_6);
             __Pyx_DECREF_SET(__pyx_v_episode_reward, __pyx_t_6);
             __pyx_t_6 = 0;
 
-            /* "multiworker.pyx":232
+            /* "multiworker.pyx":228
  *                         episode_buffer[i][-1][2] += 1.0
  *                         episode_reward += 1.0
  *                     elif cancel_episode:             # <<<<<<<<<<<<<<
@@ -5549,7 +5549,7 @@ static PyObject *__pyx_pf_11multiworker_6Worker_2work(CYTHON_UNUSED PyObject *__
           }
           __pyx_L57:;
 
-          /* "multiworker.pyx":222
+          /* "multiworker.pyx":218
  * 
  *                 # Individual rewards
  *                 for i in range(self.env.num_agents):             # <<<<<<<<<<<<<<
@@ -5559,14 +5559,14 @@ static PyObject *__pyx_pf_11multiworker_6Worker_2work(CYTHON_UNUSED PyObject *__
         }
         __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-        /* "multiworker.pyx":237
+        /* "multiworker.pyx":233
  * 
  * 
  *                 episode_end = time()             # <<<<<<<<<<<<<<
  *                 episode_time = episode_end - episode_start
  * 
  */
-        __Pyx_GetModuleGlobalName(__pyx_t_6, __pyx_n_s_time); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 237, __pyx_L3_error)
+        __Pyx_GetModuleGlobalName(__pyx_t_6, __pyx_n_s_time); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 233, __pyx_L3_error)
         __Pyx_GOTREF(__pyx_t_6);
         __pyx_t_7 = NULL;
         if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_6))) {
@@ -5580,32 +5580,32 @@ static PyObject *__pyx_pf_11multiworker_6Worker_2work(CYTHON_UNUSED PyObject *__
         }
         __pyx_t_5 = (__pyx_t_7) ? __Pyx_PyObject_CallOneArg(__pyx_t_6, __pyx_t_7) : __Pyx_PyObject_CallNoArg(__pyx_t_6);
         __Pyx_XDECREF(__pyx_t_7); __pyx_t_7 = 0;
-        if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 237, __pyx_L3_error)
+        if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 233, __pyx_L3_error)
         __Pyx_GOTREF(__pyx_t_5);
         __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
         __Pyx_XDECREF_SET(__pyx_v_episode_end, __pyx_t_5);
         __pyx_t_5 = 0;
 
-        /* "multiworker.pyx":238
+        /* "multiworker.pyx":234
  * 
  *                 episode_end = time()
  *                 episode_time = episode_end - episode_start             # <<<<<<<<<<<<<<
  * 
  *                 # print('Tot NN', tot_nn)
  */
-        __pyx_t_5 = PyNumber_Subtract(__pyx_v_episode_end, __pyx_v_episode_start); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 238, __pyx_L3_error)
+        __pyx_t_5 = PyNumber_Subtract(__pyx_v_episode_end, __pyx_v_episode_start); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 234, __pyx_L3_error)
         __Pyx_GOTREF(__pyx_t_5);
         __Pyx_XDECREF_SET(__pyx_v_episode_time, __pyx_t_5);
         __pyx_t_5 = 0;
 
-        /* "multiworker.pyx":245
+        /* "multiworker.pyx":241
  *                 # print('Tot just obs', tot_just_obs)
  * 
  *                 avg_episode_time = (time()- time_start)/(self.episode_count + 1)             # <<<<<<<<<<<<<<
  *                 agents_arrived = num_agents_done/self.env.num_agents
  * 
  */
-        __Pyx_GetModuleGlobalName(__pyx_t_6, __pyx_n_s_time); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 245, __pyx_L3_error)
+        __Pyx_GetModuleGlobalName(__pyx_t_6, __pyx_n_s_time); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 241, __pyx_L3_error)
         __Pyx_GOTREF(__pyx_t_6);
         __pyx_t_7 = NULL;
         if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_6))) {
@@ -5619,90 +5619,90 @@ static PyObject *__pyx_pf_11multiworker_6Worker_2work(CYTHON_UNUSED PyObject *__
         }
         __pyx_t_5 = (__pyx_t_7) ? __Pyx_PyObject_CallOneArg(__pyx_t_6, __pyx_t_7) : __Pyx_PyObject_CallNoArg(__pyx_t_6);
         __Pyx_XDECREF(__pyx_t_7); __pyx_t_7 = 0;
-        if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 245, __pyx_L3_error)
+        if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 241, __pyx_L3_error)
         __Pyx_GOTREF(__pyx_t_5);
         __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-        __pyx_t_6 = PyNumber_Subtract(__pyx_t_5, __pyx_v_time_start); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 245, __pyx_L3_error)
+        __pyx_t_6 = PyNumber_Subtract(__pyx_t_5, __pyx_v_time_start); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 241, __pyx_L3_error)
         __Pyx_GOTREF(__pyx_t_6);
         __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-        __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_episode_count); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 245, __pyx_L3_error)
+        __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_episode_count); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 241, __pyx_L3_error)
         __Pyx_GOTREF(__pyx_t_5);
-        __pyx_t_7 = __Pyx_PyInt_AddObjC(__pyx_t_5, __pyx_int_1, 1, 0, 0); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 245, __pyx_L3_error)
+        __pyx_t_7 = __Pyx_PyInt_AddObjC(__pyx_t_5, __pyx_int_1, 1, 0, 0); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 241, __pyx_L3_error)
         __Pyx_GOTREF(__pyx_t_7);
         __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-        __pyx_t_5 = __Pyx_PyNumber_Divide(__pyx_t_6, __pyx_t_7); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 245, __pyx_L3_error)
+        __pyx_t_5 = __Pyx_PyNumber_Divide(__pyx_t_6, __pyx_t_7); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 241, __pyx_L3_error)
         __Pyx_GOTREF(__pyx_t_5);
         __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
         __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
         __Pyx_XDECREF_SET(__pyx_v_avg_episode_time, __pyx_t_5);
         __pyx_t_5 = 0;
 
-        /* "multiworker.pyx":246
+        /* "multiworker.pyx":242
  * 
  *                 avg_episode_time = (time()- time_start)/(self.episode_count + 1)
  *                 agents_arrived = num_agents_done/self.env.num_agents             # <<<<<<<<<<<<<<
  * 
  *                 self.episode_agents_arrived.append(agents_arrived)
  */
-        __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_env); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 246, __pyx_L3_error)
+        __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_env); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 242, __pyx_L3_error)
         __Pyx_GOTREF(__pyx_t_5);
-        __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_n_s_num_agents); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 246, __pyx_L3_error)
+        __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_n_s_num_agents); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 242, __pyx_L3_error)
         __Pyx_GOTREF(__pyx_t_7);
         __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-        __pyx_t_5 = __Pyx_PyNumber_Divide(__pyx_v_num_agents_done, __pyx_t_7); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 246, __pyx_L3_error)
+        __pyx_t_5 = __Pyx_PyNumber_Divide(__pyx_v_num_agents_done, __pyx_t_7); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 242, __pyx_L3_error)
         __Pyx_GOTREF(__pyx_t_5);
         __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
         __Pyx_XDECREF_SET(__pyx_v_agents_arrived, __pyx_t_5);
         __pyx_t_5 = 0;
 
-        /* "multiworker.pyx":248
+        /* "multiworker.pyx":244
  *                 agents_arrived = num_agents_done/self.env.num_agents
  * 
  *                 self.episode_agents_arrived.append(agents_arrived)             # <<<<<<<<<<<<<<
  *                 self.episode_rewards.append(episode_reward)
  *                 self.episode_lengths.append(episode_step_count)
  */
-        __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_episode_agents_arrived); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 248, __pyx_L3_error)
+        __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_episode_agents_arrived); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 244, __pyx_L3_error)
         __Pyx_GOTREF(__pyx_t_5);
-        __pyx_t_17 = __Pyx_PyObject_Append(__pyx_t_5, __pyx_v_agents_arrived); if (unlikely(__pyx_t_17 == ((int)-1))) __PYX_ERR(0, 248, __pyx_L3_error)
+        __pyx_t_17 = __Pyx_PyObject_Append(__pyx_t_5, __pyx_v_agents_arrived); if (unlikely(__pyx_t_17 == ((int)-1))) __PYX_ERR(0, 244, __pyx_L3_error)
         __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-        /* "multiworker.pyx":249
+        /* "multiworker.pyx":245
  * 
  *                 self.episode_agents_arrived.append(agents_arrived)
  *                 self.episode_rewards.append(episode_reward)             # <<<<<<<<<<<<<<
  *                 self.episode_lengths.append(episode_step_count)
  *                 self.episode_mean_values.append(np.mean(episode_values))
  */
-        __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_episode_rewards); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 249, __pyx_L3_error)
+        __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_episode_rewards); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 245, __pyx_L3_error)
         __Pyx_GOTREF(__pyx_t_5);
-        __pyx_t_17 = __Pyx_PyObject_Append(__pyx_t_5, __pyx_v_episode_reward); if (unlikely(__pyx_t_17 == ((int)-1))) __PYX_ERR(0, 249, __pyx_L3_error)
+        __pyx_t_17 = __Pyx_PyObject_Append(__pyx_t_5, __pyx_v_episode_reward); if (unlikely(__pyx_t_17 == ((int)-1))) __PYX_ERR(0, 245, __pyx_L3_error)
         __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-        /* "multiworker.pyx":250
+        /* "multiworker.pyx":246
  *                 self.episode_agents_arrived.append(agents_arrived)
  *                 self.episode_rewards.append(episode_reward)
  *                 self.episode_lengths.append(episode_step_count)             # <<<<<<<<<<<<<<
  *                 self.episode_mean_values.append(np.mean(episode_values))
  *                 self.episode_success.append(episode_done)
  */
-        __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_episode_lengths); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 250, __pyx_L3_error)
+        __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_episode_lengths); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 246, __pyx_L3_error)
         __Pyx_GOTREF(__pyx_t_5);
-        __pyx_t_17 = __Pyx_PyObject_Append(__pyx_t_5, __pyx_v_episode_step_count); if (unlikely(__pyx_t_17 == ((int)-1))) __PYX_ERR(0, 250, __pyx_L3_error)
+        __pyx_t_17 = __Pyx_PyObject_Append(__pyx_t_5, __pyx_v_episode_step_count); if (unlikely(__pyx_t_17 == ((int)-1))) __PYX_ERR(0, 246, __pyx_L3_error)
         __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-        /* "multiworker.pyx":251
+        /* "multiworker.pyx":247
  *                 self.episode_rewards.append(episode_reward)
  *                 self.episode_lengths.append(episode_step_count)
  *                 self.episode_mean_values.append(np.mean(episode_values))             # <<<<<<<<<<<<<<
  *                 self.episode_success.append(episode_done)
  * 
  */
-        __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_episode_mean_values); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 251, __pyx_L3_error)
+        __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_episode_mean_values); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 247, __pyx_L3_error)
         __Pyx_GOTREF(__pyx_t_5);
-        __Pyx_GetModuleGlobalName(__pyx_t_6, __pyx_n_s_np); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 251, __pyx_L3_error)
+        __Pyx_GetModuleGlobalName(__pyx_t_6, __pyx_n_s_np); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 247, __pyx_L3_error)
         __Pyx_GOTREF(__pyx_t_6);
-        __pyx_t_15 = __Pyx_PyObject_GetAttrStr(__pyx_t_6, __pyx_n_s_mean); if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 251, __pyx_L3_error)
+        __pyx_t_15 = __Pyx_PyObject_GetAttrStr(__pyx_t_6, __pyx_n_s_mean); if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 247, __pyx_L3_error)
         __Pyx_GOTREF(__pyx_t_15);
         __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
         __pyx_t_6 = NULL;
@@ -5717,33 +5717,33 @@ static PyObject *__pyx_pf_11multiworker_6Worker_2work(CYTHON_UNUSED PyObject *__
         }
         __pyx_t_7 = (__pyx_t_6) ? __Pyx_PyObject_Call2Args(__pyx_t_15, __pyx_t_6, __pyx_v_episode_values) : __Pyx_PyObject_CallOneArg(__pyx_t_15, __pyx_v_episode_values);
         __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
-        if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 251, __pyx_L3_error)
+        if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 247, __pyx_L3_error)
         __Pyx_GOTREF(__pyx_t_7);
         __Pyx_DECREF(__pyx_t_15); __pyx_t_15 = 0;
-        __pyx_t_17 = __Pyx_PyObject_Append(__pyx_t_5, __pyx_t_7); if (unlikely(__pyx_t_17 == ((int)-1))) __PYX_ERR(0, 251, __pyx_L3_error)
+        __pyx_t_17 = __Pyx_PyObject_Append(__pyx_t_5, __pyx_t_7); if (unlikely(__pyx_t_17 == ((int)-1))) __PYX_ERR(0, 247, __pyx_L3_error)
         __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
         __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
 
-        /* "multiworker.pyx":252
+        /* "multiworker.pyx":248
  *                 self.episode_lengths.append(episode_step_count)
  *                 self.episode_mean_values.append(np.mean(episode_values))
  *                 self.episode_success.append(episode_done)             # <<<<<<<<<<<<<<
  * 
  *                 v_l, p_l, e_l, g_n, v_n = self.train(episode_buffer, episode_done)
  */
-        __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_episode_success); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 252, __pyx_L3_error)
+        __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_episode_success); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 248, __pyx_L3_error)
         __Pyx_GOTREF(__pyx_t_7);
-        __pyx_t_17 = __Pyx_PyObject_Append(__pyx_t_7, __pyx_v_episode_done); if (unlikely(__pyx_t_17 == ((int)-1))) __PYX_ERR(0, 252, __pyx_L3_error)
+        __pyx_t_17 = __Pyx_PyObject_Append(__pyx_t_7, __pyx_v_episode_done); if (unlikely(__pyx_t_17 == ((int)-1))) __PYX_ERR(0, 248, __pyx_L3_error)
         __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
 
-        /* "multiworker.pyx":254
+        /* "multiworker.pyx":250
  *                 self.episode_success.append(episode_done)
  * 
  *                 v_l, p_l, e_l, g_n, v_n = self.train(episode_buffer, episode_done)             # <<<<<<<<<<<<<<
  *                 self.stats.append([v_l, p_l, e_l, g_n, v_n])
  * 
  */
-        __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_train); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 254, __pyx_L3_error)
+        __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_train); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 250, __pyx_L3_error)
         __Pyx_GOTREF(__pyx_t_5);
         __pyx_t_15 = NULL;
         __pyx_t_18 = 0;
@@ -5760,7 +5760,7 @@ static PyObject *__pyx_pf_11multiworker_6Worker_2work(CYTHON_UNUSED PyObject *__
         #if CYTHON_FAST_PYCALL
         if (PyFunction_Check(__pyx_t_5)) {
           PyObject *__pyx_temp[3] = {__pyx_t_15, __pyx_v_episode_buffer, __pyx_v_episode_done};
-          __pyx_t_7 = __Pyx_PyFunction_FastCall(__pyx_t_5, __pyx_temp+1-__pyx_t_18, 2+__pyx_t_18); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 254, __pyx_L3_error)
+          __pyx_t_7 = __Pyx_PyFunction_FastCall(__pyx_t_5, __pyx_temp+1-__pyx_t_18, 2+__pyx_t_18); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 250, __pyx_L3_error)
           __Pyx_XDECREF(__pyx_t_15); __pyx_t_15 = 0;
           __Pyx_GOTREF(__pyx_t_7);
         } else
@@ -5768,13 +5768,13 @@ static PyObject *__pyx_pf_11multiworker_6Worker_2work(CYTHON_UNUSED PyObject *__
         #if CYTHON_FAST_PYCCALL
         if (__Pyx_PyFastCFunction_Check(__pyx_t_5)) {
           PyObject *__pyx_temp[3] = {__pyx_t_15, __pyx_v_episode_buffer, __pyx_v_episode_done};
-          __pyx_t_7 = __Pyx_PyCFunction_FastCall(__pyx_t_5, __pyx_temp+1-__pyx_t_18, 2+__pyx_t_18); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 254, __pyx_L3_error)
+          __pyx_t_7 = __Pyx_PyCFunction_FastCall(__pyx_t_5, __pyx_temp+1-__pyx_t_18, 2+__pyx_t_18); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 250, __pyx_L3_error)
           __Pyx_XDECREF(__pyx_t_15); __pyx_t_15 = 0;
           __Pyx_GOTREF(__pyx_t_7);
         } else
         #endif
         {
-          __pyx_t_6 = PyTuple_New(2+__pyx_t_18); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 254, __pyx_L3_error)
+          __pyx_t_6 = PyTuple_New(2+__pyx_t_18); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 250, __pyx_L3_error)
           __Pyx_GOTREF(__pyx_t_6);
           if (__pyx_t_15) {
             __Pyx_GIVEREF(__pyx_t_15); PyTuple_SET_ITEM(__pyx_t_6, 0, __pyx_t_15); __pyx_t_15 = NULL;
@@ -5785,7 +5785,7 @@ static PyObject *__pyx_pf_11multiworker_6Worker_2work(CYTHON_UNUSED PyObject *__
           __Pyx_INCREF(__pyx_v_episode_done);
           __Pyx_GIVEREF(__pyx_v_episode_done);
           PyTuple_SET_ITEM(__pyx_t_6, 1+__pyx_t_18, __pyx_v_episode_done);
-          __pyx_t_7 = __Pyx_PyObject_Call(__pyx_t_5, __pyx_t_6, NULL); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 254, __pyx_L3_error)
+          __pyx_t_7 = __Pyx_PyObject_Call(__pyx_t_5, __pyx_t_6, NULL); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 250, __pyx_L3_error)
           __Pyx_GOTREF(__pyx_t_7);
           __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
         }
@@ -5796,7 +5796,7 @@ static PyObject *__pyx_pf_11multiworker_6Worker_2work(CYTHON_UNUSED PyObject *__
           if (unlikely(size != 5)) {
             if (size > 5) __Pyx_RaiseTooManyValuesError(5);
             else if (size >= 0) __Pyx_RaiseNeedMoreValuesError(size);
-            __PYX_ERR(0, 254, __pyx_L3_error)
+            __PYX_ERR(0, 250, __pyx_L3_error)
           }
           #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
           if (likely(PyTuple_CheckExact(sequence))) {
@@ -5822,7 +5822,7 @@ static PyObject *__pyx_pf_11multiworker_6Worker_2work(CYTHON_UNUSED PyObject *__
             Py_ssize_t i;
             PyObject** temps[5] = {&__pyx_t_5,&__pyx_t_6,&__pyx_t_15,&__pyx_t_4,&__pyx_t_19};
             for (i=0; i < 5; i++) {
-              PyObject* item = PySequence_ITEM(sequence, i); if (unlikely(!item)) __PYX_ERR(0, 254, __pyx_L3_error)
+              PyObject* item = PySequence_ITEM(sequence, i); if (unlikely(!item)) __PYX_ERR(0, 250, __pyx_L3_error)
               __Pyx_GOTREF(item);
               *(temps[i]) = item;
             }
@@ -5832,7 +5832,7 @@ static PyObject *__pyx_pf_11multiworker_6Worker_2work(CYTHON_UNUSED PyObject *__
         } else {
           Py_ssize_t index = -1;
           PyObject** temps[5] = {&__pyx_t_5,&__pyx_t_6,&__pyx_t_15,&__pyx_t_4,&__pyx_t_19};
-          __pyx_t_22 = PyObject_GetIter(__pyx_t_7); if (unlikely(!__pyx_t_22)) __PYX_ERR(0, 254, __pyx_L3_error)
+          __pyx_t_22 = PyObject_GetIter(__pyx_t_7); if (unlikely(!__pyx_t_22)) __PYX_ERR(0, 250, __pyx_L3_error)
           __Pyx_GOTREF(__pyx_t_22);
           __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
           __pyx_t_12 = Py_TYPE(__pyx_t_22)->tp_iternext;
@@ -5841,7 +5841,7 @@ static PyObject *__pyx_pf_11multiworker_6Worker_2work(CYTHON_UNUSED PyObject *__
             __Pyx_GOTREF(item);
             *(temps[index]) = item;
           }
-          if (__Pyx_IternextUnpackEndCheck(__pyx_t_12(__pyx_t_22), 5) < 0) __PYX_ERR(0, 254, __pyx_L3_error)
+          if (__Pyx_IternextUnpackEndCheck(__pyx_t_12(__pyx_t_22), 5) < 0) __PYX_ERR(0, 250, __pyx_L3_error)
           __pyx_t_12 = NULL;
           __Pyx_DECREF(__pyx_t_22); __pyx_t_22 = 0;
           goto __pyx_L59_unpacking_done;
@@ -5849,7 +5849,7 @@ static PyObject *__pyx_pf_11multiworker_6Worker_2work(CYTHON_UNUSED PyObject *__
           __Pyx_DECREF(__pyx_t_22); __pyx_t_22 = 0;
           __pyx_t_12 = NULL;
           if (__Pyx_IterFinish() == 0) __Pyx_RaiseNeedMoreValuesError(index);
-          __PYX_ERR(0, 254, __pyx_L3_error)
+          __PYX_ERR(0, 250, __pyx_L3_error)
           __pyx_L59_unpacking_done:;
         }
         __Pyx_XDECREF_SET(__pyx_v_v_l, __pyx_t_5);
@@ -5863,16 +5863,16 @@ static PyObject *__pyx_pf_11multiworker_6Worker_2work(CYTHON_UNUSED PyObject *__
         __Pyx_XDECREF_SET(__pyx_v_v_n, __pyx_t_19);
         __pyx_t_19 = 0;
 
-        /* "multiworker.pyx":255
+        /* "multiworker.pyx":251
  * 
  *                 v_l, p_l, e_l, g_n, v_n = self.train(episode_buffer, episode_done)
  *                 self.stats.append([v_l, p_l, e_l, g_n, v_n])             # <<<<<<<<<<<<<<
  * 
  *                 # Save stats to Tensorboard every 5 episodes
  */
-        __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_stats); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 255, __pyx_L3_error)
+        __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_stats); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 251, __pyx_L3_error)
         __Pyx_GOTREF(__pyx_t_7);
-        __pyx_t_19 = PyList_New(5); if (unlikely(!__pyx_t_19)) __PYX_ERR(0, 255, __pyx_L3_error)
+        __pyx_t_19 = PyList_New(5); if (unlikely(!__pyx_t_19)) __PYX_ERR(0, 251, __pyx_L3_error)
         __Pyx_GOTREF(__pyx_t_19);
         __Pyx_INCREF(__pyx_v_v_l);
         __Pyx_GIVEREF(__pyx_v_v_l);
@@ -5889,18 +5889,18 @@ static PyObject *__pyx_pf_11multiworker_6Worker_2work(CYTHON_UNUSED PyObject *__
         __Pyx_INCREF(__pyx_v_v_n);
         __Pyx_GIVEREF(__pyx_v_v_n);
         PyList_SET_ITEM(__pyx_t_19, 4, __pyx_v_v_n);
-        __pyx_t_17 = __Pyx_PyObject_Append(__pyx_t_7, __pyx_t_19); if (unlikely(__pyx_t_17 == ((int)-1))) __PYX_ERR(0, 255, __pyx_L3_error)
+        __pyx_t_17 = __Pyx_PyObject_Append(__pyx_t_7, __pyx_t_19); if (unlikely(__pyx_t_17 == ((int)-1))) __PYX_ERR(0, 251, __pyx_L3_error)
         __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
         __Pyx_DECREF(__pyx_t_19); __pyx_t_19 = 0;
 
-        /* "multiworker.pyx":258
+        /* "multiworker.pyx":254
  * 
  *                 # Save stats to Tensorboard every 5 episodes
  *                 self.log_in_tensorboard()             # <<<<<<<<<<<<<<
  *                 self.episode_count += 1
  * 
  */
-        __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_log_in_tensorboard); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 258, __pyx_L3_error)
+        __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_log_in_tensorboard); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 254, __pyx_L3_error)
         __Pyx_GOTREF(__pyx_t_7);
         __pyx_t_4 = NULL;
         if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_7))) {
@@ -5914,56 +5914,56 @@ static PyObject *__pyx_pf_11multiworker_6Worker_2work(CYTHON_UNUSED PyObject *__
         }
         __pyx_t_19 = (__pyx_t_4) ? __Pyx_PyObject_CallOneArg(__pyx_t_7, __pyx_t_4) : __Pyx_PyObject_CallNoArg(__pyx_t_7);
         __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
-        if (unlikely(!__pyx_t_19)) __PYX_ERR(0, 258, __pyx_L3_error)
+        if (unlikely(!__pyx_t_19)) __PYX_ERR(0, 254, __pyx_L3_error)
         __Pyx_GOTREF(__pyx_t_19);
         __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
         __Pyx_DECREF(__pyx_t_19); __pyx_t_19 = 0;
 
-        /* "multiworker.pyx":259
+        /* "multiworker.pyx":255
  *                 # Save stats to Tensorboard every 5 episodes
  *                 self.log_in_tensorboard()
  *                 self.episode_count += 1             # <<<<<<<<<<<<<<
  * 
  *                 print('Episode', self.episode_count,'of',self.name,'with',episode_step_count,'steps, reward of',episode_reward,', perc. arrived',agents_arrived, ', mean entropy of', np.mean([l[2] for l in self.stats[-1:]]), ', curriculum level', self.curriculum.current_level, ', using best actions:', use_best_actions,', cancel episode:', cancel_episode, ', time', episode_time, ', Avg. time', avg_episode_time)
  */
-        __pyx_t_19 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_episode_count); if (unlikely(!__pyx_t_19)) __PYX_ERR(0, 259, __pyx_L3_error)
+        __pyx_t_19 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_episode_count); if (unlikely(!__pyx_t_19)) __PYX_ERR(0, 255, __pyx_L3_error)
         __Pyx_GOTREF(__pyx_t_19);
-        __pyx_t_7 = __Pyx_PyInt_AddObjC(__pyx_t_19, __pyx_int_1, 1, 1, 0); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 259, __pyx_L3_error)
+        __pyx_t_7 = __Pyx_PyInt_AddObjC(__pyx_t_19, __pyx_int_1, 1, 1, 0); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 255, __pyx_L3_error)
         __Pyx_GOTREF(__pyx_t_7);
         __Pyx_DECREF(__pyx_t_19); __pyx_t_19 = 0;
-        if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_episode_count, __pyx_t_7) < 0) __PYX_ERR(0, 259, __pyx_L3_error)
+        if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_episode_count, __pyx_t_7) < 0) __PYX_ERR(0, 255, __pyx_L3_error)
         __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
 
-        /* "multiworker.pyx":261
+        /* "multiworker.pyx":257
  *                 self.episode_count += 1
  * 
  *                 print('Episode', self.episode_count,'of',self.name,'with',episode_step_count,'steps, reward of',episode_reward,', perc. arrived',agents_arrived, ', mean entropy of', np.mean([l[2] for l in self.stats[-1:]]), ', curriculum level', self.curriculum.current_level, ', using best actions:', use_best_actions,', cancel episode:', cancel_episode, ', time', episode_time, ', Avg. time', avg_episode_time)             # <<<<<<<<<<<<<<
  * 
  *             return self.episode_count
  */
-        __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_episode_count); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 261, __pyx_L3_error)
+        __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_episode_count); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 257, __pyx_L3_error)
         __Pyx_GOTREF(__pyx_t_7);
-        __pyx_t_19 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_name); if (unlikely(!__pyx_t_19)) __PYX_ERR(0, 261, __pyx_L3_error)
+        __pyx_t_19 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_name); if (unlikely(!__pyx_t_19)) __PYX_ERR(0, 257, __pyx_L3_error)
         __Pyx_GOTREF(__pyx_t_19);
-        __Pyx_GetModuleGlobalName(__pyx_t_15, __pyx_n_s_np); if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 261, __pyx_L3_error)
+        __Pyx_GetModuleGlobalName(__pyx_t_15, __pyx_n_s_np); if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 257, __pyx_L3_error)
         __Pyx_GOTREF(__pyx_t_15);
-        __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_t_15, __pyx_n_s_mean); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 261, __pyx_L3_error)
+        __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_t_15, __pyx_n_s_mean); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 257, __pyx_L3_error)
         __Pyx_GOTREF(__pyx_t_6);
         __Pyx_DECREF(__pyx_t_15); __pyx_t_15 = 0;
-        __pyx_t_15 = PyList_New(0); if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 261, __pyx_L3_error)
+        __pyx_t_15 = PyList_New(0); if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 257, __pyx_L3_error)
         __Pyx_GOTREF(__pyx_t_15);
-        __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_stats); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 261, __pyx_L3_error)
+        __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_stats); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 257, __pyx_L3_error)
         __Pyx_GOTREF(__pyx_t_5);
-        __pyx_t_22 = __Pyx_PyObject_GetSlice(__pyx_t_5, -1L, 0, NULL, NULL, &__pyx_slice__7, 1, 0, 1); if (unlikely(!__pyx_t_22)) __PYX_ERR(0, 261, __pyx_L3_error)
+        __pyx_t_22 = __Pyx_PyObject_GetSlice(__pyx_t_5, -1L, 0, NULL, NULL, &__pyx_slice__7, 1, 0, 1); if (unlikely(!__pyx_t_22)) __PYX_ERR(0, 257, __pyx_L3_error)
         __Pyx_GOTREF(__pyx_t_22);
         __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
         if (likely(PyList_CheckExact(__pyx_t_22)) || PyTuple_CheckExact(__pyx_t_22)) {
           __pyx_t_5 = __pyx_t_22; __Pyx_INCREF(__pyx_t_5); __pyx_t_13 = 0;
           __pyx_t_11 = NULL;
         } else {
-          __pyx_t_13 = -1; __pyx_t_5 = PyObject_GetIter(__pyx_t_22); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 261, __pyx_L3_error)
+          __pyx_t_13 = -1; __pyx_t_5 = PyObject_GetIter(__pyx_t_22); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 257, __pyx_L3_error)
           __Pyx_GOTREF(__pyx_t_5);
-          __pyx_t_11 = Py_TYPE(__pyx_t_5)->tp_iternext; if (unlikely(!__pyx_t_11)) __PYX_ERR(0, 261, __pyx_L3_error)
+          __pyx_t_11 = Py_TYPE(__pyx_t_5)->tp_iternext; if (unlikely(!__pyx_t_11)) __PYX_ERR(0, 257, __pyx_L3_error)
         }
         __Pyx_DECREF(__pyx_t_22); __pyx_t_22 = 0;
         for (;;) {
@@ -5971,17 +5971,17 @@ static PyObject *__pyx_pf_11multiworker_6Worker_2work(CYTHON_UNUSED PyObject *__
             if (likely(PyList_CheckExact(__pyx_t_5))) {
               if (__pyx_t_13 >= PyList_GET_SIZE(__pyx_t_5)) break;
               #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-              __pyx_t_22 = PyList_GET_ITEM(__pyx_t_5, __pyx_t_13); __Pyx_INCREF(__pyx_t_22); __pyx_t_13++; if (unlikely(0 < 0)) __PYX_ERR(0, 261, __pyx_L3_error)
+              __pyx_t_22 = PyList_GET_ITEM(__pyx_t_5, __pyx_t_13); __Pyx_INCREF(__pyx_t_22); __pyx_t_13++; if (unlikely(0 < 0)) __PYX_ERR(0, 257, __pyx_L3_error)
               #else
-              __pyx_t_22 = PySequence_ITEM(__pyx_t_5, __pyx_t_13); __pyx_t_13++; if (unlikely(!__pyx_t_22)) __PYX_ERR(0, 261, __pyx_L3_error)
+              __pyx_t_22 = PySequence_ITEM(__pyx_t_5, __pyx_t_13); __pyx_t_13++; if (unlikely(!__pyx_t_22)) __PYX_ERR(0, 257, __pyx_L3_error)
               __Pyx_GOTREF(__pyx_t_22);
               #endif
             } else {
               if (__pyx_t_13 >= PyTuple_GET_SIZE(__pyx_t_5)) break;
               #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-              __pyx_t_22 = PyTuple_GET_ITEM(__pyx_t_5, __pyx_t_13); __Pyx_INCREF(__pyx_t_22); __pyx_t_13++; if (unlikely(0 < 0)) __PYX_ERR(0, 261, __pyx_L3_error)
+              __pyx_t_22 = PyTuple_GET_ITEM(__pyx_t_5, __pyx_t_13); __Pyx_INCREF(__pyx_t_22); __pyx_t_13++; if (unlikely(0 < 0)) __PYX_ERR(0, 257, __pyx_L3_error)
               #else
-              __pyx_t_22 = PySequence_ITEM(__pyx_t_5, __pyx_t_13); __pyx_t_13++; if (unlikely(!__pyx_t_22)) __PYX_ERR(0, 261, __pyx_L3_error)
+              __pyx_t_22 = PySequence_ITEM(__pyx_t_5, __pyx_t_13); __pyx_t_13++; if (unlikely(!__pyx_t_22)) __PYX_ERR(0, 257, __pyx_L3_error)
               __Pyx_GOTREF(__pyx_t_22);
               #endif
             }
@@ -5991,7 +5991,7 @@ static PyObject *__pyx_pf_11multiworker_6Worker_2work(CYTHON_UNUSED PyObject *__
               PyObject* exc_type = PyErr_Occurred();
               if (exc_type) {
                 if (likely(__Pyx_PyErr_GivenExceptionMatches(exc_type, PyExc_StopIteration))) PyErr_Clear();
-                else __PYX_ERR(0, 261, __pyx_L3_error)
+                else __PYX_ERR(0, 257, __pyx_L3_error)
               }
               break;
             }
@@ -5999,9 +5999,9 @@ static PyObject *__pyx_pf_11multiworker_6Worker_2work(CYTHON_UNUSED PyObject *__
           }
           __Pyx_XDECREF_SET(__pyx_v_l, __pyx_t_22);
           __pyx_t_22 = 0;
-          __pyx_t_22 = __Pyx_GetItemInt(__pyx_v_l, 2, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_22)) __PYX_ERR(0, 261, __pyx_L3_error)
+          __pyx_t_22 = __Pyx_GetItemInt(__pyx_v_l, 2, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_22)) __PYX_ERR(0, 257, __pyx_L3_error)
           __Pyx_GOTREF(__pyx_t_22);
-          if (unlikely(__Pyx_ListComp_Append(__pyx_t_15, (PyObject*)__pyx_t_22))) __PYX_ERR(0, 261, __pyx_L3_error)
+          if (unlikely(__Pyx_ListComp_Append(__pyx_t_15, (PyObject*)__pyx_t_22))) __PYX_ERR(0, 257, __pyx_L3_error)
           __Pyx_DECREF(__pyx_t_22); __pyx_t_22 = 0;
         }
         __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
@@ -6018,17 +6018,17 @@ static PyObject *__pyx_pf_11multiworker_6Worker_2work(CYTHON_UNUSED PyObject *__
         __pyx_t_4 = (__pyx_t_5) ? __Pyx_PyObject_Call2Args(__pyx_t_6, __pyx_t_5, __pyx_t_15) : __Pyx_PyObject_CallOneArg(__pyx_t_6, __pyx_t_15);
         __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
         __Pyx_DECREF(__pyx_t_15); __pyx_t_15 = 0;
-        if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 261, __pyx_L3_error)
+        if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 257, __pyx_L3_error)
         __Pyx_GOTREF(__pyx_t_4);
         __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-        __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_curriculum); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 261, __pyx_L3_error)
+        __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_curriculum); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 257, __pyx_L3_error)
         __Pyx_GOTREF(__pyx_t_6);
-        __pyx_t_15 = __Pyx_PyObject_GetAttrStr(__pyx_t_6, __pyx_n_s_current_level); if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 261, __pyx_L3_error)
+        __pyx_t_15 = __Pyx_PyObject_GetAttrStr(__pyx_t_6, __pyx_n_s_current_level); if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 257, __pyx_L3_error)
         __Pyx_GOTREF(__pyx_t_15);
         __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-        __pyx_t_6 = __Pyx_PyBool_FromLong(__pyx_v_cancel_episode); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 261, __pyx_L3_error)
+        __pyx_t_6 = __Pyx_PyBool_FromLong(__pyx_v_cancel_episode); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 257, __pyx_L3_error)
         __Pyx_GOTREF(__pyx_t_6);
-        __pyx_t_5 = PyTuple_New(22); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 261, __pyx_L3_error)
+        __pyx_t_5 = PyTuple_New(22); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 257, __pyx_L3_error)
         __Pyx_GOTREF(__pyx_t_5);
         __Pyx_INCREF(__pyx_n_s_Episode);
         __Pyx_GIVEREF(__pyx_n_s_Episode);
@@ -6096,11 +6096,11 @@ static PyObject *__pyx_pf_11multiworker_6Worker_2work(CYTHON_UNUSED PyObject *__
         __pyx_t_4 = 0;
         __pyx_t_15 = 0;
         __pyx_t_6 = 0;
-        if (__Pyx_PrintOne(0, __pyx_t_5) < 0) __PYX_ERR(0, 261, __pyx_L3_error)
+        if (__Pyx_PrintOne(0, __pyx_t_5) < 0) __PYX_ERR(0, 257, __pyx_L3_error)
         __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
       }
 
-      /* "multiworker.pyx":263
+      /* "multiworker.pyx":259
  *                 print('Episode', self.episode_count,'of',self.name,'with',episode_step_count,'steps, reward of',episode_reward,', perc. arrived',agents_arrived, ', mean entropy of', np.mean([l[2] for l in self.stats[-1:]]), ', curriculum level', self.curriculum.current_level, ', using best actions:', use_best_actions,', cancel episode:', cancel_episode, ', time', episode_time, ', Avg. time', avg_episode_time)
  * 
  *             return self.episode_count             # <<<<<<<<<<<<<<
@@ -6108,7 +6108,7 @@ static PyObject *__pyx_pf_11multiworker_6Worker_2work(CYTHON_UNUSED PyObject *__
  *         except KeyboardInterrupt:
  */
       __Pyx_XDECREF(__pyx_r);
-      __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_episode_count); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 263, __pyx_L3_error)
+      __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_episode_count); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 259, __pyx_L3_error)
       __Pyx_GOTREF(__pyx_t_5);
       __pyx_r = __pyx_t_5;
       __pyx_t_5 = 0;
@@ -6132,7 +6132,7 @@ static PyObject *__pyx_pf_11multiworker_6Worker_2work(CYTHON_UNUSED PyObject *__
     __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
     __Pyx_XDECREF(__pyx_t_7); __pyx_t_7 = 0;
 
-    /* "multiworker.pyx":265
+    /* "multiworker.pyx":261
  *             return self.episode_count
  * 
  *         except KeyboardInterrupt:             # <<<<<<<<<<<<<<
@@ -6142,19 +6142,19 @@ static PyObject *__pyx_pf_11multiworker_6Worker_2work(CYTHON_UNUSED PyObject *__
     __pyx_t_18 = __Pyx_PyErr_ExceptionMatches(__pyx_builtin_KeyboardInterrupt);
     if (__pyx_t_18) {
       __Pyx_AddTraceback("multiworker.Worker.work", __pyx_clineno, __pyx_lineno, __pyx_filename);
-      if (__Pyx_GetException(&__pyx_t_5, &__pyx_t_6, &__pyx_t_15) < 0) __PYX_ERR(0, 265, __pyx_L5_except_error)
+      if (__Pyx_GetException(&__pyx_t_5, &__pyx_t_6, &__pyx_t_15) < 0) __PYX_ERR(0, 261, __pyx_L5_except_error)
       __Pyx_GOTREF(__pyx_t_5);
       __Pyx_GOTREF(__pyx_t_6);
       __Pyx_GOTREF(__pyx_t_15);
 
-      /* "multiworker.pyx":266
+      /* "multiworker.pyx":262
  * 
  *         except KeyboardInterrupt:
  *             raise KeyboardInterruptError()             # <<<<<<<<<<<<<<
  * 
  * 
  */
-      __Pyx_GetModuleGlobalName(__pyx_t_19, __pyx_n_s_KeyboardInterruptError); if (unlikely(!__pyx_t_19)) __PYX_ERR(0, 266, __pyx_L5_except_error)
+      __Pyx_GetModuleGlobalName(__pyx_t_19, __pyx_n_s_KeyboardInterruptError); if (unlikely(!__pyx_t_19)) __PYX_ERR(0, 262, __pyx_L5_except_error)
       __Pyx_GOTREF(__pyx_t_19);
       __pyx_t_7 = NULL;
       if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_19))) {
@@ -6168,12 +6168,12 @@ static PyObject *__pyx_pf_11multiworker_6Worker_2work(CYTHON_UNUSED PyObject *__
       }
       __pyx_t_4 = (__pyx_t_7) ? __Pyx_PyObject_CallOneArg(__pyx_t_19, __pyx_t_7) : __Pyx_PyObject_CallNoArg(__pyx_t_19);
       __Pyx_XDECREF(__pyx_t_7); __pyx_t_7 = 0;
-      if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 266, __pyx_L5_except_error)
+      if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 262, __pyx_L5_except_error)
       __Pyx_GOTREF(__pyx_t_4);
       __Pyx_DECREF(__pyx_t_19); __pyx_t_19 = 0;
       __Pyx_Raise(__pyx_t_4, 0, 0, 0);
       __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-      __PYX_ERR(0, 266, __pyx_L5_except_error)
+      __PYX_ERR(0, 262, __pyx_L5_except_error)
     }
     goto __pyx_L5_except_error;
     __pyx_L5_except_error:;
@@ -6277,7 +6277,7 @@ static PyObject *__pyx_pf_11multiworker_6Worker_2work(CYTHON_UNUSED PyObject *__
   return __pyx_r;
 }
 
-/* "multiworker.pyx":269
+/* "multiworker.pyx":265
  * 
  * 
  *     def train(self, rollout, episode_done):             # <<<<<<<<<<<<<<
@@ -6320,17 +6320,17 @@ static PyObject *__pyx_pw_11multiworker_6Worker_5train(PyObject *__pyx_self, PyO
         case  1:
         if (likely((values[1] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_rollout)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("train", 1, 3, 3, 1); __PYX_ERR(0, 269, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("train", 1, 3, 3, 1); __PYX_ERR(0, 265, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  2:
         if (likely((values[2] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_episode_done)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("train", 1, 3, 3, 2); __PYX_ERR(0, 269, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("train", 1, 3, 3, 2); __PYX_ERR(0, 265, __pyx_L3_error)
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "train") < 0)) __PYX_ERR(0, 269, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "train") < 0)) __PYX_ERR(0, 265, __pyx_L3_error)
       }
     } else if (PyTuple_GET_SIZE(__pyx_args) != 3) {
       goto __pyx_L5_argtuple_error;
@@ -6345,7 +6345,7 @@ static PyObject *__pyx_pw_11multiworker_6Worker_5train(PyObject *__pyx_self, PyO
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("train", 1, 3, 3, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 269, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("train", 1, 3, 3, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 265, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_AddTraceback("multiworker.Worker.train", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
@@ -6392,52 +6392,52 @@ static PyObject *__pyx_pf_11multiworker_6Worker_4train(CYTHON_UNUSED PyObject *_
   PyObject *(*__pyx_t_14)(PyObject *);
   __Pyx_RefNannySetupContext("train", 0);
 
-  /* "multiworker.pyx":270
+  /* "multiworker.pyx":266
  * 
  *     def train(self, rollout, episode_done):
  *         all_rollouts = []             # <<<<<<<<<<<<<<
  *         all_rewards = []
  * 
  */
-  __pyx_t_1 = PyList_New(0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 270, __pyx_L1_error)
+  __pyx_t_1 = PyList_New(0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 266, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_v_all_rollouts = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "multiworker.pyx":271
+  /* "multiworker.pyx":267
  *     def train(self, rollout, episode_done):
  *         all_rollouts = []
  *         all_rewards = []             # <<<<<<<<<<<<<<
  * 
  *         for i in range(self.env.num_agents):
  */
-  __pyx_t_1 = PyList_New(0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 271, __pyx_L1_error)
+  __pyx_t_1 = PyList_New(0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 267, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_v_all_rewards = ((PyObject*)__pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "multiworker.pyx":273
+  /* "multiworker.pyx":269
  *         all_rewards = []
  * 
  *         for i in range(self.env.num_agents):             # <<<<<<<<<<<<<<
  *             rewards = [row[2] for row in rollout[i]]
  *             rewards = discount(rewards, self.params.gamma)
  */
-  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_env); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 273, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_env); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 269, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_num_agents); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 273, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_num_agents); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 269, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_builtin_range, __pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 273, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_builtin_range, __pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 269, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   if (likely(PyList_CheckExact(__pyx_t_1)) || PyTuple_CheckExact(__pyx_t_1)) {
     __pyx_t_2 = __pyx_t_1; __Pyx_INCREF(__pyx_t_2); __pyx_t_3 = 0;
     __pyx_t_4 = NULL;
   } else {
-    __pyx_t_3 = -1; __pyx_t_2 = PyObject_GetIter(__pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 273, __pyx_L1_error)
+    __pyx_t_3 = -1; __pyx_t_2 = PyObject_GetIter(__pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 269, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_4 = Py_TYPE(__pyx_t_2)->tp_iternext; if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 273, __pyx_L1_error)
+    __pyx_t_4 = Py_TYPE(__pyx_t_2)->tp_iternext; if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 269, __pyx_L1_error)
   }
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   for (;;) {
@@ -6445,17 +6445,17 @@ static PyObject *__pyx_pf_11multiworker_6Worker_4train(CYTHON_UNUSED PyObject *_
       if (likely(PyList_CheckExact(__pyx_t_2))) {
         if (__pyx_t_3 >= PyList_GET_SIZE(__pyx_t_2)) break;
         #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-        __pyx_t_1 = PyList_GET_ITEM(__pyx_t_2, __pyx_t_3); __Pyx_INCREF(__pyx_t_1); __pyx_t_3++; if (unlikely(0 < 0)) __PYX_ERR(0, 273, __pyx_L1_error)
+        __pyx_t_1 = PyList_GET_ITEM(__pyx_t_2, __pyx_t_3); __Pyx_INCREF(__pyx_t_1); __pyx_t_3++; if (unlikely(0 < 0)) __PYX_ERR(0, 269, __pyx_L1_error)
         #else
-        __pyx_t_1 = PySequence_ITEM(__pyx_t_2, __pyx_t_3); __pyx_t_3++; if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 273, __pyx_L1_error)
+        __pyx_t_1 = PySequence_ITEM(__pyx_t_2, __pyx_t_3); __pyx_t_3++; if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 269, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_1);
         #endif
       } else {
         if (__pyx_t_3 >= PyTuple_GET_SIZE(__pyx_t_2)) break;
         #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-        __pyx_t_1 = PyTuple_GET_ITEM(__pyx_t_2, __pyx_t_3); __Pyx_INCREF(__pyx_t_1); __pyx_t_3++; if (unlikely(0 < 0)) __PYX_ERR(0, 273, __pyx_L1_error)
+        __pyx_t_1 = PyTuple_GET_ITEM(__pyx_t_2, __pyx_t_3); __Pyx_INCREF(__pyx_t_1); __pyx_t_3++; if (unlikely(0 < 0)) __PYX_ERR(0, 269, __pyx_L1_error)
         #else
-        __pyx_t_1 = PySequence_ITEM(__pyx_t_2, __pyx_t_3); __pyx_t_3++; if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 273, __pyx_L1_error)
+        __pyx_t_1 = PySequence_ITEM(__pyx_t_2, __pyx_t_3); __pyx_t_3++; if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 269, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_1);
         #endif
       }
@@ -6465,7 +6465,7 @@ static PyObject *__pyx_pf_11multiworker_6Worker_4train(CYTHON_UNUSED PyObject *_
         PyObject* exc_type = PyErr_Occurred();
         if (exc_type) {
           if (likely(__Pyx_PyErr_GivenExceptionMatches(exc_type, PyExc_StopIteration))) PyErr_Clear();
-          else __PYX_ERR(0, 273, __pyx_L1_error)
+          else __PYX_ERR(0, 269, __pyx_L1_error)
         }
         break;
       }
@@ -6474,24 +6474,24 @@ static PyObject *__pyx_pf_11multiworker_6Worker_4train(CYTHON_UNUSED PyObject *_
     __Pyx_XDECREF_SET(__pyx_v_i, __pyx_t_1);
     __pyx_t_1 = 0;
 
-    /* "multiworker.pyx":274
+    /* "multiworker.pyx":270
  * 
  *         for i in range(self.env.num_agents):
  *             rewards = [row[2] for row in rollout[i]]             # <<<<<<<<<<<<<<
  *             rewards = discount(rewards, self.params.gamma)
  *             all_rewards.append(rewards)
  */
-    __pyx_t_1 = PyList_New(0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 274, __pyx_L1_error)
+    __pyx_t_1 = PyList_New(0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 270, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_5 = __Pyx_PyObject_GetItem(__pyx_v_rollout, __pyx_v_i); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 274, __pyx_L1_error)
+    __pyx_t_5 = __Pyx_PyObject_GetItem(__pyx_v_rollout, __pyx_v_i); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 270, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
     if (likely(PyList_CheckExact(__pyx_t_5)) || PyTuple_CheckExact(__pyx_t_5)) {
       __pyx_t_6 = __pyx_t_5; __Pyx_INCREF(__pyx_t_6); __pyx_t_7 = 0;
       __pyx_t_8 = NULL;
     } else {
-      __pyx_t_7 = -1; __pyx_t_6 = PyObject_GetIter(__pyx_t_5); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 274, __pyx_L1_error)
+      __pyx_t_7 = -1; __pyx_t_6 = PyObject_GetIter(__pyx_t_5); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 270, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_6);
-      __pyx_t_8 = Py_TYPE(__pyx_t_6)->tp_iternext; if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 274, __pyx_L1_error)
+      __pyx_t_8 = Py_TYPE(__pyx_t_6)->tp_iternext; if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 270, __pyx_L1_error)
     }
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
     for (;;) {
@@ -6499,17 +6499,17 @@ static PyObject *__pyx_pf_11multiworker_6Worker_4train(CYTHON_UNUSED PyObject *_
         if (likely(PyList_CheckExact(__pyx_t_6))) {
           if (__pyx_t_7 >= PyList_GET_SIZE(__pyx_t_6)) break;
           #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-          __pyx_t_5 = PyList_GET_ITEM(__pyx_t_6, __pyx_t_7); __Pyx_INCREF(__pyx_t_5); __pyx_t_7++; if (unlikely(0 < 0)) __PYX_ERR(0, 274, __pyx_L1_error)
+          __pyx_t_5 = PyList_GET_ITEM(__pyx_t_6, __pyx_t_7); __Pyx_INCREF(__pyx_t_5); __pyx_t_7++; if (unlikely(0 < 0)) __PYX_ERR(0, 270, __pyx_L1_error)
           #else
-          __pyx_t_5 = PySequence_ITEM(__pyx_t_6, __pyx_t_7); __pyx_t_7++; if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 274, __pyx_L1_error)
+          __pyx_t_5 = PySequence_ITEM(__pyx_t_6, __pyx_t_7); __pyx_t_7++; if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 270, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_5);
           #endif
         } else {
           if (__pyx_t_7 >= PyTuple_GET_SIZE(__pyx_t_6)) break;
           #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-          __pyx_t_5 = PyTuple_GET_ITEM(__pyx_t_6, __pyx_t_7); __Pyx_INCREF(__pyx_t_5); __pyx_t_7++; if (unlikely(0 < 0)) __PYX_ERR(0, 274, __pyx_L1_error)
+          __pyx_t_5 = PyTuple_GET_ITEM(__pyx_t_6, __pyx_t_7); __Pyx_INCREF(__pyx_t_5); __pyx_t_7++; if (unlikely(0 < 0)) __PYX_ERR(0, 270, __pyx_L1_error)
           #else
-          __pyx_t_5 = PySequence_ITEM(__pyx_t_6, __pyx_t_7); __pyx_t_7++; if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 274, __pyx_L1_error)
+          __pyx_t_5 = PySequence_ITEM(__pyx_t_6, __pyx_t_7); __pyx_t_7++; if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 270, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_5);
           #endif
         }
@@ -6519,7 +6519,7 @@ static PyObject *__pyx_pf_11multiworker_6Worker_4train(CYTHON_UNUSED PyObject *_
           PyObject* exc_type = PyErr_Occurred();
           if (exc_type) {
             if (likely(__Pyx_PyErr_GivenExceptionMatches(exc_type, PyExc_StopIteration))) PyErr_Clear();
-            else __PYX_ERR(0, 274, __pyx_L1_error)
+            else __PYX_ERR(0, 270, __pyx_L1_error)
           }
           break;
         }
@@ -6527,27 +6527,27 @@ static PyObject *__pyx_pf_11multiworker_6Worker_4train(CYTHON_UNUSED PyObject *_
       }
       __Pyx_XDECREF_SET(__pyx_v_row, __pyx_t_5);
       __pyx_t_5 = 0;
-      __pyx_t_5 = __Pyx_GetItemInt(__pyx_v_row, 2, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 274, __pyx_L1_error)
+      __pyx_t_5 = __Pyx_GetItemInt(__pyx_v_row, 2, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 270, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_5);
-      if (unlikely(__Pyx_ListComp_Append(__pyx_t_1, (PyObject*)__pyx_t_5))) __PYX_ERR(0, 274, __pyx_L1_error)
+      if (unlikely(__Pyx_ListComp_Append(__pyx_t_1, (PyObject*)__pyx_t_5))) __PYX_ERR(0, 270, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
     }
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
     __Pyx_XDECREF_SET(__pyx_v_rewards, __pyx_t_1);
     __pyx_t_1 = 0;
 
-    /* "multiworker.pyx":275
+    /* "multiworker.pyx":271
  *         for i in range(self.env.num_agents):
  *             rewards = [row[2] for row in rollout[i]]
  *             rewards = discount(rewards, self.params.gamma)             # <<<<<<<<<<<<<<
  *             all_rewards.append(rewards)
  *             all_rollouts += rollout[i]
  */
-    __Pyx_GetModuleGlobalName(__pyx_t_6, __pyx_n_s_discount); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 275, __pyx_L1_error)
+    __Pyx_GetModuleGlobalName(__pyx_t_6, __pyx_n_s_discount); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 271, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_6);
-    __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_params); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 275, __pyx_L1_error)
+    __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_params); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 271, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
-    __pyx_t_9 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_n_s_gamma); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 275, __pyx_L1_error)
+    __pyx_t_9 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_n_s_gamma); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 271, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_9);
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
     __pyx_t_5 = NULL;
@@ -6565,7 +6565,7 @@ static PyObject *__pyx_pf_11multiworker_6Worker_4train(CYTHON_UNUSED PyObject *_
     #if CYTHON_FAST_PYCALL
     if (PyFunction_Check(__pyx_t_6)) {
       PyObject *__pyx_temp[3] = {__pyx_t_5, __pyx_v_rewards, __pyx_t_9};
-      __pyx_t_1 = __Pyx_PyFunction_FastCall(__pyx_t_6, __pyx_temp+1-__pyx_t_10, 2+__pyx_t_10); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 275, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyFunction_FastCall(__pyx_t_6, __pyx_temp+1-__pyx_t_10, 2+__pyx_t_10); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 271, __pyx_L1_error)
       __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
       __Pyx_GOTREF(__pyx_t_1);
       __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
@@ -6574,14 +6574,14 @@ static PyObject *__pyx_pf_11multiworker_6Worker_4train(CYTHON_UNUSED PyObject *_
     #if CYTHON_FAST_PYCCALL
     if (__Pyx_PyFastCFunction_Check(__pyx_t_6)) {
       PyObject *__pyx_temp[3] = {__pyx_t_5, __pyx_v_rewards, __pyx_t_9};
-      __pyx_t_1 = __Pyx_PyCFunction_FastCall(__pyx_t_6, __pyx_temp+1-__pyx_t_10, 2+__pyx_t_10); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 275, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyCFunction_FastCall(__pyx_t_6, __pyx_temp+1-__pyx_t_10, 2+__pyx_t_10); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 271, __pyx_L1_error)
       __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
       __Pyx_GOTREF(__pyx_t_1);
       __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
     } else
     #endif
     {
-      __pyx_t_11 = PyTuple_New(2+__pyx_t_10); if (unlikely(!__pyx_t_11)) __PYX_ERR(0, 275, __pyx_L1_error)
+      __pyx_t_11 = PyTuple_New(2+__pyx_t_10); if (unlikely(!__pyx_t_11)) __PYX_ERR(0, 271, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_11);
       if (__pyx_t_5) {
         __Pyx_GIVEREF(__pyx_t_5); PyTuple_SET_ITEM(__pyx_t_11, 0, __pyx_t_5); __pyx_t_5 = NULL;
@@ -6592,7 +6592,7 @@ static PyObject *__pyx_pf_11multiworker_6Worker_4train(CYTHON_UNUSED PyObject *_
       __Pyx_GIVEREF(__pyx_t_9);
       PyTuple_SET_ITEM(__pyx_t_11, 1+__pyx_t_10, __pyx_t_9);
       __pyx_t_9 = 0;
-      __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_6, __pyx_t_11, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 275, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_6, __pyx_t_11, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 271, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
       __Pyx_DECREF(__pyx_t_11); __pyx_t_11 = 0;
     }
@@ -6600,31 +6600,31 @@ static PyObject *__pyx_pf_11multiworker_6Worker_4train(CYTHON_UNUSED PyObject *_
     __Pyx_DECREF_SET(__pyx_v_rewards, __pyx_t_1);
     __pyx_t_1 = 0;
 
-    /* "multiworker.pyx":276
+    /* "multiworker.pyx":272
  *             rewards = [row[2] for row in rollout[i]]
  *             rewards = discount(rewards, self.params.gamma)
  *             all_rewards.append(rewards)             # <<<<<<<<<<<<<<
  *             all_rollouts += rollout[i]
  * 
  */
-    __pyx_t_12 = __Pyx_PyList_Append(__pyx_v_all_rewards, __pyx_v_rewards); if (unlikely(__pyx_t_12 == ((int)-1))) __PYX_ERR(0, 276, __pyx_L1_error)
+    __pyx_t_12 = __Pyx_PyList_Append(__pyx_v_all_rewards, __pyx_v_rewards); if (unlikely(__pyx_t_12 == ((int)-1))) __PYX_ERR(0, 272, __pyx_L1_error)
 
-    /* "multiworker.pyx":277
+    /* "multiworker.pyx":273
  *             rewards = discount(rewards, self.params.gamma)
  *             all_rewards.append(rewards)
  *             all_rollouts += rollout[i]             # <<<<<<<<<<<<<<
  * 
  *         discounted_rewards = np.concatenate(all_rewards)
  */
-    __pyx_t_1 = __Pyx_PyObject_GetItem(__pyx_v_rollout, __pyx_v_i); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 277, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_GetItem(__pyx_v_rollout, __pyx_v_i); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 273, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_6 = PyNumber_InPlaceAdd(__pyx_v_all_rollouts, __pyx_t_1); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 277, __pyx_L1_error)
+    __pyx_t_6 = PyNumber_InPlaceAdd(__pyx_v_all_rollouts, __pyx_t_1); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 273, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_6);
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     __Pyx_DECREF_SET(__pyx_v_all_rollouts, __pyx_t_6);
     __pyx_t_6 = 0;
 
-    /* "multiworker.pyx":273
+    /* "multiworker.pyx":269
  *         all_rewards = []
  * 
  *         for i in range(self.env.num_agents):             # <<<<<<<<<<<<<<
@@ -6634,16 +6634,16 @@ static PyObject *__pyx_pf_11multiworker_6Worker_4train(CYTHON_UNUSED PyObject *_
   }
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "multiworker.pyx":279
+  /* "multiworker.pyx":275
  *             all_rollouts += rollout[i]
  * 
  *         discounted_rewards = np.concatenate(all_rewards)             # <<<<<<<<<<<<<<
  *         actions = np.asarray([row[1] for row in all_rollouts])
  *         values = np.asarray([row[5] for row in all_rollouts])
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_6, __pyx_n_s_np); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 279, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_6, __pyx_n_s_np); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 275, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_6);
-  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_6, __pyx_n_s_concatenate); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 279, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_6, __pyx_n_s_concatenate); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 275, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
   __pyx_t_6 = NULL;
@@ -6658,50 +6658,50 @@ static PyObject *__pyx_pf_11multiworker_6Worker_4train(CYTHON_UNUSED PyObject *_
   }
   __pyx_t_2 = (__pyx_t_6) ? __Pyx_PyObject_Call2Args(__pyx_t_1, __pyx_t_6, __pyx_v_all_rewards) : __Pyx_PyObject_CallOneArg(__pyx_t_1, __pyx_v_all_rewards);
   __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
-  if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 279, __pyx_L1_error)
+  if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 275, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_v_discounted_rewards = __pyx_t_2;
   __pyx_t_2 = 0;
 
-  /* "multiworker.pyx":280
+  /* "multiworker.pyx":276
  * 
  *         discounted_rewards = np.concatenate(all_rewards)
  *         actions = np.asarray([row[1] for row in all_rollouts])             # <<<<<<<<<<<<<<
  *         values = np.asarray([row[5] for row in all_rollouts])
  *         obs = self.obs_helper.buffer_to_obs_lists(all_rollouts)
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_np); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 280, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_np); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 276, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_asarray); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 280, __pyx_L1_error)
+  __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_asarray); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 276, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_6);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_1 = PyList_New(0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 280, __pyx_L1_error)
+  __pyx_t_1 = PyList_New(0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 276, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   if (likely(PyList_CheckExact(__pyx_v_all_rollouts)) || PyTuple_CheckExact(__pyx_v_all_rollouts)) {
     __pyx_t_11 = __pyx_v_all_rollouts; __Pyx_INCREF(__pyx_t_11); __pyx_t_3 = 0;
     __pyx_t_4 = NULL;
   } else {
-    __pyx_t_3 = -1; __pyx_t_11 = PyObject_GetIter(__pyx_v_all_rollouts); if (unlikely(!__pyx_t_11)) __PYX_ERR(0, 280, __pyx_L1_error)
+    __pyx_t_3 = -1; __pyx_t_11 = PyObject_GetIter(__pyx_v_all_rollouts); if (unlikely(!__pyx_t_11)) __PYX_ERR(0, 276, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_11);
-    __pyx_t_4 = Py_TYPE(__pyx_t_11)->tp_iternext; if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 280, __pyx_L1_error)
+    __pyx_t_4 = Py_TYPE(__pyx_t_11)->tp_iternext; if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 276, __pyx_L1_error)
   }
   for (;;) {
     if (likely(!__pyx_t_4)) {
       if (likely(PyList_CheckExact(__pyx_t_11))) {
         if (__pyx_t_3 >= PyList_GET_SIZE(__pyx_t_11)) break;
         #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-        __pyx_t_9 = PyList_GET_ITEM(__pyx_t_11, __pyx_t_3); __Pyx_INCREF(__pyx_t_9); __pyx_t_3++; if (unlikely(0 < 0)) __PYX_ERR(0, 280, __pyx_L1_error)
+        __pyx_t_9 = PyList_GET_ITEM(__pyx_t_11, __pyx_t_3); __Pyx_INCREF(__pyx_t_9); __pyx_t_3++; if (unlikely(0 < 0)) __PYX_ERR(0, 276, __pyx_L1_error)
         #else
-        __pyx_t_9 = PySequence_ITEM(__pyx_t_11, __pyx_t_3); __pyx_t_3++; if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 280, __pyx_L1_error)
+        __pyx_t_9 = PySequence_ITEM(__pyx_t_11, __pyx_t_3); __pyx_t_3++; if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 276, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_9);
         #endif
       } else {
         if (__pyx_t_3 >= PyTuple_GET_SIZE(__pyx_t_11)) break;
         #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-        __pyx_t_9 = PyTuple_GET_ITEM(__pyx_t_11, __pyx_t_3); __Pyx_INCREF(__pyx_t_9); __pyx_t_3++; if (unlikely(0 < 0)) __PYX_ERR(0, 280, __pyx_L1_error)
+        __pyx_t_9 = PyTuple_GET_ITEM(__pyx_t_11, __pyx_t_3); __Pyx_INCREF(__pyx_t_9); __pyx_t_3++; if (unlikely(0 < 0)) __PYX_ERR(0, 276, __pyx_L1_error)
         #else
-        __pyx_t_9 = PySequence_ITEM(__pyx_t_11, __pyx_t_3); __pyx_t_3++; if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 280, __pyx_L1_error)
+        __pyx_t_9 = PySequence_ITEM(__pyx_t_11, __pyx_t_3); __pyx_t_3++; if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 276, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_9);
         #endif
       }
@@ -6711,7 +6711,7 @@ static PyObject *__pyx_pf_11multiworker_6Worker_4train(CYTHON_UNUSED PyObject *_
         PyObject* exc_type = PyErr_Occurred();
         if (exc_type) {
           if (likely(__Pyx_PyErr_GivenExceptionMatches(exc_type, PyExc_StopIteration))) PyErr_Clear();
-          else __PYX_ERR(0, 280, __pyx_L1_error)
+          else __PYX_ERR(0, 276, __pyx_L1_error)
         }
         break;
       }
@@ -6719,9 +6719,9 @@ static PyObject *__pyx_pf_11multiworker_6Worker_4train(CYTHON_UNUSED PyObject *_
     }
     __Pyx_XDECREF_SET(__pyx_v_row, __pyx_t_9);
     __pyx_t_9 = 0;
-    __pyx_t_9 = __Pyx_GetItemInt(__pyx_v_row, 1, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 280, __pyx_L1_error)
+    __pyx_t_9 = __Pyx_GetItemInt(__pyx_v_row, 1, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 276, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_9);
-    if (unlikely(__Pyx_ListComp_Append(__pyx_t_1, (PyObject*)__pyx_t_9))) __PYX_ERR(0, 280, __pyx_L1_error)
+    if (unlikely(__Pyx_ListComp_Append(__pyx_t_1, (PyObject*)__pyx_t_9))) __PYX_ERR(0, 276, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
   }
   __Pyx_DECREF(__pyx_t_11); __pyx_t_11 = 0;
@@ -6738,50 +6738,50 @@ static PyObject *__pyx_pf_11multiworker_6Worker_4train(CYTHON_UNUSED PyObject *_
   __pyx_t_2 = (__pyx_t_11) ? __Pyx_PyObject_Call2Args(__pyx_t_6, __pyx_t_11, __pyx_t_1) : __Pyx_PyObject_CallOneArg(__pyx_t_6, __pyx_t_1);
   __Pyx_XDECREF(__pyx_t_11); __pyx_t_11 = 0;
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 280, __pyx_L1_error)
+  if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 276, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
   __pyx_v_actions = __pyx_t_2;
   __pyx_t_2 = 0;
 
-  /* "multiworker.pyx":281
+  /* "multiworker.pyx":277
  *         discounted_rewards = np.concatenate(all_rewards)
  *         actions = np.asarray([row[1] for row in all_rollouts])
  *         values = np.asarray([row[5] for row in all_rollouts])             # <<<<<<<<<<<<<<
  *         obs = self.obs_helper.buffer_to_obs_lists(all_rollouts)
  *         advantages = discounted_rewards - values
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_6, __pyx_n_s_np); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 281, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_6, __pyx_n_s_np); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 277, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_6);
-  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_6, __pyx_n_s_asarray); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 281, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_6, __pyx_n_s_asarray); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 277, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-  __pyx_t_6 = PyList_New(0); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 281, __pyx_L1_error)
+  __pyx_t_6 = PyList_New(0); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 277, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_6);
   if (likely(PyList_CheckExact(__pyx_v_all_rollouts)) || PyTuple_CheckExact(__pyx_v_all_rollouts)) {
     __pyx_t_11 = __pyx_v_all_rollouts; __Pyx_INCREF(__pyx_t_11); __pyx_t_3 = 0;
     __pyx_t_4 = NULL;
   } else {
-    __pyx_t_3 = -1; __pyx_t_11 = PyObject_GetIter(__pyx_v_all_rollouts); if (unlikely(!__pyx_t_11)) __PYX_ERR(0, 281, __pyx_L1_error)
+    __pyx_t_3 = -1; __pyx_t_11 = PyObject_GetIter(__pyx_v_all_rollouts); if (unlikely(!__pyx_t_11)) __PYX_ERR(0, 277, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_11);
-    __pyx_t_4 = Py_TYPE(__pyx_t_11)->tp_iternext; if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 281, __pyx_L1_error)
+    __pyx_t_4 = Py_TYPE(__pyx_t_11)->tp_iternext; if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 277, __pyx_L1_error)
   }
   for (;;) {
     if (likely(!__pyx_t_4)) {
       if (likely(PyList_CheckExact(__pyx_t_11))) {
         if (__pyx_t_3 >= PyList_GET_SIZE(__pyx_t_11)) break;
         #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-        __pyx_t_9 = PyList_GET_ITEM(__pyx_t_11, __pyx_t_3); __Pyx_INCREF(__pyx_t_9); __pyx_t_3++; if (unlikely(0 < 0)) __PYX_ERR(0, 281, __pyx_L1_error)
+        __pyx_t_9 = PyList_GET_ITEM(__pyx_t_11, __pyx_t_3); __Pyx_INCREF(__pyx_t_9); __pyx_t_3++; if (unlikely(0 < 0)) __PYX_ERR(0, 277, __pyx_L1_error)
         #else
-        __pyx_t_9 = PySequence_ITEM(__pyx_t_11, __pyx_t_3); __pyx_t_3++; if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 281, __pyx_L1_error)
+        __pyx_t_9 = PySequence_ITEM(__pyx_t_11, __pyx_t_3); __pyx_t_3++; if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 277, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_9);
         #endif
       } else {
         if (__pyx_t_3 >= PyTuple_GET_SIZE(__pyx_t_11)) break;
         #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-        __pyx_t_9 = PyTuple_GET_ITEM(__pyx_t_11, __pyx_t_3); __Pyx_INCREF(__pyx_t_9); __pyx_t_3++; if (unlikely(0 < 0)) __PYX_ERR(0, 281, __pyx_L1_error)
+        __pyx_t_9 = PyTuple_GET_ITEM(__pyx_t_11, __pyx_t_3); __Pyx_INCREF(__pyx_t_9); __pyx_t_3++; if (unlikely(0 < 0)) __PYX_ERR(0, 277, __pyx_L1_error)
         #else
-        __pyx_t_9 = PySequence_ITEM(__pyx_t_11, __pyx_t_3); __pyx_t_3++; if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 281, __pyx_L1_error)
+        __pyx_t_9 = PySequence_ITEM(__pyx_t_11, __pyx_t_3); __pyx_t_3++; if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 277, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_9);
         #endif
       }
@@ -6791,7 +6791,7 @@ static PyObject *__pyx_pf_11multiworker_6Worker_4train(CYTHON_UNUSED PyObject *_
         PyObject* exc_type = PyErr_Occurred();
         if (exc_type) {
           if (likely(__Pyx_PyErr_GivenExceptionMatches(exc_type, PyExc_StopIteration))) PyErr_Clear();
-          else __PYX_ERR(0, 281, __pyx_L1_error)
+          else __PYX_ERR(0, 277, __pyx_L1_error)
         }
         break;
       }
@@ -6799,9 +6799,9 @@ static PyObject *__pyx_pf_11multiworker_6Worker_4train(CYTHON_UNUSED PyObject *_
     }
     __Pyx_XDECREF_SET(__pyx_v_row, __pyx_t_9);
     __pyx_t_9 = 0;
-    __pyx_t_9 = __Pyx_GetItemInt(__pyx_v_row, 5, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 281, __pyx_L1_error)
+    __pyx_t_9 = __Pyx_GetItemInt(__pyx_v_row, 5, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 277, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_9);
-    if (unlikely(__Pyx_ListComp_Append(__pyx_t_6, (PyObject*)__pyx_t_9))) __PYX_ERR(0, 281, __pyx_L1_error)
+    if (unlikely(__Pyx_ListComp_Append(__pyx_t_6, (PyObject*)__pyx_t_9))) __PYX_ERR(0, 277, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
   }
   __Pyx_DECREF(__pyx_t_11); __pyx_t_11 = 0;
@@ -6818,22 +6818,22 @@ static PyObject *__pyx_pf_11multiworker_6Worker_4train(CYTHON_UNUSED PyObject *_
   __pyx_t_2 = (__pyx_t_11) ? __Pyx_PyObject_Call2Args(__pyx_t_1, __pyx_t_11, __pyx_t_6) : __Pyx_PyObject_CallOneArg(__pyx_t_1, __pyx_t_6);
   __Pyx_XDECREF(__pyx_t_11); __pyx_t_11 = 0;
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-  if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 281, __pyx_L1_error)
+  if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 277, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_v_values = __pyx_t_2;
   __pyx_t_2 = 0;
 
-  /* "multiworker.pyx":282
+  /* "multiworker.pyx":278
  *         actions = np.asarray([row[1] for row in all_rollouts])
  *         values = np.asarray([row[5] for row in all_rollouts])
  *         obs = self.obs_helper.buffer_to_obs_lists(all_rollouts)             # <<<<<<<<<<<<<<
  *         advantages = discounted_rewards - values
  * 
  */
-  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_obs_helper); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 282, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_obs_helper); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 278, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_buffer_to_obs_lists); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 282, __pyx_L1_error)
+  __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_buffer_to_obs_lists); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 278, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_6);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_t_1 = NULL;
@@ -6848,34 +6848,34 @@ static PyObject *__pyx_pf_11multiworker_6Worker_4train(CYTHON_UNUSED PyObject *_
   }
   __pyx_t_2 = (__pyx_t_1) ? __Pyx_PyObject_Call2Args(__pyx_t_6, __pyx_t_1, __pyx_v_all_rollouts) : __Pyx_PyObject_CallOneArg(__pyx_t_6, __pyx_v_all_rollouts);
   __Pyx_XDECREF(__pyx_t_1); __pyx_t_1 = 0;
-  if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 282, __pyx_L1_error)
+  if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 278, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
   __pyx_v_obs = __pyx_t_2;
   __pyx_t_2 = 0;
 
-  /* "multiworker.pyx":283
+  /* "multiworker.pyx":279
  *         values = np.asarray([row[5] for row in all_rollouts])
  *         obs = self.obs_helper.buffer_to_obs_lists(all_rollouts)
  *         advantages = discounted_rewards - values             # <<<<<<<<<<<<<<
  * 
  *         v_l,p_l,e_l, g_n, v_n = self.local_model.train(discounted_rewards, advantages, actions, obs, episode_done)
  */
-  __pyx_t_2 = PyNumber_Subtract(__pyx_v_discounted_rewards, __pyx_v_values); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 283, __pyx_L1_error)
+  __pyx_t_2 = PyNumber_Subtract(__pyx_v_discounted_rewards, __pyx_v_values); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 279, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __pyx_v_advantages = __pyx_t_2;
   __pyx_t_2 = 0;
 
-  /* "multiworker.pyx":285
+  /* "multiworker.pyx":281
  *         advantages = discounted_rewards - values
  * 
  *         v_l,p_l,e_l, g_n, v_n = self.local_model.train(discounted_rewards, advantages, actions, obs, episode_done)             # <<<<<<<<<<<<<<
  *         return v_l, p_l, e_l, g_n,  v_n
  * 
  */
-  __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_local_model); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 285, __pyx_L1_error)
+  __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_local_model); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 281, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_6);
-  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_6, __pyx_n_s_train); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 285, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_6, __pyx_n_s_train); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 281, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
   __pyx_t_6 = NULL;
@@ -6893,7 +6893,7 @@ static PyObject *__pyx_pf_11multiworker_6Worker_4train(CYTHON_UNUSED PyObject *_
   #if CYTHON_FAST_PYCALL
   if (PyFunction_Check(__pyx_t_1)) {
     PyObject *__pyx_temp[6] = {__pyx_t_6, __pyx_v_discounted_rewards, __pyx_v_advantages, __pyx_v_actions, __pyx_v_obs, __pyx_v_episode_done};
-    __pyx_t_2 = __Pyx_PyFunction_FastCall(__pyx_t_1, __pyx_temp+1-__pyx_t_10, 5+__pyx_t_10); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 285, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyFunction_FastCall(__pyx_t_1, __pyx_temp+1-__pyx_t_10, 5+__pyx_t_10); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 281, __pyx_L1_error)
     __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
     __Pyx_GOTREF(__pyx_t_2);
   } else
@@ -6901,13 +6901,13 @@ static PyObject *__pyx_pf_11multiworker_6Worker_4train(CYTHON_UNUSED PyObject *_
   #if CYTHON_FAST_PYCCALL
   if (__Pyx_PyFastCFunction_Check(__pyx_t_1)) {
     PyObject *__pyx_temp[6] = {__pyx_t_6, __pyx_v_discounted_rewards, __pyx_v_advantages, __pyx_v_actions, __pyx_v_obs, __pyx_v_episode_done};
-    __pyx_t_2 = __Pyx_PyCFunction_FastCall(__pyx_t_1, __pyx_temp+1-__pyx_t_10, 5+__pyx_t_10); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 285, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyCFunction_FastCall(__pyx_t_1, __pyx_temp+1-__pyx_t_10, 5+__pyx_t_10); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 281, __pyx_L1_error)
     __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
     __Pyx_GOTREF(__pyx_t_2);
   } else
   #endif
   {
-    __pyx_t_11 = PyTuple_New(5+__pyx_t_10); if (unlikely(!__pyx_t_11)) __PYX_ERR(0, 285, __pyx_L1_error)
+    __pyx_t_11 = PyTuple_New(5+__pyx_t_10); if (unlikely(!__pyx_t_11)) __PYX_ERR(0, 281, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_11);
     if (__pyx_t_6) {
       __Pyx_GIVEREF(__pyx_t_6); PyTuple_SET_ITEM(__pyx_t_11, 0, __pyx_t_6); __pyx_t_6 = NULL;
@@ -6927,7 +6927,7 @@ static PyObject *__pyx_pf_11multiworker_6Worker_4train(CYTHON_UNUSED PyObject *_
     __Pyx_INCREF(__pyx_v_episode_done);
     __Pyx_GIVEREF(__pyx_v_episode_done);
     PyTuple_SET_ITEM(__pyx_t_11, 4+__pyx_t_10, __pyx_v_episode_done);
-    __pyx_t_2 = __Pyx_PyObject_Call(__pyx_t_1, __pyx_t_11, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 285, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyObject_Call(__pyx_t_1, __pyx_t_11, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 281, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     __Pyx_DECREF(__pyx_t_11); __pyx_t_11 = 0;
   }
@@ -6938,7 +6938,7 @@ static PyObject *__pyx_pf_11multiworker_6Worker_4train(CYTHON_UNUSED PyObject *_
     if (unlikely(size != 5)) {
       if (size > 5) __Pyx_RaiseTooManyValuesError(5);
       else if (size >= 0) __Pyx_RaiseNeedMoreValuesError(size);
-      __PYX_ERR(0, 285, __pyx_L1_error)
+      __PYX_ERR(0, 281, __pyx_L1_error)
     }
     #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
     if (likely(PyTuple_CheckExact(sequence))) {
@@ -6964,7 +6964,7 @@ static PyObject *__pyx_pf_11multiworker_6Worker_4train(CYTHON_UNUSED PyObject *_
       Py_ssize_t i;
       PyObject** temps[5] = {&__pyx_t_1,&__pyx_t_11,&__pyx_t_6,&__pyx_t_9,&__pyx_t_5};
       for (i=0; i < 5; i++) {
-        PyObject* item = PySequence_ITEM(sequence, i); if (unlikely(!item)) __PYX_ERR(0, 285, __pyx_L1_error)
+        PyObject* item = PySequence_ITEM(sequence, i); if (unlikely(!item)) __PYX_ERR(0, 281, __pyx_L1_error)
         __Pyx_GOTREF(item);
         *(temps[i]) = item;
       }
@@ -6974,7 +6974,7 @@ static PyObject *__pyx_pf_11multiworker_6Worker_4train(CYTHON_UNUSED PyObject *_
   } else {
     Py_ssize_t index = -1;
     PyObject** temps[5] = {&__pyx_t_1,&__pyx_t_11,&__pyx_t_6,&__pyx_t_9,&__pyx_t_5};
-    __pyx_t_13 = PyObject_GetIter(__pyx_t_2); if (unlikely(!__pyx_t_13)) __PYX_ERR(0, 285, __pyx_L1_error)
+    __pyx_t_13 = PyObject_GetIter(__pyx_t_2); if (unlikely(!__pyx_t_13)) __PYX_ERR(0, 281, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_13);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     __pyx_t_14 = Py_TYPE(__pyx_t_13)->tp_iternext;
@@ -6983,7 +6983,7 @@ static PyObject *__pyx_pf_11multiworker_6Worker_4train(CYTHON_UNUSED PyObject *_
       __Pyx_GOTREF(item);
       *(temps[index]) = item;
     }
-    if (__Pyx_IternextUnpackEndCheck(__pyx_t_14(__pyx_t_13), 5) < 0) __PYX_ERR(0, 285, __pyx_L1_error)
+    if (__Pyx_IternextUnpackEndCheck(__pyx_t_14(__pyx_t_13), 5) < 0) __PYX_ERR(0, 281, __pyx_L1_error)
     __pyx_t_14 = NULL;
     __Pyx_DECREF(__pyx_t_13); __pyx_t_13 = 0;
     goto __pyx_L12_unpacking_done;
@@ -6991,7 +6991,7 @@ static PyObject *__pyx_pf_11multiworker_6Worker_4train(CYTHON_UNUSED PyObject *_
     __Pyx_DECREF(__pyx_t_13); __pyx_t_13 = 0;
     __pyx_t_14 = NULL;
     if (__Pyx_IterFinish() == 0) __Pyx_RaiseNeedMoreValuesError(index);
-    __PYX_ERR(0, 285, __pyx_L1_error)
+    __PYX_ERR(0, 281, __pyx_L1_error)
     __pyx_L12_unpacking_done:;
   }
   __pyx_v_v_l = __pyx_t_1;
@@ -7005,7 +7005,7 @@ static PyObject *__pyx_pf_11multiworker_6Worker_4train(CYTHON_UNUSED PyObject *_
   __pyx_v_v_n = __pyx_t_5;
   __pyx_t_5 = 0;
 
-  /* "multiworker.pyx":286
+  /* "multiworker.pyx":282
  * 
  *         v_l,p_l,e_l, g_n, v_n = self.local_model.train(discounted_rewards, advantages, actions, obs, episode_done)
  *         return v_l, p_l, e_l, g_n,  v_n             # <<<<<<<<<<<<<<
@@ -7013,7 +7013,7 @@ static PyObject *__pyx_pf_11multiworker_6Worker_4train(CYTHON_UNUSED PyObject *_
  *     def log_in_tensorboard(self):
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_2 = PyTuple_New(5); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 286, __pyx_L1_error)
+  __pyx_t_2 = PyTuple_New(5); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 282, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_INCREF(__pyx_v_v_l);
   __Pyx_GIVEREF(__pyx_v_v_l);
@@ -7034,7 +7034,7 @@ static PyObject *__pyx_pf_11multiworker_6Worker_4train(CYTHON_UNUSED PyObject *_
   __pyx_t_2 = 0;
   goto __pyx_L0;
 
-  /* "multiworker.pyx":269
+  /* "multiworker.pyx":265
  * 
  * 
  *     def train(self, rollout, episode_done):             # <<<<<<<<<<<<<<
@@ -7074,7 +7074,7 @@ static PyObject *__pyx_pf_11multiworker_6Worker_4train(CYTHON_UNUSED PyObject *_
   return __pyx_r;
 }
 
-/* "multiworker.pyx":288
+/* "multiworker.pyx":284
  *         return v_l, p_l, e_l, g_n,  v_n
  * 
  *     def log_in_tensorboard(self):             # <<<<<<<<<<<<<<
@@ -7128,54 +7128,54 @@ static PyObject *__pyx_pf_11multiworker_6Worker_6log_in_tensorboard(CYTHON_UNUSE
   PyObject *__pyx_t_14 = NULL;
   __Pyx_RefNannySetupContext("log_in_tensorboard", 0);
 
-  /* "multiworker.pyx":289
+  /* "multiworker.pyx":285
  * 
  *     def log_in_tensorboard(self):
  *         if self.episode_count % 5 == 0 and self.episode_count != 0:             # <<<<<<<<<<<<<<
  *             mean_length = np.mean(self.episode_lengths[-100:])
  *             mean_value = np.mean(self.episode_mean_values[-100:])
  */
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_episode_count); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 289, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_episode_count); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 285, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_3 = __Pyx_PyInt_RemainderObjC(__pyx_t_2, __pyx_int_5, 5, 0, 0); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 289, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyInt_RemainderObjC(__pyx_t_2, __pyx_int_5, 5, 0, 0); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 285, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_2 = __Pyx_PyInt_EqObjC(__pyx_t_3, __pyx_int_0, 0, 0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 289, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyInt_EqObjC(__pyx_t_3, __pyx_int_0, 0, 0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 285, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_t_4 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely(__pyx_t_4 < 0)) __PYX_ERR(0, 289, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely(__pyx_t_4 < 0)) __PYX_ERR(0, 285, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   if (__pyx_t_4) {
   } else {
     __pyx_t_1 = __pyx_t_4;
     goto __pyx_L4_bool_binop_done;
   }
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_episode_count); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 289, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_episode_count); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 285, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_3 = __Pyx_PyInt_NeObjC(__pyx_t_2, __pyx_int_0, 0, 0); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 289, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyInt_NeObjC(__pyx_t_2, __pyx_int_0, 0, 0); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 285, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_4 = __Pyx_PyObject_IsTrue(__pyx_t_3); if (unlikely(__pyx_t_4 < 0)) __PYX_ERR(0, 289, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyObject_IsTrue(__pyx_t_3); if (unlikely(__pyx_t_4 < 0)) __PYX_ERR(0, 285, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   __pyx_t_1 = __pyx_t_4;
   __pyx_L4_bool_binop_done:;
   if (__pyx_t_1) {
 
-    /* "multiworker.pyx":290
+    /* "multiworker.pyx":286
  *     def log_in_tensorboard(self):
  *         if self.episode_count % 5 == 0 and self.episode_count != 0:
  *             mean_length = np.mean(self.episode_lengths[-100:])             # <<<<<<<<<<<<<<
  *             mean_value = np.mean(self.episode_mean_values[-100:])
  *             mean_success_rate = np.mean(self.episode_success[-100:])
  */
-    __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_np); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 290, __pyx_L1_error)
+    __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_np); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 286, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_mean); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 290, __pyx_L1_error)
+    __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_mean); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 286, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_episode_lengths); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 290, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_episode_lengths); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 286, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_6 = __Pyx_PyObject_GetSlice(__pyx_t_2, -100L, 0, NULL, NULL, &__pyx_slice__8, 1, 0, 1); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 290, __pyx_L1_error)
+    __pyx_t_6 = __Pyx_PyObject_GetSlice(__pyx_t_2, -100L, 0, NULL, NULL, &__pyx_slice__8, 1, 0, 1); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 286, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_6);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     __pyx_t_2 = NULL;
@@ -7191,27 +7191,27 @@ static PyObject *__pyx_pf_11multiworker_6Worker_6log_in_tensorboard(CYTHON_UNUSE
     __pyx_t_3 = (__pyx_t_2) ? __Pyx_PyObject_Call2Args(__pyx_t_5, __pyx_t_2, __pyx_t_6) : __Pyx_PyObject_CallOneArg(__pyx_t_5, __pyx_t_6);
     __Pyx_XDECREF(__pyx_t_2); __pyx_t_2 = 0;
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-    if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 290, __pyx_L1_error)
+    if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 286, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
     __pyx_v_mean_length = __pyx_t_3;
     __pyx_t_3 = 0;
 
-    /* "multiworker.pyx":291
+    /* "multiworker.pyx":287
  *         if self.episode_count % 5 == 0 and self.episode_count != 0:
  *             mean_length = np.mean(self.episode_lengths[-100:])
  *             mean_value = np.mean(self.episode_mean_values[-100:])             # <<<<<<<<<<<<<<
  *             mean_success_rate = np.mean(self.episode_success[-100:])
  *             mean_agents_arrived = np.mean(self.episode_agents_arrived[-100:])
  */
-    __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_n_s_np); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 291, __pyx_L1_error)
+    __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_n_s_np); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 287, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
-    __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_n_s_mean); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 291, __pyx_L1_error)
+    __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_n_s_mean); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 287, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_6);
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-    __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_episode_mean_values); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 291, __pyx_L1_error)
+    __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_episode_mean_values); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 287, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
-    __pyx_t_2 = __Pyx_PyObject_GetSlice(__pyx_t_5, -100L, 0, NULL, NULL, &__pyx_slice__8, 1, 0, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 291, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyObject_GetSlice(__pyx_t_5, -100L, 0, NULL, NULL, &__pyx_slice__8, 1, 0, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 287, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
     __pyx_t_5 = NULL;
@@ -7227,27 +7227,27 @@ static PyObject *__pyx_pf_11multiworker_6Worker_6log_in_tensorboard(CYTHON_UNUSE
     __pyx_t_3 = (__pyx_t_5) ? __Pyx_PyObject_Call2Args(__pyx_t_6, __pyx_t_5, __pyx_t_2) : __Pyx_PyObject_CallOneArg(__pyx_t_6, __pyx_t_2);
     __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-    if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 291, __pyx_L1_error)
+    if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 287, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
     __pyx_v_mean_value = __pyx_t_3;
     __pyx_t_3 = 0;
 
-    /* "multiworker.pyx":292
+    /* "multiworker.pyx":288
  *             mean_length = np.mean(self.episode_lengths[-100:])
  *             mean_value = np.mean(self.episode_mean_values[-100:])
  *             mean_success_rate = np.mean(self.episode_success[-100:])             # <<<<<<<<<<<<<<
  *             mean_agents_arrived = np.mean(self.episode_agents_arrived[-100:])
  *             mean_reward = np.mean(self.episode_rewards[-100:])
  */
-    __Pyx_GetModuleGlobalName(__pyx_t_6, __pyx_n_s_np); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 292, __pyx_L1_error)
+    __Pyx_GetModuleGlobalName(__pyx_t_6, __pyx_n_s_np); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 288, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_6);
-    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_6, __pyx_n_s_mean); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 292, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_6, __pyx_n_s_mean); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 288, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-    __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_episode_success); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 292, __pyx_L1_error)
+    __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_episode_success); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 288, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_6);
-    __pyx_t_5 = __Pyx_PyObject_GetSlice(__pyx_t_6, -100L, 0, NULL, NULL, &__pyx_slice__8, 1, 0, 1); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 292, __pyx_L1_error)
+    __pyx_t_5 = __Pyx_PyObject_GetSlice(__pyx_t_6, -100L, 0, NULL, NULL, &__pyx_slice__8, 1, 0, 1); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 288, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
     __pyx_t_6 = NULL;
@@ -7263,27 +7263,27 @@ static PyObject *__pyx_pf_11multiworker_6Worker_6log_in_tensorboard(CYTHON_UNUSE
     __pyx_t_3 = (__pyx_t_6) ? __Pyx_PyObject_Call2Args(__pyx_t_2, __pyx_t_6, __pyx_t_5) : __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_5);
     __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-    if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 292, __pyx_L1_error)
+    if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 288, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     __pyx_v_mean_success_rate = __pyx_t_3;
     __pyx_t_3 = 0;
 
-    /* "multiworker.pyx":293
+    /* "multiworker.pyx":289
  *             mean_value = np.mean(self.episode_mean_values[-100:])
  *             mean_success_rate = np.mean(self.episode_success[-100:])
  *             mean_agents_arrived = np.mean(self.episode_agents_arrived[-100:])             # <<<<<<<<<<<<<<
  *             mean_reward = np.mean(self.episode_rewards[-100:])
  * 
  */
-    __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_np); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 293, __pyx_L1_error)
+    __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_np); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 289, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_mean); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 293, __pyx_L1_error)
+    __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_mean); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 289, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_episode_agents_arrived); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 293, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_episode_agents_arrived); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 289, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_6 = __Pyx_PyObject_GetSlice(__pyx_t_2, -100L, 0, NULL, NULL, &__pyx_slice__8, 1, 0, 1); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 293, __pyx_L1_error)
+    __pyx_t_6 = __Pyx_PyObject_GetSlice(__pyx_t_2, -100L, 0, NULL, NULL, &__pyx_slice__8, 1, 0, 1); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 289, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_6);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     __pyx_t_2 = NULL;
@@ -7299,27 +7299,27 @@ static PyObject *__pyx_pf_11multiworker_6Worker_6log_in_tensorboard(CYTHON_UNUSE
     __pyx_t_3 = (__pyx_t_2) ? __Pyx_PyObject_Call2Args(__pyx_t_5, __pyx_t_2, __pyx_t_6) : __Pyx_PyObject_CallOneArg(__pyx_t_5, __pyx_t_6);
     __Pyx_XDECREF(__pyx_t_2); __pyx_t_2 = 0;
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-    if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 293, __pyx_L1_error)
+    if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 289, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
     __pyx_v_mean_agents_arrived = __pyx_t_3;
     __pyx_t_3 = 0;
 
-    /* "multiworker.pyx":294
+    /* "multiworker.pyx":290
  *             mean_success_rate = np.mean(self.episode_success[-100:])
  *             mean_agents_arrived = np.mean(self.episode_agents_arrived[-100:])
  *             mean_reward = np.mean(self.episode_rewards[-100:])             # <<<<<<<<<<<<<<
  * 
  *             mean_value_loss = np.mean([l[0] for l in self.stats[-1:]])
  */
-    __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_n_s_np); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 294, __pyx_L1_error)
+    __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_n_s_np); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 290, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
-    __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_n_s_mean); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 294, __pyx_L1_error)
+    __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_n_s_mean); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 290, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_6);
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-    __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_episode_rewards); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 294, __pyx_L1_error)
+    __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_episode_rewards); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 290, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
-    __pyx_t_2 = __Pyx_PyObject_GetSlice(__pyx_t_5, -100L, 0, NULL, NULL, &__pyx_slice__8, 1, 0, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 294, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyObject_GetSlice(__pyx_t_5, -100L, 0, NULL, NULL, &__pyx_slice__8, 1, 0, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 290, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
     __pyx_t_5 = NULL;
@@ -7335,18 +7335,362 @@ static PyObject *__pyx_pf_11multiworker_6Worker_6log_in_tensorboard(CYTHON_UNUSE
     __pyx_t_3 = (__pyx_t_5) ? __Pyx_PyObject_Call2Args(__pyx_t_6, __pyx_t_5, __pyx_t_2) : __Pyx_PyObject_CallOneArg(__pyx_t_6, __pyx_t_2);
     __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-    if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 294, __pyx_L1_error)
+    if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 290, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
     __pyx_v_mean_reward = __pyx_t_3;
     __pyx_t_3 = 0;
 
-    /* "multiworker.pyx":296
+    /* "multiworker.pyx":292
  *             mean_reward = np.mean(self.episode_rewards[-100:])
  * 
  *             mean_value_loss = np.mean([l[0] for l in self.stats[-1:]])             # <<<<<<<<<<<<<<
  *             mean_policy_loss = np.mean([l[1] for l in self.stats[-1:]])
  *             mean_entropy_loss = np.mean([l[2] for l in self.stats[-1:]])
+ */
+    __Pyx_GetModuleGlobalName(__pyx_t_6, __pyx_n_s_np); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 292, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_6);
+    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_6, __pyx_n_s_mean); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 292, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_2);
+    __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+    __pyx_t_6 = PyList_New(0); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 292, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_6);
+    __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_stats); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 292, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_5);
+    __pyx_t_7 = __Pyx_PyObject_GetSlice(__pyx_t_5, -1L, 0, NULL, NULL, &__pyx_slice__7, 1, 0, 1); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 292, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_7);
+    __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+    if (likely(PyList_CheckExact(__pyx_t_7)) || PyTuple_CheckExact(__pyx_t_7)) {
+      __pyx_t_5 = __pyx_t_7; __Pyx_INCREF(__pyx_t_5); __pyx_t_8 = 0;
+      __pyx_t_9 = NULL;
+    } else {
+      __pyx_t_8 = -1; __pyx_t_5 = PyObject_GetIter(__pyx_t_7); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 292, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_5);
+      __pyx_t_9 = Py_TYPE(__pyx_t_5)->tp_iternext; if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 292, __pyx_L1_error)
+    }
+    __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
+    for (;;) {
+      if (likely(!__pyx_t_9)) {
+        if (likely(PyList_CheckExact(__pyx_t_5))) {
+          if (__pyx_t_8 >= PyList_GET_SIZE(__pyx_t_5)) break;
+          #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
+          __pyx_t_7 = PyList_GET_ITEM(__pyx_t_5, __pyx_t_8); __Pyx_INCREF(__pyx_t_7); __pyx_t_8++; if (unlikely(0 < 0)) __PYX_ERR(0, 292, __pyx_L1_error)
+          #else
+          __pyx_t_7 = PySequence_ITEM(__pyx_t_5, __pyx_t_8); __pyx_t_8++; if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 292, __pyx_L1_error)
+          __Pyx_GOTREF(__pyx_t_7);
+          #endif
+        } else {
+          if (__pyx_t_8 >= PyTuple_GET_SIZE(__pyx_t_5)) break;
+          #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
+          __pyx_t_7 = PyTuple_GET_ITEM(__pyx_t_5, __pyx_t_8); __Pyx_INCREF(__pyx_t_7); __pyx_t_8++; if (unlikely(0 < 0)) __PYX_ERR(0, 292, __pyx_L1_error)
+          #else
+          __pyx_t_7 = PySequence_ITEM(__pyx_t_5, __pyx_t_8); __pyx_t_8++; if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 292, __pyx_L1_error)
+          __Pyx_GOTREF(__pyx_t_7);
+          #endif
+        }
+      } else {
+        __pyx_t_7 = __pyx_t_9(__pyx_t_5);
+        if (unlikely(!__pyx_t_7)) {
+          PyObject* exc_type = PyErr_Occurred();
+          if (exc_type) {
+            if (likely(__Pyx_PyErr_GivenExceptionMatches(exc_type, PyExc_StopIteration))) PyErr_Clear();
+            else __PYX_ERR(0, 292, __pyx_L1_error)
+          }
+          break;
+        }
+        __Pyx_GOTREF(__pyx_t_7);
+      }
+      __Pyx_XDECREF_SET(__pyx_v_l, __pyx_t_7);
+      __pyx_t_7 = 0;
+      __pyx_t_7 = __Pyx_GetItemInt(__pyx_v_l, 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 292, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_7);
+      if (unlikely(__Pyx_ListComp_Append(__pyx_t_6, (PyObject*)__pyx_t_7))) __PYX_ERR(0, 292, __pyx_L1_error)
+      __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
+    }
+    __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+    __pyx_t_5 = NULL;
+    if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_2))) {
+      __pyx_t_5 = PyMethod_GET_SELF(__pyx_t_2);
+      if (likely(__pyx_t_5)) {
+        PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_2);
+        __Pyx_INCREF(__pyx_t_5);
+        __Pyx_INCREF(function);
+        __Pyx_DECREF_SET(__pyx_t_2, function);
+      }
+    }
+    __pyx_t_3 = (__pyx_t_5) ? __Pyx_PyObject_Call2Args(__pyx_t_2, __pyx_t_5, __pyx_t_6) : __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_6);
+    __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
+    __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+    if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 292, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_3);
+    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+    __pyx_v_mean_value_loss = __pyx_t_3;
+    __pyx_t_3 = 0;
+
+    /* "multiworker.pyx":293
+ * 
+ *             mean_value_loss = np.mean([l[0] for l in self.stats[-1:]])
+ *             mean_policy_loss = np.mean([l[1] for l in self.stats[-1:]])             # <<<<<<<<<<<<<<
+ *             mean_entropy_loss = np.mean([l[2] for l in self.stats[-1:]])
+ *             mean_gradient_norm = np.mean([l[3] for l in self.stats[-1:]])
+ */
+    __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_np); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 293, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_2);
+    __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_mean); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 293, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_6);
+    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+    __pyx_t_2 = PyList_New(0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 293, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_2);
+    __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_stats); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 293, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_5);
+    __pyx_t_7 = __Pyx_PyObject_GetSlice(__pyx_t_5, -1L, 0, NULL, NULL, &__pyx_slice__7, 1, 0, 1); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 293, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_7);
+    __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+    if (likely(PyList_CheckExact(__pyx_t_7)) || PyTuple_CheckExact(__pyx_t_7)) {
+      __pyx_t_5 = __pyx_t_7; __Pyx_INCREF(__pyx_t_5); __pyx_t_8 = 0;
+      __pyx_t_9 = NULL;
+    } else {
+      __pyx_t_8 = -1; __pyx_t_5 = PyObject_GetIter(__pyx_t_7); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 293, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_5);
+      __pyx_t_9 = Py_TYPE(__pyx_t_5)->tp_iternext; if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 293, __pyx_L1_error)
+    }
+    __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
+    for (;;) {
+      if (likely(!__pyx_t_9)) {
+        if (likely(PyList_CheckExact(__pyx_t_5))) {
+          if (__pyx_t_8 >= PyList_GET_SIZE(__pyx_t_5)) break;
+          #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
+          __pyx_t_7 = PyList_GET_ITEM(__pyx_t_5, __pyx_t_8); __Pyx_INCREF(__pyx_t_7); __pyx_t_8++; if (unlikely(0 < 0)) __PYX_ERR(0, 293, __pyx_L1_error)
+          #else
+          __pyx_t_7 = PySequence_ITEM(__pyx_t_5, __pyx_t_8); __pyx_t_8++; if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 293, __pyx_L1_error)
+          __Pyx_GOTREF(__pyx_t_7);
+          #endif
+        } else {
+          if (__pyx_t_8 >= PyTuple_GET_SIZE(__pyx_t_5)) break;
+          #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
+          __pyx_t_7 = PyTuple_GET_ITEM(__pyx_t_5, __pyx_t_8); __Pyx_INCREF(__pyx_t_7); __pyx_t_8++; if (unlikely(0 < 0)) __PYX_ERR(0, 293, __pyx_L1_error)
+          #else
+          __pyx_t_7 = PySequence_ITEM(__pyx_t_5, __pyx_t_8); __pyx_t_8++; if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 293, __pyx_L1_error)
+          __Pyx_GOTREF(__pyx_t_7);
+          #endif
+        }
+      } else {
+        __pyx_t_7 = __pyx_t_9(__pyx_t_5);
+        if (unlikely(!__pyx_t_7)) {
+          PyObject* exc_type = PyErr_Occurred();
+          if (exc_type) {
+            if (likely(__Pyx_PyErr_GivenExceptionMatches(exc_type, PyExc_StopIteration))) PyErr_Clear();
+            else __PYX_ERR(0, 293, __pyx_L1_error)
+          }
+          break;
+        }
+        __Pyx_GOTREF(__pyx_t_7);
+      }
+      __Pyx_XDECREF_SET(__pyx_v_l, __pyx_t_7);
+      __pyx_t_7 = 0;
+      __pyx_t_7 = __Pyx_GetItemInt(__pyx_v_l, 1, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 293, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_7);
+      if (unlikely(__Pyx_ListComp_Append(__pyx_t_2, (PyObject*)__pyx_t_7))) __PYX_ERR(0, 293, __pyx_L1_error)
+      __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
+    }
+    __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+    __pyx_t_5 = NULL;
+    if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_6))) {
+      __pyx_t_5 = PyMethod_GET_SELF(__pyx_t_6);
+      if (likely(__pyx_t_5)) {
+        PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_6);
+        __Pyx_INCREF(__pyx_t_5);
+        __Pyx_INCREF(function);
+        __Pyx_DECREF_SET(__pyx_t_6, function);
+      }
+    }
+    __pyx_t_3 = (__pyx_t_5) ? __Pyx_PyObject_Call2Args(__pyx_t_6, __pyx_t_5, __pyx_t_2) : __Pyx_PyObject_CallOneArg(__pyx_t_6, __pyx_t_2);
+    __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
+    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+    if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 293, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_3);
+    __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+    __pyx_v_mean_policy_loss = __pyx_t_3;
+    __pyx_t_3 = 0;
+
+    /* "multiworker.pyx":294
+ *             mean_value_loss = np.mean([l[0] for l in self.stats[-1:]])
+ *             mean_policy_loss = np.mean([l[1] for l in self.stats[-1:]])
+ *             mean_entropy_loss = np.mean([l[2] for l in self.stats[-1:]])             # <<<<<<<<<<<<<<
+ *             mean_gradient_norm = np.mean([l[3] for l in self.stats[-1:]])
+ *             mean_variable_norm = np.mean([l[4] for l in self.stats[-1:]])
+ */
+    __Pyx_GetModuleGlobalName(__pyx_t_6, __pyx_n_s_np); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 294, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_6);
+    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_6, __pyx_n_s_mean); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 294, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_2);
+    __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+    __pyx_t_6 = PyList_New(0); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 294, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_6);
+    __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_stats); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 294, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_5);
+    __pyx_t_7 = __Pyx_PyObject_GetSlice(__pyx_t_5, -1L, 0, NULL, NULL, &__pyx_slice__7, 1, 0, 1); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 294, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_7);
+    __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+    if (likely(PyList_CheckExact(__pyx_t_7)) || PyTuple_CheckExact(__pyx_t_7)) {
+      __pyx_t_5 = __pyx_t_7; __Pyx_INCREF(__pyx_t_5); __pyx_t_8 = 0;
+      __pyx_t_9 = NULL;
+    } else {
+      __pyx_t_8 = -1; __pyx_t_5 = PyObject_GetIter(__pyx_t_7); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 294, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_5);
+      __pyx_t_9 = Py_TYPE(__pyx_t_5)->tp_iternext; if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 294, __pyx_L1_error)
+    }
+    __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
+    for (;;) {
+      if (likely(!__pyx_t_9)) {
+        if (likely(PyList_CheckExact(__pyx_t_5))) {
+          if (__pyx_t_8 >= PyList_GET_SIZE(__pyx_t_5)) break;
+          #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
+          __pyx_t_7 = PyList_GET_ITEM(__pyx_t_5, __pyx_t_8); __Pyx_INCREF(__pyx_t_7); __pyx_t_8++; if (unlikely(0 < 0)) __PYX_ERR(0, 294, __pyx_L1_error)
+          #else
+          __pyx_t_7 = PySequence_ITEM(__pyx_t_5, __pyx_t_8); __pyx_t_8++; if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 294, __pyx_L1_error)
+          __Pyx_GOTREF(__pyx_t_7);
+          #endif
+        } else {
+          if (__pyx_t_8 >= PyTuple_GET_SIZE(__pyx_t_5)) break;
+          #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
+          __pyx_t_7 = PyTuple_GET_ITEM(__pyx_t_5, __pyx_t_8); __Pyx_INCREF(__pyx_t_7); __pyx_t_8++; if (unlikely(0 < 0)) __PYX_ERR(0, 294, __pyx_L1_error)
+          #else
+          __pyx_t_7 = PySequence_ITEM(__pyx_t_5, __pyx_t_8); __pyx_t_8++; if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 294, __pyx_L1_error)
+          __Pyx_GOTREF(__pyx_t_7);
+          #endif
+        }
+      } else {
+        __pyx_t_7 = __pyx_t_9(__pyx_t_5);
+        if (unlikely(!__pyx_t_7)) {
+          PyObject* exc_type = PyErr_Occurred();
+          if (exc_type) {
+            if (likely(__Pyx_PyErr_GivenExceptionMatches(exc_type, PyExc_StopIteration))) PyErr_Clear();
+            else __PYX_ERR(0, 294, __pyx_L1_error)
+          }
+          break;
+        }
+        __Pyx_GOTREF(__pyx_t_7);
+      }
+      __Pyx_XDECREF_SET(__pyx_v_l, __pyx_t_7);
+      __pyx_t_7 = 0;
+      __pyx_t_7 = __Pyx_GetItemInt(__pyx_v_l, 2, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 294, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_7);
+      if (unlikely(__Pyx_ListComp_Append(__pyx_t_6, (PyObject*)__pyx_t_7))) __PYX_ERR(0, 294, __pyx_L1_error)
+      __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
+    }
+    __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+    __pyx_t_5 = NULL;
+    if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_2))) {
+      __pyx_t_5 = PyMethod_GET_SELF(__pyx_t_2);
+      if (likely(__pyx_t_5)) {
+        PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_2);
+        __Pyx_INCREF(__pyx_t_5);
+        __Pyx_INCREF(function);
+        __Pyx_DECREF_SET(__pyx_t_2, function);
+      }
+    }
+    __pyx_t_3 = (__pyx_t_5) ? __Pyx_PyObject_Call2Args(__pyx_t_2, __pyx_t_5, __pyx_t_6) : __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_6);
+    __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
+    __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+    if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 294, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_3);
+    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+    __pyx_v_mean_entropy_loss = __pyx_t_3;
+    __pyx_t_3 = 0;
+
+    /* "multiworker.pyx":295
+ *             mean_policy_loss = np.mean([l[1] for l in self.stats[-1:]])
+ *             mean_entropy_loss = np.mean([l[2] for l in self.stats[-1:]])
+ *             mean_gradient_norm = np.mean([l[3] for l in self.stats[-1:]])             # <<<<<<<<<<<<<<
+ *             mean_variable_norm = np.mean([l[4] for l in self.stats[-1:]])
+ * 
+ */
+    __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_np); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 295, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_2);
+    __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_mean); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 295, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_6);
+    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+    __pyx_t_2 = PyList_New(0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 295, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_2);
+    __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_stats); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 295, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_5);
+    __pyx_t_7 = __Pyx_PyObject_GetSlice(__pyx_t_5, -1L, 0, NULL, NULL, &__pyx_slice__7, 1, 0, 1); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 295, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_7);
+    __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+    if (likely(PyList_CheckExact(__pyx_t_7)) || PyTuple_CheckExact(__pyx_t_7)) {
+      __pyx_t_5 = __pyx_t_7; __Pyx_INCREF(__pyx_t_5); __pyx_t_8 = 0;
+      __pyx_t_9 = NULL;
+    } else {
+      __pyx_t_8 = -1; __pyx_t_5 = PyObject_GetIter(__pyx_t_7); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 295, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_5);
+      __pyx_t_9 = Py_TYPE(__pyx_t_5)->tp_iternext; if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 295, __pyx_L1_error)
+    }
+    __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
+    for (;;) {
+      if (likely(!__pyx_t_9)) {
+        if (likely(PyList_CheckExact(__pyx_t_5))) {
+          if (__pyx_t_8 >= PyList_GET_SIZE(__pyx_t_5)) break;
+          #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
+          __pyx_t_7 = PyList_GET_ITEM(__pyx_t_5, __pyx_t_8); __Pyx_INCREF(__pyx_t_7); __pyx_t_8++; if (unlikely(0 < 0)) __PYX_ERR(0, 295, __pyx_L1_error)
+          #else
+          __pyx_t_7 = PySequence_ITEM(__pyx_t_5, __pyx_t_8); __pyx_t_8++; if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 295, __pyx_L1_error)
+          __Pyx_GOTREF(__pyx_t_7);
+          #endif
+        } else {
+          if (__pyx_t_8 >= PyTuple_GET_SIZE(__pyx_t_5)) break;
+          #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
+          __pyx_t_7 = PyTuple_GET_ITEM(__pyx_t_5, __pyx_t_8); __Pyx_INCREF(__pyx_t_7); __pyx_t_8++; if (unlikely(0 < 0)) __PYX_ERR(0, 295, __pyx_L1_error)
+          #else
+          __pyx_t_7 = PySequence_ITEM(__pyx_t_5, __pyx_t_8); __pyx_t_8++; if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 295, __pyx_L1_error)
+          __Pyx_GOTREF(__pyx_t_7);
+          #endif
+        }
+      } else {
+        __pyx_t_7 = __pyx_t_9(__pyx_t_5);
+        if (unlikely(!__pyx_t_7)) {
+          PyObject* exc_type = PyErr_Occurred();
+          if (exc_type) {
+            if (likely(__Pyx_PyErr_GivenExceptionMatches(exc_type, PyExc_StopIteration))) PyErr_Clear();
+            else __PYX_ERR(0, 295, __pyx_L1_error)
+          }
+          break;
+        }
+        __Pyx_GOTREF(__pyx_t_7);
+      }
+      __Pyx_XDECREF_SET(__pyx_v_l, __pyx_t_7);
+      __pyx_t_7 = 0;
+      __pyx_t_7 = __Pyx_GetItemInt(__pyx_v_l, 3, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 295, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_7);
+      if (unlikely(__Pyx_ListComp_Append(__pyx_t_2, (PyObject*)__pyx_t_7))) __PYX_ERR(0, 295, __pyx_L1_error)
+      __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
+    }
+    __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+    __pyx_t_5 = NULL;
+    if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_6))) {
+      __pyx_t_5 = PyMethod_GET_SELF(__pyx_t_6);
+      if (likely(__pyx_t_5)) {
+        PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_6);
+        __Pyx_INCREF(__pyx_t_5);
+        __Pyx_INCREF(function);
+        __Pyx_DECREF_SET(__pyx_t_6, function);
+      }
+    }
+    __pyx_t_3 = (__pyx_t_5) ? __Pyx_PyObject_Call2Args(__pyx_t_6, __pyx_t_5, __pyx_t_2) : __Pyx_PyObject_CallOneArg(__pyx_t_6, __pyx_t_2);
+    __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
+    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+    if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 295, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_3);
+    __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+    __pyx_v_mean_gradient_norm = __pyx_t_3;
+    __pyx_t_3 = 0;
+
+    /* "multiworker.pyx":296
+ *             mean_entropy_loss = np.mean([l[2] for l in self.stats[-1:]])
+ *             mean_gradient_norm = np.mean([l[3] for l in self.stats[-1:]])
+ *             mean_variable_norm = np.mean([l[4] for l in self.stats[-1:]])             # <<<<<<<<<<<<<<
+ * 
+ *             with self.summary_writer.as_default():
  */
     __Pyx_GetModuleGlobalName(__pyx_t_6, __pyx_n_s_np); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 296, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_6);
@@ -7402,7 +7746,7 @@ static PyObject *__pyx_pf_11multiworker_6Worker_6log_in_tensorboard(CYTHON_UNUSE
       }
       __Pyx_XDECREF_SET(__pyx_v_l, __pyx_t_7);
       __pyx_t_7 = 0;
-      __pyx_t_7 = __Pyx_GetItemInt(__pyx_v_l, 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 296, __pyx_L1_error)
+      __pyx_t_7 = __Pyx_GetItemInt(__pyx_v_l, 4, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 296, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_7);
       if (unlikely(__Pyx_ListComp_Append(__pyx_t_6, (PyObject*)__pyx_t_7))) __PYX_ERR(0, 296, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
@@ -7424,354 +7768,10 @@ static PyObject *__pyx_pf_11multiworker_6Worker_6log_in_tensorboard(CYTHON_UNUSE
     if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 296, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-    __pyx_v_mean_value_loss = __pyx_t_3;
-    __pyx_t_3 = 0;
-
-    /* "multiworker.pyx":297
- * 
- *             mean_value_loss = np.mean([l[0] for l in self.stats[-1:]])
- *             mean_policy_loss = np.mean([l[1] for l in self.stats[-1:]])             # <<<<<<<<<<<<<<
- *             mean_entropy_loss = np.mean([l[2] for l in self.stats[-1:]])
- *             mean_gradient_norm = np.mean([l[3] for l in self.stats[-1:]])
- */
-    __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_np); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 297, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_mean); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 297, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_6);
-    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-    __pyx_t_2 = PyList_New(0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 297, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_stats); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 297, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_5);
-    __pyx_t_7 = __Pyx_PyObject_GetSlice(__pyx_t_5, -1L, 0, NULL, NULL, &__pyx_slice__7, 1, 0, 1); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 297, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_7);
-    __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-    if (likely(PyList_CheckExact(__pyx_t_7)) || PyTuple_CheckExact(__pyx_t_7)) {
-      __pyx_t_5 = __pyx_t_7; __Pyx_INCREF(__pyx_t_5); __pyx_t_8 = 0;
-      __pyx_t_9 = NULL;
-    } else {
-      __pyx_t_8 = -1; __pyx_t_5 = PyObject_GetIter(__pyx_t_7); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 297, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_5);
-      __pyx_t_9 = Py_TYPE(__pyx_t_5)->tp_iternext; if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 297, __pyx_L1_error)
-    }
-    __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-    for (;;) {
-      if (likely(!__pyx_t_9)) {
-        if (likely(PyList_CheckExact(__pyx_t_5))) {
-          if (__pyx_t_8 >= PyList_GET_SIZE(__pyx_t_5)) break;
-          #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-          __pyx_t_7 = PyList_GET_ITEM(__pyx_t_5, __pyx_t_8); __Pyx_INCREF(__pyx_t_7); __pyx_t_8++; if (unlikely(0 < 0)) __PYX_ERR(0, 297, __pyx_L1_error)
-          #else
-          __pyx_t_7 = PySequence_ITEM(__pyx_t_5, __pyx_t_8); __pyx_t_8++; if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 297, __pyx_L1_error)
-          __Pyx_GOTREF(__pyx_t_7);
-          #endif
-        } else {
-          if (__pyx_t_8 >= PyTuple_GET_SIZE(__pyx_t_5)) break;
-          #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-          __pyx_t_7 = PyTuple_GET_ITEM(__pyx_t_5, __pyx_t_8); __Pyx_INCREF(__pyx_t_7); __pyx_t_8++; if (unlikely(0 < 0)) __PYX_ERR(0, 297, __pyx_L1_error)
-          #else
-          __pyx_t_7 = PySequence_ITEM(__pyx_t_5, __pyx_t_8); __pyx_t_8++; if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 297, __pyx_L1_error)
-          __Pyx_GOTREF(__pyx_t_7);
-          #endif
-        }
-      } else {
-        __pyx_t_7 = __pyx_t_9(__pyx_t_5);
-        if (unlikely(!__pyx_t_7)) {
-          PyObject* exc_type = PyErr_Occurred();
-          if (exc_type) {
-            if (likely(__Pyx_PyErr_GivenExceptionMatches(exc_type, PyExc_StopIteration))) PyErr_Clear();
-            else __PYX_ERR(0, 297, __pyx_L1_error)
-          }
-          break;
-        }
-        __Pyx_GOTREF(__pyx_t_7);
-      }
-      __Pyx_XDECREF_SET(__pyx_v_l, __pyx_t_7);
-      __pyx_t_7 = 0;
-      __pyx_t_7 = __Pyx_GetItemInt(__pyx_v_l, 1, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 297, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_7);
-      if (unlikely(__Pyx_ListComp_Append(__pyx_t_2, (PyObject*)__pyx_t_7))) __PYX_ERR(0, 297, __pyx_L1_error)
-      __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-    }
-    __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-    __pyx_t_5 = NULL;
-    if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_6))) {
-      __pyx_t_5 = PyMethod_GET_SELF(__pyx_t_6);
-      if (likely(__pyx_t_5)) {
-        PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_6);
-        __Pyx_INCREF(__pyx_t_5);
-        __Pyx_INCREF(function);
-        __Pyx_DECREF_SET(__pyx_t_6, function);
-      }
-    }
-    __pyx_t_3 = (__pyx_t_5) ? __Pyx_PyObject_Call2Args(__pyx_t_6, __pyx_t_5, __pyx_t_2) : __Pyx_PyObject_CallOneArg(__pyx_t_6, __pyx_t_2);
-    __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
-    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-    if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 297, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_3);
-    __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-    __pyx_v_mean_policy_loss = __pyx_t_3;
-    __pyx_t_3 = 0;
-
-    /* "multiworker.pyx":298
- *             mean_value_loss = np.mean([l[0] for l in self.stats[-1:]])
- *             mean_policy_loss = np.mean([l[1] for l in self.stats[-1:]])
- *             mean_entropy_loss = np.mean([l[2] for l in self.stats[-1:]])             # <<<<<<<<<<<<<<
- *             mean_gradient_norm = np.mean([l[3] for l in self.stats[-1:]])
- *             mean_variable_norm = np.mean([l[4] for l in self.stats[-1:]])
- */
-    __Pyx_GetModuleGlobalName(__pyx_t_6, __pyx_n_s_np); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 298, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_6);
-    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_6, __pyx_n_s_mean); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 298, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_2);
-    __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-    __pyx_t_6 = PyList_New(0); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 298, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_6);
-    __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_stats); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 298, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_5);
-    __pyx_t_7 = __Pyx_PyObject_GetSlice(__pyx_t_5, -1L, 0, NULL, NULL, &__pyx_slice__7, 1, 0, 1); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 298, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_7);
-    __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-    if (likely(PyList_CheckExact(__pyx_t_7)) || PyTuple_CheckExact(__pyx_t_7)) {
-      __pyx_t_5 = __pyx_t_7; __Pyx_INCREF(__pyx_t_5); __pyx_t_8 = 0;
-      __pyx_t_9 = NULL;
-    } else {
-      __pyx_t_8 = -1; __pyx_t_5 = PyObject_GetIter(__pyx_t_7); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 298, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_5);
-      __pyx_t_9 = Py_TYPE(__pyx_t_5)->tp_iternext; if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 298, __pyx_L1_error)
-    }
-    __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-    for (;;) {
-      if (likely(!__pyx_t_9)) {
-        if (likely(PyList_CheckExact(__pyx_t_5))) {
-          if (__pyx_t_8 >= PyList_GET_SIZE(__pyx_t_5)) break;
-          #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-          __pyx_t_7 = PyList_GET_ITEM(__pyx_t_5, __pyx_t_8); __Pyx_INCREF(__pyx_t_7); __pyx_t_8++; if (unlikely(0 < 0)) __PYX_ERR(0, 298, __pyx_L1_error)
-          #else
-          __pyx_t_7 = PySequence_ITEM(__pyx_t_5, __pyx_t_8); __pyx_t_8++; if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 298, __pyx_L1_error)
-          __Pyx_GOTREF(__pyx_t_7);
-          #endif
-        } else {
-          if (__pyx_t_8 >= PyTuple_GET_SIZE(__pyx_t_5)) break;
-          #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-          __pyx_t_7 = PyTuple_GET_ITEM(__pyx_t_5, __pyx_t_8); __Pyx_INCREF(__pyx_t_7); __pyx_t_8++; if (unlikely(0 < 0)) __PYX_ERR(0, 298, __pyx_L1_error)
-          #else
-          __pyx_t_7 = PySequence_ITEM(__pyx_t_5, __pyx_t_8); __pyx_t_8++; if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 298, __pyx_L1_error)
-          __Pyx_GOTREF(__pyx_t_7);
-          #endif
-        }
-      } else {
-        __pyx_t_7 = __pyx_t_9(__pyx_t_5);
-        if (unlikely(!__pyx_t_7)) {
-          PyObject* exc_type = PyErr_Occurred();
-          if (exc_type) {
-            if (likely(__Pyx_PyErr_GivenExceptionMatches(exc_type, PyExc_StopIteration))) PyErr_Clear();
-            else __PYX_ERR(0, 298, __pyx_L1_error)
-          }
-          break;
-        }
-        __Pyx_GOTREF(__pyx_t_7);
-      }
-      __Pyx_XDECREF_SET(__pyx_v_l, __pyx_t_7);
-      __pyx_t_7 = 0;
-      __pyx_t_7 = __Pyx_GetItemInt(__pyx_v_l, 2, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 298, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_7);
-      if (unlikely(__Pyx_ListComp_Append(__pyx_t_6, (PyObject*)__pyx_t_7))) __PYX_ERR(0, 298, __pyx_L1_error)
-      __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-    }
-    __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-    __pyx_t_5 = NULL;
-    if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_2))) {
-      __pyx_t_5 = PyMethod_GET_SELF(__pyx_t_2);
-      if (likely(__pyx_t_5)) {
-        PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_2);
-        __Pyx_INCREF(__pyx_t_5);
-        __Pyx_INCREF(function);
-        __Pyx_DECREF_SET(__pyx_t_2, function);
-      }
-    }
-    __pyx_t_3 = (__pyx_t_5) ? __Pyx_PyObject_Call2Args(__pyx_t_2, __pyx_t_5, __pyx_t_6) : __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_6);
-    __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
-    __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-    if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 298, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_3);
-    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-    __pyx_v_mean_entropy_loss = __pyx_t_3;
-    __pyx_t_3 = 0;
-
-    /* "multiworker.pyx":299
- *             mean_policy_loss = np.mean([l[1] for l in self.stats[-1:]])
- *             mean_entropy_loss = np.mean([l[2] for l in self.stats[-1:]])
- *             mean_gradient_norm = np.mean([l[3] for l in self.stats[-1:]])             # <<<<<<<<<<<<<<
- *             mean_variable_norm = np.mean([l[4] for l in self.stats[-1:]])
- * 
- */
-    __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_np); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 299, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_mean); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 299, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_6);
-    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-    __pyx_t_2 = PyList_New(0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 299, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_stats); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 299, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_5);
-    __pyx_t_7 = __Pyx_PyObject_GetSlice(__pyx_t_5, -1L, 0, NULL, NULL, &__pyx_slice__7, 1, 0, 1); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 299, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_7);
-    __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-    if (likely(PyList_CheckExact(__pyx_t_7)) || PyTuple_CheckExact(__pyx_t_7)) {
-      __pyx_t_5 = __pyx_t_7; __Pyx_INCREF(__pyx_t_5); __pyx_t_8 = 0;
-      __pyx_t_9 = NULL;
-    } else {
-      __pyx_t_8 = -1; __pyx_t_5 = PyObject_GetIter(__pyx_t_7); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 299, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_5);
-      __pyx_t_9 = Py_TYPE(__pyx_t_5)->tp_iternext; if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 299, __pyx_L1_error)
-    }
-    __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-    for (;;) {
-      if (likely(!__pyx_t_9)) {
-        if (likely(PyList_CheckExact(__pyx_t_5))) {
-          if (__pyx_t_8 >= PyList_GET_SIZE(__pyx_t_5)) break;
-          #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-          __pyx_t_7 = PyList_GET_ITEM(__pyx_t_5, __pyx_t_8); __Pyx_INCREF(__pyx_t_7); __pyx_t_8++; if (unlikely(0 < 0)) __PYX_ERR(0, 299, __pyx_L1_error)
-          #else
-          __pyx_t_7 = PySequence_ITEM(__pyx_t_5, __pyx_t_8); __pyx_t_8++; if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 299, __pyx_L1_error)
-          __Pyx_GOTREF(__pyx_t_7);
-          #endif
-        } else {
-          if (__pyx_t_8 >= PyTuple_GET_SIZE(__pyx_t_5)) break;
-          #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-          __pyx_t_7 = PyTuple_GET_ITEM(__pyx_t_5, __pyx_t_8); __Pyx_INCREF(__pyx_t_7); __pyx_t_8++; if (unlikely(0 < 0)) __PYX_ERR(0, 299, __pyx_L1_error)
-          #else
-          __pyx_t_7 = PySequence_ITEM(__pyx_t_5, __pyx_t_8); __pyx_t_8++; if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 299, __pyx_L1_error)
-          __Pyx_GOTREF(__pyx_t_7);
-          #endif
-        }
-      } else {
-        __pyx_t_7 = __pyx_t_9(__pyx_t_5);
-        if (unlikely(!__pyx_t_7)) {
-          PyObject* exc_type = PyErr_Occurred();
-          if (exc_type) {
-            if (likely(__Pyx_PyErr_GivenExceptionMatches(exc_type, PyExc_StopIteration))) PyErr_Clear();
-            else __PYX_ERR(0, 299, __pyx_L1_error)
-          }
-          break;
-        }
-        __Pyx_GOTREF(__pyx_t_7);
-      }
-      __Pyx_XDECREF_SET(__pyx_v_l, __pyx_t_7);
-      __pyx_t_7 = 0;
-      __pyx_t_7 = __Pyx_GetItemInt(__pyx_v_l, 3, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 299, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_7);
-      if (unlikely(__Pyx_ListComp_Append(__pyx_t_2, (PyObject*)__pyx_t_7))) __PYX_ERR(0, 299, __pyx_L1_error)
-      __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-    }
-    __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-    __pyx_t_5 = NULL;
-    if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_6))) {
-      __pyx_t_5 = PyMethod_GET_SELF(__pyx_t_6);
-      if (likely(__pyx_t_5)) {
-        PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_6);
-        __Pyx_INCREF(__pyx_t_5);
-        __Pyx_INCREF(function);
-        __Pyx_DECREF_SET(__pyx_t_6, function);
-      }
-    }
-    __pyx_t_3 = (__pyx_t_5) ? __Pyx_PyObject_Call2Args(__pyx_t_6, __pyx_t_5, __pyx_t_2) : __Pyx_PyObject_CallOneArg(__pyx_t_6, __pyx_t_2);
-    __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
-    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-    if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 299, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_3);
-    __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-    __pyx_v_mean_gradient_norm = __pyx_t_3;
-    __pyx_t_3 = 0;
-
-    /* "multiworker.pyx":300
- *             mean_entropy_loss = np.mean([l[2] for l in self.stats[-1:]])
- *             mean_gradient_norm = np.mean([l[3] for l in self.stats[-1:]])
- *             mean_variable_norm = np.mean([l[4] for l in self.stats[-1:]])             # <<<<<<<<<<<<<<
- * 
- *             with self.summary_writer.as_default():
- */
-    __Pyx_GetModuleGlobalName(__pyx_t_6, __pyx_n_s_np); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 300, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_6);
-    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_6, __pyx_n_s_mean); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 300, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_2);
-    __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-    __pyx_t_6 = PyList_New(0); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 300, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_6);
-    __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_stats); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 300, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_5);
-    __pyx_t_7 = __Pyx_PyObject_GetSlice(__pyx_t_5, -1L, 0, NULL, NULL, &__pyx_slice__7, 1, 0, 1); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 300, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_7);
-    __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-    if (likely(PyList_CheckExact(__pyx_t_7)) || PyTuple_CheckExact(__pyx_t_7)) {
-      __pyx_t_5 = __pyx_t_7; __Pyx_INCREF(__pyx_t_5); __pyx_t_8 = 0;
-      __pyx_t_9 = NULL;
-    } else {
-      __pyx_t_8 = -1; __pyx_t_5 = PyObject_GetIter(__pyx_t_7); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 300, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_5);
-      __pyx_t_9 = Py_TYPE(__pyx_t_5)->tp_iternext; if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 300, __pyx_L1_error)
-    }
-    __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-    for (;;) {
-      if (likely(!__pyx_t_9)) {
-        if (likely(PyList_CheckExact(__pyx_t_5))) {
-          if (__pyx_t_8 >= PyList_GET_SIZE(__pyx_t_5)) break;
-          #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-          __pyx_t_7 = PyList_GET_ITEM(__pyx_t_5, __pyx_t_8); __Pyx_INCREF(__pyx_t_7); __pyx_t_8++; if (unlikely(0 < 0)) __PYX_ERR(0, 300, __pyx_L1_error)
-          #else
-          __pyx_t_7 = PySequence_ITEM(__pyx_t_5, __pyx_t_8); __pyx_t_8++; if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 300, __pyx_L1_error)
-          __Pyx_GOTREF(__pyx_t_7);
-          #endif
-        } else {
-          if (__pyx_t_8 >= PyTuple_GET_SIZE(__pyx_t_5)) break;
-          #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-          __pyx_t_7 = PyTuple_GET_ITEM(__pyx_t_5, __pyx_t_8); __Pyx_INCREF(__pyx_t_7); __pyx_t_8++; if (unlikely(0 < 0)) __PYX_ERR(0, 300, __pyx_L1_error)
-          #else
-          __pyx_t_7 = PySequence_ITEM(__pyx_t_5, __pyx_t_8); __pyx_t_8++; if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 300, __pyx_L1_error)
-          __Pyx_GOTREF(__pyx_t_7);
-          #endif
-        }
-      } else {
-        __pyx_t_7 = __pyx_t_9(__pyx_t_5);
-        if (unlikely(!__pyx_t_7)) {
-          PyObject* exc_type = PyErr_Occurred();
-          if (exc_type) {
-            if (likely(__Pyx_PyErr_GivenExceptionMatches(exc_type, PyExc_StopIteration))) PyErr_Clear();
-            else __PYX_ERR(0, 300, __pyx_L1_error)
-          }
-          break;
-        }
-        __Pyx_GOTREF(__pyx_t_7);
-      }
-      __Pyx_XDECREF_SET(__pyx_v_l, __pyx_t_7);
-      __pyx_t_7 = 0;
-      __pyx_t_7 = __Pyx_GetItemInt(__pyx_v_l, 4, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 300, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_7);
-      if (unlikely(__Pyx_ListComp_Append(__pyx_t_6, (PyObject*)__pyx_t_7))) __PYX_ERR(0, 300, __pyx_L1_error)
-      __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-    }
-    __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-    __pyx_t_5 = NULL;
-    if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_2))) {
-      __pyx_t_5 = PyMethod_GET_SELF(__pyx_t_2);
-      if (likely(__pyx_t_5)) {
-        PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_2);
-        __Pyx_INCREF(__pyx_t_5);
-        __Pyx_INCREF(function);
-        __Pyx_DECREF_SET(__pyx_t_2, function);
-      }
-    }
-    __pyx_t_3 = (__pyx_t_5) ? __Pyx_PyObject_Call2Args(__pyx_t_2, __pyx_t_5, __pyx_t_6) : __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_6);
-    __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
-    __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-    if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 300, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_3);
-    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     __pyx_v_mean_variable_norm = __pyx_t_3;
     __pyx_t_3 = 0;
 
-    /* "multiworker.pyx":302
+    /* "multiworker.pyx":298
  *             mean_variable_norm = np.mean([l[4] for l in self.stats[-1:]])
  * 
  *             with self.summary_writer.as_default():             # <<<<<<<<<<<<<<
@@ -7779,9 +7779,9 @@ static PyObject *__pyx_pf_11multiworker_6Worker_6log_in_tensorboard(CYTHON_UNUSE
  *                 lvl = str(self.curriculum.active_level)
  */
     /*with:*/ {
-      __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_summary_writer); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 302, __pyx_L1_error)
+      __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_summary_writer); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 298, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_2);
-      __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_as_default); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 302, __pyx_L1_error)
+      __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_as_default); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 298, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_6);
       __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
       __pyx_t_2 = NULL;
@@ -7796,12 +7796,12 @@ static PyObject *__pyx_pf_11multiworker_6Worker_6log_in_tensorboard(CYTHON_UNUSE
       }
       __pyx_t_3 = (__pyx_t_2) ? __Pyx_PyObject_CallOneArg(__pyx_t_6, __pyx_t_2) : __Pyx_PyObject_CallNoArg(__pyx_t_6);
       __Pyx_XDECREF(__pyx_t_2); __pyx_t_2 = 0;
-      if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 302, __pyx_L1_error)
+      if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 298, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_3);
       __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-      __pyx_t_10 = __Pyx_PyObject_LookupSpecial(__pyx_t_3, __pyx_n_s_exit); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 302, __pyx_L1_error)
+      __pyx_t_10 = __Pyx_PyObject_LookupSpecial(__pyx_t_3, __pyx_n_s_exit); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 298, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_10);
-      __pyx_t_2 = __Pyx_PyObject_LookupSpecial(__pyx_t_3, __pyx_n_s_enter); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 302, __pyx_L16_error)
+      __pyx_t_2 = __Pyx_PyObject_LookupSpecial(__pyx_t_3, __pyx_n_s_enter); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 298, __pyx_L16_error)
       __Pyx_GOTREF(__pyx_t_2);
       __pyx_t_5 = NULL;
       if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_2))) {
@@ -7815,7 +7815,7 @@ static PyObject *__pyx_pf_11multiworker_6Worker_6log_in_tensorboard(CYTHON_UNUSE
       }
       __pyx_t_6 = (__pyx_t_5) ? __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_5) : __Pyx_PyObject_CallNoArg(__pyx_t_2);
       __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
-      if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 302, __pyx_L16_error)
+      if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 298, __pyx_L16_error)
       __Pyx_GOTREF(__pyx_t_6);
       __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
       __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
@@ -7830,19 +7830,19 @@ static PyObject *__pyx_pf_11multiworker_6Worker_6log_in_tensorboard(CYTHON_UNUSE
           __Pyx_XGOTREF(__pyx_t_13);
           /*try:*/ {
 
-            /* "multiworker.pyx":303
+            /* "multiworker.pyx":299
  * 
  *             with self.summary_writer.as_default():
  *                 episode_count = np.int32(self.episode_count)             # <<<<<<<<<<<<<<
  *                 lvl = str(self.curriculum.active_level)
  *                 tf.summary.scalar('Lvl '+ lvl+' - Perf/Reward', mean_reward, step=episode_count)
  */
-            __Pyx_GetModuleGlobalName(__pyx_t_6, __pyx_n_s_np); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 303, __pyx_L20_error)
+            __Pyx_GetModuleGlobalName(__pyx_t_6, __pyx_n_s_np); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 299, __pyx_L20_error)
             __Pyx_GOTREF(__pyx_t_6);
-            __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_6, __pyx_n_s_int32); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 303, __pyx_L20_error)
+            __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_6, __pyx_n_s_int32); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 299, __pyx_L20_error)
             __Pyx_GOTREF(__pyx_t_2);
             __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-            __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_episode_count); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 303, __pyx_L20_error)
+            __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_episode_count); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 299, __pyx_L20_error)
             __Pyx_GOTREF(__pyx_t_6);
             __pyx_t_5 = NULL;
             if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_2))) {
@@ -7857,36 +7857,188 @@ static PyObject *__pyx_pf_11multiworker_6Worker_6log_in_tensorboard(CYTHON_UNUSE
             __pyx_t_3 = (__pyx_t_5) ? __Pyx_PyObject_Call2Args(__pyx_t_2, __pyx_t_5, __pyx_t_6) : __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_6);
             __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
             __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-            if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 303, __pyx_L20_error)
+            if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 299, __pyx_L20_error)
             __Pyx_GOTREF(__pyx_t_3);
             __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
             __pyx_v_episode_count = __pyx_t_3;
             __pyx_t_3 = 0;
 
-            /* "multiworker.pyx":304
+            /* "multiworker.pyx":300
  *             with self.summary_writer.as_default():
  *                 episode_count = np.int32(self.episode_count)
  *                 lvl = str(self.curriculum.active_level)             # <<<<<<<<<<<<<<
  *                 tf.summary.scalar('Lvl '+ lvl+' - Perf/Reward', mean_reward, step=episode_count)
  *                 tf.summary.scalar('Lvl '+ lvl+' - Perf/Length', mean_length, step=episode_count)
  */
-            __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_curriculum); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 304, __pyx_L20_error)
+            __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_curriculum); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 300, __pyx_L20_error)
             __Pyx_GOTREF(__pyx_t_3);
-            __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_active_level); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 304, __pyx_L20_error)
+            __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_active_level); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 300, __pyx_L20_error)
             __Pyx_GOTREF(__pyx_t_2);
             __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-            __pyx_t_3 = __Pyx_PyObject_CallOneArg(((PyObject *)(&PyString_Type)), __pyx_t_2); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 304, __pyx_L20_error)
+            __pyx_t_3 = __Pyx_PyObject_CallOneArg(((PyObject *)(&PyString_Type)), __pyx_t_2); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 300, __pyx_L20_error)
             __Pyx_GOTREF(__pyx_t_3);
             __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
             __pyx_v_lvl = __pyx_t_3;
             __pyx_t_3 = 0;
 
-            /* "multiworker.pyx":305
+            /* "multiworker.pyx":301
  *                 episode_count = np.int32(self.episode_count)
  *                 lvl = str(self.curriculum.active_level)
  *                 tf.summary.scalar('Lvl '+ lvl+' - Perf/Reward', mean_reward, step=episode_count)             # <<<<<<<<<<<<<<
  *                 tf.summary.scalar('Lvl '+ lvl+' - Perf/Length', mean_length, step=episode_count)
  *                 tf.summary.scalar('Lvl '+ lvl+' - Perf/Value', mean_value, step=episode_count)
+ */
+            __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_n_s_tf); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 301, __pyx_L20_error)
+            __Pyx_GOTREF(__pyx_t_3);
+            __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_summary); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 301, __pyx_L20_error)
+            __Pyx_GOTREF(__pyx_t_2);
+            __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+            __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_scalar); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 301, __pyx_L20_error)
+            __Pyx_GOTREF(__pyx_t_3);
+            __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+            __pyx_t_2 = PyNumber_Add(__pyx_kp_s_Lvl, __pyx_v_lvl); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 301, __pyx_L20_error)
+            __Pyx_GOTREF(__pyx_t_2);
+            __pyx_t_6 = PyNumber_Add(__pyx_t_2, __pyx_kp_s_Perf_Reward); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 301, __pyx_L20_error)
+            __Pyx_GOTREF(__pyx_t_6);
+            __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+            __pyx_t_2 = PyTuple_New(2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 301, __pyx_L20_error)
+            __Pyx_GOTREF(__pyx_t_2);
+            __Pyx_GIVEREF(__pyx_t_6);
+            PyTuple_SET_ITEM(__pyx_t_2, 0, __pyx_t_6);
+            __Pyx_INCREF(__pyx_v_mean_reward);
+            __Pyx_GIVEREF(__pyx_v_mean_reward);
+            PyTuple_SET_ITEM(__pyx_t_2, 1, __pyx_v_mean_reward);
+            __pyx_t_6 = 0;
+            __pyx_t_6 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 301, __pyx_L20_error)
+            __Pyx_GOTREF(__pyx_t_6);
+            if (PyDict_SetItem(__pyx_t_6, __pyx_n_s_step, __pyx_v_episode_count) < 0) __PYX_ERR(0, 301, __pyx_L20_error)
+            __pyx_t_5 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_2, __pyx_t_6); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 301, __pyx_L20_error)
+            __Pyx_GOTREF(__pyx_t_5);
+            __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+            __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+            __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+            __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+
+            /* "multiworker.pyx":302
+ *                 lvl = str(self.curriculum.active_level)
+ *                 tf.summary.scalar('Lvl '+ lvl+' - Perf/Reward', mean_reward, step=episode_count)
+ *                 tf.summary.scalar('Lvl '+ lvl+' - Perf/Length', mean_length, step=episode_count)             # <<<<<<<<<<<<<<
+ *                 tf.summary.scalar('Lvl '+ lvl+' - Perf/Value', mean_value, step=episode_count)
+ *                 tf.summary.scalar('Lvl '+ lvl+' - Perf/Successrate', mean_success_rate, step=episode_count)
+ */
+            __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_n_s_tf); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 302, __pyx_L20_error)
+            __Pyx_GOTREF(__pyx_t_5);
+            __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_n_s_summary); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 302, __pyx_L20_error)
+            __Pyx_GOTREF(__pyx_t_6);
+            __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+            __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_6, __pyx_n_s_scalar); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 302, __pyx_L20_error)
+            __Pyx_GOTREF(__pyx_t_5);
+            __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+            __pyx_t_6 = PyNumber_Add(__pyx_kp_s_Lvl, __pyx_v_lvl); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 302, __pyx_L20_error)
+            __Pyx_GOTREF(__pyx_t_6);
+            __pyx_t_2 = PyNumber_Add(__pyx_t_6, __pyx_kp_s_Perf_Length); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 302, __pyx_L20_error)
+            __Pyx_GOTREF(__pyx_t_2);
+            __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+            __pyx_t_6 = PyTuple_New(2); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 302, __pyx_L20_error)
+            __Pyx_GOTREF(__pyx_t_6);
+            __Pyx_GIVEREF(__pyx_t_2);
+            PyTuple_SET_ITEM(__pyx_t_6, 0, __pyx_t_2);
+            __Pyx_INCREF(__pyx_v_mean_length);
+            __Pyx_GIVEREF(__pyx_v_mean_length);
+            PyTuple_SET_ITEM(__pyx_t_6, 1, __pyx_v_mean_length);
+            __pyx_t_2 = 0;
+            __pyx_t_2 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 302, __pyx_L20_error)
+            __Pyx_GOTREF(__pyx_t_2);
+            if (PyDict_SetItem(__pyx_t_2, __pyx_n_s_step, __pyx_v_episode_count) < 0) __PYX_ERR(0, 302, __pyx_L20_error)
+            __pyx_t_3 = __Pyx_PyObject_Call(__pyx_t_5, __pyx_t_6, __pyx_t_2); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 302, __pyx_L20_error)
+            __Pyx_GOTREF(__pyx_t_3);
+            __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+            __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+            __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+            __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+
+            /* "multiworker.pyx":303
+ *                 tf.summary.scalar('Lvl '+ lvl+' - Perf/Reward', mean_reward, step=episode_count)
+ *                 tf.summary.scalar('Lvl '+ lvl+' - Perf/Length', mean_length, step=episode_count)
+ *                 tf.summary.scalar('Lvl '+ lvl+' - Perf/Value', mean_value, step=episode_count)             # <<<<<<<<<<<<<<
+ *                 tf.summary.scalar('Lvl '+ lvl+' - Perf/Successrate', mean_success_rate, step=episode_count)
+ *                 tf.summary.scalar('Lvl '+ lvl+' - Perf/Perc. agents arrived', mean_agents_arrived, step=episode_count)
+ */
+            __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_n_s_tf); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 303, __pyx_L20_error)
+            __Pyx_GOTREF(__pyx_t_3);
+            __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_summary); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 303, __pyx_L20_error)
+            __Pyx_GOTREF(__pyx_t_2);
+            __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+            __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_scalar); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 303, __pyx_L20_error)
+            __Pyx_GOTREF(__pyx_t_3);
+            __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+            __pyx_t_2 = PyNumber_Add(__pyx_kp_s_Lvl, __pyx_v_lvl); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 303, __pyx_L20_error)
+            __Pyx_GOTREF(__pyx_t_2);
+            __pyx_t_6 = PyNumber_Add(__pyx_t_2, __pyx_kp_s_Perf_Value); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 303, __pyx_L20_error)
+            __Pyx_GOTREF(__pyx_t_6);
+            __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+            __pyx_t_2 = PyTuple_New(2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 303, __pyx_L20_error)
+            __Pyx_GOTREF(__pyx_t_2);
+            __Pyx_GIVEREF(__pyx_t_6);
+            PyTuple_SET_ITEM(__pyx_t_2, 0, __pyx_t_6);
+            __Pyx_INCREF(__pyx_v_mean_value);
+            __Pyx_GIVEREF(__pyx_v_mean_value);
+            PyTuple_SET_ITEM(__pyx_t_2, 1, __pyx_v_mean_value);
+            __pyx_t_6 = 0;
+            __pyx_t_6 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 303, __pyx_L20_error)
+            __Pyx_GOTREF(__pyx_t_6);
+            if (PyDict_SetItem(__pyx_t_6, __pyx_n_s_step, __pyx_v_episode_count) < 0) __PYX_ERR(0, 303, __pyx_L20_error)
+            __pyx_t_5 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_2, __pyx_t_6); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 303, __pyx_L20_error)
+            __Pyx_GOTREF(__pyx_t_5);
+            __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+            __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+            __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+            __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+
+            /* "multiworker.pyx":304
+ *                 tf.summary.scalar('Lvl '+ lvl+' - Perf/Length', mean_length, step=episode_count)
+ *                 tf.summary.scalar('Lvl '+ lvl+' - Perf/Value', mean_value, step=episode_count)
+ *                 tf.summary.scalar('Lvl '+ lvl+' - Perf/Successrate', mean_success_rate, step=episode_count)             # <<<<<<<<<<<<<<
+ *                 tf.summary.scalar('Lvl '+ lvl+' - Perf/Perc. agents arrived', mean_agents_arrived, step=episode_count)
+ *                 tf.summary.scalar('Lvl '+ lvl+' - Losses/Value Loss', mean_value_loss, step=episode_count)
+ */
+            __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_n_s_tf); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 304, __pyx_L20_error)
+            __Pyx_GOTREF(__pyx_t_5);
+            __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_n_s_summary); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 304, __pyx_L20_error)
+            __Pyx_GOTREF(__pyx_t_6);
+            __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+            __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_6, __pyx_n_s_scalar); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 304, __pyx_L20_error)
+            __Pyx_GOTREF(__pyx_t_5);
+            __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+            __pyx_t_6 = PyNumber_Add(__pyx_kp_s_Lvl, __pyx_v_lvl); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 304, __pyx_L20_error)
+            __Pyx_GOTREF(__pyx_t_6);
+            __pyx_t_2 = PyNumber_Add(__pyx_t_6, __pyx_kp_s_Perf_Successrate); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 304, __pyx_L20_error)
+            __Pyx_GOTREF(__pyx_t_2);
+            __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+            __pyx_t_6 = PyTuple_New(2); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 304, __pyx_L20_error)
+            __Pyx_GOTREF(__pyx_t_6);
+            __Pyx_GIVEREF(__pyx_t_2);
+            PyTuple_SET_ITEM(__pyx_t_6, 0, __pyx_t_2);
+            __Pyx_INCREF(__pyx_v_mean_success_rate);
+            __Pyx_GIVEREF(__pyx_v_mean_success_rate);
+            PyTuple_SET_ITEM(__pyx_t_6, 1, __pyx_v_mean_success_rate);
+            __pyx_t_2 = 0;
+            __pyx_t_2 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 304, __pyx_L20_error)
+            __Pyx_GOTREF(__pyx_t_2);
+            if (PyDict_SetItem(__pyx_t_2, __pyx_n_s_step, __pyx_v_episode_count) < 0) __PYX_ERR(0, 304, __pyx_L20_error)
+            __pyx_t_3 = __Pyx_PyObject_Call(__pyx_t_5, __pyx_t_6, __pyx_t_2); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 304, __pyx_L20_error)
+            __Pyx_GOTREF(__pyx_t_3);
+            __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+            __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+            __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+            __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+
+            /* "multiworker.pyx":305
+ *                 tf.summary.scalar('Lvl '+ lvl+' - Perf/Value', mean_value, step=episode_count)
+ *                 tf.summary.scalar('Lvl '+ lvl+' - Perf/Successrate', mean_success_rate, step=episode_count)
+ *                 tf.summary.scalar('Lvl '+ lvl+' - Perf/Perc. agents arrived', mean_agents_arrived, step=episode_count)             # <<<<<<<<<<<<<<
+ *                 tf.summary.scalar('Lvl '+ lvl+' - Losses/Value Loss', mean_value_loss, step=episode_count)
+ *                 tf.summary.scalar('Lvl '+ lvl+' - Losses/Policy Loss', mean_policy_loss, step=episode_count)
  */
             __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_n_s_tf); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 305, __pyx_L20_error)
             __Pyx_GOTREF(__pyx_t_3);
@@ -7898,16 +8050,16 @@ static PyObject *__pyx_pf_11multiworker_6Worker_6log_in_tensorboard(CYTHON_UNUSE
             __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
             __pyx_t_2 = PyNumber_Add(__pyx_kp_s_Lvl, __pyx_v_lvl); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 305, __pyx_L20_error)
             __Pyx_GOTREF(__pyx_t_2);
-            __pyx_t_6 = PyNumber_Add(__pyx_t_2, __pyx_kp_s_Perf_Reward); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 305, __pyx_L20_error)
+            __pyx_t_6 = PyNumber_Add(__pyx_t_2, __pyx_kp_s_Perf_Perc_agents_arrived); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 305, __pyx_L20_error)
             __Pyx_GOTREF(__pyx_t_6);
             __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
             __pyx_t_2 = PyTuple_New(2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 305, __pyx_L20_error)
             __Pyx_GOTREF(__pyx_t_2);
             __Pyx_GIVEREF(__pyx_t_6);
             PyTuple_SET_ITEM(__pyx_t_2, 0, __pyx_t_6);
-            __Pyx_INCREF(__pyx_v_mean_reward);
-            __Pyx_GIVEREF(__pyx_v_mean_reward);
-            PyTuple_SET_ITEM(__pyx_t_2, 1, __pyx_v_mean_reward);
+            __Pyx_INCREF(__pyx_v_mean_agents_arrived);
+            __Pyx_GIVEREF(__pyx_v_mean_agents_arrived);
+            PyTuple_SET_ITEM(__pyx_t_2, 1, __pyx_v_mean_agents_arrived);
             __pyx_t_6 = 0;
             __pyx_t_6 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 305, __pyx_L20_error)
             __Pyx_GOTREF(__pyx_t_6);
@@ -7920,11 +8072,11 @@ static PyObject *__pyx_pf_11multiworker_6Worker_6log_in_tensorboard(CYTHON_UNUSE
             __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
             /* "multiworker.pyx":306
- *                 lvl = str(self.curriculum.active_level)
- *                 tf.summary.scalar('Lvl '+ lvl+' - Perf/Reward', mean_reward, step=episode_count)
- *                 tf.summary.scalar('Lvl '+ lvl+' - Perf/Length', mean_length, step=episode_count)             # <<<<<<<<<<<<<<
- *                 tf.summary.scalar('Lvl '+ lvl+' - Perf/Value', mean_value, step=episode_count)
  *                 tf.summary.scalar('Lvl '+ lvl+' - Perf/Successrate', mean_success_rate, step=episode_count)
+ *                 tf.summary.scalar('Lvl '+ lvl+' - Perf/Perc. agents arrived', mean_agents_arrived, step=episode_count)
+ *                 tf.summary.scalar('Lvl '+ lvl+' - Losses/Value Loss', mean_value_loss, step=episode_count)             # <<<<<<<<<<<<<<
+ *                 tf.summary.scalar('Lvl '+ lvl+' - Losses/Policy Loss', mean_policy_loss, step=episode_count)
+ *                 tf.summary.scalar('Lvl '+ lvl+' - Losses/Entropy', mean_entropy_loss, step=episode_count)
  */
             __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_n_s_tf); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 306, __pyx_L20_error)
             __Pyx_GOTREF(__pyx_t_5);
@@ -7936,16 +8088,16 @@ static PyObject *__pyx_pf_11multiworker_6Worker_6log_in_tensorboard(CYTHON_UNUSE
             __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
             __pyx_t_6 = PyNumber_Add(__pyx_kp_s_Lvl, __pyx_v_lvl); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 306, __pyx_L20_error)
             __Pyx_GOTREF(__pyx_t_6);
-            __pyx_t_2 = PyNumber_Add(__pyx_t_6, __pyx_kp_s_Perf_Length); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 306, __pyx_L20_error)
+            __pyx_t_2 = PyNumber_Add(__pyx_t_6, __pyx_kp_s_Losses_Value_Loss); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 306, __pyx_L20_error)
             __Pyx_GOTREF(__pyx_t_2);
             __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
             __pyx_t_6 = PyTuple_New(2); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 306, __pyx_L20_error)
             __Pyx_GOTREF(__pyx_t_6);
             __Pyx_GIVEREF(__pyx_t_2);
             PyTuple_SET_ITEM(__pyx_t_6, 0, __pyx_t_2);
-            __Pyx_INCREF(__pyx_v_mean_length);
-            __Pyx_GIVEREF(__pyx_v_mean_length);
-            PyTuple_SET_ITEM(__pyx_t_6, 1, __pyx_v_mean_length);
+            __Pyx_INCREF(__pyx_v_mean_value_loss);
+            __Pyx_GIVEREF(__pyx_v_mean_value_loss);
+            PyTuple_SET_ITEM(__pyx_t_6, 1, __pyx_v_mean_value_loss);
             __pyx_t_2 = 0;
             __pyx_t_2 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 306, __pyx_L20_error)
             __Pyx_GOTREF(__pyx_t_2);
@@ -7958,11 +8110,11 @@ static PyObject *__pyx_pf_11multiworker_6Worker_6log_in_tensorboard(CYTHON_UNUSE
             __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
 
             /* "multiworker.pyx":307
- *                 tf.summary.scalar('Lvl '+ lvl+' - Perf/Reward', mean_reward, step=episode_count)
- *                 tf.summary.scalar('Lvl '+ lvl+' - Perf/Length', mean_length, step=episode_count)
- *                 tf.summary.scalar('Lvl '+ lvl+' - Perf/Value', mean_value, step=episode_count)             # <<<<<<<<<<<<<<
- *                 tf.summary.scalar('Lvl '+ lvl+' - Perf/Successrate', mean_success_rate, step=episode_count)
  *                 tf.summary.scalar('Lvl '+ lvl+' - Perf/Perc. agents arrived', mean_agents_arrived, step=episode_count)
+ *                 tf.summary.scalar('Lvl '+ lvl+' - Losses/Value Loss', mean_value_loss, step=episode_count)
+ *                 tf.summary.scalar('Lvl '+ lvl+' - Losses/Policy Loss', mean_policy_loss, step=episode_count)             # <<<<<<<<<<<<<<
+ *                 tf.summary.scalar('Lvl '+ lvl+' - Losses/Entropy', mean_entropy_loss, step=episode_count)
+ *                 tf.summary.scalar('Lvl '+ lvl+' - Losses/Grad Norm', mean_gradient_norm, step=episode_count)
  */
             __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_n_s_tf); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 307, __pyx_L20_error)
             __Pyx_GOTREF(__pyx_t_3);
@@ -7974,16 +8126,16 @@ static PyObject *__pyx_pf_11multiworker_6Worker_6log_in_tensorboard(CYTHON_UNUSE
             __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
             __pyx_t_2 = PyNumber_Add(__pyx_kp_s_Lvl, __pyx_v_lvl); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 307, __pyx_L20_error)
             __Pyx_GOTREF(__pyx_t_2);
-            __pyx_t_6 = PyNumber_Add(__pyx_t_2, __pyx_kp_s_Perf_Value); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 307, __pyx_L20_error)
+            __pyx_t_6 = PyNumber_Add(__pyx_t_2, __pyx_kp_s_Losses_Policy_Loss); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 307, __pyx_L20_error)
             __Pyx_GOTREF(__pyx_t_6);
             __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
             __pyx_t_2 = PyTuple_New(2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 307, __pyx_L20_error)
             __Pyx_GOTREF(__pyx_t_2);
             __Pyx_GIVEREF(__pyx_t_6);
             PyTuple_SET_ITEM(__pyx_t_2, 0, __pyx_t_6);
-            __Pyx_INCREF(__pyx_v_mean_value);
-            __Pyx_GIVEREF(__pyx_v_mean_value);
-            PyTuple_SET_ITEM(__pyx_t_2, 1, __pyx_v_mean_value);
+            __Pyx_INCREF(__pyx_v_mean_policy_loss);
+            __Pyx_GIVEREF(__pyx_v_mean_policy_loss);
+            PyTuple_SET_ITEM(__pyx_t_2, 1, __pyx_v_mean_policy_loss);
             __pyx_t_6 = 0;
             __pyx_t_6 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 307, __pyx_L20_error)
             __Pyx_GOTREF(__pyx_t_6);
@@ -7996,11 +8148,11 @@ static PyObject *__pyx_pf_11multiworker_6Worker_6log_in_tensorboard(CYTHON_UNUSE
             __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
             /* "multiworker.pyx":308
- *                 tf.summary.scalar('Lvl '+ lvl+' - Perf/Length', mean_length, step=episode_count)
- *                 tf.summary.scalar('Lvl '+ lvl+' - Perf/Value', mean_value, step=episode_count)
- *                 tf.summary.scalar('Lvl '+ lvl+' - Perf/Successrate', mean_success_rate, step=episode_count)             # <<<<<<<<<<<<<<
- *                 tf.summary.scalar('Lvl '+ lvl+' - Perf/Perc. agents arrived', mean_agents_arrived, step=episode_count)
  *                 tf.summary.scalar('Lvl '+ lvl+' - Losses/Value Loss', mean_value_loss, step=episode_count)
+ *                 tf.summary.scalar('Lvl '+ lvl+' - Losses/Policy Loss', mean_policy_loss, step=episode_count)
+ *                 tf.summary.scalar('Lvl '+ lvl+' - Losses/Entropy', mean_entropy_loss, step=episode_count)             # <<<<<<<<<<<<<<
+ *                 tf.summary.scalar('Lvl '+ lvl+' - Losses/Grad Norm', mean_gradient_norm, step=episode_count)
+ *                 tf.summary.scalar('Lvl '+ lvl+' - Losses/Var Norm', mean_variable_norm, step=episode_count)
  */
             __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_n_s_tf); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 308, __pyx_L20_error)
             __Pyx_GOTREF(__pyx_t_5);
@@ -8012,16 +8164,16 @@ static PyObject *__pyx_pf_11multiworker_6Worker_6log_in_tensorboard(CYTHON_UNUSE
             __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
             __pyx_t_6 = PyNumber_Add(__pyx_kp_s_Lvl, __pyx_v_lvl); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 308, __pyx_L20_error)
             __Pyx_GOTREF(__pyx_t_6);
-            __pyx_t_2 = PyNumber_Add(__pyx_t_6, __pyx_kp_s_Perf_Successrate); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 308, __pyx_L20_error)
+            __pyx_t_2 = PyNumber_Add(__pyx_t_6, __pyx_kp_s_Losses_Entropy); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 308, __pyx_L20_error)
             __Pyx_GOTREF(__pyx_t_2);
             __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
             __pyx_t_6 = PyTuple_New(2); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 308, __pyx_L20_error)
             __Pyx_GOTREF(__pyx_t_6);
             __Pyx_GIVEREF(__pyx_t_2);
             PyTuple_SET_ITEM(__pyx_t_6, 0, __pyx_t_2);
-            __Pyx_INCREF(__pyx_v_mean_success_rate);
-            __Pyx_GIVEREF(__pyx_v_mean_success_rate);
-            PyTuple_SET_ITEM(__pyx_t_6, 1, __pyx_v_mean_success_rate);
+            __Pyx_INCREF(__pyx_v_mean_entropy_loss);
+            __Pyx_GIVEREF(__pyx_v_mean_entropy_loss);
+            PyTuple_SET_ITEM(__pyx_t_6, 1, __pyx_v_mean_entropy_loss);
             __pyx_t_2 = 0;
             __pyx_t_2 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 308, __pyx_L20_error)
             __Pyx_GOTREF(__pyx_t_2);
@@ -8034,11 +8186,11 @@ static PyObject *__pyx_pf_11multiworker_6Worker_6log_in_tensorboard(CYTHON_UNUSE
             __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
 
             /* "multiworker.pyx":309
- *                 tf.summary.scalar('Lvl '+ lvl+' - Perf/Value', mean_value, step=episode_count)
- *                 tf.summary.scalar('Lvl '+ lvl+' - Perf/Successrate', mean_success_rate, step=episode_count)
- *                 tf.summary.scalar('Lvl '+ lvl+' - Perf/Perc. agents arrived', mean_agents_arrived, step=episode_count)             # <<<<<<<<<<<<<<
- *                 tf.summary.scalar('Lvl '+ lvl+' - Losses/Value Loss', mean_value_loss, step=episode_count)
  *                 tf.summary.scalar('Lvl '+ lvl+' - Losses/Policy Loss', mean_policy_loss, step=episode_count)
+ *                 tf.summary.scalar('Lvl '+ lvl+' - Losses/Entropy', mean_entropy_loss, step=episode_count)
+ *                 tf.summary.scalar('Lvl '+ lvl+' - Losses/Grad Norm', mean_gradient_norm, step=episode_count)             # <<<<<<<<<<<<<<
+ *                 tf.summary.scalar('Lvl '+ lvl+' - Losses/Var Norm', mean_variable_norm, step=episode_count)
+ *                 self.summary_writer.flush()
  */
             __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_n_s_tf); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 309, __pyx_L20_error)
             __Pyx_GOTREF(__pyx_t_3);
@@ -8050,16 +8202,16 @@ static PyObject *__pyx_pf_11multiworker_6Worker_6log_in_tensorboard(CYTHON_UNUSE
             __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
             __pyx_t_2 = PyNumber_Add(__pyx_kp_s_Lvl, __pyx_v_lvl); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 309, __pyx_L20_error)
             __Pyx_GOTREF(__pyx_t_2);
-            __pyx_t_6 = PyNumber_Add(__pyx_t_2, __pyx_kp_s_Perf_Perc_agents_arrived); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 309, __pyx_L20_error)
+            __pyx_t_6 = PyNumber_Add(__pyx_t_2, __pyx_kp_s_Losses_Grad_Norm); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 309, __pyx_L20_error)
             __Pyx_GOTREF(__pyx_t_6);
             __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
             __pyx_t_2 = PyTuple_New(2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 309, __pyx_L20_error)
             __Pyx_GOTREF(__pyx_t_2);
             __Pyx_GIVEREF(__pyx_t_6);
             PyTuple_SET_ITEM(__pyx_t_2, 0, __pyx_t_6);
-            __Pyx_INCREF(__pyx_v_mean_agents_arrived);
-            __Pyx_GIVEREF(__pyx_v_mean_agents_arrived);
-            PyTuple_SET_ITEM(__pyx_t_2, 1, __pyx_v_mean_agents_arrived);
+            __Pyx_INCREF(__pyx_v_mean_gradient_norm);
+            __Pyx_GIVEREF(__pyx_v_mean_gradient_norm);
+            PyTuple_SET_ITEM(__pyx_t_2, 1, __pyx_v_mean_gradient_norm);
             __pyx_t_6 = 0;
             __pyx_t_6 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 309, __pyx_L20_error)
             __Pyx_GOTREF(__pyx_t_6);
@@ -8072,11 +8224,11 @@ static PyObject *__pyx_pf_11multiworker_6Worker_6log_in_tensorboard(CYTHON_UNUSE
             __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
             /* "multiworker.pyx":310
- *                 tf.summary.scalar('Lvl '+ lvl+' - Perf/Successrate', mean_success_rate, step=episode_count)
- *                 tf.summary.scalar('Lvl '+ lvl+' - Perf/Perc. agents arrived', mean_agents_arrived, step=episode_count)
- *                 tf.summary.scalar('Lvl '+ lvl+' - Losses/Value Loss', mean_value_loss, step=episode_count)             # <<<<<<<<<<<<<<
- *                 tf.summary.scalar('Lvl '+ lvl+' - Losses/Policy Loss', mean_policy_loss, step=episode_count)
  *                 tf.summary.scalar('Lvl '+ lvl+' - Losses/Entropy', mean_entropy_loss, step=episode_count)
+ *                 tf.summary.scalar('Lvl '+ lvl+' - Losses/Grad Norm', mean_gradient_norm, step=episode_count)
+ *                 tf.summary.scalar('Lvl '+ lvl+' - Losses/Var Norm', mean_variable_norm, step=episode_count)             # <<<<<<<<<<<<<<
+ *                 self.summary_writer.flush()
+ * 
  */
             __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_n_s_tf); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 310, __pyx_L20_error)
             __Pyx_GOTREF(__pyx_t_5);
@@ -8088,16 +8240,16 @@ static PyObject *__pyx_pf_11multiworker_6Worker_6log_in_tensorboard(CYTHON_UNUSE
             __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
             __pyx_t_6 = PyNumber_Add(__pyx_kp_s_Lvl, __pyx_v_lvl); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 310, __pyx_L20_error)
             __Pyx_GOTREF(__pyx_t_6);
-            __pyx_t_2 = PyNumber_Add(__pyx_t_6, __pyx_kp_s_Losses_Value_Loss); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 310, __pyx_L20_error)
+            __pyx_t_2 = PyNumber_Add(__pyx_t_6, __pyx_kp_s_Losses_Var_Norm); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 310, __pyx_L20_error)
             __Pyx_GOTREF(__pyx_t_2);
             __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
             __pyx_t_6 = PyTuple_New(2); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 310, __pyx_L20_error)
             __Pyx_GOTREF(__pyx_t_6);
             __Pyx_GIVEREF(__pyx_t_2);
             PyTuple_SET_ITEM(__pyx_t_6, 0, __pyx_t_2);
-            __Pyx_INCREF(__pyx_v_mean_value_loss);
-            __Pyx_GIVEREF(__pyx_v_mean_value_loss);
-            PyTuple_SET_ITEM(__pyx_t_6, 1, __pyx_v_mean_value_loss);
+            __Pyx_INCREF(__pyx_v_mean_variable_norm);
+            __Pyx_GIVEREF(__pyx_v_mean_variable_norm);
+            PyTuple_SET_ITEM(__pyx_t_6, 1, __pyx_v_mean_variable_norm);
             __pyx_t_2 = 0;
             __pyx_t_2 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 310, __pyx_L20_error)
             __Pyx_GOTREF(__pyx_t_2);
@@ -8110,167 +8262,15 @@ static PyObject *__pyx_pf_11multiworker_6Worker_6log_in_tensorboard(CYTHON_UNUSE
             __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
 
             /* "multiworker.pyx":311
- *                 tf.summary.scalar('Lvl '+ lvl+' - Perf/Perc. agents arrived', mean_agents_arrived, step=episode_count)
- *                 tf.summary.scalar('Lvl '+ lvl+' - Losses/Value Loss', mean_value_loss, step=episode_count)
- *                 tf.summary.scalar('Lvl '+ lvl+' - Losses/Policy Loss', mean_policy_loss, step=episode_count)             # <<<<<<<<<<<<<<
- *                 tf.summary.scalar('Lvl '+ lvl+' - Losses/Entropy', mean_entropy_loss, step=episode_count)
- *                 tf.summary.scalar('Lvl '+ lvl+' - Losses/Grad Norm', mean_gradient_norm, step=episode_count)
- */
-            __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_n_s_tf); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 311, __pyx_L20_error)
-            __Pyx_GOTREF(__pyx_t_3);
-            __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_summary); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 311, __pyx_L20_error)
-            __Pyx_GOTREF(__pyx_t_2);
-            __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-            __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_scalar); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 311, __pyx_L20_error)
-            __Pyx_GOTREF(__pyx_t_3);
-            __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-            __pyx_t_2 = PyNumber_Add(__pyx_kp_s_Lvl, __pyx_v_lvl); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 311, __pyx_L20_error)
-            __Pyx_GOTREF(__pyx_t_2);
-            __pyx_t_6 = PyNumber_Add(__pyx_t_2, __pyx_kp_s_Losses_Policy_Loss); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 311, __pyx_L20_error)
-            __Pyx_GOTREF(__pyx_t_6);
-            __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-            __pyx_t_2 = PyTuple_New(2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 311, __pyx_L20_error)
-            __Pyx_GOTREF(__pyx_t_2);
-            __Pyx_GIVEREF(__pyx_t_6);
-            PyTuple_SET_ITEM(__pyx_t_2, 0, __pyx_t_6);
-            __Pyx_INCREF(__pyx_v_mean_policy_loss);
-            __Pyx_GIVEREF(__pyx_v_mean_policy_loss);
-            PyTuple_SET_ITEM(__pyx_t_2, 1, __pyx_v_mean_policy_loss);
-            __pyx_t_6 = 0;
-            __pyx_t_6 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 311, __pyx_L20_error)
-            __Pyx_GOTREF(__pyx_t_6);
-            if (PyDict_SetItem(__pyx_t_6, __pyx_n_s_step, __pyx_v_episode_count) < 0) __PYX_ERR(0, 311, __pyx_L20_error)
-            __pyx_t_5 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_2, __pyx_t_6); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 311, __pyx_L20_error)
-            __Pyx_GOTREF(__pyx_t_5);
-            __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-            __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-            __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-            __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-
-            /* "multiworker.pyx":312
- *                 tf.summary.scalar('Lvl '+ lvl+' - Losses/Value Loss', mean_value_loss, step=episode_count)
- *                 tf.summary.scalar('Lvl '+ lvl+' - Losses/Policy Loss', mean_policy_loss, step=episode_count)
- *                 tf.summary.scalar('Lvl '+ lvl+' - Losses/Entropy', mean_entropy_loss, step=episode_count)             # <<<<<<<<<<<<<<
- *                 tf.summary.scalar('Lvl '+ lvl+' - Losses/Grad Norm', mean_gradient_norm, step=episode_count)
- *                 tf.summary.scalar('Lvl '+ lvl+' - Losses/Var Norm', mean_variable_norm, step=episode_count)
- */
-            __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_n_s_tf); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 312, __pyx_L20_error)
-            __Pyx_GOTREF(__pyx_t_5);
-            __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_n_s_summary); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 312, __pyx_L20_error)
-            __Pyx_GOTREF(__pyx_t_6);
-            __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-            __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_6, __pyx_n_s_scalar); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 312, __pyx_L20_error)
-            __Pyx_GOTREF(__pyx_t_5);
-            __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-            __pyx_t_6 = PyNumber_Add(__pyx_kp_s_Lvl, __pyx_v_lvl); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 312, __pyx_L20_error)
-            __Pyx_GOTREF(__pyx_t_6);
-            __pyx_t_2 = PyNumber_Add(__pyx_t_6, __pyx_kp_s_Losses_Entropy); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 312, __pyx_L20_error)
-            __Pyx_GOTREF(__pyx_t_2);
-            __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-            __pyx_t_6 = PyTuple_New(2); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 312, __pyx_L20_error)
-            __Pyx_GOTREF(__pyx_t_6);
-            __Pyx_GIVEREF(__pyx_t_2);
-            PyTuple_SET_ITEM(__pyx_t_6, 0, __pyx_t_2);
-            __Pyx_INCREF(__pyx_v_mean_entropy_loss);
-            __Pyx_GIVEREF(__pyx_v_mean_entropy_loss);
-            PyTuple_SET_ITEM(__pyx_t_6, 1, __pyx_v_mean_entropy_loss);
-            __pyx_t_2 = 0;
-            __pyx_t_2 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 312, __pyx_L20_error)
-            __Pyx_GOTREF(__pyx_t_2);
-            if (PyDict_SetItem(__pyx_t_2, __pyx_n_s_step, __pyx_v_episode_count) < 0) __PYX_ERR(0, 312, __pyx_L20_error)
-            __pyx_t_3 = __Pyx_PyObject_Call(__pyx_t_5, __pyx_t_6, __pyx_t_2); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 312, __pyx_L20_error)
-            __Pyx_GOTREF(__pyx_t_3);
-            __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-            __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-            __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-            __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-
-            /* "multiworker.pyx":313
- *                 tf.summary.scalar('Lvl '+ lvl+' - Losses/Policy Loss', mean_policy_loss, step=episode_count)
- *                 tf.summary.scalar('Lvl '+ lvl+' - Losses/Entropy', mean_entropy_loss, step=episode_count)
- *                 tf.summary.scalar('Lvl '+ lvl+' - Losses/Grad Norm', mean_gradient_norm, step=episode_count)             # <<<<<<<<<<<<<<
- *                 tf.summary.scalar('Lvl '+ lvl+' - Losses/Var Norm', mean_variable_norm, step=episode_count)
- *                 self.summary_writer.flush()
- */
-            __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_n_s_tf); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 313, __pyx_L20_error)
-            __Pyx_GOTREF(__pyx_t_3);
-            __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_summary); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 313, __pyx_L20_error)
-            __Pyx_GOTREF(__pyx_t_2);
-            __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-            __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_scalar); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 313, __pyx_L20_error)
-            __Pyx_GOTREF(__pyx_t_3);
-            __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-            __pyx_t_2 = PyNumber_Add(__pyx_kp_s_Lvl, __pyx_v_lvl); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 313, __pyx_L20_error)
-            __Pyx_GOTREF(__pyx_t_2);
-            __pyx_t_6 = PyNumber_Add(__pyx_t_2, __pyx_kp_s_Losses_Grad_Norm); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 313, __pyx_L20_error)
-            __Pyx_GOTREF(__pyx_t_6);
-            __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-            __pyx_t_2 = PyTuple_New(2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 313, __pyx_L20_error)
-            __Pyx_GOTREF(__pyx_t_2);
-            __Pyx_GIVEREF(__pyx_t_6);
-            PyTuple_SET_ITEM(__pyx_t_2, 0, __pyx_t_6);
-            __Pyx_INCREF(__pyx_v_mean_gradient_norm);
-            __Pyx_GIVEREF(__pyx_v_mean_gradient_norm);
-            PyTuple_SET_ITEM(__pyx_t_2, 1, __pyx_v_mean_gradient_norm);
-            __pyx_t_6 = 0;
-            __pyx_t_6 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 313, __pyx_L20_error)
-            __Pyx_GOTREF(__pyx_t_6);
-            if (PyDict_SetItem(__pyx_t_6, __pyx_n_s_step, __pyx_v_episode_count) < 0) __PYX_ERR(0, 313, __pyx_L20_error)
-            __pyx_t_5 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_2, __pyx_t_6); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 313, __pyx_L20_error)
-            __Pyx_GOTREF(__pyx_t_5);
-            __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-            __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-            __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-            __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-
-            /* "multiworker.pyx":314
- *                 tf.summary.scalar('Lvl '+ lvl+' - Losses/Entropy', mean_entropy_loss, step=episode_count)
- *                 tf.summary.scalar('Lvl '+ lvl+' - Losses/Grad Norm', mean_gradient_norm, step=episode_count)
- *                 tf.summary.scalar('Lvl '+ lvl+' - Losses/Var Norm', mean_variable_norm, step=episode_count)             # <<<<<<<<<<<<<<
- *                 self.summary_writer.flush()
- * 
- */
-            __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_n_s_tf); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 314, __pyx_L20_error)
-            __Pyx_GOTREF(__pyx_t_5);
-            __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_n_s_summary); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 314, __pyx_L20_error)
-            __Pyx_GOTREF(__pyx_t_6);
-            __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-            __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_6, __pyx_n_s_scalar); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 314, __pyx_L20_error)
-            __Pyx_GOTREF(__pyx_t_5);
-            __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-            __pyx_t_6 = PyNumber_Add(__pyx_kp_s_Lvl, __pyx_v_lvl); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 314, __pyx_L20_error)
-            __Pyx_GOTREF(__pyx_t_6);
-            __pyx_t_2 = PyNumber_Add(__pyx_t_6, __pyx_kp_s_Losses_Var_Norm); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 314, __pyx_L20_error)
-            __Pyx_GOTREF(__pyx_t_2);
-            __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-            __pyx_t_6 = PyTuple_New(2); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 314, __pyx_L20_error)
-            __Pyx_GOTREF(__pyx_t_6);
-            __Pyx_GIVEREF(__pyx_t_2);
-            PyTuple_SET_ITEM(__pyx_t_6, 0, __pyx_t_2);
-            __Pyx_INCREF(__pyx_v_mean_variable_norm);
-            __Pyx_GIVEREF(__pyx_v_mean_variable_norm);
-            PyTuple_SET_ITEM(__pyx_t_6, 1, __pyx_v_mean_variable_norm);
-            __pyx_t_2 = 0;
-            __pyx_t_2 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 314, __pyx_L20_error)
-            __Pyx_GOTREF(__pyx_t_2);
-            if (PyDict_SetItem(__pyx_t_2, __pyx_n_s_step, __pyx_v_episode_count) < 0) __PYX_ERR(0, 314, __pyx_L20_error)
-            __pyx_t_3 = __Pyx_PyObject_Call(__pyx_t_5, __pyx_t_6, __pyx_t_2); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 314, __pyx_L20_error)
-            __Pyx_GOTREF(__pyx_t_3);
-            __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-            __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-            __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-            __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-
-            /* "multiworker.pyx":315
  *                 tf.summary.scalar('Lvl '+ lvl+' - Losses/Grad Norm', mean_gradient_norm, step=episode_count)
  *                 tf.summary.scalar('Lvl '+ lvl+' - Losses/Var Norm', mean_variable_norm, step=episode_count)
  *                 self.summary_writer.flush()             # <<<<<<<<<<<<<<
  * 
  * 
  */
-            __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_summary_writer); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 315, __pyx_L20_error)
+            __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_summary_writer); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 311, __pyx_L20_error)
             __Pyx_GOTREF(__pyx_t_2);
-            __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_flush); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 315, __pyx_L20_error)
+            __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_flush); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 311, __pyx_L20_error)
             __Pyx_GOTREF(__pyx_t_6);
             __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
             __pyx_t_2 = NULL;
@@ -8285,12 +8285,12 @@ static PyObject *__pyx_pf_11multiworker_6Worker_6log_in_tensorboard(CYTHON_UNUSE
             }
             __pyx_t_3 = (__pyx_t_2) ? __Pyx_PyObject_CallOneArg(__pyx_t_6, __pyx_t_2) : __Pyx_PyObject_CallNoArg(__pyx_t_6);
             __Pyx_XDECREF(__pyx_t_2); __pyx_t_2 = 0;
-            if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 315, __pyx_L20_error)
+            if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 311, __pyx_L20_error)
             __Pyx_GOTREF(__pyx_t_3);
             __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
             __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
 
-            /* "multiworker.pyx":302
+            /* "multiworker.pyx":298
  *             mean_variable_norm = np.mean([l[4] for l in self.stats[-1:]])
  * 
  *             with self.summary_writer.as_default():             # <<<<<<<<<<<<<<
@@ -8310,20 +8310,20 @@ static PyObject *__pyx_pf_11multiworker_6Worker_6log_in_tensorboard(CYTHON_UNUSE
           __Pyx_XDECREF(__pyx_t_7); __pyx_t_7 = 0;
           /*except:*/ {
             __Pyx_AddTraceback("multiworker.Worker.log_in_tensorboard", __pyx_clineno, __pyx_lineno, __pyx_filename);
-            if (__Pyx_GetException(&__pyx_t_3, &__pyx_t_6, &__pyx_t_2) < 0) __PYX_ERR(0, 302, __pyx_L22_except_error)
+            if (__Pyx_GetException(&__pyx_t_3, &__pyx_t_6, &__pyx_t_2) < 0) __PYX_ERR(0, 298, __pyx_L22_except_error)
             __Pyx_GOTREF(__pyx_t_3);
             __Pyx_GOTREF(__pyx_t_6);
             __Pyx_GOTREF(__pyx_t_2);
-            __pyx_t_5 = PyTuple_Pack(3, __pyx_t_3, __pyx_t_6, __pyx_t_2); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 302, __pyx_L22_except_error)
+            __pyx_t_5 = PyTuple_Pack(3, __pyx_t_3, __pyx_t_6, __pyx_t_2); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 298, __pyx_L22_except_error)
             __Pyx_GOTREF(__pyx_t_5);
             __pyx_t_14 = __Pyx_PyObject_Call(__pyx_t_10, __pyx_t_5, NULL);
             __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
             __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-            if (unlikely(!__pyx_t_14)) __PYX_ERR(0, 302, __pyx_L22_except_error)
+            if (unlikely(!__pyx_t_14)) __PYX_ERR(0, 298, __pyx_L22_except_error)
             __Pyx_GOTREF(__pyx_t_14);
             __pyx_t_1 = __Pyx_PyObject_IsTrue(__pyx_t_14);
             __Pyx_DECREF(__pyx_t_14); __pyx_t_14 = 0;
-            if (__pyx_t_1 < 0) __PYX_ERR(0, 302, __pyx_L22_except_error)
+            if (__pyx_t_1 < 0) __PYX_ERR(0, 298, __pyx_L22_except_error)
             __pyx_t_4 = ((!(__pyx_t_1 != 0)) != 0);
             if (__pyx_t_4) {
               __Pyx_GIVEREF(__pyx_t_3);
@@ -8331,7 +8331,7 @@ static PyObject *__pyx_pf_11multiworker_6Worker_6log_in_tensorboard(CYTHON_UNUSE
               __Pyx_XGIVEREF(__pyx_t_2);
               __Pyx_ErrRestoreWithState(__pyx_t_3, __pyx_t_6, __pyx_t_2);
               __pyx_t_3 = 0; __pyx_t_6 = 0; __pyx_t_2 = 0; 
-              __PYX_ERR(0, 302, __pyx_L22_except_error)
+              __PYX_ERR(0, 298, __pyx_L22_except_error)
             }
             __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
             __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
@@ -8357,7 +8357,7 @@ static PyObject *__pyx_pf_11multiworker_6Worker_6log_in_tensorboard(CYTHON_UNUSE
           if (__pyx_t_10) {
             __pyx_t_13 = __Pyx_PyObject_Call(__pyx_t_10, __pyx_tuple__9, NULL);
             __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
-            if (unlikely(!__pyx_t_13)) __PYX_ERR(0, 302, __pyx_L1_error)
+            if (unlikely(!__pyx_t_13)) __PYX_ERR(0, 298, __pyx_L1_error)
             __Pyx_GOTREF(__pyx_t_13);
             __Pyx_DECREF(__pyx_t_13); __pyx_t_13 = 0;
           }
@@ -8372,7 +8372,7 @@ static PyObject *__pyx_pf_11multiworker_6Worker_6log_in_tensorboard(CYTHON_UNUSE
       __pyx_L29:;
     }
 
-    /* "multiworker.pyx":289
+    /* "multiworker.pyx":285
  * 
  *     def log_in_tensorboard(self):
  *         if self.episode_count % 5 == 0 and self.episode_count != 0:             # <<<<<<<<<<<<<<
@@ -8381,7 +8381,7 @@ static PyObject *__pyx_pf_11multiworker_6Worker_6log_in_tensorboard(CYTHON_UNUSE
  */
   }
 
-  /* "multiworker.pyx":288
+  /* "multiworker.pyx":284
  *         return v_l, p_l, e_l, g_n,  v_n
  * 
  *     def log_in_tensorboard(self):             # <<<<<<<<<<<<<<
@@ -8703,7 +8703,7 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedBuiltins(void) {
   __pyx_builtin___import__ = __Pyx_GetBuiltinName(__pyx_n_s_import); if (!__pyx_builtin___import__) __PYX_ERR(0, 50, __pyx_L1_error)
   __pyx_builtin_range = __Pyx_GetBuiltinName(__pyx_n_s_range); if (!__pyx_builtin_range) __PYX_ERR(0, 107, __pyx_L1_error)
   __pyx_builtin_max = __Pyx_GetBuiltinName(__pyx_n_s_max); if (!__pyx_builtin_max) __PYX_ERR(0, 171, __pyx_L1_error)
-  __pyx_builtin_KeyboardInterrupt = __Pyx_GetBuiltinName(__pyx_n_s_KeyboardInterrupt); if (!__pyx_builtin_KeyboardInterrupt) __PYX_ERR(0, 265, __pyx_L1_error)
+  __pyx_builtin_KeyboardInterrupt = __Pyx_GetBuiltinName(__pyx_n_s_KeyboardInterrupt); if (!__pyx_builtin_KeyboardInterrupt) __PYX_ERR(0, 261, __pyx_L1_error)
   return 0;
   __pyx_L1_error:;
   return -1;
@@ -8768,36 +8768,36 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
   __Pyx_GOTREF(__pyx_tuple__6);
   __Pyx_GIVEREF(__pyx_tuple__6);
 
-  /* "multiworker.pyx":261
+  /* "multiworker.pyx":257
  *                 self.episode_count += 1
  * 
  *                 print('Episode', self.episode_count,'of',self.name,'with',episode_step_count,'steps, reward of',episode_reward,', perc. arrived',agents_arrived, ', mean entropy of', np.mean([l[2] for l in self.stats[-1:]]), ', curriculum level', self.curriculum.current_level, ', using best actions:', use_best_actions,', cancel episode:', cancel_episode, ', time', episode_time, ', Avg. time', avg_episode_time)             # <<<<<<<<<<<<<<
  * 
  *             return self.episode_count
  */
-  __pyx_slice__7 = PySlice_New(__pyx_int_neg_1, Py_None, Py_None); if (unlikely(!__pyx_slice__7)) __PYX_ERR(0, 261, __pyx_L1_error)
+  __pyx_slice__7 = PySlice_New(__pyx_int_neg_1, Py_None, Py_None); if (unlikely(!__pyx_slice__7)) __PYX_ERR(0, 257, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_slice__7);
   __Pyx_GIVEREF(__pyx_slice__7);
 
-  /* "multiworker.pyx":290
+  /* "multiworker.pyx":286
  *     def log_in_tensorboard(self):
  *         if self.episode_count % 5 == 0 and self.episode_count != 0:
  *             mean_length = np.mean(self.episode_lengths[-100:])             # <<<<<<<<<<<<<<
  *             mean_value = np.mean(self.episode_mean_values[-100:])
  *             mean_success_rate = np.mean(self.episode_success[-100:])
  */
-  __pyx_slice__8 = PySlice_New(__pyx_int_neg_100, Py_None, Py_None); if (unlikely(!__pyx_slice__8)) __PYX_ERR(0, 290, __pyx_L1_error)
+  __pyx_slice__8 = PySlice_New(__pyx_int_neg_100, Py_None, Py_None); if (unlikely(!__pyx_slice__8)) __PYX_ERR(0, 286, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_slice__8);
   __Pyx_GIVEREF(__pyx_slice__8);
 
-  /* "multiworker.pyx":302
+  /* "multiworker.pyx":298
  *             mean_variable_norm = np.mean([l[4] for l in self.stats[-1:]])
  * 
  *             with self.summary_writer.as_default():             # <<<<<<<<<<<<<<
  *                 episode_count = np.int32(self.episode_count)
  *                 lvl = str(self.curriculum.active_level)
  */
-  __pyx_tuple__9 = PyTuple_Pack(3, Py_None, Py_None, Py_None); if (unlikely(!__pyx_tuple__9)) __PYX_ERR(0, 302, __pyx_L1_error)
+  __pyx_tuple__9 = PyTuple_Pack(3, Py_None, Py_None, Py_None); if (unlikely(!__pyx_tuple__9)) __PYX_ERR(0, 298, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__9);
   __Pyx_GIVEREF(__pyx_tuple__9);
 
@@ -8849,29 +8849,29 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
   __Pyx_GIVEREF(__pyx_tuple__16);
   __pyx_codeobj__17 = (PyObject*)__Pyx_PyCode_New(1, 0, 58, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__16, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_multiworker_pyx, __pyx_n_s_work, 68, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__17)) __PYX_ERR(0, 68, __pyx_L1_error)
 
-  /* "multiworker.pyx":269
+  /* "multiworker.pyx":265
  * 
  * 
  *     def train(self, rollout, episode_done):             # <<<<<<<<<<<<<<
  *         all_rollouts = []
  *         all_rewards = []
  */
-  __pyx_tuple__18 = PyTuple_Pack(18, __pyx_n_s_self, __pyx_n_s_rollout, __pyx_n_s_episode_done, __pyx_n_s_all_rollouts, __pyx_n_s_all_rewards, __pyx_n_s_i, __pyx_n_s_rewards, __pyx_n_s_discounted_rewards, __pyx_n_s_actions, __pyx_n_s_values, __pyx_n_s_obs, __pyx_n_s_advantages, __pyx_n_s_v_l, __pyx_n_s_p_l, __pyx_n_s_e_l, __pyx_n_s_g_n, __pyx_n_s_v_n, __pyx_n_s_row); if (unlikely(!__pyx_tuple__18)) __PYX_ERR(0, 269, __pyx_L1_error)
+  __pyx_tuple__18 = PyTuple_Pack(18, __pyx_n_s_self, __pyx_n_s_rollout, __pyx_n_s_episode_done, __pyx_n_s_all_rollouts, __pyx_n_s_all_rewards, __pyx_n_s_i, __pyx_n_s_rewards, __pyx_n_s_discounted_rewards, __pyx_n_s_actions, __pyx_n_s_values, __pyx_n_s_obs, __pyx_n_s_advantages, __pyx_n_s_v_l, __pyx_n_s_p_l, __pyx_n_s_e_l, __pyx_n_s_g_n, __pyx_n_s_v_n, __pyx_n_s_row); if (unlikely(!__pyx_tuple__18)) __PYX_ERR(0, 265, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__18);
   __Pyx_GIVEREF(__pyx_tuple__18);
-  __pyx_codeobj__19 = (PyObject*)__Pyx_PyCode_New(3, 0, 18, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__18, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_multiworker_pyx, __pyx_n_s_train, 269, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__19)) __PYX_ERR(0, 269, __pyx_L1_error)
+  __pyx_codeobj__19 = (PyObject*)__Pyx_PyCode_New(3, 0, 18, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__18, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_multiworker_pyx, __pyx_n_s_train, 265, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__19)) __PYX_ERR(0, 265, __pyx_L1_error)
 
-  /* "multiworker.pyx":288
+  /* "multiworker.pyx":284
  *         return v_l, p_l, e_l, g_n,  v_n
  * 
  *     def log_in_tensorboard(self):             # <<<<<<<<<<<<<<
  *         if self.episode_count % 5 == 0 and self.episode_count != 0:
  *             mean_length = np.mean(self.episode_lengths[-100:])
  */
-  __pyx_tuple__20 = PyTuple_Pack(14, __pyx_n_s_self, __pyx_n_s_mean_length, __pyx_n_s_mean_value, __pyx_n_s_mean_success_rate, __pyx_n_s_mean_agents_arrived, __pyx_n_s_mean_reward, __pyx_n_s_mean_value_loss, __pyx_n_s_mean_policy_loss, __pyx_n_s_mean_entropy_loss, __pyx_n_s_mean_gradient_norm, __pyx_n_s_mean_variable_norm, __pyx_n_s_episode_count, __pyx_n_s_lvl, __pyx_n_s_l); if (unlikely(!__pyx_tuple__20)) __PYX_ERR(0, 288, __pyx_L1_error)
+  __pyx_tuple__20 = PyTuple_Pack(14, __pyx_n_s_self, __pyx_n_s_mean_length, __pyx_n_s_mean_value, __pyx_n_s_mean_success_rate, __pyx_n_s_mean_agents_arrived, __pyx_n_s_mean_reward, __pyx_n_s_mean_value_loss, __pyx_n_s_mean_policy_loss, __pyx_n_s_mean_entropy_loss, __pyx_n_s_mean_gradient_norm, __pyx_n_s_mean_variable_norm, __pyx_n_s_episode_count, __pyx_n_s_lvl, __pyx_n_s_l); if (unlikely(!__pyx_tuple__20)) __PYX_ERR(0, 284, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__20);
   __Pyx_GIVEREF(__pyx_tuple__20);
-  __pyx_codeobj__21 = (PyObject*)__Pyx_PyCode_New(1, 0, 14, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__20, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_multiworker_pyx, __pyx_n_s_log_in_tensorboard, 288, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__21)) __PYX_ERR(0, 288, __pyx_L1_error)
+  __pyx_codeobj__21 = (PyObject*)__Pyx_PyCode_New(1, 0, 14, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__20, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_multiworker_pyx, __pyx_n_s_log_in_tensorboard, 284, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__21)) __PYX_ERR(0, 284, __pyx_L1_error)
   __Pyx_RefNannyFinishContext();
   return 0;
   __pyx_L1_error:;
@@ -8886,7 +8886,7 @@ static CYTHON_SMALL_CODE int __Pyx_InitGlobals(void) {
   __pyx_int_0 = PyInt_FromLong(0); if (unlikely(!__pyx_int_0)) __PYX_ERR(0, 1, __pyx_L1_error)
   __pyx_int_1 = PyInt_FromLong(1); if (unlikely(!__pyx_int_1)) __PYX_ERR(0, 1, __pyx_L1_error)
   __pyx_int_5 = PyInt_FromLong(5); if (unlikely(!__pyx_int_5)) __PYX_ERR(0, 1, __pyx_L1_error)
-  __pyx_int_9 = PyInt_FromLong(9); if (unlikely(!__pyx_int_9)) __PYX_ERR(0, 1, __pyx_L1_error)
+  __pyx_int_10 = PyInt_FromLong(10); if (unlikely(!__pyx_int_10)) __PYX_ERR(0, 1, __pyx_L1_error)
   __pyx_int_50 = PyInt_FromLong(50); if (unlikely(!__pyx_int_50)) __PYX_ERR(0, 1, __pyx_L1_error)
   __pyx_int_neg_1 = PyInt_FromLong(-1); if (unlikely(!__pyx_int_neg_1)) __PYX_ERR(0, 1, __pyx_L1_error)
   __pyx_int_neg_100 = PyInt_FromLong(-100); if (unlikely(!__pyx_int_neg_100)) __PYX_ERR(0, 1, __pyx_L1_error)
@@ -9543,28 +9543,28 @@ if (!__Pyx_RefNanny) {
   if (__Pyx_SetNameInClass(__pyx_t_1, __pyx_n_s_work, __pyx_t_2) < 0) __PYX_ERR(0, 68, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "multiworker.pyx":269
+  /* "multiworker.pyx":265
  * 
  * 
  *     def train(self, rollout, episode_done):             # <<<<<<<<<<<<<<
  *         all_rollouts = []
  *         all_rewards = []
  */
-  __pyx_t_2 = __Pyx_CyFunction_NewEx(&__pyx_mdef_11multiworker_6Worker_5train, 0, __pyx_n_s_Worker_train, NULL, __pyx_n_s_multiworker, __pyx_d, ((PyObject *)__pyx_codeobj__19)); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 269, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_CyFunction_NewEx(&__pyx_mdef_11multiworker_6Worker_5train, 0, __pyx_n_s_Worker_train, NULL, __pyx_n_s_multiworker, __pyx_d, ((PyObject *)__pyx_codeobj__19)); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 265, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (__Pyx_SetNameInClass(__pyx_t_1, __pyx_n_s_train, __pyx_t_2) < 0) __PYX_ERR(0, 269, __pyx_L1_error)
+  if (__Pyx_SetNameInClass(__pyx_t_1, __pyx_n_s_train, __pyx_t_2) < 0) __PYX_ERR(0, 265, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "multiworker.pyx":288
+  /* "multiworker.pyx":284
  *         return v_l, p_l, e_l, g_n,  v_n
  * 
  *     def log_in_tensorboard(self):             # <<<<<<<<<<<<<<
  *         if self.episode_count % 5 == 0 and self.episode_count != 0:
  *             mean_length = np.mean(self.episode_lengths[-100:])
  */
-  __pyx_t_2 = __Pyx_CyFunction_NewEx(&__pyx_mdef_11multiworker_6Worker_7log_in_tensorboard, 0, __pyx_n_s_Worker_log_in_tensorboard, NULL, __pyx_n_s_multiworker, __pyx_d, ((PyObject *)__pyx_codeobj__21)); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 288, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_CyFunction_NewEx(&__pyx_mdef_11multiworker_6Worker_7log_in_tensorboard, 0, __pyx_n_s_Worker_log_in_tensorboard, NULL, __pyx_n_s_multiworker, __pyx_d, ((PyObject *)__pyx_codeobj__21)); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 284, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (__Pyx_SetNameInClass(__pyx_t_1, __pyx_n_s_log_in_tensorboard, __pyx_t_2) < 0) __PYX_ERR(0, 288, __pyx_L1_error)
+  if (__Pyx_SetNameInClass(__pyx_t_1, __pyx_n_s_log_in_tensorboard, __pyx_t_2) < 0) __PYX_ERR(0, 284, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
   /* "multiworker.pyx":41
