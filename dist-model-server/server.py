@@ -1,12 +1,22 @@
-from flask import Flask, jsonify, send_from_directory,send_file, request, Response
 
-from flatland.envs.observations import TreeObsForRailEnv
 
 import os
+def delete_files(dir_name, extensions):
+    test = os.listdir(dir_name)
+    for item in test:
+        for ext in extensions:
+            if item.endswith(ext):
+                os.remove(os.path.join(dir_name, item))
+                print('Delete file', os.path.join(dir_name, item))
+
+#delete_files('./deliverables', ['.c', '.pyd', '.so','.o'])
+#delete_files('.', ['.c', '.pyd', '.so','.o'])
+
 myCmd = 'python setup.py build_ext --inplace'
-os.system(myCmd)
+#os.system(myCmd)
 
-
+from flask import Flask, jsonify, send_from_directory,send_file, request, Response
+from flatland.envs.observations import TreeObsForRailEnv
 
 from model_server import Singleton
 import tensorflow as tf

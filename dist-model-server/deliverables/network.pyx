@@ -115,7 +115,9 @@ class AC_Network():
         return policy_loss, tf.reduce_mean(entropy)
 
 
-    def train(self, target_v, advantages, actions,  obs, episode_done):
+    def train(self, target_v, advantages, actions,  obs, num_agents_done):
+        num_agents_done = np.min([1, num_agents_done])
+
         # Value loss
         with tf.GradientTape() as tape:
             policy,value,_,_ = self.model(obs)
@@ -124,8 +126,7 @@ class AC_Network():
             tot_loss = p_loss + v_loss
 
         gradient_norm = params.gradient_norm
-        if episode_done:
-            gradient_norm *= 2
+        gradient_norm = 2 ** num_agents_done          
 
         local_vars = self.model.trainable_variables
         gradients_new = tape.gradient(tot_loss, local_vars)

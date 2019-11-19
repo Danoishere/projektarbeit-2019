@@ -172,7 +172,6 @@ class Worker():
                         if max_pos_repeation > 10:
                             cancel_episode = True
 
-
                         prep_steps = 0
                         obs_builder.prep_steps = prep_steps
                         episode_step_count += 1
@@ -214,6 +213,9 @@ class Worker():
                     done_last_step = dict(done)
 
                 num_agents_done = 0
+                for i in range(self.env.num_agents):
+                    if done[i]:
+                        num_agents_done += 1
 
                 # Individual rewards
                 for i in range(self.env.num_agents):
@@ -221,11 +223,10 @@ class Worker():
                         episode_buffer[i][-1][2] -= 1.0
                         episode_reward -= 1.0
                     if done[i]:
-                        num_agents_done += 1
                         # If agents could finish the level, 
                         # set final reward for all agents
-                        episode_buffer[i][-1][2] += 1.0
-                        episode_reward += 1.0
+                        episode_buffer[i][-1][2] += 0.5*num_agents_done
+                        episode_reward += 0.5*num_agents_done
                     elif cancel_episode:
                         episode_buffer[i][-1][2] -= 1.0
                         episode_reward -= 1.0
@@ -248,7 +249,7 @@ class Worker():
                 self.episode_mean_values.append(np.mean(episode_values))
                 self.episode_success.append(episode_done)
 
-                v_l, p_l, e_l, g_n, v_n = self.train(episode_buffer, episode_done)
+                v_l, p_l, e_l, g_n, v_n = self.train(episode_buffer, num_agents_done)
                 self.stats.append([v_l, p_l, e_l, g_n, v_n])
 
                 # Save stats to Tensorboard every 5 episodes

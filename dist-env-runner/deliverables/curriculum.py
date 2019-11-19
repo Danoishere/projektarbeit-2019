@@ -75,7 +75,7 @@ class Curriculum:
             rail_gen_params = {
                 'num_cities': 2,
                 'grid_mode': False,
-                'max_rails_between_cities': 1,
+                'max_rails_between_cities': 2,
                 'max_rails_in_city' : 2
             },
             seed = self.seed        
