@@ -3831,7 +3831,7 @@ static PyObject *__pyx_pf_12deliverables_7network_10AC_Network_10update_entropy_
  *         ''' Updates the local copy of the global model
  *         '''
  *         resp = requests.get(url=self.global_model_url + '/entropy_factor').json()             # <<<<<<<<<<<<<<
- *         new_entropy_factor = resp['entropy_factor'] * 0.1
+ *         new_entropy_factor = resp['entropy_factor']
  *         if new_entropy_factor != self.entropy_factor:
  */
   __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_requests); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 90, __pyx_L1_error)
@@ -3876,50 +3876,47 @@ static PyObject *__pyx_pf_12deliverables_7network_10AC_Network_10update_entropy_
   /* "deliverables/network.pyx":91
  *         '''
  *         resp = requests.get(url=self.global_model_url + '/entropy_factor').json()
- *         new_entropy_factor = resp['entropy_factor'] * 0.1             # <<<<<<<<<<<<<<
+ *         new_entropy_factor = resp['entropy_factor']             # <<<<<<<<<<<<<<
  *         if new_entropy_factor != self.entropy_factor:
  *             print('New entropy factor aquired:', new_entropy_factor)
  */
   __pyx_t_1 = __Pyx_PyObject_Dict_GetItem(__pyx_v_resp, __pyx_n_s_entropy_factor); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 91, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = PyNumber_Multiply(__pyx_t_1, __pyx_float_0_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 91, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_2);
-  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_v_new_entropy_factor = __pyx_t_2;
-  __pyx_t_2 = 0;
+  __pyx_v_new_entropy_factor = __pyx_t_1;
+  __pyx_t_1 = 0;
 
   /* "deliverables/network.pyx":92
  *         resp = requests.get(url=self.global_model_url + '/entropy_factor').json()
- *         new_entropy_factor = resp['entropy_factor'] * 0.1
+ *         new_entropy_factor = resp['entropy_factor']
  *         if new_entropy_factor != self.entropy_factor:             # <<<<<<<<<<<<<<
  *             print('New entropy factor aquired:', new_entropy_factor)
  *             self.entropy_factor = new_entropy_factor
  */
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_entropy_factor); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 92, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_1 = PyObject_RichCompare(__pyx_v_new_entropy_factor, __pyx_t_2, Py_NE); __Pyx_XGOTREF(__pyx_t_1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 92, __pyx_L1_error)
-  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_6 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely(__pyx_t_6 < 0)) __PYX_ERR(0, 92, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_entropy_factor); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 92, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_t_2 = PyObject_RichCompare(__pyx_v_new_entropy_factor, __pyx_t_1, Py_NE); __Pyx_XGOTREF(__pyx_t_2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 92, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  __pyx_t_6 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely(__pyx_t_6 < 0)) __PYX_ERR(0, 92, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   if (__pyx_t_6) {
 
     /* "deliverables/network.pyx":93
- *         new_entropy_factor = resp['entropy_factor'] * 0.1
+ *         new_entropy_factor = resp['entropy_factor']
  *         if new_entropy_factor != self.entropy_factor:
  *             print('New entropy factor aquired:', new_entropy_factor)             # <<<<<<<<<<<<<<
  *             self.entropy_factor = new_entropy_factor
  * 
  */
-    __pyx_t_1 = PyTuple_New(2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 93, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_1);
+    __pyx_t_2 = PyTuple_New(2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 93, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_2);
     __Pyx_INCREF(__pyx_kp_s_New_entropy_factor_aquired);
     __Pyx_GIVEREF(__pyx_kp_s_New_entropy_factor_aquired);
-    PyTuple_SET_ITEM(__pyx_t_1, 0, __pyx_kp_s_New_entropy_factor_aquired);
+    PyTuple_SET_ITEM(__pyx_t_2, 0, __pyx_kp_s_New_entropy_factor_aquired);
     __Pyx_INCREF(__pyx_v_new_entropy_factor);
     __Pyx_GIVEREF(__pyx_v_new_entropy_factor);
-    PyTuple_SET_ITEM(__pyx_t_1, 1, __pyx_v_new_entropy_factor);
-    if (__Pyx_PrintOne(0, __pyx_t_1) < 0) __PYX_ERR(0, 93, __pyx_L1_error)
-    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+    PyTuple_SET_ITEM(__pyx_t_2, 1, __pyx_v_new_entropy_factor);
+    if (__Pyx_PrintOne(0, __pyx_t_2) < 0) __PYX_ERR(0, 93, __pyx_L1_error)
+    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
     /* "deliverables/network.pyx":94
  *         if new_entropy_factor != self.entropy_factor:
@@ -3932,7 +3929,7 @@ static PyObject *__pyx_pf_12deliverables_7network_10AC_Network_10update_entropy_
 
     /* "deliverables/network.pyx":92
  *         resp = requests.get(url=self.global_model_url + '/entropy_factor').json()
- *         new_entropy_factor = resp['entropy_factor'] * 0.1
+ *         new_entropy_factor = resp['entropy_factor']
  *         if new_entropy_factor != self.entropy_factor:             # <<<<<<<<<<<<<<
  *             print('New entropy factor aquired:', new_entropy_factor)
  *             self.entropy_factor = new_entropy_factor

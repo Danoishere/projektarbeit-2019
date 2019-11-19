@@ -9,7 +9,7 @@ import scipy.signal
 from tensorflow.keras.optimizers import RMSprop
 
 from datetime import datetime
-from random import choice,uniform, random
+from random import choice,uniform, random, getrandbits, seed
 from time import sleep
 from time import time
 
@@ -82,6 +82,8 @@ class Worker():
             time_start = time()
 
             while not bool(self.should_stop.value):
+                self.curriculum.update_env_to_curriculum_level(self.env)
+
                 # Check with server if there is a new curriculum level available
                 if self.episode_count % 50 == 0:
                     self.local_model.update_entropy_factor()
@@ -91,7 +93,7 @@ class Worker():
                     # Only regenerate env on curriculum level change. Otherwise just reset
                     # Important, because otherwise the player doens't see all levels
                     if self.curriculum.current_level != old_curriculum_level:
-                        self.curriculum.update_env_to_curriculum_level(self.env)
+                        
                         self.episode_count = 0
                         self.stats = []
                 
@@ -114,8 +116,8 @@ class Worker():
                 no_reward = {i:0 for i in range(len(self.env.env.agents))}
 
                 prep_steps = 0
-
-                use_best_actions = random() < 0.5
+                seed(self.episode_count + self.number)
+                use_best_actions = bool(getrandbits(1))
 
                 done = {i:False for i in range(len(self.env.env.agents))}
                 done['__all__'] = False
