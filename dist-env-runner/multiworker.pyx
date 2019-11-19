@@ -169,11 +169,8 @@ class Worker():
                             agent_pos[agent_pos_key] = 0
 
                         max_pos_repeation = max(agent_pos.values())
-                        if max_pos_repeation > 5:
+                        if max_pos_repeation > 10:
                             cancel_episode = True
-
-                        #for agent in self.env.env.agents:
-                        #    agent.last_action = 0
 
                         prep_steps = 0
                         obs_builder.prep_steps = prep_steps
