@@ -7,7 +7,7 @@ learning_rate = 1e-4
 
 gradient_norm = 1.0
 
-number_of_actions = 5
+number_of_actions = 4
 number_of_comm = 5
 num_of_obs = 2
 

@@ -228,7 +228,7 @@ class AC_Network():
         for handle in obs:
             idx = mapping[handle]
             a_dist = predcition[idx]
-            actions[handle] = np.random.choice([0,1,2,3,4], p = a_dist)
+            actions[handle] = np.random.choice([0,1,2,3], p = a_dist)
             
             values_dict[handle] = values[idx,0]
             obs_builder.actor_rec_state[handle] = [a_rec_h[idx], a_rec_c[idx]]

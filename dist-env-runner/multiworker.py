@@ -38,6 +38,8 @@ def discount(x, gamma):
     return scipy.signal.lfilter([1], [1, -gamma], x[::-1], axis=0)[::-1]
 
 
+
+
 class Worker():
     def __init__(self, name, should_stop):
         self.should_stop = should_stop
@@ -136,52 +138,75 @@ class Worker():
                 cancel_episode = False
 
                 while not episode_done and not cancel_episode and episode_step_count < self.env.max_steps:
-                    # Figure out, which agents can move
+                    agents = self.env.env.agents
+                    actions = {}
+                    for agent in agents:
+                        try:
+                            agent.wait
+                            agent.wait = np.max([agent.wait - 1,0]) 
+                            if agent.wait > 0:
+                                #print('Wait', agent.wait)
+                                pass
+                        except:
+                            agent.wait = 0
+
+                        next_agent_pos = self.next_pos(agent.position, agent.direction)
+
+                        if agent.status == RailAgentStatus.READY_TO_DEPART:
+                            actions[agent.handle] = RailEnvActions.MOVE_FORWARD
+
+                        elif agent.wait > 0 and agent.speed_data['speed'] > 0:
+                            actions[agent.handle] = RailEnvActions.STOP_MOVING
+
+                        elif agent.wait > 0 and agent.speed_data['speed'] == 0:
+                            actions[agent.handle] = RailEnvActions.DO_NOTHING
+
+                        elif agent.malfunction_data['malfunction'] > 0:
+                            actions[agent.handle] = RailEnvActions.DO_NOTHING
+
+                        elif self.is_agent_on_unusable_switch(next_agent_pos, agent.direction):
+                            pass 
+
+                        elif not self.is_agent_on_usable_switch(agent.position, agent.direction):
+                            actions[agent.handle] = RailEnvActions.MOVE_FORWARD
+
+
                     obs_dict = {}
-                    handles = []
-                    for handle in range(len(self.env.env.agents)):
-                        handles.append((1,self.env.env.agents[handle].position))
-                        if info['status'][handle] == RailAgentStatus.READY_TO_DEPART or (
-                            info['action_required'][handle] and info['malfunction'][handle] == 0):
-                            obs_dict[handle] = obs[handle]
+                    for agent in agents:
+                        if info['action_required'][agent.handle] and agent.handle not in actions:
+                            obs_dict[agent.handle] = obs[agent.handle]
 
-                
-                    nn_call_start = time()
-                    # Get actions/values
-                    if use_best_actions:
-                        actions, v = self.local_model.get_best_actions_and_values(obs_dict, self.env.env)
-                    else:
-                        actions, v = self.local_model.get_actions_and_values(obs_dict, self.env.env)
-                        
-                    tot_nn += time() - nn_call_start
+                    nn_actions, v = self.local_model.get_actions_and_values(obs_dict, self.env.env)
+                    for handle in nn_actions:
+                        if handle not in actions:
+                            agent = agents[handle]
+                            nn_action = nn_actions[handle]
+                            env_action = self.agent_action_to_env_action(agent, nn_action)
+                            actions[handle] = env_action
+
                     step_call = time()
+                    start_env_s = time()
+                    next_obs, rewards, done, info = self.env.step(actions)
+                    tot_env_s += time() - start_env_s
 
-                    # We use 1 lookahead steps
-                    if prep_steps == 1:
-                        start_env_s = time()
-                        next_obs, rewards, done, info = self.env.step(actions)
-                        tot_env_s += time() - start_env_s
+                    handles = []
+                    for agent in agents:
+                        if agent.position is not None:
+                            handles.append((agent.handle, *agent.position))
 
-                        agent_pos_key = tuple(handles)
-                        if agent_pos_key in agent_pos:
-                            agent_pos[agent_pos_key] += 1
-                        else:
-                            agent_pos[agent_pos_key] = 0
-
-                        max_pos_repeation = max(agent_pos.values())
-                        if max_pos_repeation > 10:
-                            cancel_episode = True
-
-                        prep_steps = 0
-                        obs_builder.prep_steps = prep_steps
-                        episode_step_count += 1
+                    agent_pos_key = tuple(handles)
+                    if agent_pos_key in agent_pos:
+                        agent_pos[agent_pos_key] += 1
                     else:
-                        prep_steps += 1
-                        obs_builder.prep_steps = prep_steps
-                        start_just_obs = time()
-                        next_obs = obs_builder.get_many(all_handles)
-                        tot_just_obs += time() - start_just_obs
-                        rewards = dict(no_reward)
+                        agent_pos[agent_pos_key] = 0
+
+                    max_pos_repeation = max(agent_pos.values())
+                    if max_pos_repeation > 10:
+                        cancel_episode = True
+
+                    prep_steps = 0
+                    obs_builder.prep_steps = prep_steps
+                    episode_step_count += 1
 
                     step_end_call = time()
                     tot_step += time() - step_call
@@ -313,6 +338,92 @@ class Worker():
                 self.summary_writer.flush()
 
 
+    def is_agent_on_usable_switch(self, position, dir):
+        ''' a tile is a switch with more than one possible transitions for the
+            given direction. '''
+
+        if position is None:
+            return False
+
+        transition = self.env.env.rail.get_transitions(*position, dir)
+
+        if np.sum(transition) == 1:
+            return False
+        else:
+            return True
+
+    def is_agent_on_unusable_switch(self, position, dir):
+        ''' a tile is a switch with more than one possible transitions for the
+            given direction. '''
+
+        if position is None:
+            return False
+
+        possible_transitions = np.sum(self.env.env.rail.get_transitions(*position, dir))
+        #print(env.rail.get_transitions(*position, dir))
+        for d in range(4):
+            dir_transitions = np.sum(self.env.env.rail.get_transitions(*position, d))
+            if dir_transitions > possible_transitions >= 1:
+                #print(env.rail.get_transitions(*position, d))
+                return True
+
+        return False
+
+    def agent_action_to_env_action(self, agent, agent_action):
+        ''' agent actions: left, right, wait
+            env actions: 'do nothing, left, forward, right, brake 
+        '''
+        if agent.position is None:
+            return RailEnvActions.MOVE_FORWARD
+
+        if agent_action == 3:
+            return RailEnvActions.MOVE_FORWARD
+
+        if agent_action == 2:
+            agent.wait = 5
+            if agent.speed_data['speed'] > 0:
+                return RailEnvActions.STOP_MOVING
+            else:
+                return RailEnvActions.DO_NOTHING
+
+        dir = agent.direction
+        transition = self.env.env.rail.get_transitions(*agent.position, agent.direction)
+
+        can_go_left = False
+        can_go_forward = False
+        can_go_right = False
+
+        if transition[(3 + dir) % 4] == 1:
+            can_go_left = True
+        if transition[(0 + dir) % 4] == 1:
+            can_go_forward = True
+        if transition[(1 + dir) % 4] == 1:
+            can_go_right = True
+
+        # print('Can go left:', can_go_left)
+        # print('Can go forward:', can_go_forward)
+        # print('Can go right:', can_go_right)
+        
+        if agent_action == 0 and can_go_left:
+            return RailEnvActions.MOVE_LEFT
+        if agent_action == 1 and can_go_right:
+            return RailEnvActions.MOVE_RIGHT
+
+        return RailEnvActions.MOVE_FORWARD
+
+
+    def next_pos(self, position, direction):
+        if position is None:
+            return None
+
+        transition = self.env.env.rail.get_transitions(*position, direction)
+        if np.sum(transition) > 1:
+            None
+
+        posy = position[0] - transition[0]  + transition[2]
+        posx = position[1] + transition[1] - transition[3]
+
+        return [posy, posx]
 
 
         
