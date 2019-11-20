@@ -205,10 +205,11 @@ def is_agent_on_unusable_switch(position, dir):
         return False
 
     possible_transitions = np.sum(env.rail.get_transitions(*position, dir))
-
+    #print(env.rail.get_transitions(*position, dir))
     for d in range(4):
         dir_transitions = np.sum(env.rail.get_transitions(*position, d))
-        if dir_transitions > possible_transitions:
+        if dir_transitions > possible_transitions >= 1:
+            #print(env.rail.get_transitions(*position, d))
             return True
 
     return False
@@ -218,6 +219,9 @@ def agent_action_to_env_action(agent, agent_action):
         env actions: 'do nothing, left, forward, right, brake 
     '''
     if agent.position is None:
+        return RailEnvActions.MOVE_FORWARD
+
+    if agent_action == 3:
         return RailEnvActions.MOVE_FORWARD
 
     if agent_action == 2:
@@ -246,7 +250,6 @@ def agent_action_to_env_action(agent, agent_action):
     print('Can go forward:', can_go_forward)
     print('Can go right:', can_go_right)
     
-
     if agent_action == 0 and can_go_left:
         return RailEnvActions.MOVE_LEFT
     if agent_action == 1 and can_go_right:
@@ -256,12 +259,17 @@ def agent_action_to_env_action(agent, agent_action):
 
 
 def next_pos(position, direction):
+    if position is None:
+        return None
+
     transition = env.rail.get_transitions(*position, direction)
     if np.sum(transition) > 1:
-        raise ValueError('Cannot get next position on switch')
+        None
 
-    
+    posy = position[0] - transition[0]  + transition[2]
+    posx = position[1] + transition[1] - transition[3]
 
+    return [posy, posx]
 
 
 while True:
@@ -271,8 +279,6 @@ while True:
 
     obs, info = env.reset()
     obs_builder = env.obs_builder
-    #plot_graph(obs_helper.graph_list)
-
     env_renderer.set_new_rail()
 
     while episode_done == False and episode_step_count < 180:
@@ -284,21 +290,32 @@ while True:
                 agent.wait
                 agent.wait = np.max([agent.wait - 1,0]) 
                 if agent.wait > 0:
-                    print('Wait', agent.wait)
+                    #print('Wait', agent.wait)
+                    pass
             except:
                 agent.wait = 0
 
-            print('Agent on switch:', agent.position, is_agent_on_usable_switch(agent.position, agent.direction))
-            print('Agent on u-switch:', agent.position, is_agent_on_unusable_switch(agent.position, agent.direction))
+            #print('Agent on switch:', agent.position, is_agent_on_usable_switch(agent.position, agent.direction))
+            #print('Agent on u-switch:', agent.position, is_agent_on_unusable_switch(agent.position, agent.direction))
+
+            next_agent_pos = next_pos(agent.position, agent.direction)
 
             if agent.status == RailAgentStatus.READY_TO_DEPART:
                 actions[agent.handle] = RailEnvActions.MOVE_FORWARD
+
             elif agent.wait > 0 and agent.speed_data['speed'] > 0:
                 actions[agent.handle] = RailEnvActions.STOP_MOVING
+
             elif agent.wait > 0 and agent.speed_data['speed'] == 0:
                 actions[agent.handle] = RailEnvActions.DO_NOTHING
+
             elif agent.malfunction_data['malfunction'] > 0:
                 actions[agent.handle] = RailEnvActions.DO_NOTHING
+
+            elif is_agent_on_unusable_switch(next_agent_pos, agent.direction):
+                print('before unusable switch', agent.position, 'Switch:', next_agent_pos)
+                pass 
+
             elif not is_agent_on_usable_switch(agent.position, agent.direction):
                 actions[agent.handle] = RailEnvActions.MOVE_FORWARD
 
@@ -315,19 +332,26 @@ while True:
                 agent = env.agents[handle]
                 print('Action for agent ', handle, agent.position, agent.direction,is_agent_on_usable_switch(agent.position, agent.direction))
 
-                ch = msvcrt.getch()
-                if ch == b'a':
-                    nn_action = 0
-                elif ch == b'd':
-                    nn_action = 1
-                elif ch == b's':
-                    nn_action = 2
-                elif ch == b'w':
-                    nn_action = 3
-
+                
+                key_found = False
+                while not key_found:
+                    ch = msvcrt.getch()
+                    print('Input: ', str(ch))
+                    if ch == b'a':
+                        nn_action = 0
+                        key_found = True
+                    elif ch == b'd':
+                        nn_action = 1
+                        key_found = True
+                    elif ch == b's':
+                        nn_action = 2
+                        key_found = True
+                    elif ch == b'w':
+                        nn_action = 3
+                        key_found = True
 
                 env_action = agent_action_to_env_action(agent, nn_action)
-                print(env_action)
+                print(nn_action, '-', env_action)
                 actions[handle] = env_action
 
         next_obs, rewards, done, info = env.step(actions)
