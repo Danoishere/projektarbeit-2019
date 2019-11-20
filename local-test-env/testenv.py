@@ -16,7 +16,8 @@ import deliverables.observation as obs_helper
 import matplotlib.pyplot as plt
 import networkx as nx
 from matplotlib.widgets import Button
-from flatland.envs.rail_env import RailEnvActions
+from flatland.envs.rail_env import RailEnvActions, RailAgentStatus
+import msvcrt
 
 def plot_graph(obs):
     G=nx.DiGraph()
@@ -149,7 +150,7 @@ stochastic_data = {
 #observation_builder = GlobalObsForRailEnv()
 
 model = AC_Network()
-model.load_model('deliverables/model','lstm_comm')
+model.load_model('deliverables/model','best_lvl_0')
 
 # Custom observation builder with predictor, uncomment line below if you want to try this one
 observation_builder = model.get_observation_builder()
@@ -181,6 +182,88 @@ succ_stoch = 1
 tries_stoch = 1
 use_best = False
 
+
+def is_agent_on_usable_switch(position, dir):
+    ''' a tile is a switch with more than one possible transitions for the
+        given direction. '''
+
+    if position is None:
+        return False
+
+    transition = env.rail.get_transitions(*position, dir)
+
+    if np.sum(transition) == 1:
+        return False
+    else:
+        return True
+
+def is_agent_on_unusable_switch(position, dir):
+    ''' a tile is a switch with more than one possible transitions for the
+        given direction. '''
+
+    if position is None:
+        return False
+
+    possible_transitions = np.sum(env.rail.get_transitions(*position, dir))
+
+    for d in range(4):
+        dir_transitions = np.sum(env.rail.get_transitions(*position, d))
+        if dir_transitions > possible_transitions:
+            return True
+
+    return False
+
+def agent_action_to_env_action(agent, agent_action):
+    ''' agent actions: left, right, wait
+        env actions: 'do nothing, left, forward, right, brake 
+    '''
+    if agent.position is None:
+        return RailEnvActions.MOVE_FORWARD
+
+    if agent_action == 2:
+        agent.wait = 5
+        if agent.speed_data['speed'] > 0:
+            return RailEnvActions.STOP_MOVING
+        else:
+            return RailEnvActions.DO_NOTHING
+
+
+    dir = agent.direction
+    transition = env.rail.get_transitions(*agent.position, agent.direction)
+
+    can_go_left = False
+    can_go_forward = False
+    can_go_right = False
+
+    if transition[(3 + dir) % 4] == 1:
+        can_go_left = True
+    if transition[(0 + dir) % 4] == 1:
+        can_go_forward = True
+    if transition[(1 + dir) % 4] == 1:
+        can_go_right = True
+
+    print('Can go left:', can_go_left)
+    print('Can go forward:', can_go_forward)
+    print('Can go right:', can_go_right)
+    
+
+    if agent_action == 0 and can_go_left:
+        return RailEnvActions.MOVE_LEFT
+    if agent_action == 1 and can_go_right:
+        return RailEnvActions.MOVE_RIGHT
+
+    return RailEnvActions.MOVE_FORWARD
+
+
+def next_pos(position, direction):
+    transition = env.rail.get_transitions(*position, direction)
+    if np.sum(transition) > 1:
+        raise ValueError('Cannot get next position on switch')
+
+    
+
+
+
 while True:
     episode_done = False
     episode_reward = 0
@@ -194,46 +277,60 @@ while True:
 
     while episode_done == False and episode_step_count < 180:
         print(episode_step_count)
-        obs_dict = {}
-        for handle in obs:
-            if info['action_required'][handle] and info['malfunction'][handle] == 0:
-                obs_dict[handle] = obs[handle]
-
-        # Usually, this part is handled in the network, but to get
-        # the probabilities, we do it ourselfs
-        #if use_best:
-        #    actions, values, comm = model.get_best_actions_and_values(obs_dict, env)
-        #else:
-        actions, values, comm = model.get_actions_and_values(obs_dict, env)
-
-        
-
-        '''
-        obs_ = model.obs_dict_to_lists(obs)
-        predcition, _ = model.model.predict_on_batch(obs_)
         actions = {}
+        for agent in env.agents:
 
-        for i in range(nr_trains):
-            a_dist = predcition[i]
-            actions[i] = np.random.choice([0,1,2,3,4], p=a_dist) #np.argmax(a_dist)
-        '''
-        #plt.clf()
-        
-        #plt.subplot(2,1,1)
-        #plt.bar([0,1,2,3,4],predcition[0],tick_label=['do nothing', 'left', 'forward', 'right', 'stop'])
-        
+            try:
+                agent.wait
+                agent.wait = np.max([agent.wait - 1,0]) 
+                if agent.wait > 0:
+                    print('Wait', agent.wait)
+            except:
+                agent.wait = 0
+
+            print('Agent on switch:', agent.position, is_agent_on_usable_switch(agent.position, agent.direction))
+            print('Agent on u-switch:', agent.position, is_agent_on_unusable_switch(agent.position, agent.direction))
+
+            if agent.status == RailAgentStatus.READY_TO_DEPART:
+                actions[agent.handle] = RailEnvActions.MOVE_FORWARD
+            elif agent.wait > 0 and agent.speed_data['speed'] > 0:
+                actions[agent.handle] = RailEnvActions.STOP_MOVING
+            elif agent.wait > 0 and agent.speed_data['speed'] == 0:
+                actions[agent.handle] = RailEnvActions.DO_NOTHING
+            elif agent.malfunction_data['malfunction'] > 0:
+                actions[agent.handle] = RailEnvActions.DO_NOTHING
+            elif not is_agent_on_usable_switch(agent.position, agent.direction):
+                actions[agent.handle] = RailEnvActions.MOVE_FORWARD
+
+
+        obs_dict = {}
+        for agent in env.agents:
+            #print(agent.position, is_agent_on_switch(agent))
+            if info['action_required'][agent.handle] and agent.handle not in actions:
+                obs_dict[agent.handle] = obs[agent.handle]
+
+        nn_actions, values = model.get_actions_and_values(obs_dict, env)
+        for handle in nn_actions:
+            if handle not in actions:
+                agent = env.agents[handle]
+                print('Action for agent ', handle, agent.position, agent.direction,is_agent_on_usable_switch(agent.position, agent.direction))
+
+                ch = msvcrt.getch()
+                if ch == b'a':
+                    nn_action = 0
+                elif ch == b'd':
+                    nn_action = 1
+                elif ch == b's':
+                    nn_action = 2
+                elif ch == b'w':
+                    nn_action = 3
+
+
+                env_action = agent_action_to_env_action(agent, nn_action)
+                print(env_action)
+                actions[handle] = env_action
+
         next_obs, rewards, done, info = env.step(actions)
-        #punish_impossible_actions(env, obs, actions, rewards)
-        #plt.subplot(2,1,2)
-        
-        #plot_graph(obs_helper.graph_list)
-
-        #plt.xlim([-1.1,1.1])
-        #plt.ylim([-1.4,1.4])
-
-        #plt.waitforbuttonpress()
-        #plt.draw()
-    
         env_renderer.render_env(show=True)
 
         episode_done = done['__all__']
