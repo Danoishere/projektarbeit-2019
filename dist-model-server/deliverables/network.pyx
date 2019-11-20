@@ -8,6 +8,9 @@ import numpy as np
 import requests 
 import dill
 import deliverables.input_params as params
+import random
+from datetime import datetime
+import time
 
 from io import StringIO
 from flatland.envs.observations import TreeObsForRailEnv
@@ -209,6 +212,7 @@ class AC_Network():
 
 
     def get_actions_and_values(self, obs, env):
+        np.random.seed(np.int64(time.time()*100000) % 123455)
         if len(obs) == 0:
             return {},{}
 

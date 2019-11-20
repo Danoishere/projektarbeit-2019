@@ -4,7 +4,7 @@ import numpy as np
 import tensorflow as tf
 from ctypes import c_bool
 
-
+#from flatland.utils.rendertools import RenderTool, AgentRenderVariant
 import scipy.signal
 from tensorflow.keras.optimizers import RMSprop
 
@@ -85,8 +85,16 @@ class Worker():
             use_best_actions = False
 
             time_start = time()
+            """
+            env_renderer = RenderTool(self.env.env, gl="PILSVG",
+                          agent_render_variant=AgentRenderVariant.AGENT_SHOWS_OPTIONS_AND_BOX,
+                          show_debug=False,
+                          screen_height=800,  # Adjust these parameters to fit your resolution
+                          screen_width=800) 
+            """
 
             while not bool(self.should_stop.value):
+                seed(datetime.now())
                 self.curriculum.update_env_to_curriculum_level(self.env)
 
                 # Check with server if there is a new curriculum level available
@@ -121,7 +129,6 @@ class Worker():
                 no_reward = {i:0 for i in range(len(self.env.env.agents))}
 
                 prep_steps = 0
-                seed(self.episode_count + self.number)
                 use_best_actions = bool(getrandbits(1))
 
                 done = {i:False for i in range(len(self.env.env.agents))}
@@ -137,10 +144,16 @@ class Worker():
                 agent_pos = {}
                 cancel_episode = False
 
+                """
+                env_renderer.env = self.env.env
+                env_renderer.set_new_rail()
+                """
+
                 while not episode_done and not cancel_episode and episode_step_count < self.env.max_steps:
                     agents = self.env.env.agents
                     actions = {}
                     for agent in agents:
+                        #print(agent.handle, agent.position)
                         try:
                             agent.wait
                             agent.wait = np.max([agent.wait - 1,0]) 
@@ -189,10 +202,18 @@ class Worker():
                     next_obs, rewards, done, info = self.env.step(actions)
                     tot_env_s += time() - start_env_s
 
+                    #env_renderer.render_env(show=True)
+
                     handles = []
                     for agent in agents:
+                        if agent.handle in actions:
+                            pass
+                            #print(actions[agent.handle])
+                        else:
+                            pass
+                            #print("No action for agent", agent.handle)
                         if agent.position is not None:
-                            handles.append((agent.handle, *agent.position))
+                            handles.append((agent.handle, *agent.position, agent.malfunction_data['malfunction']))
 
                     agent_pos_key = tuple(handles)
                     if agent_pos_key in agent_pos:
