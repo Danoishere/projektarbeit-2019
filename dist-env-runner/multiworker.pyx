@@ -97,7 +97,7 @@ class Worker():
                     self.local_model.update_entropy_factor()
                     old_curriculum_level = self.curriculum.current_level
                     self.curriculum.update_curriculum_level()
-                    
+
                     # Only regenerate env on curriculum level change. Otherwise just reset
                     # Important, because otherwise the player doens't see all levels
                     if self.curriculum.current_level != old_curriculum_level:
@@ -275,17 +275,18 @@ class Worker():
 
                 # Individual rewards
                 for i in range(self.env.num_agents):
-                    if self.env.env.agents[i].status == RailAgentStatus.READY_TO_DEPART:
-                        episode_buffer[i][-1][2] -= 1.0
-                        episode_reward -= 1.0
-                    if done[i]:
-                        # If agents could finish the level, 
-                        # set final reward for all agents
-                        episode_buffer[i][-1][2] += 0.5*num_agents_done
-                        episode_reward += 0.5*num_agents_done
-                    elif cancel_episode:
-                        episode_buffer[i][-1][2] -= 1.0
-                        episode_reward -= 1.0
+                    if len(pisode_buffer[i]) > 0:
+                        if self.env.env.agents[i].status == RailAgentStatus.READY_TO_DEPART:
+                            episode_buffer[i][-1][2] -= 1.0
+                            episode_reward -= 1.0
+                        if done[i]:
+                            # If agents could finish the level, 
+                            # set final reward for all agents
+                            episode_buffer[i][-1][2] += 0.5*num_agents_done
+                            episode_reward += 0.5*num_agents_done
+                        elif cancel_episode:
+                            episode_buffer[i][-1][2] -= 1.0
+                            episode_reward -= 1.0
 
 
                 episode_time = time() - episode_start
