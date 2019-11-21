@@ -12,7 +12,7 @@ from datetime import datetime
 from random import choice,uniform, random, getrandbits, seed
 from time import sleep
 from time import time
-import msvcrt
+#import msvcrt
 import os
 cwd = os.getcwd()
 
