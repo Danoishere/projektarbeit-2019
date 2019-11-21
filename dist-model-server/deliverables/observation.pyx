@@ -725,10 +725,33 @@ class RailObsBuilder(CustomTreeObsForRailEnv):
                 dist_y = np.abs(agent.target[1] - agent.position[1])
                 vec_obs[6] = normalize_field(dist_y)
 
+            try:
+                agent.is_on_unusable_switch
+            except:
+                agent.is_on_unusable_switch = False
+
+            try:
+                agent.is_on_usable_switch
+            except:
+                agent.is_on_usable_switch = False
+
+            try:
+                agent.is_next_unusable_switch
+            except:
+                agent.is_next_unusable_switch = False
+
+            try:
+                agent.is_next_usable_switch
+            except:
+                agent.is_next_usable_switch = False
+
             vec_obs[7] = normalize_field(root_node.dist_min_to_target)
-            vec_obs[8] = 1 if self.prep_step == 0 else 0
-            vec_obs[9] = 1 if self.prep_step == 1 else 0
-            vec_obs[10] = 1 if self.prep_step == 2 else 0
+            vec_obs[8] = 1 if agent.is_on_unusable_switch else 0
+            vec_obs[9] = 1 if agent.is_on_usable_switch else 0
+            vec_obs[10] = 1 if agent.is_next_unusable_switch else 0
+            vec_obs[11] = 1 if agent.is_next_usable_switch else 0
+            vec_obs[12] = 1 if agent.status == RailAgentStatus.READY_TO_DEPART else 0
+            vec_obs[13] = 1 if agent.status == RailAgentStatus.ACTIVE else 0
 
             if handle in self.actor_rec_state and handle in self.critic_rec_state:
                 agent_actor_rec_state = self.actor_rec_state[handle]
@@ -868,8 +891,14 @@ def node_to_obs(node_tuple):
 
     if len(node.other_agents) > 0:
         clostest_agent = node.other_agents[0]
-        agent_action_onehot = np.zeros(5)
-        agent_action_onehot[np.arange(0,5) == clostest_agent.last_action] = 1
-        obs[-5:] = agent_action_onehot
+        agent_action_onehot = np.zeros(4)
+
+        try:
+            clostest_agent.last_action
+        except:
+            clostest_agent.last_action = 0
+
+        agent_action_onehot[np.arange(0,4) == clostest_agent.last_action] = 1
+        obs[-4:] = agent_action_onehot
 
     return obs

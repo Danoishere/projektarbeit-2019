@@ -4,7 +4,7 @@ import numpy as np
 import tensorflow as tf
 from ctypes import c_bool
 
-#from flatland.utils.rendertools import RenderTool, AgentRenderVariant
+from flatland.utils.rendertools import RenderTool, AgentRenderVariant
 import scipy.signal
 from tensorflow.keras.optimizers import RMSprop
 
@@ -12,7 +12,7 @@ from datetime import datetime
 from random import choice,uniform, random, getrandbits, seed
 from time import sleep
 from time import time
-
+import msvcrt
 import os
 cwd = os.getcwd()
 
@@ -20,10 +20,6 @@ from rail_env_wrapper import RailEnvWrapper
 from flatland.envs.rail_env import RailEnvActions, RailAgentStatus
 
 import constant as const
-#import sys
-
-#np.set_printoptions(threshold=sys.maxsize)
-
 
 class KeyboardInterruptError(Exception): pass
 
@@ -36,7 +32,6 @@ def create_worker(name, should_stop):
 # Discounting function used to calculate discounted returns.
 def discount(x, gamma):
     return scipy.signal.lfilter([1], [1, -gamma], x[::-1], axis=0)[::-1]
-
 
 
 
@@ -85,28 +80,25 @@ class Worker():
             use_best_actions = False
 
             time_start = time()
-            """
             env_renderer = RenderTool(self.env.env, gl="PILSVG",
                           agent_render_variant=AgentRenderVariant.AGENT_SHOWS_OPTIONS_AND_BOX,
                           show_debug=False,
                           screen_height=800,  # Adjust these parameters to fit your resolution
                           screen_width=800) 
-            """
+            
 
-            while not bool(self.should_stop.value):
-                seed(datetime.now())
-                self.curriculum.update_env_to_curriculum_level(self.env)
+            while not bool(self.should_stop.value):              
 
                 # Check with server if there is a new curriculum level available
                 if self.episode_count % 50 == 0:
                     self.local_model.update_entropy_factor()
                     old_curriculum_level = self.curriculum.current_level
                     self.curriculum.update_curriculum_level()
-
+                   
                     # Only regenerate env on curriculum level change. Otherwise just reset
                     # Important, because otherwise the player doens't see all levels
                     if self.curriculum.current_level != old_curriculum_level:
-                        
+                        self.curriculum.update_env_to_curriculum_level(self.env)
                         self.episode_count = 0
                         self.stats = []
                 
@@ -144,26 +136,27 @@ class Worker():
                 agent_pos = {}
                 cancel_episode = False
 
-                """
+                
                 env_renderer.env = self.env.env
                 env_renderer.set_new_rail()
-                """
+                
 
                 while not episode_done and not cancel_episode and episode_step_count < self.env.max_steps:
                     agents = self.env.env.agents
                     actions = {}
                     for agent in agents:
-                        #print(agent.handle, agent.position)
                         try:
                             agent.wait
                             agent.wait = np.max([agent.wait - 1,0]) 
-                            if agent.wait > 0:
-                                #print('Wait', agent.wait)
-                                pass
                         except:
                             agent.wait = 0
 
-                        next_agent_pos = self.next_pos(agent.position, agent.direction)
+                        agent.next_pos = self.next_pos(agent.position, agent.direction)
+
+                        agent.is_on_unusable_switch = self.is_agent_on_unusable_switch(agent.position, agent.direction)
+                        agent.is_on_usable_switch = self.is_agent_on_usable_switch(agent.position, agent.direction)
+                        agent.is_next_unusable_switch = self.is_agent_on_unusable_switch(agent.next_pos, agent.direction)
+                        agent.is_next_usable_switch = self.is_agent_on_usable_switch(agent.next_pos, agent.direction)
 
                         if agent.status == RailAgentStatus.READY_TO_DEPART:
                             actions[agent.handle] = RailEnvActions.MOVE_FORWARD
@@ -176,42 +169,57 @@ class Worker():
 
                         elif agent.malfunction_data['malfunction'] > 0:
                             actions[agent.handle] = RailEnvActions.DO_NOTHING
-
-                        elif self.is_agent_on_unusable_switch(next_agent_pos, agent.direction):
+ 
+                        elif agent.is_next_unusable_switch:
                             pass 
 
-                        elif not self.is_agent_on_usable_switch(agent.position, agent.direction):
+                        elif not agent.is_on_usable_switch:
                             actions[agent.handle] = RailEnvActions.MOVE_FORWARD
-
 
                     obs_dict = {}
                     for agent in agents:
                         if info['action_required'][agent.handle] and agent.handle not in actions:
                             obs_dict[agent.handle] = obs[agent.handle]
+                            print('OBS:', agent.handle)
 
                     nn_actions, v = self.local_model.get_actions_and_values(obs_dict, self.env.env)
+
+                    trained_actions = {}
                     for handle in nn_actions:
                         if handle not in actions:
                             agent = agents[handle]
                             nn_action = nn_actions[handle]
+                            print('Action for agent ', handle, agent.position, agent.direction, agent.is_on_usable_switch)
+                            key_found = False
+                            while not key_found:
+                                ch = msvcrt.getch()
+                                print('Input: ', str(ch))
+                                if ch == b'a':
+                                    nn_action = 0
+                                    key_found = True
+                                elif ch == b'd':
+                                    nn_action = 1
+                                    key_found = True
+                                elif ch == b's':
+                                    nn_action = 2
+                                    key_found = True
+                                elif ch == b'w':
+                                    nn_action = 3
+                                    key_found = True
+
+
+
                             env_action = self.agent_action_to_env_action(agent, nn_action)
                             actions[handle] = env_action
+                            trained_actions[handle] = nn_action
+                            print('ACT:', agent.handle)
 
-                    step_call = time()
-                    start_env_s = time()
                     next_obs, rewards, done, info = self.env.step(actions)
-                    tot_env_s += time() - start_env_s
 
-                    #env_renderer.render_env(show=True)
+                    env_renderer.render_env(show=True)
 
                     handles = []
                     for agent in agents:
-                        if agent.handle in actions:
-                            pass
-                            #print(actions[agent.handle])
-                        else:
-                            pass
-                            #print("No action for agent", agent.handle)
                         if agent.position is not None:
                             handles.append((agent.handle, *agent.position, agent.malfunction_data['malfunction']))
 
@@ -229,16 +237,13 @@ class Worker():
                     obs_builder.prep_steps = prep_steps
                     episode_step_count += 1
 
-                    step_end_call = time()
-                    tot_step += time() - step_call
-
                     episode_done = done['__all__']
                     if episode_done == True:
                         next_obs = obs
 
                     for i in obs_dict:
                         agent_obs = obs[i]
-                        agent_action = actions[i]
+                        agent_action = trained_actions[i]
                         agent_reward = rewards[i]
                         agent_next_obs =  next_obs[i]
 
@@ -278,13 +283,7 @@ class Worker():
                         episode_reward -= 1.0
 
 
-                episode_end = time()
-                episode_time = episode_end - episode_start
-
-                # print('Tot NN', tot_nn)
-                # print('Tot step', tot_step)
-                # print('Tot env step', tot_env_s)
-                # print('Tot just obs', tot_just_obs)
+                episode_time = time() - episode_start
 
                 avg_episode_time = (time()- time_start)/(self.episode_count + 1)
                 agents_arrived = num_agents_done/self.env.num_agents
@@ -395,10 +394,23 @@ class Worker():
             env actions: 'do nothing, left, forward, right, brake 
         '''
         if agent.position is None:
-            return RailEnvActions.MOVE_FORWARD
+            # Ready to depart. Wait or go?
+            if agent_action == 3:
+                return RailEnvActions.MOVE_FORWARD
+            else:
+                return RailEnvActions.DO_NOTHING
+
+        if self.is_agent_on_unusable_switch(agent.next_pos, agent.direction):
+            if agent_action == 3:
+                return RailEnvActions.MOVE_FORWARD
+            else:
+                if agent.speed_data['speed'] > 0:
+                    return RailEnvActions.STOP_MOVING
+                else:
+                    return RailEnvActions.DO_NOTHING
 
         if agent_action == 3:
-            return RailEnvActions.MOVE_FORWARD
+            return RailEnvActions.DO_NOTHING
 
         if agent_action == 2:
             agent.wait = 5

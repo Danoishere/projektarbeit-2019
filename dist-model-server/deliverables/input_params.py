@@ -25,7 +25,7 @@ for d in range(tree_depth):
     tree_state_size += 2**d
 
 tree_state_size *= num_features
-vec_state_size = 11
+vec_state_size = 14
 
 tot_obs_size = tree_state_size + vec_state_size
 print(tot_obs_size)
