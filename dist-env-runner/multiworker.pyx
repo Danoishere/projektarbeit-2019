@@ -184,7 +184,6 @@ class Worker():
                     for agent in agents:
                         if info['action_required'][agent.handle] and agent.handle not in actions:
                             obs_dict[agent.handle] = obs[agent.handle]
-                            #print('OBS:', agent.handle)
 
                     nn_actions, v = self.local_model.get_actions_and_values(obs_dict, self.env.env)
 
@@ -193,31 +192,9 @@ class Worker():
                         if handle not in actions:
                             agent = agents[handle]
                             nn_action = nn_actions[handle]
-                            '''
-                            print('Action for agent ', handle, agent.position, agent.direction, agent.is_on_usable_switch)
-                            key_found = False
-                            while not key_found:
-                                ch = msvcrt.getch()
-                                print('Input: ', str(ch))
-                                if ch == b'a':
-                                    nn_action = 0
-                                    key_found = True
-                                elif ch == b'd':
-                                    nn_action = 1
-                                    key_found = True
-                                elif ch == b's':
-                                    nn_action = 2
-                                    key_found = True
-                                elif ch == b'w':
-                                    nn_action = 3
-                                    key_found = True
-
-
-                            '''
                             env_action = self.agent_action_to_env_action(agent, nn_action)
                             actions[handle] = env_action
                             trained_actions[handle] = nn_action
-                            #print('ACT:', agent.handle)
 
                     next_obs, rewards, done, info = self.env.step(actions)
 
@@ -282,8 +259,8 @@ class Worker():
                         if done[i]:
                             # If agents could finish the level, 
                             # set final reward for all agents
-                            episode_buffer[i][-1][2] += 0.5*num_agents_done
-                            episode_reward += 0.5*num_agents_done
+                            episode_buffer[i][-1][2] += 1.0
+                            episode_reward += 1.0
                         elif cancel_episode:
                             episode_buffer[i][-1][2] -= 1.0
                             episode_reward -= 1.0
@@ -326,12 +303,24 @@ class Worker():
             all_rollouts += rollout[i]
 
         discounted_rewards = np.concatenate(all_rewards)
-        actions = np.asarray([row[1] for row in all_rollouts]) 
-        values = np.asarray([row[5] for row in all_rollouts])
-        obs = self.obs_helper.buffer_to_obs_lists(all_rollouts)
-        advantages = discounted_rewards - values
+        
+        batch_size = 50
+        num_batches = int(len(all_rollouts)/batch_size) + 1
+        print(num_batches)
+        for batch in range(num_batches):
+            idx_start = batch * batch_size
+            idx_end = (batch + 1) * batch_size
 
-        v_l,p_l,e_l, g_n, v_n = self.local_model.train(discounted_rewards, advantages, actions, obs, episode_done)
+            batch_rollout = all_rollouts[idx_start:idx_end]
+            batch_rewards = discounted_rewards[idx_start:idx_end]
+            
+            batch_actions = np.asarray([row[1] for row in batch_rollout]) 
+            batch_values = np.asarray([row[5] for row in batch_rollout])
+            batch_obs = self.obs_helper.buffer_to_obs_lists(batch_rollout)
+            batch_advantages = batch_rewards - batch_values
+
+            v_l,p_l,e_l, g_n, v_n = self.local_model.train(batch_rewards, batch_advantages, batch_actions, batch_obs, episode_done)
+
         return v_l, p_l, e_l, g_n,  v_n
 
     def log_in_tensorboard(self):

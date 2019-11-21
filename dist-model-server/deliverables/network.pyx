@@ -120,7 +120,7 @@ class AC_Network():
 
     def train(self, target_v, advantages, actions,  obs, num_agents_done):
         num_agents_done = np.min([1, num_agents_done])
-
+        
         # Value loss
         with tf.GradientTape() as tape:
             policy,value,_,_ = self.model(obs)

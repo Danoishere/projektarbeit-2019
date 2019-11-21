@@ -3,7 +3,7 @@ gamma = 1.0
 
 
 entropy_factor = 0.05
-learning_rate = 1e-3
+learning_rate = 1e-4
 
 gradient_norm = 1.0
 
