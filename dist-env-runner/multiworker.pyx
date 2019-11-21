@@ -275,7 +275,7 @@ class Worker():
 
                 # Individual rewards
                 for i in range(self.env.num_agents):
-                    if len(pisode_buffer[i]) > 0:
+                    if len(episode_buffer[i]) > 0:
                         if self.env.env.agents[i].status == RailAgentStatus.READY_TO_DEPART:
                             episode_buffer[i][-1][2] -= 1.0
                             episode_reward -= 1.0
