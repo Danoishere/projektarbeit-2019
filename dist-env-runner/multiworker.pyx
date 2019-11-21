@@ -12,6 +12,7 @@ from datetime import datetime
 from random import choice,uniform, random, getrandbits, seed
 from time import sleep
 from time import time
+import math
 #import msvcrt
 import os
 cwd = os.getcwd()
@@ -305,7 +306,7 @@ class Worker():
         discounted_rewards = np.concatenate(all_rewards)
         
         batch_size = 50
-        num_batches = int(len(all_rollouts)/batch_size) + 1
+        num_batches = math.ceil(len(all_rollouts)/batch_size)
         print(num_batches)
         for batch in range(num_batches):
             idx_start = batch * batch_size
