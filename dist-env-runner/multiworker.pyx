@@ -4,7 +4,7 @@ import numpy as np
 import tensorflow as tf
 from ctypes import c_bool
 
-from flatland.utils.rendertools import RenderTool, AgentRenderVariant
+#from flatland.utils.rendertools import RenderTool, AgentRenderVariant
 import scipy.signal
 from tensorflow.keras.optimizers import RMSprop
 
@@ -80,15 +80,18 @@ class Worker():
             use_best_actions = False
 
             time_start = time()
+            '''
             env_renderer = RenderTool(self.env.env, gl="PILSVG",
                           agent_render_variant=AgentRenderVariant.AGENT_SHOWS_OPTIONS_AND_BOX,
                           show_debug=False,
                           screen_height=800,  # Adjust these parameters to fit your resolution
                           screen_width=800) 
+
+            '''
             
 
-            while not bool(self.should_stop.value):              
-
+            while not bool(self.should_stop.value):       
+                self.curriculum.update_env_to_curriculum_level(self.env)
                 # Check with server if there is a new curriculum level available
                 if self.episode_count % 50 == 0:
                     self.local_model.update_entropy_factor()
@@ -98,7 +101,6 @@ class Worker():
                     # Only regenerate env on curriculum level change. Otherwise just reset
                     # Important, because otherwise the player doens't see all levels
                     if self.curriculum.current_level != old_curriculum_level:
-                        self.curriculum.update_env_to_curriculum_level(self.env)
                         self.episode_count = 0
                         self.stats = []
                 
@@ -137,8 +139,8 @@ class Worker():
                 cancel_episode = False
 
                 
-                env_renderer.env = self.env.env
-                env_renderer.set_new_rail()
+                # env_renderer.env = self.env.env
+                # env_renderer.set_new_rail()
                 
 
                 while not episode_done and not cancel_episode and episode_step_count < self.env.max_steps:
@@ -180,7 +182,7 @@ class Worker():
                     for agent in agents:
                         if info['action_required'][agent.handle] and agent.handle not in actions:
                             obs_dict[agent.handle] = obs[agent.handle]
-                            print('OBS:', agent.handle)
+                            #print('OBS:', agent.handle)
 
                     nn_actions, v = self.local_model.get_actions_and_values(obs_dict, self.env.env)
 
@@ -189,6 +191,7 @@ class Worker():
                         if handle not in actions:
                             agent = agents[handle]
                             nn_action = nn_actions[handle]
+                            '''
                             print('Action for agent ', handle, agent.position, agent.direction, agent.is_on_usable_switch)
                             key_found = False
                             while not key_found:
@@ -208,15 +211,15 @@ class Worker():
                                     key_found = True
 
 
-
+                            '''
                             env_action = self.agent_action_to_env_action(agent, nn_action)
                             actions[handle] = env_action
                             trained_actions[handle] = nn_action
-                            print('ACT:', agent.handle)
+                            #print('ACT:', agent.handle)
 
                     next_obs, rewards, done, info = self.env.step(actions)
 
-                    env_renderer.render_env(show=True)
+                    #env_renderer.render_env(show=True)
 
                     handles = []
                     for agent in agents:

@@ -69,13 +69,13 @@ class Curriculum:
         env.update_env_with_params(
             width=30,
             height=30,
-            num_agents=3,
+            num_agents=5,
             max_steps = 250,
             rail_type = 'sparse',
             rail_gen_params = {
                 'num_cities': 2,
                 'grid_mode': False,
-                'max_rails_between_cities': 2,
+                'max_rails_between_cities': 1,
                 'max_rails_in_city' : 2
             },
             seed = self.seed        
