@@ -61,11 +61,11 @@ class RailEnvWrapper():
             self.done_last_step[i] = False
             self.dist[i] = 100
         
-        obs,info = self.env.reset(random_seed=1, activate_agents=True)
+        obs,info = self.env.reset(activate_agents=True)
         
         # Obs-shape must be equal to num of agents, otherwise, the level couldn't be generated orderly
         while self.env.num_agents != self.num_agents:
-            obs,info = self.env.reset(random_seed=1, activate_agents=True)
+            obs,info = self.env.reset(activate_agents=True)
 
         self.num_of_done_agents = 0
         self.env.step_penalty = self.initial_step_penalty

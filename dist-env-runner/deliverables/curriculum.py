@@ -5,7 +5,7 @@ from random import randint, random
 class Curriculum:
     def __init__(self):
         # Seed = -1 means create random seed
-        self.seed = 12
+        self.seed = -1
         self.randomize_level_generation = False
         self.curriculum = {
             0: {

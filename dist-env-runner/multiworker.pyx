@@ -91,8 +91,8 @@ class Worker():
             '''
             
 
-            while not bool(self.should_stop.value):       
-                
+            while not bool(self.should_stop.value):    
+
                 # Check with server if there is a new curriculum level available
                 if self.episode_count % 50 == 0:
                     self.local_model.update_entropy_factor()
@@ -105,8 +105,6 @@ class Worker():
                         self.curriculum.update_env_to_curriculum_level(self.env)
                         self.episode_count = 0
                         self.stats = []
-                        
-                
 
                 episode_done = False
 
