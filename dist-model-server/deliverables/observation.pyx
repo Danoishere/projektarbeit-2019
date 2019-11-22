@@ -583,36 +583,40 @@ class RailObsBuilder(CustomTreeObsForRailEnv):
             depth_list.append([])
             for n in depth_list[d]:
                 left,left_turn, right, right_turn = self.get_turns(n)
-                is_left_closer, is_right_closer, dist_left, dist_right = self.get_closer_turn(left, right)
+                if left is None and right is None:
+                    depth_list[d+1].append((None, None))
+                    depth_list[d+1].append((None, None))
+                else:
+                    is_left_closer, is_right_closer, dist_left, dist_right = self.get_closer_turn(left, right)
 
-                left_info = {
-                    'is_root' : False,
-                    'closer' : is_left_closer,
-                    'dist' : dist_left,
-                    'turn' : left_turn
-                }
+                    left_info = {
+                        'is_root' : False,
+                        'closer' : is_left_closer,
+                        'dist' : dist_left,
+                        'turn' : left_turn
+                    }
 
-                right_info = {
-                    'is_root' : False,
-                    'closer' : is_right_closer,
-                    'dist' : dist_right,
-                    'turn' : right_turn
-                }
+                    right_info = {
+                        'is_root' : False,
+                        'closer' : is_right_closer,
+                        'dist' : dist_right,
+                        'turn' : right_turn
+                    }
 
-                depth_list[d+1].append((left_info, left))
-                depth_list[d+1].append((right_info, right))
+                    depth_list[d+1].append((left_info, left))
+                    depth_list[d+1].append((right_info, right))
 
         return depth_list
 
     def get_turns(self, node_tuple):
         if node_tuple is None:
-            return None, None
+            return None, None, None, None
 
         node_info = node_tuple[0]
         node = node_tuple[1]
 
-        if len(node.childs) == 0:
-            return None, None
+        if node is None or node.childs is None or len(node.childs) == 0:
+            return None, None, None, None
 
         left = node.childs['L']
         left_dir = 'L'

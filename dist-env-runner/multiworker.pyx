@@ -307,7 +307,6 @@ class Worker():
         
         batch_size = 50
         num_batches = math.ceil(len(all_rollouts)/batch_size)
-        print(num_batches)
         for batch in range(num_batches):
             idx_start = batch * batch_size
             idx_end = (batch + 1) * batch_size
