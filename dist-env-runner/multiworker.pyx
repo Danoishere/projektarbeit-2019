@@ -204,7 +204,7 @@ class Worker():
                     handles = []
                     for agent in agents:
                         if agent.position is not None:
-                            handles.append((agent.handle, *agent.position, agent.malfunction_data['malfunction']))
+                            handles.append((agent.handle, *agent.position, agent.malfunction_data['malfunction'], agent.wait))
 
                     agent_pos_key = tuple(handles)
                     if agent_pos_key in agent_pos:
