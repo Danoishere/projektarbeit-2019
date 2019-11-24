@@ -175,6 +175,8 @@ class Worker():
  
                         elif agent.is_next_unusable_switch:
                             pass 
+                        elif agent.is_next_usable_switch:
+                            pass 
 
                         elif not agent.is_on_usable_switch:
                             actions[agent.handle] = RailEnvActions.MOVE_FORWARD

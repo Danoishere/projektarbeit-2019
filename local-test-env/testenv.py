@@ -150,7 +150,7 @@ stochastic_data = {
 #observation_builder = GlobalObsForRailEnv()
 
 model = AC_Network()
-model.load_model('deliverables/model','best_lvl_0')
+model.load_model('deliverables/model','checkpoint_lvl_0')
 
 # Custom observation builder with predictor, uncomment line below if you want to try this one
 observation_builder = model.get_observation_builder()
@@ -330,8 +330,10 @@ while True:
         for handle in nn_actions:
             if handle not in actions:
                 agent = env.agents[handle]
+                
                 print('Action for agent ', handle, agent.position, agent.direction,is_agent_on_usable_switch(agent.position, agent.direction))
-
+                msvcrt.getch()
+                '''
                 
                 key_found = False
                 while not key_found:
@@ -349,7 +351,8 @@ while True:
                     elif ch == b'w':
                         nn_action = 3
                         key_found = True
-
+                '''
+                nn_action = nn_actions[handle]
                 env_action = agent_action_to_env_action(agent, nn_action)
                 print(nn_action, '-', env_action)
                 actions[handle] = env_action

@@ -5,7 +5,7 @@ from random import randint, random
 class Curriculum:
     def __init__(self):
         # Seed = -1 means create random seed
-        self.seed = 12
+        self.seed = -1
         self.randomize_level_generation = False
         self.curriculum = {
             0: {
@@ -75,7 +75,7 @@ class Curriculum:
             rail_gen_params = {
                 'num_cities': 2,
                 'grid_mode': False,
-                'max_rails_between_cities': 2,
+                'max_rails_between_cities': 1,
                 'max_rails_in_city' : 2
             },
             seed = self.seed        

@@ -8,6 +8,9 @@ import numpy as np
 import requests 
 import dill
 import deliverables.input_params as params
+import random
+from datetime import datetime
+import time
 
 from io import StringIO
 from flatland.envs.observations import TreeObsForRailEnv
@@ -117,7 +120,7 @@ class AC_Network():
 
     def train(self, target_v, advantages, actions,  obs, num_agents_done):
         num_agents_done = np.min([1, num_agents_done])
-
+        
         # Value loss
         with tf.GradientTape() as tape:
             policy,value,_,_ = self.model(obs)
@@ -209,6 +212,7 @@ class AC_Network():
 
 
     def get_actions_and_values(self, obs, env):
+        np.random.seed(np.int64(time.time()*100000) % 123455)
         if len(obs) == 0:
             return {},{}
 
@@ -228,7 +232,7 @@ class AC_Network():
         for handle in obs:
             idx = mapping[handle]
             a_dist = predcition[idx]
-            actions[handle] = np.random.choice([0,1,2,3,4], p = a_dist)
+            actions[handle] = np.random.choice([0,1,2,3], p = a_dist)
             
             values_dict[handle] = values[idx,0]
             obs_builder.actor_rec_state[handle] = [a_rec_h[idx], a_rec_c[idx]]
