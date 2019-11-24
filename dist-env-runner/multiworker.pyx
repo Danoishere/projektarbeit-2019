@@ -3,6 +3,7 @@ import multiprocess as mp
 import numpy as np
 import tensorflow as tf
 from ctypes import c_bool
+import requests
 
 #from flatland.utils.rendertools import RenderTool, AgentRenderVariant
 import scipy.signal
