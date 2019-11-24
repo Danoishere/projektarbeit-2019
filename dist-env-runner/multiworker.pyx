@@ -285,6 +285,10 @@ class Worker():
                 # Save stats to Tensorboard every 5 episodes
                 self.log_in_tensorboard()
                 self.episode_count += 1
+
+                if self.episode_count % 50 == 0 and self.episode_count != 0:
+                    successrate = np.mean(self.episode_agents_arrived[-25:])
+                    requests.post(url=const.url + '/report_success', json={'successrate':successrate})
                 
                 print('Episode', self.episode_count,'of',self.name,'with',episode_step_count,'steps, reward of',episode_reward,', perc. arrived',agents_arrived, ', mean entropy of', np.mean([l[2] for l in self.stats[-1:]]), ', curriculum level', self.curriculum.current_level, ', using best actions:', use_best_actions,', cancel episode:', cancel_episode, ', time', episode_time, ', Avg. time', avg_episode_time)
 

@@ -39,6 +39,7 @@ lock = threading.RLock()
 state = Singleton.get_instance()
 network_hash = state.global_model.network_hash
 
+
 @app.route('/send_gradient', methods=['POST'])
 def post_update_weights():
 
@@ -49,13 +50,17 @@ def post_update_weights():
     gradients = dill.loads(gradient_str)
 
     lock.acquire()
-    state.ckpt_manager.try_save_model(state.episode_count, 0)
     global_vars = state.global_model.model.trainable_variables
     state.trainer.apply_gradients(zip(gradients, global_vars))
     lock.release()
 
     return get_global_weights()
 
+@app.route('/report_success', methods=['POST'])
+def post_success():
+    data = request.get_json()
+    state.ckpt_manager.try_save_model(state.episode_count, data['successrate'])
+    return 'OK'
 
 @app.route('/send_benchmark_report', methods=['POST'])
 def post_send_benchmark_report():

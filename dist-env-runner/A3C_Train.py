@@ -11,7 +11,7 @@ import multiprocess as mp
 import numpy as np
 import tensorflow as tf
 from ctypes import c_bool
-
+import requests
 import os
 
 
