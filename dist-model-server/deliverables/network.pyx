@@ -16,6 +16,7 @@ from io import StringIO
 from flatland.envs.observations import TreeObsForRailEnv
 from deliverables.observation import RailObsBuilder
 from flatland.envs.predictions import ShortestPathPredictorForRailEnv
+from flatland.envs.rail_env import RailAgentStatus, RailEnvActions
 
 import base64
 import hashlib
@@ -250,3 +251,159 @@ class AC_Network():
 
     def get_observation_builder(self):
         return RailObsBuilder()
+
+    def get_agent_actions(self, env, obs, info):
+        self.env = env
+        agents = env.env.agents
+        actions = {}
+        for agent in agents:
+            try:
+                agent.wait
+                agent.wait = np.max([agent.wait - 1,0]) 
+            except:
+                agent.wait = 0
+
+            agent.next_pos = self.next_pos(agent.position, agent.direction)
+
+            agent.is_on_unusable_switch = self.is_agent_on_unusable_switch(agent.position, agent.direction)
+            agent.is_on_usable_switch = self.is_agent_on_usable_switch(agent.position, agent.direction)
+            agent.is_next_unusable_switch = self.is_agent_on_unusable_switch(agent.next_pos, agent.direction)
+            agent.is_next_usable_switch = self.is_agent_on_usable_switch(agent.next_pos, agent.direction)
+
+            if agent.status == RailAgentStatus.READY_TO_DEPART:
+                actions[agent.handle] = RailEnvActions.MOVE_FORWARD
+
+            elif agent.wait > 0 and agent.speed_data['speed'] > 0:
+                actions[agent.handle] = RailEnvActions.STOP_MOVING
+
+            elif agent.wait > 0 and agent.speed_data['speed'] == 0:
+                actions[agent.handle] = RailEnvActions.DO_NOTHING
+
+            elif agent.malfunction_data['malfunction'] > 0:
+                actions[agent.handle] = RailEnvActions.DO_NOTHING
+
+            elif agent.is_next_unusable_switch:
+                pass 
+            elif agent.is_next_usable_switch:
+                pass 
+
+            elif not agent.is_on_usable_switch:
+                actions[agent.handle] = RailEnvActions.MOVE_FORWARD
+
+        obs_dict = {}
+        for agent in agents:
+            if info['action_required'][agent.handle] and agent.handle not in actions:
+                obs_dict[agent.handle] = obs[agent.handle]
+
+        nn_actions, v = self.get_actions_and_values(obs_dict, env.env)
+
+        trained_actions = {}
+        for handle in nn_actions:
+            if handle not in actions:
+                agent = agents[handle]
+                nn_action = nn_actions[handle]
+                env_action = self.agent_action_to_env_action(agent, nn_action)
+                actions[handle] = env_action
+                trained_actions[handle] = nn_action
+
+        return actions, trained_actions, v, obs_dict
+
+    def is_agent_on_usable_switch(self, position, dir):
+        ''' a tile is a switch with more than one possible transitions for the
+            given direction. '''
+
+        if position is None:
+            return False
+
+        transition = self.env.env.rail.get_transitions(*position, dir)
+
+        if np.sum(transition) == 1:
+            return False
+        else:
+            return True
+
+    def is_agent_on_unusable_switch(self, position, dir):
+        ''' a tile is a switch with more than one possible transitions for the
+            given direction. '''
+
+        if position is None:
+            return False
+
+        possible_transitions = np.sum(self.env.env.rail.get_transitions(*position, dir))
+        #print(env.rail.get_transitions(*position, dir))
+        for d in range(4):
+            dir_transitions = np.sum(self.env.env.rail.get_transitions(*position, d))
+            if dir_transitions > possible_transitions >= 1:
+                #print(env.rail.get_transitions(*position, d))
+                return True
+
+        return False
+
+    def agent_action_to_env_action(self, agent, agent_action):
+        ''' agent actions: left, right, wait
+            env actions: 'do nothing, left, forward, right, brake 
+        '''
+        if agent.position is None:
+            # Ready to depart. Wait or go?
+            if agent_action == 3:
+                return RailEnvActions.MOVE_FORWARD
+            else:
+                return RailEnvActions.DO_NOTHING
+
+        if self.is_agent_on_unusable_switch(agent.next_pos, agent.direction):
+            if agent_action == 3:
+                return RailEnvActions.MOVE_FORWARD
+            else:
+                if agent.speed_data['speed'] > 0:
+                    return RailEnvActions.STOP_MOVING
+                else:
+                    return RailEnvActions.DO_NOTHING
+
+        if agent_action == 3:
+            return RailEnvActions.DO_NOTHING
+
+        if agent_action == 2:
+            agent.wait = 30
+            if agent.speed_data['speed'] > 0:
+                return RailEnvActions.STOP_MOVING
+            else:
+                return RailEnvActions.DO_NOTHING
+
+        dir = agent.direction
+        transition = self.env.env.rail.get_transitions(*agent.position, agent.direction)
+
+        can_go_left = False
+        can_go_forward = False
+        can_go_right = False
+
+        if transition[(3 + dir) % 4] == 1:
+            can_go_left = True
+        if transition[(0 + dir) % 4] == 1:
+            can_go_forward = True
+        if transition[(1 + dir) % 4] == 1:
+            can_go_right = True
+
+        # print('Can go left:', can_go_left)
+        # print('Can go forward:', can_go_forward)
+        # print('Can go right:', can_go_right)
+        
+        if agent_action == 0 and can_go_left:
+            return RailEnvActions.MOVE_LEFT
+        if agent_action == 1 and can_go_right:
+            return RailEnvActions.MOVE_RIGHT
+
+        return RailEnvActions.MOVE_FORWARD
+
+
+    def next_pos(self, position, direction):
+        if position is None:
+            return None
+
+        transition = self.env.env.rail.get_transitions(*position, direction)
+        if np.sum(transition) > 1:
+            None
+
+        posy = position[0] - transition[0]  + transition[2]
+        posx = position[1] + transition[1] - transition[3]
+
+        return [posy, posx]

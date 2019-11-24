@@ -97,65 +97,19 @@ def start_train(resume):
 
             agent_pos = {}
 
-            while episode_done == False and episode_step_count < env.max_steps:
+            max_steps = env.env._max_episode_steps - 5
+            while episode_done == False and episode_step_count < max_steps:
                 agents = env.env.agents
-                actions = {}
-                for agent in agents:
-                    try:
-                        agent.wait
-                        agent.wait = np.max([agent.wait - 1,0]) 
-                    except:
-                        agent.wait = 0
+                env_actions, nn_actions, v, relevant_obs = model.get_agent_actions(env, obs, info)
 
-                    agent.next_pos = next_pos(env, agent.position, agent.direction)
-
-                    agent.is_on_unusable_switch = is_agent_on_unusable_switch(env, agent.position, agent.direction)
-                    agent.is_on_usable_switch = is_agent_on_usable_switch(env, agent.position, agent.direction)
-                    agent.is_next_unusable_switch = is_agent_on_unusable_switch(env, agent.next_pos, agent.direction)
-                    agent.is_next_usable_switch = is_agent_on_usable_switch(env, agent.next_pos, agent.direction)
-
-                    if agent.status == RailAgentStatus.READY_TO_DEPART:
-                        actions[agent.handle] = RailEnvActions.MOVE_FORWARD
-
-                    elif agent.wait > 0 and agent.speed_data['speed'] > 0:
-                        actions[agent.handle] = RailEnvActions.STOP_MOVING
-
-                    elif agent.wait > 0 and agent.speed_data['speed'] == 0:
-                        actions[agent.handle] = RailEnvActions.DO_NOTHING
-
-                    elif agent.malfunction_data['malfunction'] > 0:
-                        actions[agent.handle] = RailEnvActions.DO_NOTHING
-
-                    elif agent.is_next_unusable_switch:
-                        pass 
-
-                    elif not agent.is_on_usable_switch:
-                        actions[agent.handle] = RailEnvActions.MOVE_FORWARD
-
-                obs_dict = {}
-                for agent in agents:
-                    if info['action_required'][agent.handle] and agent.handle not in actions:
-                        obs_dict[agent.handle] = obs[agent.handle]
-
-                nn_actions, v = model.get_actions_and_values(obs_dict, env.env)
-
-                trained_actions = {}
-                for handle in nn_actions:
-                    if handle not in actions:
-                        agent = agents[handle]
-                        nn_action = nn_actions[handle]
-                        env_action = agent_action_to_env_action(env, agent, nn_action)
-                        actions[handle] = env_action
-                        trained_actions[handle] = nn_action
-
-                next_obs, rewards, done, info = env.step(actions)
+                next_obs, rewards, done, info = env.step(env_actions)
 
                 #env_renderer.render_env(show=True)
 
                 handles = []
                 for agent in agents:
                     if agent.position is not None:
-                        handles.append((agent.handle, *agent.position, agent.malfunction_data['malfunction']))
+                        handles.append((agent.handle, *agent.position, agent.malfunction_data['malfunction'], agent.wait))
 
                 agent_pos_key = tuple(handles)
                 if agent_pos_key in agent_pos:
