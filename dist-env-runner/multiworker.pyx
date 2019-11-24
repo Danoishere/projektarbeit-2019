@@ -143,8 +143,9 @@ class Worker():
                 # env_renderer.env = self.env.env
                 # env_renderer.set_new_rail()
                 
+                max_steps = self.env.env._max_episode_steps - 5
 
-                while not episode_done and not cancel_episode and episode_step_count < self.env.max_steps:
+                while not episode_done and not cancel_episode and episode_step_count < max_steps:
                     agents = self.env.env.agents
                     actions = {}
                     for agent in agents:
