@@ -282,82 +282,9 @@ while True:
     env_renderer.set_new_rail()
 
     while episode_done == False and episode_step_count < 180:
-        print(episode_step_count)
-        actions = {}
-        for agent in env.agents:
-
-            try:
-                agent.wait
-                agent.wait = np.max([agent.wait - 1,0]) 
-                if agent.wait > 0:
-                    #print('Wait', agent.wait)
-                    pass
-            except:
-                agent.wait = 0
-
-            #print('Agent on switch:', agent.position, is_agent_on_usable_switch(agent.position, agent.direction))
-            #print('Agent on u-switch:', agent.position, is_agent_on_unusable_switch(agent.position, agent.direction))
-
-            next_agent_pos = next_pos(agent.position, agent.direction)
-
-            if agent.status == RailAgentStatus.READY_TO_DEPART:
-                actions[agent.handle] = RailEnvActions.MOVE_FORWARD
-
-            elif agent.wait > 0 and agent.speed_data['speed'] > 0:
-                actions[agent.handle] = RailEnvActions.STOP_MOVING
-
-            elif agent.wait > 0 and agent.speed_data['speed'] == 0:
-                actions[agent.handle] = RailEnvActions.DO_NOTHING
-
-            elif agent.malfunction_data['malfunction'] > 0:
-                actions[agent.handle] = RailEnvActions.DO_NOTHING
-
-            elif is_agent_on_unusable_switch(next_agent_pos, agent.direction):
-                print('before unusable switch', agent.position, 'Switch:', next_agent_pos)
-                pass 
-
-            elif not is_agent_on_usable_switch(agent.position, agent.direction):
-                actions[agent.handle] = RailEnvActions.MOVE_FORWARD
-
-
-        obs_dict = {}
-        for agent in env.agents:
-            #print(agent.position, is_agent_on_switch(agent))
-            if info['action_required'][agent.handle] and agent.handle not in actions:
-                obs_dict[agent.handle] = obs[agent.handle]
-
-        nn_actions, values = model.get_actions_and_values(obs_dict, env)
-        for handle in nn_actions:
-            if handle not in actions:
-                agent = env.agents[handle]
-                
-                print('Action for agent ', handle, agent.position, agent.direction,is_agent_on_usable_switch(agent.position, agent.direction))
-                msvcrt.getch()
-                '''
-                
-                key_found = False
-                while not key_found:
-                    ch = msvcrt.getch()
-                    print('Input: ', str(ch))
-                    if ch == b'a':
-                        nn_action = 0
-                        key_found = True
-                    elif ch == b'd':
-                        nn_action = 1
-                        key_found = True
-                    elif ch == b's':
-                        nn_action = 2
-                        key_found = True
-                    elif ch == b'w':
-                        nn_action = 3
-                        key_found = True
-                '''
-                nn_action = nn_actions[handle]
-                env_action = agent_action_to_env_action(agent, nn_action)
-                print(nn_action, '-', env_action)
-                actions[handle] = env_action
-
-        next_obs, rewards, done, info = env.step(actions)
+        agents = env.env.agents
+        env_actions, nn_actions, v, relevant_obs = model.get_agent_actions(env, obs, info, True)
+        next_obs, rewards, done, info = env.step(env_actions)
         env_renderer.render_env(show=True)
 
         episode_done = done['__all__']
@@ -367,7 +294,6 @@ while True:
         obs = next_obs               
         episode_step_count += 1
 
-        
 
     if use_best:
         if episode_done:

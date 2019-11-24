@@ -252,7 +252,7 @@ class AC_Network():
     def get_observation_builder(self):
         return RailObsBuilder()
 
-    def get_agent_actions(self, env, obs, info):
+    def get_agent_actions(self, env, obs, info, use_best_actions):
         self.env = env
         agents = env.env.agents
         actions = {}
@@ -295,7 +295,10 @@ class AC_Network():
             if info['action_required'][agent.handle] and agent.handle not in actions:
                 obs_dict[agent.handle] = obs[agent.handle]
 
-        nn_actions, v = self.get_actions_and_values(obs_dict, env.env)
+        if use_best_actions:
+            nn_actions, v = self.get_best_actions_and_values(obs_dict, env.env)
+        else:
+            nn_actions, v = self.get_actions_and_values(obs_dict, env.env)
 
         trained_actions = {}
         for handle in nn_actions:
