@@ -10,11 +10,11 @@ class Curriculum:
         self.curriculum = {
             0: {
                 'level_generator' : lambda env: self.change_grid_round0(env),
-                'switch_on_successrate': 0.85
+                'switch_on_successrate': 0.70
                 },
             1: {
                 'level_generator' : lambda env: self.change_grid_round1(env),
-                'switch_on_successrate': 0.80
+                'switch_on_successrate': 0.70
                 },
             2: {
                 'level_generator' : lambda env: self.change_grid_round2(env),
@@ -70,7 +70,7 @@ class Curriculum:
             width=30,
             height=30,
             num_agents=5,
-            max_steps = 250,
+            max_steps = 1000,
             rail_type = 'sparse',
             rail_gen_params = {
                 'num_cities': 2,
@@ -86,7 +86,7 @@ class Curriculum:
             width=40,
             height=40,
             num_agents=12,
-            max_steps = 250,
+            max_steps = 1000,
             rail_type = 'sparse',
             rail_gen_params = {
                 'num_cities': 2,
@@ -100,10 +100,10 @@ class Curriculum:
 
     def change_grid_round2(self, env):
         env.update_env_with_params(
-            width=40,
-            height=40,
+            width=50,
+            height=50,
             num_agents=20,
-            max_steps = 300,
+            max_steps = 1000,
             rail_type = 'sparse',
             rail_gen_params = {
                 'num_cities': 3,

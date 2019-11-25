@@ -3,7 +3,7 @@ from Cython.Build import cythonize
 
 setup(
     ext_modules=cythonize([
-        "multiworker.pyx",
+        #"multiworker.pyx",
         "deliverables/*.pyx"
     ]),
 )

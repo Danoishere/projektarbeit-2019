@@ -144,10 +144,10 @@ class AC_Network():
             url=self.global_model_url + '/send_gradient', 
             data=gradients_str)
 
-        weights_str = resp.content
-        weights_str = zlib.decompress(weights_str)
-        weights = msgpack.loads(weights_str)
-        self.model.set_weights(weights)
+        #weights_str = resp.content
+        #weights_str = zlib.decompress(weights_str)
+        #weights = msgpack.loads(weights_str)
+        #self.model.set_weights(weights)
 
         return v_loss, p_loss, entropy, grad_norms, var_norms
 

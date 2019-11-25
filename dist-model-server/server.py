@@ -54,7 +54,7 @@ def post_update_weights():
     state.trainer.apply_gradients(zip(gradients, global_vars))
     lock.release()
 
-    return get_global_weights()
+    return 'OK'
 
 @app.route('/report_success', methods=['POST'])
 def post_success():

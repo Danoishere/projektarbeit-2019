@@ -10,7 +10,7 @@ import scipy.signal
 from tensorflow.keras.optimizers import RMSprop
 
 from datetime import datetime
-from random import choice,uniform, random, getrandbits, seed
+from random import choice,uniform, random, getrandbits, seed, sample, shuffle
 from time import sleep
 from time import time
 import math
@@ -228,6 +228,27 @@ class Worker():
                 self.episode_mean_values.append(np.mean(episode_values))
                 self.episode_success.append(episode_done)
 
+                episode_buffer_success = []
+                episode_buffer_fail = []
+
+                for i in range(self.env.num_agents):
+                    if done[i]:
+                        episode_buffer_success.append(episode_buffer[i])
+                    elif len(episode_buffer[i]) > 0:
+                        episode_buffer_fail.append(episode_buffer[i])
+
+                # Not more than three negative samples
+                num_negative_samples = 3
+
+                # Not more than four positive samples
+                num_positive_samples = np.min([num_agents_done, 5])
+
+                episode_buffer_success = sample(episode_buffer_success, np.min([len(episode_buffer_success),num_positive_samples]))
+                episode_buffer_fail = sample(episode_buffer_fail, np.min([len(episode_buffer_fail),num_negative_samples]))
+                
+                episode_buffer = episode_buffer_success + episode_buffer_fail
+                shuffle(episode_buffer)
+
                 v_l, p_l, e_l, g_n, v_n = self.train(episode_buffer, num_agents_done)
                 self.stats.append([v_l, p_l, e_l, g_n, v_n])
 
@@ -251,7 +272,7 @@ class Worker():
         all_rollouts = []
         all_rewards = []
 
-        for i in range(self.env.num_agents):
+        for i in range(len(rollout)):
             rewards = [row[2] for row in rollout[i]]
             rewards = discount(rewards, self.params.gamma)
             all_rewards.append(rewards)
@@ -259,7 +280,7 @@ class Worker():
 
         discounted_rewards = np.concatenate(all_rewards)
         
-        batch_size = 50
+        batch_size = 20
         num_batches = math.ceil(len(all_rollouts)/batch_size)
         for batch in range(num_batches):
             idx_start = batch * batch_size
@@ -275,6 +296,7 @@ class Worker():
 
             v_l,p_l,e_l, g_n, v_n = self.local_model.train(batch_rewards, batch_advantages, batch_actions, batch_obs, episode_done)
 
+        self.local_model.update_from_global_model()
         return v_l, p_l, e_l, g_n,  v_n
 
     def log_in_tensorboard(self):

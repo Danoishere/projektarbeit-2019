@@ -70,7 +70,6 @@ def draw_branch(start_node, node_id, G, y_pos, source_node):
 
 def punish_impossible_actions(env, obs, actions, rewards):
     for handle in obs:
-
         agent = env.agents[handle]
         if agent.position is None:
             if actions[handle] != RailEnvActions.MOVE_FORWARD:
@@ -183,95 +182,6 @@ tries_stoch = 1
 use_best = False
 
 
-def is_agent_on_usable_switch(position, dir):
-    ''' a tile is a switch with more than one possible transitions for the
-        given direction. '''
-
-    if position is None:
-        return False
-
-    transition = env.rail.get_transitions(*position, dir)
-
-    if np.sum(transition) == 1:
-        return False
-    else:
-        return True
-
-def is_agent_on_unusable_switch(position, dir):
-    ''' a tile is a switch with more than one possible transitions for the
-        given direction. '''
-
-    if position is None:
-        return False
-
-    possible_transitions = np.sum(env.rail.get_transitions(*position, dir))
-    #print(env.rail.get_transitions(*position, dir))
-    for d in range(4):
-        dir_transitions = np.sum(env.rail.get_transitions(*position, d))
-        if dir_transitions > possible_transitions >= 1:
-            #print(env.rail.get_transitions(*position, d))
-            return True
-
-    return False
-
-def agent_action_to_env_action(agent, agent_action):
-    ''' agent actions: left, right, wait
-        env actions: 'do nothing, left, forward, right, brake 
-    '''
-    if agent.position is None:
-        return RailEnvActions.MOVE_FORWARD
-
-    if agent_action == 3:
-        return RailEnvActions.MOVE_FORWARD
-
-    if agent_action == 2:
-        agent.wait = 5
-        if agent.speed_data['speed'] > 0:
-            return RailEnvActions.STOP_MOVING
-        else:
-            return RailEnvActions.DO_NOTHING
-
-
-    dir = agent.direction
-    transition = env.rail.get_transitions(*agent.position, agent.direction)
-
-    can_go_left = False
-    can_go_forward = False
-    can_go_right = False
-
-    if transition[(3 + dir) % 4] == 1:
-        can_go_left = True
-    if transition[(0 + dir) % 4] == 1:
-        can_go_forward = True
-    if transition[(1 + dir) % 4] == 1:
-        can_go_right = True
-
-    print('Can go left:', can_go_left)
-    print('Can go forward:', can_go_forward)
-    print('Can go right:', can_go_right)
-    
-    if agent_action == 0 and can_go_left:
-        return RailEnvActions.MOVE_LEFT
-    if agent_action == 1 and can_go_right:
-        return RailEnvActions.MOVE_RIGHT
-
-    return RailEnvActions.MOVE_FORWARD
-
-
-def next_pos(position, direction):
-    if position is None:
-        return None
-
-    transition = env.rail.get_transitions(*position, direction)
-    if np.sum(transition) > 1:
-        None
-
-    posy = position[0] - transition[0]  + transition[2]
-    posx = position[1] + transition[1] - transition[3]
-
-    return [posy, posx]
-
-
 while True:
     episode_done = False
     episode_reward = 0
@@ -279,13 +189,13 @@ while True:
 
     obs, info = env.reset()
     obs_builder = env.obs_builder
-    env_renderer.set_new_rail()
+    #env_renderer.set_new_rail()
 
     while episode_done == False and episode_step_count < 180:
-        agents = env.env.agents
+        agents = env.agents
         env_actions, nn_actions, v, relevant_obs = model.get_agent_actions(env, obs, info, True)
         next_obs, rewards, done, info = env.step(env_actions)
-        env_renderer.render_env(show=True)
+        #env_renderer.render_env(show=True)
 
         episode_done = done['__all__']
         if episode_done == True:
