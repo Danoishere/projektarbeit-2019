@@ -107,7 +107,7 @@ def punish_impossible_actions(env, obs, actions, rewards):
 
 width = 20  # With of map
 height = 20  # Height of map
-nr_trains = 5 # Number of trains that have an assigned task in the env
+nr_trains = 12 # Number of trains that have an assigned task in the env
 cities_in_map = 2  # Number of cities where agents can start or end
 seed = 14  # Random seed
 grid_distribution_of_cities = False  # Type of city distribution, if False cities are randomly placed
@@ -189,13 +189,18 @@ while True:
 
     obs, info = env.reset()
     obs_builder = env.obs_builder
-    #env_renderer.set_new_rail()
+    env_renderer.set_new_rail()
 
     while episode_done == False and episode_step_count < 180:
         agents = env.agents
         env_actions, nn_actions, v, relevant_obs = model.get_agent_actions(env, obs, info, True)
+
+        for agent in agents:
+            if agent.handle not in env_actions:
+                env_actions[agent.handle] = RailEnvActions.DO_NOTHING
+
         next_obs, rewards, done, info = env.step(env_actions)
-        #env_renderer.render_env(show=True)
+        env_renderer.render_env(show=True)
 
         episode_done = done['__all__']
         if episode_done == True:
