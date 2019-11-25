@@ -47,9 +47,6 @@ def start_train(resume):
     myCmd = 'python setup.py build_ext --inplace'
     os.system(myCmd)
 
-    # myCmd = 'python setup_deliverables.py build_ext --inplace'
-    # os.system(myCmd)
-
     # Wait with this import until we compiled all required modules!
     from multiworker import create_worker
 
@@ -59,7 +56,7 @@ def start_train(resume):
     while True:
         worker_processes = []
 
-        # create_worker(0, should_stop)
+        create_worker(0, should_stop)
 
         # Start process 1 - n, running in other processes
         for w_num in range(0,num_workers):

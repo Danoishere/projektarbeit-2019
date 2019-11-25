@@ -180,14 +180,12 @@ class Worker():
                         agent_obs = obs[i]
                         agent_action = nn_actions[i]
                         agent_reward = rewards[i]
-                        agent_next_obs =  next_obs[i]
 
                         if not done_last_step[i]:
                             episode_buffer[i].append([
                                 agent_obs,
                                 agent_action,
                                 agent_reward,
-                                agent_next_obs,
                                 episode_done,
                                 v[i]])
                             
@@ -271,7 +269,7 @@ class Worker():
             batch_rewards = discounted_rewards[idx_start:idx_end]
             
             batch_actions = np.asarray([row[1] for row in batch_rollout]) 
-            batch_values = np.asarray([row[5] for row in batch_rollout])
+            batch_values = np.asarray([row[4] for row in batch_rollout])
             batch_obs = self.obs_helper.buffer_to_obs_lists(batch_rollout)
             batch_advantages = batch_rewards - batch_values
 

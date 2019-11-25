@@ -3,7 +3,7 @@ gamma = 1.0
 
 
 entropy_factor = 0.05
-learning_rate = 1e-4
+learning_rate = 5e-5
 
 gradient_norm = 1.0
 
@@ -11,7 +11,7 @@ number_of_actions = 4
 number_of_comm = 5
 num_of_obs = 2
 
-tree_depth = 3
+tree_depth = 2
 path_root = tree_depth + 1
 path_sec = tree_depth
 path_thrd = tree_depth - 1

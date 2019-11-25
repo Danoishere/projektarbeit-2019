@@ -253,52 +253,13 @@ class AC_Network():
         return RailObsBuilder()
 
     def get_agent_actions(self, env, obs, info, use_best_actions):
-        self.env = env
-        agents = env.env.agents
-        actions = {}
-        for agent in agents:
-            try:
-                agent.wait
-                agent.wait = np.max([agent.wait - 1,0]) 
-            except:
-                agent.wait = 0
-
-            agent.next_pos = self.next_pos(agent.position, agent.direction)
-
-            agent.is_on_unusable_switch = self.is_agent_on_unusable_switch(agent.position, agent.direction)
-            agent.is_on_usable_switch = self.is_agent_on_usable_switch(agent.position, agent.direction)
-            agent.is_next_unusable_switch = self.is_agent_on_unusable_switch(agent.next_pos, agent.direction)
-            agent.is_next_usable_switch = self.is_agent_on_usable_switch(agent.next_pos, agent.direction)
-
-            if agent.status == RailAgentStatus.READY_TO_DEPART:
-                actions[agent.handle] = RailEnvActions.MOVE_FORWARD
-
-            elif agent.wait > 0 and agent.speed_data['speed'] > 0:
-                actions[agent.handle] = RailEnvActions.STOP_MOVING
-
-            elif agent.wait > 0 and agent.speed_data['speed'] == 0:
-                actions[agent.handle] = RailEnvActions.DO_NOTHING
-
-            elif agent.malfunction_data['malfunction'] > 0:
-                actions[agent.handle] = RailEnvActions.DO_NOTHING
-
-            elif agent.is_next_unusable_switch:
-                pass 
-            elif agent.is_next_usable_switch:
-                pass 
-
-            elif not agent.is_on_usable_switch:
-                actions[agent.handle] = RailEnvActions.MOVE_FORWARD
-
-        obs_dict = {}
-        for agent in agents:
-            if info['action_required'][agent.handle] and agent.handle not in actions:
-                obs_dict[agent.handle] = obs[agent.handle]
-
+        self.env = env.env
+        agents = self.env.agents
+        actions = dict(self.env.next_actions)
         if use_best_actions:
-            nn_actions, v = self.get_best_actions_and_values(obs_dict, env.env)
+            nn_actions, v = self.get_best_actions_and_values(obs, self.env)
         else:
-            nn_actions, v = self.get_actions_and_values(obs_dict, env.env)
+            nn_actions, v = self.get_actions_and_values(obs,self.env)
 
         trained_actions = {}
         for handle in nn_actions:
@@ -308,39 +269,8 @@ class AC_Network():
                 env_action = self.agent_action_to_env_action(agent, nn_action)
                 actions[handle] = env_action
                 trained_actions[handle] = nn_action
-
-        return actions, trained_actions, v, obs_dict
-
-    def is_agent_on_usable_switch(self, position, dir):
-        ''' a tile is a switch with more than one possible transitions for the
-            given direction. '''
-
-        if position is None:
-            return False
-
-        transition = self.env.env.rail.get_transitions(*position, dir)
-
-        if np.sum(transition) == 1:
-            return False
-        else:
-            return True
-
-    def is_agent_on_unusable_switch(self, position, dir):
-        ''' a tile is a switch with more than one possible transitions for the
-            given direction. '''
-
-        if position is None:
-            return False
-
-        possible_transitions = np.sum(self.env.env.rail.get_transitions(*position, dir))
-        #print(env.rail.get_transitions(*position, dir))
-        for d in range(4):
-            dir_transitions = np.sum(self.env.env.rail.get_transitions(*position, d))
-            if dir_transitions > possible_transitions >= 1:
-                #print(env.rail.get_transitions(*position, d))
-                return True
-
-        return False
+        
+        return actions, trained_actions, v, obs
 
     def agent_action_to_env_action(self, agent, agent_action):
         ''' agent actions: left, right, wait
@@ -373,7 +303,7 @@ class AC_Network():
                 return RailEnvActions.DO_NOTHING
 
         dir = agent.direction
-        transition = self.env.env.rail.get_transitions(*agent.position, agent.direction)
+        transition = self.env.rail.get_transitions(*agent.position, agent.direction)
 
         can_go_left = False
         can_go_forward = False
@@ -397,16 +327,21 @@ class AC_Network():
 
         return RailEnvActions.MOVE_FORWARD
 
+    def is_agent_on_unusable_switch(self, position, dir):
+        ''' a tile is a switch with more than one possible transitions for the
+            given direction. '''
 
-    def next_pos(self, position, direction):
         if position is None:
-            return None
+            return False
 
-        transition = self.env.env.rail.get_transitions(*position, direction)
-        if np.sum(transition) > 1:
-            None
+        possible_transitions = np.sum(self.env.rail.get_transitions(*position, dir))
+        #print(env.rail.get_transitions(*position, dir))
+        for d in range(4):
+            dir_transitions = np.sum(self.env.rail.get_transitions(*position, d))
+            if dir_transitions > possible_transitions >= 1:
+                #print(env.rail.get_transitions(*position, d))
+                return True
 
-        posy = position[0] - transition[0]  + transition[2]
-        posx = position[1] + transition[1] - transition[3]
+        return False
 
-        return [posy, posx]
+    
