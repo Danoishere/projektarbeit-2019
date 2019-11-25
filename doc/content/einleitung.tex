@@ -11,8 +11,11 @@
 The indirect industry partner during this work was the Swiss Federal Railways (SBB AG) which created the challange on AICrowd \cite{aicrowd}.\\
 The challenge consists of 2 parts. Part 1 was about avoiding conflicts with multiple trains (agents) on their given environment. \\
 The aim of part 2 was to optimize train traffic which includes trains with different speeds, broken trains and less switchover facilities.\\
-We could use Stefan Husters work as a foundation to build our solution for the challenge.%TODO: add Stefan Husters Work
-
+We could use Stefan Huschauer\cite{flatlandstephan} work as a foundation to build our solution for the challenge.
+%TODO: Stefans Stand
+Stefan used the A3C algorithm with a multi environment and gave the reward at the end of  each simulation to make sure, all agents have terminated.\\
+He used the first version of Flatland to evaluate his models and got a total score of 24.7\% in a local evaluation.%TODO: check
+He trained his model with 2 to 10 agents with a field of view of 10*10. %TODO: fertigmachen
 
 
 \section{Zielsetzung / Aufgabenstellung / Anforderungen}\label{zielsetzung}
@@ -26,8 +29,15 @@ We could use Stefan Husters work as a foundation to build our solution for the c
 \item (Angaben zum Zielpublikum: nennt das für die Arbeit vorausgesetzte Wissen)
 \item (Terminologie: Definiert die in der Arbeit verwendeten Begriffe)
 \end{itemize}
-The aim of the project was to build and train a model which uses reinforcement learning to optimize train traffic on the flatland simulation.\\
+%Comment: Explore ths use of A3C RL Learning in am cooperative multi agent env.
+
+The aim of the work was to explore the use of the A3C (Asynchronous Actor-Critic Agents) reinforcement learning algorithm.\\
+The target audience of this work are people with a basic knowledge of machine learning, as reinforcement learning is d in short in %TODO: Verlinkung Kapitel ueber reinforcement learning.
 %TODO: add verlinkung auf Aufgabenstellung im Anhang.
-%TODO: PDF Aufgabenstellung (ZHAW und Flatland?)
 The work it self consists out of 3 major parts: first round, second round and the attempt to add communication between the agents to prevent them from blocking each other. \\
 
+
+%Vorwissen
+
+
+%Terminologie hier oder Verweis auf Glossar?

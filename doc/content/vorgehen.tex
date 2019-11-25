@@ -29,29 +29,74 @@
 \item (Theoretische Herleitung der Lösung)
 \end{itemize}
 
+\section{(Used Software)}\label{software}
+We used the following tools in our project.
 
-
-\section{(Verwendete Software)}\label{software}
-Für die vorliegende Arbeit wurden die unten aufgeführten Programme eingesetzt.
-
-\subsection*{Arbeitsumgebung}\label{wintool}
+\subsection*{Working Environment}\label{os}
 \begin{itemize}
-	\item Microsoft Windows 8 developer preview
+	\item Microsoft Windows 10
+	\item Ubuntu 19.04
 \end{itemize}
 
-\subsection*{Virtual Machine}\label{vm}
+\subsection*{Visual Studio Code}\label{vsc}
 \begin{itemize}
-	\item Oracle VM VirtualBox, Version 3.2.10
+	\item Visual Studio Code 1.40
 \end{itemize}
 
-\subsection*{CAD Catia}\label{catia}
+\subsection*{Documentation}\label{dokutools}
 \begin{itemize}
-	\item CATIA, Version 5.19 (in VirtualBox)
+	\item XeLateX with Visual Studio Code
+	\item XeLateX with WebStorm
 \end{itemize}
 
-\subsection*{Dokumentation}\label{dokutools}
+
+\subsection*{Programming language}\label{programminglanguages}
 \begin{itemize}
-	\item proTeXt mit TexMakerX 2.1 (SVN 1774), \href{http://www.latex-project.org/ftp.html}{latex-project.org}
-	\item Microsoft Visio 2007
-	\item Adobe Acrobat 8 Professional 8.1.6
+	\item Python 3.6
 \end{itemize}
+
+\subsection*{Python modules}\label{modules}
+\begin{itemize}
+	\item Flatland-rl 1.3 - 2.1.10
+	\item Tensorboard 2.0
+	\item Keras x.x
+	\item Cython x.x
+	\item %TODO: finish this
+\end{itemize}
+
+
+\section{Basic considerations}
+%split into round 1 / round 2
+
+\subsection{Round 1}
+%Observations
+%Convolutional network + Global observations
+%Early stopping
+%Reward vergabe angepasst
+We started with rebuilding the A3C algorithm from S. Huschauer to get a better knowledge how A3C works.\\
+We made some experiments with different observations: TreeObservations and GlobalOberservations.
+Because we made better and faster progress with GlobalObservatione we continued with those and combind them with a convolutional network.
+Right after starting this project, we faced a problem regarding the reward distribution.\\
+
+
+\subsection{Round 2}
+
+
+
+
+\section{Measurands}
+%Messgrössen: Evaluator, benchmark
+
+\section{Experiments}
+%
+
+\section{Solution approach}
+%Neue Actions
+
+
+\section{Testing and submissions}
+
+\section{Theoretical derivation of the solution}
+
+
+
