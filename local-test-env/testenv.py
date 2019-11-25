@@ -194,13 +194,12 @@ while True:
     while episode_done == False and episode_step_count < 180:
         agents = env.agents
         env_actions, nn_actions, v, relevant_obs = model.get_agent_actions(env, obs, info, True)
-
         for agent in agents:
             if agent.handle not in env_actions:
                 env_actions[agent.handle] = RailEnvActions.DO_NOTHING
 
         next_obs, rewards, done, info = env.step(env_actions)
-        env_renderer.render_env(show=True)
+        env_renderer.render_env(show=True, show_observations=False)
 
         episode_done = done['__all__']
         if episode_done == True:

@@ -1495,6 +1495,7 @@ static const char __pyx_k_params[] = "params";
 static const char __pyx_k_policy[] = "policy";
 static const char __pyx_k_random[] = "random";
 static const char __pyx_k_square[] = "square";
+static const char __pyx_k_status[] = "status";
 static const char __pyx_k_suffix[] = "suffix";
 static const char __pyx_k_urllib[] = "urllib";
 static const char __pyx_k_v_loss[] = "v_loss";
@@ -1609,6 +1610,7 @@ static const char __pyx_k_critic_out_rec[] = "critic_out_rec";
 static const char __pyx_k_entropy_factor[] = "entropy_factor";
 static const char __pyx_k_rec_critic_obs[] = "rec_critic_obs";
 static const char __pyx_k_recurrent_size[] = "recurrent_size";
+static const char __pyx_k_READY_TO_DEPART[] = "READY_TO_DEPART";
 static const char __pyx_k_RailAgentStatus[] = "RailAgentStatus";
 static const char __pyx_k_actor_rec_state[] = "actor_rec_state";
 static const char __pyx_k_dir_transitions[] = "dir_transitions";
@@ -1625,6 +1627,7 @@ static const char __pyx_k_global_model_url[] = "global_model_url";
 static const char __pyx_k_input_critic_rec[] = "input_critic_rec";
 static const char __pyx_k_predict_on_batch[] = "predict_on_batch";
 static const char __pyx_k_return_sequences[] = "return_sequences";
+static const char __pyx_k_set_agent_active[] = "set_agent_active";
 static const char __pyx_k_tensorflow_keras[] = "tensorflow.keras";
 static const char __pyx_k_use_best_actions[] = "use_best_actions";
 static const char __pyx_k_AC_Network___init[] = "AC_Network.__init__";
@@ -1716,6 +1719,7 @@ static PyObject *__pyx_n_s_MOVE_RIGHT;
 static PyObject *__pyx_n_s_Model;
 static PyObject *__pyx_n_s_New;
 static PyObject *__pyx_kp_s_New_entropy_factor_aquired;
+static PyObject *__pyx_n_s_READY_TO_DEPART;
 static PyObject *__pyx_n_s_RailAgentStatus;
 static PyObject *__pyx_n_s_RailEnvActions;
 static PyObject *__pyx_n_s_RailObsBuilder;
@@ -1911,6 +1915,7 @@ static PyObject *__pyx_n_s_save_model;
 static PyObject *__pyx_n_s_seed;
 static PyObject *__pyx_n_s_self;
 static PyObject *__pyx_kp_s_send_gradient;
+static PyObject *__pyx_n_s_set_agent_active;
 static PyObject *__pyx_n_s_set_weights;
 static PyObject *__pyx_n_s_sha1;
 static PyObject *__pyx_n_s_shape;
@@ -1920,6 +1925,7 @@ static PyObject *__pyx_n_s_speed_data;
 static PyObject *__pyx_n_s_square;
 static PyObject *__pyx_n_s_state_c;
 static PyObject *__pyx_n_s_state_h;
+static PyObject *__pyx_n_s_status;
 static PyObject *__pyx_n_s_suffix;
 static PyObject *__pyx_n_s_sum;
 static PyObject *__pyx_n_s_summary;
@@ -9248,71 +9254,120 @@ static PyObject *__pyx_pf_12deliverables_7network_10AC_Network_36agent_action_to
   int __pyx_v_can_go_right;
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
-  PyObject *__pyx_t_1 = NULL;
-  int __pyx_t_2;
+  int __pyx_t_1;
+  PyObject *__pyx_t_2 = NULL;
   int __pyx_t_3;
-  PyObject *__pyx_t_4 = NULL;
+  int __pyx_t_4;
   PyObject *__pyx_t_5 = NULL;
   PyObject *__pyx_t_6 = NULL;
   PyObject *__pyx_t_7 = NULL;
-  int __pyx_t_8;
-  PyObject *__pyx_t_9 = NULL;
+  PyObject *__pyx_t_8 = NULL;
+  int __pyx_t_9;
+  PyObject *__pyx_t_10 = NULL;
   __Pyx_RefNannySetupContext("agent_action_to_env_action", 0);
 
-  /* "deliverables/network.pyx":279
- *             env actions: 'do nothing, left, forward, right, brake
+  /* "deliverables/network.pyx":280
  *         '''
- *         if agent.position is None:             # <<<<<<<<<<<<<<
+ * 
+ *         if agent.position is None or agent.status == RailAgentStatus.READY_TO_DEPART:             # <<<<<<<<<<<<<<
  *             # Ready to depart. Wait or go?
  *             if agent_action == 3:
  */
-  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_agent, __pyx_n_s_position); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 279, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = (__pyx_t_1 == Py_None);
-  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_3 = (__pyx_t_2 != 0);
-  if (__pyx_t_3) {
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_agent, __pyx_n_s_position); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 280, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __pyx_t_3 = (__pyx_t_2 == Py_None);
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __pyx_t_4 = (__pyx_t_3 != 0);
+  if (!__pyx_t_4) {
+  } else {
+    __pyx_t_1 = __pyx_t_4;
+    goto __pyx_L4_bool_binop_done;
+  }
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_agent, __pyx_n_s_status); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 280, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_n_s_RailAgentStatus); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 280, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_5);
+  __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_n_s_READY_TO_DEPART); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 280, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_6);
+  __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+  __pyx_t_5 = PyObject_RichCompare(__pyx_t_2, __pyx_t_6, Py_EQ); __Pyx_XGOTREF(__pyx_t_5); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 280, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+  __pyx_t_4 = __Pyx_PyObject_IsTrue(__pyx_t_5); if (unlikely(__pyx_t_4 < 0)) __PYX_ERR(0, 280, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+  __pyx_t_1 = __pyx_t_4;
+  __pyx_L4_bool_binop_done:;
+  if (__pyx_t_1) {
 
-    /* "deliverables/network.pyx":281
- *         if agent.position is None:
+    /* "deliverables/network.pyx":282
+ *         if agent.position is None or agent.status == RailAgentStatus.READY_TO_DEPART:
  *             # Ready to depart. Wait or go?
  *             if agent_action == 3:             # <<<<<<<<<<<<<<
+ *                 self.env.set_agent_active(agent)
+ *                 return RailEnvActions.MOVE_FORWARD
+ */
+    __pyx_t_5 = __Pyx_PyInt_EqObjC(__pyx_v_agent_action, __pyx_int_3, 3, 0); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 282, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_5);
+    __pyx_t_1 = __Pyx_PyObject_IsTrue(__pyx_t_5); if (unlikely(__pyx_t_1 < 0)) __PYX_ERR(0, 282, __pyx_L1_error)
+    __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+    if (__pyx_t_1) {
+
+      /* "deliverables/network.pyx":283
+ *             # Ready to depart. Wait or go?
+ *             if agent_action == 3:
+ *                 self.env.set_agent_active(agent)             # <<<<<<<<<<<<<<
  *                 return RailEnvActions.MOVE_FORWARD
  *             else:
  */
-    __pyx_t_1 = __Pyx_PyInt_EqObjC(__pyx_v_agent_action, __pyx_int_3, 3, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 281, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_3 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely(__pyx_t_3 < 0)) __PYX_ERR(0, 281, __pyx_L1_error)
-    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    if (__pyx_t_3) {
+      __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_env); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 283, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_6);
+      __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_6, __pyx_n_s_set_agent_active); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 283, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_2);
+      __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+      __pyx_t_6 = NULL;
+      if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_2))) {
+        __pyx_t_6 = PyMethod_GET_SELF(__pyx_t_2);
+        if (likely(__pyx_t_6)) {
+          PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_2);
+          __Pyx_INCREF(__pyx_t_6);
+          __Pyx_INCREF(function);
+          __Pyx_DECREF_SET(__pyx_t_2, function);
+        }
+      }
+      __pyx_t_5 = (__pyx_t_6) ? __Pyx_PyObject_Call2Args(__pyx_t_2, __pyx_t_6, __pyx_v_agent) : __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_v_agent);
+      __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
+      if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 283, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_5);
+      __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+      __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-      /* "deliverables/network.pyx":282
- *             # Ready to depart. Wait or go?
+      /* "deliverables/network.pyx":284
  *             if agent_action == 3:
+ *                 self.env.set_agent_active(agent)
  *                 return RailEnvActions.MOVE_FORWARD             # <<<<<<<<<<<<<<
  *             else:
  *                 return RailEnvActions.DO_NOTHING
  */
       __Pyx_XDECREF(__pyx_r);
-      __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_RailEnvActions); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 282, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_1);
-      __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_MOVE_FORWARD); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 282, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_4);
-      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-      __pyx_r = __pyx_t_4;
-      __pyx_t_4 = 0;
+      __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_n_s_RailEnvActions); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 284, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_5);
+      __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_n_s_MOVE_FORWARD); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 284, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_2);
+      __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+      __pyx_r = __pyx_t_2;
+      __pyx_t_2 = 0;
       goto __pyx_L0;
 
-      /* "deliverables/network.pyx":281
- *         if agent.position is None:
+      /* "deliverables/network.pyx":282
+ *         if agent.position is None or agent.status == RailAgentStatus.READY_TO_DEPART:
  *             # Ready to depart. Wait or go?
  *             if agent_action == 3:             # <<<<<<<<<<<<<<
+ *                 self.env.set_agent_active(agent)
  *                 return RailEnvActions.MOVE_FORWARD
- *             else:
  */
     }
 
-    /* "deliverables/network.pyx":284
+    /* "deliverables/network.pyx":286
  *                 return RailEnvActions.MOVE_FORWARD
  *             else:
  *                 return RailEnvActions.DO_NOTHING             # <<<<<<<<<<<<<<
@@ -9321,105 +9376,105 @@ static PyObject *__pyx_pf_12deliverables_7network_10AC_Network_36agent_action_to
  */
     /*else*/ {
       __Pyx_XDECREF(__pyx_r);
-      __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_RailEnvActions); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 284, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_4);
-      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_DO_NOTHING); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 284, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_1);
-      __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-      __pyx_r = __pyx_t_1;
-      __pyx_t_1 = 0;
+      __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_RailEnvActions); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 286, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_2);
+      __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_DO_NOTHING); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 286, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_5);
+      __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+      __pyx_r = __pyx_t_5;
+      __pyx_t_5 = 0;
       goto __pyx_L0;
     }
 
-    /* "deliverables/network.pyx":279
- *             env actions: 'do nothing, left, forward, right, brake
+    /* "deliverables/network.pyx":280
  *         '''
- *         if agent.position is None:             # <<<<<<<<<<<<<<
+ * 
+ *         if agent.position is None or agent.status == RailAgentStatus.READY_TO_DEPART:             # <<<<<<<<<<<<<<
  *             # Ready to depart. Wait or go?
  *             if agent_action == 3:
  */
   }
 
-  /* "deliverables/network.pyx":286
+  /* "deliverables/network.pyx":288
  *                 return RailEnvActions.DO_NOTHING
  * 
  *         if self.is_agent_on_unusable_switch(agent.next_pos, agent.direction):             # <<<<<<<<<<<<<<
  *             if agent_action == 3:
  *                 return RailEnvActions.MOVE_FORWARD
  */
-  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_is_agent_on_unusable_switch); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 286, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_4);
-  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_v_agent, __pyx_n_s_next_pos); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 286, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_5);
-  __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_v_agent, __pyx_n_s_direction); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 286, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_is_agent_on_unusable_switch); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 288, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_v_agent, __pyx_n_s_next_pos); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 288, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_6);
-  __pyx_t_7 = NULL;
-  __pyx_t_8 = 0;
-  if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_4))) {
-    __pyx_t_7 = PyMethod_GET_SELF(__pyx_t_4);
-    if (likely(__pyx_t_7)) {
-      PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_4);
-      __Pyx_INCREF(__pyx_t_7);
+  __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_v_agent, __pyx_n_s_direction); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 288, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_7);
+  __pyx_t_8 = NULL;
+  __pyx_t_9 = 0;
+  if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_2))) {
+    __pyx_t_8 = PyMethod_GET_SELF(__pyx_t_2);
+    if (likely(__pyx_t_8)) {
+      PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_2);
+      __Pyx_INCREF(__pyx_t_8);
       __Pyx_INCREF(function);
-      __Pyx_DECREF_SET(__pyx_t_4, function);
-      __pyx_t_8 = 1;
+      __Pyx_DECREF_SET(__pyx_t_2, function);
+      __pyx_t_9 = 1;
     }
   }
   #if CYTHON_FAST_PYCALL
-  if (PyFunction_Check(__pyx_t_4)) {
-    PyObject *__pyx_temp[3] = {__pyx_t_7, __pyx_t_5, __pyx_t_6};
-    __pyx_t_1 = __Pyx_PyFunction_FastCall(__pyx_t_4, __pyx_temp+1-__pyx_t_8, 2+__pyx_t_8); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 286, __pyx_L1_error)
-    __Pyx_XDECREF(__pyx_t_7); __pyx_t_7 = 0;
-    __Pyx_GOTREF(__pyx_t_1);
-    __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+  if (PyFunction_Check(__pyx_t_2)) {
+    PyObject *__pyx_temp[3] = {__pyx_t_8, __pyx_t_6, __pyx_t_7};
+    __pyx_t_5 = __Pyx_PyFunction_FastCall(__pyx_t_2, __pyx_temp+1-__pyx_t_9, 2+__pyx_t_9); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 288, __pyx_L1_error)
+    __Pyx_XDECREF(__pyx_t_8); __pyx_t_8 = 0;
+    __Pyx_GOTREF(__pyx_t_5);
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+    __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
   } else
   #endif
   #if CYTHON_FAST_PYCCALL
-  if (__Pyx_PyFastCFunction_Check(__pyx_t_4)) {
-    PyObject *__pyx_temp[3] = {__pyx_t_7, __pyx_t_5, __pyx_t_6};
-    __pyx_t_1 = __Pyx_PyCFunction_FastCall(__pyx_t_4, __pyx_temp+1-__pyx_t_8, 2+__pyx_t_8); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 286, __pyx_L1_error)
-    __Pyx_XDECREF(__pyx_t_7); __pyx_t_7 = 0;
-    __Pyx_GOTREF(__pyx_t_1);
-    __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+  if (__Pyx_PyFastCFunction_Check(__pyx_t_2)) {
+    PyObject *__pyx_temp[3] = {__pyx_t_8, __pyx_t_6, __pyx_t_7};
+    __pyx_t_5 = __Pyx_PyCFunction_FastCall(__pyx_t_2, __pyx_temp+1-__pyx_t_9, 2+__pyx_t_9); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 288, __pyx_L1_error)
+    __Pyx_XDECREF(__pyx_t_8); __pyx_t_8 = 0;
+    __Pyx_GOTREF(__pyx_t_5);
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+    __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
   } else
   #endif
   {
-    __pyx_t_9 = PyTuple_New(2+__pyx_t_8); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 286, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_9);
-    if (__pyx_t_7) {
-      __Pyx_GIVEREF(__pyx_t_7); PyTuple_SET_ITEM(__pyx_t_9, 0, __pyx_t_7); __pyx_t_7 = NULL;
+    __pyx_t_10 = PyTuple_New(2+__pyx_t_9); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 288, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_10);
+    if (__pyx_t_8) {
+      __Pyx_GIVEREF(__pyx_t_8); PyTuple_SET_ITEM(__pyx_t_10, 0, __pyx_t_8); __pyx_t_8 = NULL;
     }
-    __Pyx_GIVEREF(__pyx_t_5);
-    PyTuple_SET_ITEM(__pyx_t_9, 0+__pyx_t_8, __pyx_t_5);
     __Pyx_GIVEREF(__pyx_t_6);
-    PyTuple_SET_ITEM(__pyx_t_9, 1+__pyx_t_8, __pyx_t_6);
-    __pyx_t_5 = 0;
+    PyTuple_SET_ITEM(__pyx_t_10, 0+__pyx_t_9, __pyx_t_6);
+    __Pyx_GIVEREF(__pyx_t_7);
+    PyTuple_SET_ITEM(__pyx_t_10, 1+__pyx_t_9, __pyx_t_7);
     __pyx_t_6 = 0;
-    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_4, __pyx_t_9, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 286, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_1);
-    __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
+    __pyx_t_7 = 0;
+    __pyx_t_5 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_10, NULL); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 288, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_5);
+    __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
   }
-  __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  __pyx_t_3 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely(__pyx_t_3 < 0)) __PYX_ERR(0, 286, __pyx_L1_error)
-  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  if (__pyx_t_3) {
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __pyx_t_1 = __Pyx_PyObject_IsTrue(__pyx_t_5); if (unlikely(__pyx_t_1 < 0)) __PYX_ERR(0, 288, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+  if (__pyx_t_1) {
 
-    /* "deliverables/network.pyx":287
+    /* "deliverables/network.pyx":289
  * 
  *         if self.is_agent_on_unusable_switch(agent.next_pos, agent.direction):
  *             if agent_action == 3:             # <<<<<<<<<<<<<<
  *                 return RailEnvActions.MOVE_FORWARD
  *             else:
  */
-    __pyx_t_1 = __Pyx_PyInt_EqObjC(__pyx_v_agent_action, __pyx_int_3, 3, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 287, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_3 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely(__pyx_t_3 < 0)) __PYX_ERR(0, 287, __pyx_L1_error)
-    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    if (__pyx_t_3) {
+    __pyx_t_5 = __Pyx_PyInt_EqObjC(__pyx_v_agent_action, __pyx_int_3, 3, 0); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 289, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_5);
+    __pyx_t_1 = __Pyx_PyObject_IsTrue(__pyx_t_5); if (unlikely(__pyx_t_1 < 0)) __PYX_ERR(0, 289, __pyx_L1_error)
+    __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+    if (__pyx_t_1) {
 
-      /* "deliverables/network.pyx":288
+      /* "deliverables/network.pyx":290
  *         if self.is_agent_on_unusable_switch(agent.next_pos, agent.direction):
  *             if agent_action == 3:
  *                 return RailEnvActions.MOVE_FORWARD             # <<<<<<<<<<<<<<
@@ -9427,16 +9482,16 @@ static PyObject *__pyx_pf_12deliverables_7network_10AC_Network_36agent_action_to
  *                 if agent.speed_data['speed'] > 0:
  */
       __Pyx_XDECREF(__pyx_r);
-      __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_RailEnvActions); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 288, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_1);
-      __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_MOVE_FORWARD); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 288, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_4);
-      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-      __pyx_r = __pyx_t_4;
-      __pyx_t_4 = 0;
+      __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_n_s_RailEnvActions); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 290, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_5);
+      __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_n_s_MOVE_FORWARD); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 290, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_2);
+      __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+      __pyx_r = __pyx_t_2;
+      __pyx_t_2 = 0;
       goto __pyx_L0;
 
-      /* "deliverables/network.pyx":287
+      /* "deliverables/network.pyx":289
  * 
  *         if self.is_agent_on_unusable_switch(agent.next_pos, agent.direction):
  *             if agent_action == 3:             # <<<<<<<<<<<<<<
@@ -9445,7 +9500,7 @@ static PyObject *__pyx_pf_12deliverables_7network_10AC_Network_36agent_action_to
  */
     }
 
-    /* "deliverables/network.pyx":290
+    /* "deliverables/network.pyx":292
  *                 return RailEnvActions.MOVE_FORWARD
  *             else:
  *                 if agent.speed_data['speed'] > 0:             # <<<<<<<<<<<<<<
@@ -9453,18 +9508,18 @@ static PyObject *__pyx_pf_12deliverables_7network_10AC_Network_36agent_action_to
  *                 else:
  */
     /*else*/ {
-      __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_v_agent, __pyx_n_s_speed_data); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 290, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_4);
-      __pyx_t_1 = __Pyx_PyObject_Dict_GetItem(__pyx_t_4, __pyx_n_s_speed); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 290, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_1);
-      __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-      __pyx_t_4 = PyObject_RichCompare(__pyx_t_1, __pyx_int_0, Py_GT); __Pyx_XGOTREF(__pyx_t_4); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 290, __pyx_L1_error)
-      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-      __pyx_t_3 = __Pyx_PyObject_IsTrue(__pyx_t_4); if (unlikely(__pyx_t_3 < 0)) __PYX_ERR(0, 290, __pyx_L1_error)
-      __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-      if (__pyx_t_3) {
+      __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_agent, __pyx_n_s_speed_data); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 292, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_2);
+      __pyx_t_5 = __Pyx_PyObject_Dict_GetItem(__pyx_t_2, __pyx_n_s_speed); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 292, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_5);
+      __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+      __pyx_t_2 = PyObject_RichCompare(__pyx_t_5, __pyx_int_0, Py_GT); __Pyx_XGOTREF(__pyx_t_2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 292, __pyx_L1_error)
+      __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+      __pyx_t_1 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely(__pyx_t_1 < 0)) __PYX_ERR(0, 292, __pyx_L1_error)
+      __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+      if (__pyx_t_1) {
 
-        /* "deliverables/network.pyx":291
+        /* "deliverables/network.pyx":293
  *             else:
  *                 if agent.speed_data['speed'] > 0:
  *                     return RailEnvActions.STOP_MOVING             # <<<<<<<<<<<<<<
@@ -9472,16 +9527,16 @@ static PyObject *__pyx_pf_12deliverables_7network_10AC_Network_36agent_action_to
  *                     return RailEnvActions.DO_NOTHING
  */
         __Pyx_XDECREF(__pyx_r);
-        __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_RailEnvActions); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 291, __pyx_L1_error)
-        __Pyx_GOTREF(__pyx_t_4);
-        __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_STOP_MOVING); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 291, __pyx_L1_error)
-        __Pyx_GOTREF(__pyx_t_1);
-        __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-        __pyx_r = __pyx_t_1;
-        __pyx_t_1 = 0;
+        __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_RailEnvActions); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 293, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_2);
+        __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_STOP_MOVING); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 293, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_5);
+        __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+        __pyx_r = __pyx_t_5;
+        __pyx_t_5 = 0;
         goto __pyx_L0;
 
-        /* "deliverables/network.pyx":290
+        /* "deliverables/network.pyx":292
  *                 return RailEnvActions.MOVE_FORWARD
  *             else:
  *                 if agent.speed_data['speed'] > 0:             # <<<<<<<<<<<<<<
@@ -9490,7 +9545,7 @@ static PyObject *__pyx_pf_12deliverables_7network_10AC_Network_36agent_action_to
  */
       }
 
-      /* "deliverables/network.pyx":293
+      /* "deliverables/network.pyx":295
  *                     return RailEnvActions.STOP_MOVING
  *                 else:
  *                     return RailEnvActions.DO_NOTHING             # <<<<<<<<<<<<<<
@@ -9499,18 +9554,18 @@ static PyObject *__pyx_pf_12deliverables_7network_10AC_Network_36agent_action_to
  */
       /*else*/ {
         __Pyx_XDECREF(__pyx_r);
-        __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_RailEnvActions); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 293, __pyx_L1_error)
-        __Pyx_GOTREF(__pyx_t_1);
-        __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_DO_NOTHING); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 293, __pyx_L1_error)
-        __Pyx_GOTREF(__pyx_t_4);
-        __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-        __pyx_r = __pyx_t_4;
-        __pyx_t_4 = 0;
+        __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_n_s_RailEnvActions); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 295, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_5);
+        __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_n_s_DO_NOTHING); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 295, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_2);
+        __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+        __pyx_r = __pyx_t_2;
+        __pyx_t_2 = 0;
         goto __pyx_L0;
       }
     }
 
-    /* "deliverables/network.pyx":286
+    /* "deliverables/network.pyx":288
  *                 return RailEnvActions.DO_NOTHING
  * 
  *         if self.is_agent_on_unusable_switch(agent.next_pos, agent.direction):             # <<<<<<<<<<<<<<
@@ -9519,20 +9574,20 @@ static PyObject *__pyx_pf_12deliverables_7network_10AC_Network_36agent_action_to
  */
   }
 
-  /* "deliverables/network.pyx":295
+  /* "deliverables/network.pyx":297
  *                     return RailEnvActions.DO_NOTHING
  * 
  *         if agent_action == 3:             # <<<<<<<<<<<<<<
  *             return RailEnvActions.DO_NOTHING
  * 
  */
-  __pyx_t_4 = __Pyx_PyInt_EqObjC(__pyx_v_agent_action, __pyx_int_3, 3, 0); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 295, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_4);
-  __pyx_t_3 = __Pyx_PyObject_IsTrue(__pyx_t_4); if (unlikely(__pyx_t_3 < 0)) __PYX_ERR(0, 295, __pyx_L1_error)
-  __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  if (__pyx_t_3) {
+  __pyx_t_2 = __Pyx_PyInt_EqObjC(__pyx_v_agent_action, __pyx_int_3, 3, 0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 297, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __pyx_t_1 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely(__pyx_t_1 < 0)) __PYX_ERR(0, 297, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  if (__pyx_t_1) {
 
-    /* "deliverables/network.pyx":296
+    /* "deliverables/network.pyx":298
  * 
  *         if agent_action == 3:
  *             return RailEnvActions.DO_NOTHING             # <<<<<<<<<<<<<<
@@ -9540,16 +9595,16 @@ static PyObject *__pyx_pf_12deliverables_7network_10AC_Network_36agent_action_to
  *         if agent_action == 2:
  */
     __Pyx_XDECREF(__pyx_r);
-    __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_RailEnvActions); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 296, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_4);
-    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_DO_NOTHING); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 296, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_1);
-    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-    __pyx_r = __pyx_t_1;
-    __pyx_t_1 = 0;
+    __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_RailEnvActions); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 298, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_2);
+    __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_DO_NOTHING); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 298, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_5);
+    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+    __pyx_r = __pyx_t_5;
+    __pyx_t_5 = 0;
     goto __pyx_L0;
 
-    /* "deliverables/network.pyx":295
+    /* "deliverables/network.pyx":297
  *                     return RailEnvActions.DO_NOTHING
  * 
  *         if agent_action == 3:             # <<<<<<<<<<<<<<
@@ -9558,47 +9613,47 @@ static PyObject *__pyx_pf_12deliverables_7network_10AC_Network_36agent_action_to
  */
   }
 
-  /* "deliverables/network.pyx":298
+  /* "deliverables/network.pyx":300
  *             return RailEnvActions.DO_NOTHING
  * 
  *         if agent_action == 2:             # <<<<<<<<<<<<<<
  *             agent.wait = 30
  *             if agent.speed_data['speed'] > 0:
  */
-  __pyx_t_1 = __Pyx_PyInt_EqObjC(__pyx_v_agent_action, __pyx_int_2, 2, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 298, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_3 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely(__pyx_t_3 < 0)) __PYX_ERR(0, 298, __pyx_L1_error)
-  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  if (__pyx_t_3) {
+  __pyx_t_5 = __Pyx_PyInt_EqObjC(__pyx_v_agent_action, __pyx_int_2, 2, 0); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 300, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_5);
+  __pyx_t_1 = __Pyx_PyObject_IsTrue(__pyx_t_5); if (unlikely(__pyx_t_1 < 0)) __PYX_ERR(0, 300, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+  if (__pyx_t_1) {
 
-    /* "deliverables/network.pyx":299
+    /* "deliverables/network.pyx":301
  * 
  *         if agent_action == 2:
  *             agent.wait = 30             # <<<<<<<<<<<<<<
  *             if agent.speed_data['speed'] > 0:
  *                 return RailEnvActions.STOP_MOVING
  */
-    if (__Pyx_PyObject_SetAttrStr(__pyx_v_agent, __pyx_n_s_wait, __pyx_int_30) < 0) __PYX_ERR(0, 299, __pyx_L1_error)
+    if (__Pyx_PyObject_SetAttrStr(__pyx_v_agent, __pyx_n_s_wait, __pyx_int_30) < 0) __PYX_ERR(0, 301, __pyx_L1_error)
 
-    /* "deliverables/network.pyx":300
+    /* "deliverables/network.pyx":302
  *         if agent_action == 2:
  *             agent.wait = 30
  *             if agent.speed_data['speed'] > 0:             # <<<<<<<<<<<<<<
  *                 return RailEnvActions.STOP_MOVING
  *             else:
  */
-    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_agent, __pyx_n_s_speed_data); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 300, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_4 = __Pyx_PyObject_Dict_GetItem(__pyx_t_1, __pyx_n_s_speed); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 300, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_4);
-    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    __pyx_t_1 = PyObject_RichCompare(__pyx_t_4, __pyx_int_0, Py_GT); __Pyx_XGOTREF(__pyx_t_1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 300, __pyx_L1_error)
-    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-    __pyx_t_3 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely(__pyx_t_3 < 0)) __PYX_ERR(0, 300, __pyx_L1_error)
-    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    if (__pyx_t_3) {
+    __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_v_agent, __pyx_n_s_speed_data); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 302, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_5);
+    __pyx_t_2 = __Pyx_PyObject_Dict_GetItem(__pyx_t_5, __pyx_n_s_speed); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 302, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_2);
+    __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+    __pyx_t_5 = PyObject_RichCompare(__pyx_t_2, __pyx_int_0, Py_GT); __Pyx_XGOTREF(__pyx_t_5); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 302, __pyx_L1_error)
+    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+    __pyx_t_1 = __Pyx_PyObject_IsTrue(__pyx_t_5); if (unlikely(__pyx_t_1 < 0)) __PYX_ERR(0, 302, __pyx_L1_error)
+    __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+    if (__pyx_t_1) {
 
-      /* "deliverables/network.pyx":301
+      /* "deliverables/network.pyx":303
  *             agent.wait = 30
  *             if agent.speed_data['speed'] > 0:
  *                 return RailEnvActions.STOP_MOVING             # <<<<<<<<<<<<<<
@@ -9606,16 +9661,16 @@ static PyObject *__pyx_pf_12deliverables_7network_10AC_Network_36agent_action_to
  *                 return RailEnvActions.DO_NOTHING
  */
       __Pyx_XDECREF(__pyx_r);
-      __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_RailEnvActions); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 301, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_1);
-      __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_STOP_MOVING); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 301, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_4);
-      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-      __pyx_r = __pyx_t_4;
-      __pyx_t_4 = 0;
+      __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_n_s_RailEnvActions); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 303, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_5);
+      __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_n_s_STOP_MOVING); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 303, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_2);
+      __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+      __pyx_r = __pyx_t_2;
+      __pyx_t_2 = 0;
       goto __pyx_L0;
 
-      /* "deliverables/network.pyx":300
+      /* "deliverables/network.pyx":302
  *         if agent_action == 2:
  *             agent.wait = 30
  *             if agent.speed_data['speed'] > 0:             # <<<<<<<<<<<<<<
@@ -9624,7 +9679,7 @@ static PyObject *__pyx_pf_12deliverables_7network_10AC_Network_36agent_action_to
  */
     }
 
-    /* "deliverables/network.pyx":303
+    /* "deliverables/network.pyx":305
  *                 return RailEnvActions.STOP_MOVING
  *             else:
  *                 return RailEnvActions.DO_NOTHING             # <<<<<<<<<<<<<<
@@ -9633,17 +9688,17 @@ static PyObject *__pyx_pf_12deliverables_7network_10AC_Network_36agent_action_to
  */
     /*else*/ {
       __Pyx_XDECREF(__pyx_r);
-      __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_RailEnvActions); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 303, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_4);
-      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_DO_NOTHING); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 303, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_1);
-      __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-      __pyx_r = __pyx_t_1;
-      __pyx_t_1 = 0;
+      __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_RailEnvActions); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 305, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_2);
+      __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_DO_NOTHING); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 305, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_5);
+      __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+      __pyx_r = __pyx_t_5;
+      __pyx_t_5 = 0;
       goto __pyx_L0;
     }
 
-    /* "deliverables/network.pyx":298
+    /* "deliverables/network.pyx":300
  *             return RailEnvActions.DO_NOTHING
  * 
  *         if agent_action == 2:             # <<<<<<<<<<<<<<
@@ -9652,57 +9707,57 @@ static PyObject *__pyx_pf_12deliverables_7network_10AC_Network_36agent_action_to
  */
   }
 
-  /* "deliverables/network.pyx":305
+  /* "deliverables/network.pyx":307
  *                 return RailEnvActions.DO_NOTHING
  * 
  *         dir = agent.direction             # <<<<<<<<<<<<<<
  *         transition = self.env.rail.get_transitions(*agent.position, agent.direction)
  * 
  */
-  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_agent, __pyx_n_s_direction); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 305, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_1);
-  __pyx_v_dir = __pyx_t_1;
-  __pyx_t_1 = 0;
+  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_v_agent, __pyx_n_s_direction); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 307, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_5);
+  __pyx_v_dir = __pyx_t_5;
+  __pyx_t_5 = 0;
 
-  /* "deliverables/network.pyx":306
+  /* "deliverables/network.pyx":308
  * 
  *         dir = agent.direction
  *         transition = self.env.rail.get_transitions(*agent.position, agent.direction)             # <<<<<<<<<<<<<<
  * 
  *         can_go_left = False
  */
-  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_env); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 306, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_rail); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 306, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_4);
-  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_get_transitions); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 306, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_1);
-  __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_v_agent, __pyx_n_s_position); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 306, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_4);
-  __pyx_t_9 = __Pyx_PySequence_Tuple(__pyx_t_4); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 306, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_9);
-  __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_v_agent, __pyx_n_s_direction); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 306, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_4);
-  __pyx_t_6 = PyTuple_New(1); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 306, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_6);
-  __Pyx_GIVEREF(__pyx_t_4);
-  PyTuple_SET_ITEM(__pyx_t_6, 0, __pyx_t_4);
-  __pyx_t_4 = 0;
-  __pyx_t_4 = PyNumber_Add(__pyx_t_9, __pyx_t_6); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 306, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_4);
-  __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
-  __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-  __pyx_t_6 = __Pyx_PyObject_Call(__pyx_t_1, __pyx_t_4, NULL); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 306, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_6);
-  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  __pyx_v_transition = __pyx_t_6;
-  __pyx_t_6 = 0;
+  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_env); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 308, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_5);
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_n_s_rail); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 308, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_get_transitions); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 308, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_5);
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_agent, __pyx_n_s_position); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 308, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __pyx_t_10 = __Pyx_PySequence_Tuple(__pyx_t_2); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 308, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_10);
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_agent, __pyx_n_s_direction); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 308, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __pyx_t_7 = PyTuple_New(1); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 308, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_7);
+  __Pyx_GIVEREF(__pyx_t_2);
+  PyTuple_SET_ITEM(__pyx_t_7, 0, __pyx_t_2);
+  __pyx_t_2 = 0;
+  __pyx_t_2 = PyNumber_Add(__pyx_t_10, __pyx_t_7); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 308, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
+  __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
+  __pyx_t_7 = __Pyx_PyObject_Call(__pyx_t_5, __pyx_t_2, NULL); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 308, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_7);
+  __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __pyx_v_transition = __pyx_t_7;
+  __pyx_t_7 = 0;
 
-  /* "deliverables/network.pyx":308
+  /* "deliverables/network.pyx":310
  *         transition = self.env.rail.get_transitions(*agent.position, agent.direction)
  * 
  *         can_go_left = False             # <<<<<<<<<<<<<<
@@ -9711,7 +9766,7 @@ static PyObject *__pyx_pf_12deliverables_7network_10AC_Network_36agent_action_to
  */
   __pyx_v_can_go_left = 0;
 
-  /* "deliverables/network.pyx":309
+  /* "deliverables/network.pyx":311
  * 
  *         can_go_left = False
  *         can_go_forward = False             # <<<<<<<<<<<<<<
@@ -9720,7 +9775,7 @@ static PyObject *__pyx_pf_12deliverables_7network_10AC_Network_36agent_action_to
  */
   __pyx_v_can_go_forward = 0;
 
-  /* "deliverables/network.pyx":310
+  /* "deliverables/network.pyx":312
  *         can_go_left = False
  *         can_go_forward = False
  *         can_go_right = False             # <<<<<<<<<<<<<<
@@ -9729,29 +9784,29 @@ static PyObject *__pyx_pf_12deliverables_7network_10AC_Network_36agent_action_to
  */
   __pyx_v_can_go_right = 0;
 
-  /* "deliverables/network.pyx":312
+  /* "deliverables/network.pyx":314
  *         can_go_right = False
  * 
  *         if transition[(3 + dir) % 4] == 1:             # <<<<<<<<<<<<<<
  *             can_go_left = True
  *         if transition[(0 + dir) % 4] == 1:
  */
-  __pyx_t_6 = __Pyx_PyInt_AddCObj(__pyx_int_3, __pyx_v_dir, 3, 0, 0); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 312, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_6);
-  __pyx_t_4 = __Pyx_PyInt_RemainderObjC(__pyx_t_6, __pyx_int_4, 4, 0, 0); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 312, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_4);
-  __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-  __pyx_t_6 = __Pyx_PyObject_GetItem(__pyx_v_transition, __pyx_t_4); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 312, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_6);
-  __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  __pyx_t_4 = __Pyx_PyInt_EqObjC(__pyx_t_6, __pyx_int_1, 1, 0); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 312, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_4);
-  __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-  __pyx_t_3 = __Pyx_PyObject_IsTrue(__pyx_t_4); if (unlikely(__pyx_t_3 < 0)) __PYX_ERR(0, 312, __pyx_L1_error)
-  __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  if (__pyx_t_3) {
+  __pyx_t_7 = __Pyx_PyInt_AddCObj(__pyx_int_3, __pyx_v_dir, 3, 0, 0); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 314, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_7);
+  __pyx_t_2 = __Pyx_PyInt_RemainderObjC(__pyx_t_7, __pyx_int_4, 4, 0, 0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 314, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
+  __pyx_t_7 = __Pyx_PyObject_GetItem(__pyx_v_transition, __pyx_t_2); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 314, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_7);
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __pyx_t_2 = __Pyx_PyInt_EqObjC(__pyx_t_7, __pyx_int_1, 1, 0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 314, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
+  __pyx_t_1 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely(__pyx_t_1 < 0)) __PYX_ERR(0, 314, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  if (__pyx_t_1) {
 
-    /* "deliverables/network.pyx":313
+    /* "deliverables/network.pyx":315
  * 
  *         if transition[(3 + dir) % 4] == 1:
  *             can_go_left = True             # <<<<<<<<<<<<<<
@@ -9760,7 +9815,7 @@ static PyObject *__pyx_pf_12deliverables_7network_10AC_Network_36agent_action_to
  */
     __pyx_v_can_go_left = 1;
 
-    /* "deliverables/network.pyx":312
+    /* "deliverables/network.pyx":314
  *         can_go_right = False
  * 
  *         if transition[(3 + dir) % 4] == 1:             # <<<<<<<<<<<<<<
@@ -9769,29 +9824,29 @@ static PyObject *__pyx_pf_12deliverables_7network_10AC_Network_36agent_action_to
  */
   }
 
-  /* "deliverables/network.pyx":314
+  /* "deliverables/network.pyx":316
  *         if transition[(3 + dir) % 4] == 1:
  *             can_go_left = True
  *         if transition[(0 + dir) % 4] == 1:             # <<<<<<<<<<<<<<
  *             can_go_forward = True
  *         if transition[(1 + dir) % 4] == 1:
  */
-  __pyx_t_4 = __Pyx_PyInt_AddCObj(__pyx_int_0, __pyx_v_dir, 0, 0, 0); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 314, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_4);
-  __pyx_t_6 = __Pyx_PyInt_RemainderObjC(__pyx_t_4, __pyx_int_4, 4, 0, 0); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 314, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_6);
-  __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  __pyx_t_4 = __Pyx_PyObject_GetItem(__pyx_v_transition, __pyx_t_6); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 314, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_4);
-  __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-  __pyx_t_6 = __Pyx_PyInt_EqObjC(__pyx_t_4, __pyx_int_1, 1, 0); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 314, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_6);
-  __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  __pyx_t_3 = __Pyx_PyObject_IsTrue(__pyx_t_6); if (unlikely(__pyx_t_3 < 0)) __PYX_ERR(0, 314, __pyx_L1_error)
-  __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-  if (__pyx_t_3) {
+  __pyx_t_2 = __Pyx_PyInt_AddCObj(__pyx_int_0, __pyx_v_dir, 0, 0, 0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 316, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __pyx_t_7 = __Pyx_PyInt_RemainderObjC(__pyx_t_2, __pyx_int_4, 4, 0, 0); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 316, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_7);
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __pyx_t_2 = __Pyx_PyObject_GetItem(__pyx_v_transition, __pyx_t_7); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 316, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
+  __pyx_t_7 = __Pyx_PyInt_EqObjC(__pyx_t_2, __pyx_int_1, 1, 0); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 316, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_7);
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __pyx_t_1 = __Pyx_PyObject_IsTrue(__pyx_t_7); if (unlikely(__pyx_t_1 < 0)) __PYX_ERR(0, 316, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
+  if (__pyx_t_1) {
 
-    /* "deliverables/network.pyx":315
+    /* "deliverables/network.pyx":317
  *             can_go_left = True
  *         if transition[(0 + dir) % 4] == 1:
  *             can_go_forward = True             # <<<<<<<<<<<<<<
@@ -9800,7 +9855,7 @@ static PyObject *__pyx_pf_12deliverables_7network_10AC_Network_36agent_action_to
  */
     __pyx_v_can_go_forward = 1;
 
-    /* "deliverables/network.pyx":314
+    /* "deliverables/network.pyx":316
  *         if transition[(3 + dir) % 4] == 1:
  *             can_go_left = True
  *         if transition[(0 + dir) % 4] == 1:             # <<<<<<<<<<<<<<
@@ -9809,29 +9864,29 @@ static PyObject *__pyx_pf_12deliverables_7network_10AC_Network_36agent_action_to
  */
   }
 
-  /* "deliverables/network.pyx":316
+  /* "deliverables/network.pyx":318
  *         if transition[(0 + dir) % 4] == 1:
  *             can_go_forward = True
  *         if transition[(1 + dir) % 4] == 1:             # <<<<<<<<<<<<<<
  *             can_go_right = True
  * 
  */
-  __pyx_t_6 = __Pyx_PyInt_AddCObj(__pyx_int_1, __pyx_v_dir, 1, 0, 0); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 316, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_6);
-  __pyx_t_4 = __Pyx_PyInt_RemainderObjC(__pyx_t_6, __pyx_int_4, 4, 0, 0); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 316, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_4);
-  __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-  __pyx_t_6 = __Pyx_PyObject_GetItem(__pyx_v_transition, __pyx_t_4); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 316, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_6);
-  __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  __pyx_t_4 = __Pyx_PyInt_EqObjC(__pyx_t_6, __pyx_int_1, 1, 0); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 316, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_4);
-  __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-  __pyx_t_3 = __Pyx_PyObject_IsTrue(__pyx_t_4); if (unlikely(__pyx_t_3 < 0)) __PYX_ERR(0, 316, __pyx_L1_error)
-  __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  if (__pyx_t_3) {
+  __pyx_t_7 = __Pyx_PyInt_AddCObj(__pyx_int_1, __pyx_v_dir, 1, 0, 0); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 318, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_7);
+  __pyx_t_2 = __Pyx_PyInt_RemainderObjC(__pyx_t_7, __pyx_int_4, 4, 0, 0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 318, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
+  __pyx_t_7 = __Pyx_PyObject_GetItem(__pyx_v_transition, __pyx_t_2); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 318, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_7);
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __pyx_t_2 = __Pyx_PyInt_EqObjC(__pyx_t_7, __pyx_int_1, 1, 0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 318, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
+  __pyx_t_1 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely(__pyx_t_1 < 0)) __PYX_ERR(0, 318, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  if (__pyx_t_1) {
 
-    /* "deliverables/network.pyx":317
+    /* "deliverables/network.pyx":319
  *             can_go_forward = True
  *         if transition[(1 + dir) % 4] == 1:
  *             can_go_right = True             # <<<<<<<<<<<<<<
@@ -9840,7 +9895,7 @@ static PyObject *__pyx_pf_12deliverables_7network_10AC_Network_36agent_action_to
  */
     __pyx_v_can_go_right = 1;
 
-    /* "deliverables/network.pyx":316
+    /* "deliverables/network.pyx":318
  *         if transition[(0 + dir) % 4] == 1:
  *             can_go_forward = True
  *         if transition[(1 + dir) % 4] == 1:             # <<<<<<<<<<<<<<
@@ -9849,28 +9904,28 @@ static PyObject *__pyx_pf_12deliverables_7network_10AC_Network_36agent_action_to
  */
   }
 
-  /* "deliverables/network.pyx":323
+  /* "deliverables/network.pyx":325
  *         # print('Can go right:', can_go_right)
  * 
  *         if agent_action == 0 and can_go_left:             # <<<<<<<<<<<<<<
  *             return RailEnvActions.MOVE_LEFT
  *         if agent_action == 1 and can_go_right:
  */
-  __pyx_t_4 = __Pyx_PyInt_EqObjC(__pyx_v_agent_action, __pyx_int_0, 0, 0); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 323, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_4);
-  __pyx_t_2 = __Pyx_PyObject_IsTrue(__pyx_t_4); if (unlikely(__pyx_t_2 < 0)) __PYX_ERR(0, 323, __pyx_L1_error)
-  __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  if (__pyx_t_2) {
+  __pyx_t_2 = __Pyx_PyInt_EqObjC(__pyx_v_agent_action, __pyx_int_0, 0, 0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 325, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __pyx_t_4 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely(__pyx_t_4 < 0)) __PYX_ERR(0, 325, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  if (__pyx_t_4) {
   } else {
-    __pyx_t_3 = __pyx_t_2;
-    goto __pyx_L15_bool_binop_done;
+    __pyx_t_1 = __pyx_t_4;
+    goto __pyx_L17_bool_binop_done;
   }
-  __pyx_t_2 = (__pyx_v_can_go_left != 0);
-  __pyx_t_3 = __pyx_t_2;
-  __pyx_L15_bool_binop_done:;
-  if (__pyx_t_3) {
+  __pyx_t_4 = (__pyx_v_can_go_left != 0);
+  __pyx_t_1 = __pyx_t_4;
+  __pyx_L17_bool_binop_done:;
+  if (__pyx_t_1) {
 
-    /* "deliverables/network.pyx":324
+    /* "deliverables/network.pyx":326
  * 
  *         if agent_action == 0 and can_go_left:
  *             return RailEnvActions.MOVE_LEFT             # <<<<<<<<<<<<<<
@@ -9878,16 +9933,16 @@ static PyObject *__pyx_pf_12deliverables_7network_10AC_Network_36agent_action_to
  *             return RailEnvActions.MOVE_RIGHT
  */
     __Pyx_XDECREF(__pyx_r);
-    __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_RailEnvActions); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 324, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_4);
-    __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_MOVE_LEFT); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 324, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_6);
-    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-    __pyx_r = __pyx_t_6;
-    __pyx_t_6 = 0;
+    __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_RailEnvActions); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 326, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_2);
+    __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_MOVE_LEFT); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 326, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_7);
+    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+    __pyx_r = __pyx_t_7;
+    __pyx_t_7 = 0;
     goto __pyx_L0;
 
-    /* "deliverables/network.pyx":323
+    /* "deliverables/network.pyx":325
  *         # print('Can go right:', can_go_right)
  * 
  *         if agent_action == 0 and can_go_left:             # <<<<<<<<<<<<<<
@@ -9896,28 +9951,28 @@ static PyObject *__pyx_pf_12deliverables_7network_10AC_Network_36agent_action_to
  */
   }
 
-  /* "deliverables/network.pyx":325
+  /* "deliverables/network.pyx":327
  *         if agent_action == 0 and can_go_left:
  *             return RailEnvActions.MOVE_LEFT
  *         if agent_action == 1 and can_go_right:             # <<<<<<<<<<<<<<
  *             return RailEnvActions.MOVE_RIGHT
  * 
  */
-  __pyx_t_6 = __Pyx_PyInt_EqObjC(__pyx_v_agent_action, __pyx_int_1, 1, 0); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 325, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_6);
-  __pyx_t_2 = __Pyx_PyObject_IsTrue(__pyx_t_6); if (unlikely(__pyx_t_2 < 0)) __PYX_ERR(0, 325, __pyx_L1_error)
-  __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-  if (__pyx_t_2) {
+  __pyx_t_7 = __Pyx_PyInt_EqObjC(__pyx_v_agent_action, __pyx_int_1, 1, 0); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 327, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_7);
+  __pyx_t_4 = __Pyx_PyObject_IsTrue(__pyx_t_7); if (unlikely(__pyx_t_4 < 0)) __PYX_ERR(0, 327, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
+  if (__pyx_t_4) {
   } else {
-    __pyx_t_3 = __pyx_t_2;
-    goto __pyx_L18_bool_binop_done;
+    __pyx_t_1 = __pyx_t_4;
+    goto __pyx_L20_bool_binop_done;
   }
-  __pyx_t_2 = (__pyx_v_can_go_right != 0);
-  __pyx_t_3 = __pyx_t_2;
-  __pyx_L18_bool_binop_done:;
-  if (__pyx_t_3) {
+  __pyx_t_4 = (__pyx_v_can_go_right != 0);
+  __pyx_t_1 = __pyx_t_4;
+  __pyx_L20_bool_binop_done:;
+  if (__pyx_t_1) {
 
-    /* "deliverables/network.pyx":326
+    /* "deliverables/network.pyx":328
  *             return RailEnvActions.MOVE_LEFT
  *         if agent_action == 1 and can_go_right:
  *             return RailEnvActions.MOVE_RIGHT             # <<<<<<<<<<<<<<
@@ -9925,16 +9980,16 @@ static PyObject *__pyx_pf_12deliverables_7network_10AC_Network_36agent_action_to
  *         return RailEnvActions.MOVE_FORWARD
  */
     __Pyx_XDECREF(__pyx_r);
-    __Pyx_GetModuleGlobalName(__pyx_t_6, __pyx_n_s_RailEnvActions); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 326, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_6);
-    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_6, __pyx_n_s_MOVE_RIGHT); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 326, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_4);
-    __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-    __pyx_r = __pyx_t_4;
-    __pyx_t_4 = 0;
+    __Pyx_GetModuleGlobalName(__pyx_t_7, __pyx_n_s_RailEnvActions); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 328, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_7);
+    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_7, __pyx_n_s_MOVE_RIGHT); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 328, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_2);
+    __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
+    __pyx_r = __pyx_t_2;
+    __pyx_t_2 = 0;
     goto __pyx_L0;
 
-    /* "deliverables/network.pyx":325
+    /* "deliverables/network.pyx":327
  *         if agent_action == 0 and can_go_left:
  *             return RailEnvActions.MOVE_LEFT
  *         if agent_action == 1 and can_go_right:             # <<<<<<<<<<<<<<
@@ -9943,7 +9998,7 @@ static PyObject *__pyx_pf_12deliverables_7network_10AC_Network_36agent_action_to
  */
   }
 
-  /* "deliverables/network.pyx":328
+  /* "deliverables/network.pyx":330
  *             return RailEnvActions.MOVE_RIGHT
  * 
  *         return RailEnvActions.MOVE_FORWARD             # <<<<<<<<<<<<<<
@@ -9951,13 +10006,13 @@ static PyObject *__pyx_pf_12deliverables_7network_10AC_Network_36agent_action_to
  *     def is_agent_on_unusable_switch(self, position, dir):
  */
   __Pyx_XDECREF(__pyx_r);
-  __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_RailEnvActions); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 328, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_4);
-  __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_MOVE_FORWARD); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 328, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_6);
-  __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  __pyx_r = __pyx_t_6;
-  __pyx_t_6 = 0;
+  __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_RailEnvActions); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 330, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_MOVE_FORWARD); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 330, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_7);
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __pyx_r = __pyx_t_7;
+  __pyx_t_7 = 0;
   goto __pyx_L0;
 
   /* "deliverables/network.pyx":275
@@ -9970,12 +10025,12 @@ static PyObject *__pyx_pf_12deliverables_7network_10AC_Network_36agent_action_to
 
   /* function exit code */
   __pyx_L1_error:;
-  __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_XDECREF(__pyx_t_4);
+  __Pyx_XDECREF(__pyx_t_2);
   __Pyx_XDECREF(__pyx_t_5);
   __Pyx_XDECREF(__pyx_t_6);
   __Pyx_XDECREF(__pyx_t_7);
-  __Pyx_XDECREF(__pyx_t_9);
+  __Pyx_XDECREF(__pyx_t_8);
+  __Pyx_XDECREF(__pyx_t_10);
   __Pyx_AddTraceback("deliverables.network.AC_Network.agent_action_to_env_action", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
@@ -9986,7 +10041,7 @@ static PyObject *__pyx_pf_12deliverables_7network_10AC_Network_36agent_action_to
   return __pyx_r;
 }
 
-/* "deliverables/network.pyx":330
+/* "deliverables/network.pyx":332
  *         return RailEnvActions.MOVE_FORWARD
  * 
  *     def is_agent_on_unusable_switch(self, position, dir):             # <<<<<<<<<<<<<<
@@ -10030,17 +10085,17 @@ static PyObject *__pyx_pw_12deliverables_7network_10AC_Network_39is_agent_on_unu
         case  1:
         if (likely((values[1] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_position)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("is_agent_on_unusable_switch", 1, 3, 3, 1); __PYX_ERR(0, 330, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("is_agent_on_unusable_switch", 1, 3, 3, 1); __PYX_ERR(0, 332, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  2:
         if (likely((values[2] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_dir)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("is_agent_on_unusable_switch", 1, 3, 3, 2); __PYX_ERR(0, 330, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("is_agent_on_unusable_switch", 1, 3, 3, 2); __PYX_ERR(0, 332, __pyx_L3_error)
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "is_agent_on_unusable_switch") < 0)) __PYX_ERR(0, 330, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "is_agent_on_unusable_switch") < 0)) __PYX_ERR(0, 332, __pyx_L3_error)
       }
     } else if (PyTuple_GET_SIZE(__pyx_args) != 3) {
       goto __pyx_L5_argtuple_error;
@@ -10055,7 +10110,7 @@ static PyObject *__pyx_pw_12deliverables_7network_10AC_Network_39is_agent_on_unu
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("is_agent_on_unusable_switch", 1, 3, 3, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 330, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("is_agent_on_unusable_switch", 1, 3, 3, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 332, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_AddTraceback("deliverables.network.AC_Network.is_agent_on_unusable_switch", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
@@ -10085,7 +10140,7 @@ static PyObject *__pyx_pf_12deliverables_7network_10AC_Network_38is_agent_on_unu
   long __pyx_t_9;
   __Pyx_RefNannySetupContext("is_agent_on_unusable_switch", 0);
 
-  /* "deliverables/network.pyx":334
+  /* "deliverables/network.pyx":336
  *             given direction. '''
  * 
  *         if position is None:             # <<<<<<<<<<<<<<
@@ -10096,7 +10151,7 @@ static PyObject *__pyx_pf_12deliverables_7network_10AC_Network_38is_agent_on_unu
   __pyx_t_2 = (__pyx_t_1 != 0);
   if (__pyx_t_2) {
 
-    /* "deliverables/network.pyx":335
+    /* "deliverables/network.pyx":337
  * 
  *         if position is None:
  *             return False             # <<<<<<<<<<<<<<
@@ -10108,7 +10163,7 @@ static PyObject *__pyx_pf_12deliverables_7network_10AC_Network_38is_agent_on_unu
     __pyx_r = Py_False;
     goto __pyx_L0;
 
-    /* "deliverables/network.pyx":334
+    /* "deliverables/network.pyx":336
  *             given direction. '''
  * 
  *         if position is None:             # <<<<<<<<<<<<<<
@@ -10117,38 +10172,38 @@ static PyObject *__pyx_pf_12deliverables_7network_10AC_Network_38is_agent_on_unu
  */
   }
 
-  /* "deliverables/network.pyx":337
+  /* "deliverables/network.pyx":339
  *             return False
  * 
  *         possible_transitions = np.sum(self.env.rail.get_transitions(*position, dir))             # <<<<<<<<<<<<<<
  *         #print(env.rail.get_transitions(*position, dir))
  *         for d in range(4):
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_np); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 337, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_np); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 339, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
-  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_sum); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 337, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_sum); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 339, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_env); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 337, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_env); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 339, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
-  __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_rail); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 337, __pyx_L1_error)
+  __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_rail); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 339, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_6);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_6, __pyx_n_s_get_transitions); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 337, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_6, __pyx_n_s_get_transitions); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 339, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-  __pyx_t_6 = __Pyx_PySequence_Tuple(__pyx_v_position); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 337, __pyx_L1_error)
+  __pyx_t_6 = __Pyx_PySequence_Tuple(__pyx_v_position); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 339, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_6);
-  __pyx_t_7 = PyTuple_New(1); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 337, __pyx_L1_error)
+  __pyx_t_7 = PyTuple_New(1); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 339, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_7);
   __Pyx_INCREF(__pyx_v_dir);
   __Pyx_GIVEREF(__pyx_v_dir);
   PyTuple_SET_ITEM(__pyx_t_7, 0, __pyx_v_dir);
-  __pyx_t_8 = PyNumber_Add(__pyx_t_6, __pyx_t_7); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 337, __pyx_L1_error)
+  __pyx_t_8 = PyNumber_Add(__pyx_t_6, __pyx_t_7); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 339, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_8);
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
   __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-  __pyx_t_7 = __Pyx_PyObject_Call(__pyx_t_4, __pyx_t_8, NULL); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 337, __pyx_L1_error)
+  __pyx_t_7 = __Pyx_PyObject_Call(__pyx_t_4, __pyx_t_8, NULL); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 339, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_7);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
@@ -10165,13 +10220,13 @@ static PyObject *__pyx_pf_12deliverables_7network_10AC_Network_38is_agent_on_unu
   __pyx_t_3 = (__pyx_t_8) ? __Pyx_PyObject_Call2Args(__pyx_t_5, __pyx_t_8, __pyx_t_7) : __Pyx_PyObject_CallOneArg(__pyx_t_5, __pyx_t_7);
   __Pyx_XDECREF(__pyx_t_8); __pyx_t_8 = 0;
   __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-  if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 337, __pyx_L1_error)
+  if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 339, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
   __pyx_v_possible_transitions = __pyx_t_3;
   __pyx_t_3 = 0;
 
-  /* "deliverables/network.pyx":339
+  /* "deliverables/network.pyx":341
  *         possible_transitions = np.sum(self.env.rail.get_transitions(*position, dir))
  *         #print(env.rail.get_transitions(*position, dir))
  *         for d in range(4):             # <<<<<<<<<<<<<<
@@ -10181,40 +10236,40 @@ static PyObject *__pyx_pf_12deliverables_7network_10AC_Network_38is_agent_on_unu
   for (__pyx_t_9 = 0; __pyx_t_9 < 4; __pyx_t_9+=1) {
     __pyx_v_d = __pyx_t_9;
 
-    /* "deliverables/network.pyx":340
+    /* "deliverables/network.pyx":342
  *         #print(env.rail.get_transitions(*position, dir))
  *         for d in range(4):
  *             dir_transitions = np.sum(self.env.rail.get_transitions(*position, d))             # <<<<<<<<<<<<<<
  *             if dir_transitions > possible_transitions >= 1:
  *                 #print(env.rail.get_transitions(*position, d))
  */
-    __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_n_s_np); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 340, __pyx_L1_error)
+    __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_n_s_np); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 342, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
-    __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_n_s_sum); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 340, __pyx_L1_error)
+    __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_n_s_sum); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 342, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_7);
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-    __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_env); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 340, __pyx_L1_error)
+    __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_env); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 342, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
-    __pyx_t_8 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_n_s_rail); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 340, __pyx_L1_error)
+    __pyx_t_8 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_n_s_rail); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 342, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_8);
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-    __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_8, __pyx_n_s_get_transitions); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 340, __pyx_L1_error)
+    __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_8, __pyx_n_s_get_transitions); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 342, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
     __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-    __pyx_t_8 = __Pyx_PySequence_Tuple(__pyx_v_position); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 340, __pyx_L1_error)
+    __pyx_t_8 = __Pyx_PySequence_Tuple(__pyx_v_position); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 342, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_8);
-    __pyx_t_4 = __Pyx_PyInt_From_long(__pyx_v_d); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 340, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyInt_From_long(__pyx_v_d); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 342, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
-    __pyx_t_6 = PyTuple_New(1); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 340, __pyx_L1_error)
+    __pyx_t_6 = PyTuple_New(1); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 342, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_6);
     __Pyx_GIVEREF(__pyx_t_4);
     PyTuple_SET_ITEM(__pyx_t_6, 0, __pyx_t_4);
     __pyx_t_4 = 0;
-    __pyx_t_4 = PyNumber_Add(__pyx_t_8, __pyx_t_6); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 340, __pyx_L1_error)
+    __pyx_t_4 = PyNumber_Add(__pyx_t_8, __pyx_t_6); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 342, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
     __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-    __pyx_t_6 = __Pyx_PyObject_Call(__pyx_t_5, __pyx_t_4, NULL); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 340, __pyx_L1_error)
+    __pyx_t_6 = __Pyx_PyObject_Call(__pyx_t_5, __pyx_t_4, NULL); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 342, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_6);
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
@@ -10231,29 +10286,29 @@ static PyObject *__pyx_pf_12deliverables_7network_10AC_Network_38is_agent_on_unu
     __pyx_t_3 = (__pyx_t_4) ? __Pyx_PyObject_Call2Args(__pyx_t_7, __pyx_t_4, __pyx_t_6) : __Pyx_PyObject_CallOneArg(__pyx_t_7, __pyx_t_6);
     __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-    if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 340, __pyx_L1_error)
+    if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 342, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
     __Pyx_XDECREF_SET(__pyx_v_dir_transitions, __pyx_t_3);
     __pyx_t_3 = 0;
 
-    /* "deliverables/network.pyx":341
+    /* "deliverables/network.pyx":343
  *         for d in range(4):
  *             dir_transitions = np.sum(self.env.rail.get_transitions(*position, d))
  *             if dir_transitions > possible_transitions >= 1:             # <<<<<<<<<<<<<<
  *                 #print(env.rail.get_transitions(*position, d))
  *                 return True
  */
-    __pyx_t_3 = PyObject_RichCompare(__pyx_v_dir_transitions, __pyx_v_possible_transitions, Py_GT); __Pyx_XGOTREF(__pyx_t_3); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 341, __pyx_L1_error)
+    __pyx_t_3 = PyObject_RichCompare(__pyx_v_dir_transitions, __pyx_v_possible_transitions, Py_GT); __Pyx_XGOTREF(__pyx_t_3); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 343, __pyx_L1_error)
     if (__Pyx_PyObject_IsTrue(__pyx_t_3)) {
       __Pyx_DECREF(__pyx_t_3);
-      __pyx_t_3 = PyObject_RichCompare(__pyx_v_possible_transitions, __pyx_int_1, Py_GE); __Pyx_XGOTREF(__pyx_t_3); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 341, __pyx_L1_error)
+      __pyx_t_3 = PyObject_RichCompare(__pyx_v_possible_transitions, __pyx_int_1, Py_GE); __Pyx_XGOTREF(__pyx_t_3); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 343, __pyx_L1_error)
     }
-    __pyx_t_2 = __Pyx_PyObject_IsTrue(__pyx_t_3); if (unlikely(__pyx_t_2 < 0)) __PYX_ERR(0, 341, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyObject_IsTrue(__pyx_t_3); if (unlikely(__pyx_t_2 < 0)) __PYX_ERR(0, 343, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     if (__pyx_t_2) {
 
-      /* "deliverables/network.pyx":343
+      /* "deliverables/network.pyx":345
  *             if dir_transitions > possible_transitions >= 1:
  *                 #print(env.rail.get_transitions(*position, d))
  *                 return True             # <<<<<<<<<<<<<<
@@ -10265,7 +10320,7 @@ static PyObject *__pyx_pf_12deliverables_7network_10AC_Network_38is_agent_on_unu
       __pyx_r = Py_True;
       goto __pyx_L0;
 
-      /* "deliverables/network.pyx":341
+      /* "deliverables/network.pyx":343
  *         for d in range(4):
  *             dir_transitions = np.sum(self.env.rail.get_transitions(*position, d))
  *             if dir_transitions > possible_transitions >= 1:             # <<<<<<<<<<<<<<
@@ -10275,7 +10330,7 @@ static PyObject *__pyx_pf_12deliverables_7network_10AC_Network_38is_agent_on_unu
     }
   }
 
-  /* "deliverables/network.pyx":345
+  /* "deliverables/network.pyx":347
  *                 return True
  * 
  *         return False             # <<<<<<<<<<<<<<
@@ -10287,7 +10342,7 @@ static PyObject *__pyx_pf_12deliverables_7network_10AC_Network_38is_agent_on_unu
   __pyx_r = Py_False;
   goto __pyx_L0;
 
-  /* "deliverables/network.pyx":330
+  /* "deliverables/network.pyx":332
  *         return RailEnvActions.MOVE_FORWARD
  * 
  *     def is_agent_on_unusable_switch(self, position, dir):             # <<<<<<<<<<<<<<
@@ -10501,6 +10556,7 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_Model, __pyx_k_Model, sizeof(__pyx_k_Model), 0, 0, 1, 1},
   {&__pyx_n_s_New, __pyx_k_New, sizeof(__pyx_k_New), 0, 0, 1, 1},
   {&__pyx_kp_s_New_entropy_factor_aquired, __pyx_k_New_entropy_factor_aquired, sizeof(__pyx_k_New_entropy_factor_aquired), 0, 0, 1, 0},
+  {&__pyx_n_s_READY_TO_DEPART, __pyx_k_READY_TO_DEPART, sizeof(__pyx_k_READY_TO_DEPART), 0, 0, 1, 1},
   {&__pyx_n_s_RailAgentStatus, __pyx_k_RailAgentStatus, sizeof(__pyx_k_RailAgentStatus), 0, 0, 1, 1},
   {&__pyx_n_s_RailEnvActions, __pyx_k_RailEnvActions, sizeof(__pyx_k_RailEnvActions), 0, 0, 1, 1},
   {&__pyx_n_s_RailObsBuilder, __pyx_k_RailObsBuilder, sizeof(__pyx_k_RailObsBuilder), 0, 0, 1, 1},
@@ -10696,6 +10752,7 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_seed, __pyx_k_seed, sizeof(__pyx_k_seed), 0, 0, 1, 1},
   {&__pyx_n_s_self, __pyx_k_self, sizeof(__pyx_k_self), 0, 0, 1, 1},
   {&__pyx_kp_s_send_gradient, __pyx_k_send_gradient, sizeof(__pyx_k_send_gradient), 0, 0, 1, 0},
+  {&__pyx_n_s_set_agent_active, __pyx_k_set_agent_active, sizeof(__pyx_k_set_agent_active), 0, 0, 1, 1},
   {&__pyx_n_s_set_weights, __pyx_k_set_weights, sizeof(__pyx_k_set_weights), 0, 0, 1, 1},
   {&__pyx_n_s_sha1, __pyx_k_sha1, sizeof(__pyx_k_sha1), 0, 0, 1, 1},
   {&__pyx_n_s_shape, __pyx_k_shape, sizeof(__pyx_k_shape), 0, 0, 1, 1},
@@ -10705,6 +10762,7 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_square, __pyx_k_square, sizeof(__pyx_k_square), 0, 0, 1, 1},
   {&__pyx_n_s_state_c, __pyx_k_state_c, sizeof(__pyx_k_state_c), 0, 0, 1, 1},
   {&__pyx_n_s_state_h, __pyx_k_state_h, sizeof(__pyx_k_state_h), 0, 0, 1, 1},
+  {&__pyx_n_s_status, __pyx_k_status, sizeof(__pyx_k_status), 0, 0, 1, 1},
   {&__pyx_n_s_suffix, __pyx_k_suffix, sizeof(__pyx_k_suffix), 0, 0, 1, 1},
   {&__pyx_n_s_sum, __pyx_k_sum, sizeof(__pyx_k_sum), 0, 0, 1, 1},
   {&__pyx_n_s_summary, __pyx_k_summary, sizeof(__pyx_k_summary), 0, 0, 1, 1},
@@ -10747,7 +10805,7 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {0, 0, 0, 0, 0, 0, 0}
 };
 static CYTHON_SMALL_CODE int __Pyx_InitCachedBuiltins(void) {
-  __pyx_builtin_range = __Pyx_GetBuiltinName(__pyx_n_s_range); if (!__pyx_builtin_range) __PYX_ERR(0, 339, __pyx_L1_error)
+  __pyx_builtin_range = __Pyx_GetBuiltinName(__pyx_n_s_range); if (!__pyx_builtin_range) __PYX_ERR(0, 341, __pyx_L1_error)
   return 0;
   __pyx_L1_error:;
   return -1;
@@ -11060,17 +11118,17 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
   __Pyx_GIVEREF(__pyx_tuple__50);
   __pyx_codeobj__51 = (PyObject*)__Pyx_PyCode_New(3, 0, 8, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__50, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_deliverables_network_pyx, __pyx_n_s_agent_action_to_env_action, 275, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__51)) __PYX_ERR(0, 275, __pyx_L1_error)
 
-  /* "deliverables/network.pyx":330
+  /* "deliverables/network.pyx":332
  *         return RailEnvActions.MOVE_FORWARD
  * 
  *     def is_agent_on_unusable_switch(self, position, dir):             # <<<<<<<<<<<<<<
  *         ''' a tile is a switch with more than one possible transitions for the
  *             given direction. '''
  */
-  __pyx_tuple__52 = PyTuple_Pack(6, __pyx_n_s_self, __pyx_n_s_position, __pyx_n_s_dir, __pyx_n_s_possible_transitions, __pyx_n_s_d, __pyx_n_s_dir_transitions); if (unlikely(!__pyx_tuple__52)) __PYX_ERR(0, 330, __pyx_L1_error)
+  __pyx_tuple__52 = PyTuple_Pack(6, __pyx_n_s_self, __pyx_n_s_position, __pyx_n_s_dir, __pyx_n_s_possible_transitions, __pyx_n_s_d, __pyx_n_s_dir_transitions); if (unlikely(!__pyx_tuple__52)) __PYX_ERR(0, 332, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__52);
   __Pyx_GIVEREF(__pyx_tuple__52);
-  __pyx_codeobj__53 = (PyObject*)__Pyx_PyCode_New(3, 0, 6, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__52, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_deliverables_network_pyx, __pyx_n_s_is_agent_on_unusable_switch, 330, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__53)) __PYX_ERR(0, 330, __pyx_L1_error)
+  __pyx_codeobj__53 = (PyObject*)__Pyx_PyCode_New(3, 0, 6, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__52, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_deliverables_network_pyx, __pyx_n_s_is_agent_on_unusable_switch, 332, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__53)) __PYX_ERR(0, 332, __pyx_L1_error)
   __Pyx_RefNannyFinishContext();
   return 0;
   __pyx_L1_error:;
@@ -11981,16 +12039,16 @@ if (!__Pyx_RefNanny) {
   if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_n_s_agent_action_to_env_action, __pyx_t_1) < 0) __PYX_ERR(0, 275, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "deliverables/network.pyx":330
+  /* "deliverables/network.pyx":332
  *         return RailEnvActions.MOVE_FORWARD
  * 
  *     def is_agent_on_unusable_switch(self, position, dir):             # <<<<<<<<<<<<<<
  *         ''' a tile is a switch with more than one possible transitions for the
  *             given direction. '''
  */
-  __pyx_t_1 = __Pyx_CyFunction_NewEx(&__pyx_mdef_12deliverables_7network_10AC_Network_39is_agent_on_unusable_switch, 0, __pyx_n_s_AC_Network_is_agent_on_unusable, NULL, __pyx_n_s_deliverables_network, __pyx_d, ((PyObject *)__pyx_codeobj__53)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 330, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_CyFunction_NewEx(&__pyx_mdef_12deliverables_7network_10AC_Network_39is_agent_on_unusable_switch, 0, __pyx_n_s_AC_Network_is_agent_on_unusable, NULL, __pyx_n_s_deliverables_network, __pyx_d, ((PyObject *)__pyx_codeobj__53)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 332, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_n_s_is_agent_on_unusable_switch, __pyx_t_1) < 0) __PYX_ERR(0, 330, __pyx_L1_error)
+  if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_n_s_is_agent_on_unusable_switch, __pyx_t_1) < 0) __PYX_ERR(0, 332, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
   /* "deliverables/network.pyx":28

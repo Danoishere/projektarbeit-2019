@@ -276,9 +276,11 @@ class AC_Network():
         ''' agent actions: left, right, wait
             env actions: 'do nothing, left, forward, right, brake 
         '''
-        if agent.position is None:
+
+        if agent.position is None or agent.status == RailAgentStatus.READY_TO_DEPART:
             # Ready to depart. Wait or go?
             if agent_action == 3:
+                self.env.set_agent_active(agent)
                 return RailEnvActions.MOVE_FORWARD
             else:
                 return RailEnvActions.DO_NOTHING
