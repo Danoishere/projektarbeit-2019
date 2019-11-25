@@ -69,4 +69,11 @@ V.~Mnih, A.~P. Badia, M.~Mirza, A.~Graves, T.~P. Lillicrap, T.~Harley,
 G.~Bacchiani, D.~Molinari, and M.~Patander, ``Microscopic traffic simulation by
   cooperative multi-agent deep reinforcement learning,'' 2019.
 
+\bibitem{multiagent_comp_a3c_dqn_etc}
+J.~K. Gupta, M.~Egorov, and M.~Kochenderfer, ``Cooperative multi-agent control
+  using deep reinforcement learning,'' in \emph{Autonomous Agents and
+  Multiagent Systems}, G.~Sukthankar and J.~A. Rodriguez-Aguilar, Eds.\hskip
+  1em plus 0.5em minus 0.4em\relax Cham: Springer International Publishing,
+  2017, pp. 66--83.
+
 \end{thebibliography}

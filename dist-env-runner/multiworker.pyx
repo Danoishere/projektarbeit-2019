@@ -9,7 +9,7 @@ import scipy.signal
 from tensorflow.keras.optimizers import RMSprop
 
 from datetime import datetime
-from random import choice,uniform, random
+from random import choice,uniform, random, getrandbits, seed
 from time import sleep
 from time import time
 
@@ -82,6 +82,8 @@ class Worker():
             time_start = time()
 
             while not bool(self.should_stop.value):
+                self.curriculum.update_env_to_curriculum_level(self.env)
+
                 # Check with server if there is a new curriculum level available
                 if self.episode_count % 50 == 0:
                     self.local_model.update_entropy_factor()
@@ -91,7 +93,7 @@ class Worker():
                     # Only regenerate env on curriculum level change. Otherwise just reset
                     # Important, because otherwise the player doens't see all levels
                     if self.curriculum.current_level != old_curriculum_level:
-                        self.curriculum.update_env_to_curriculum_level(self.env)
+                        
                         self.episode_count = 0
                         self.stats = []
                 
@@ -114,8 +116,8 @@ class Worker():
                 no_reward = {i:0 for i in range(len(self.env.env.agents))}
 
                 prep_steps = 0
-
-                use_best_actions = random() < 0.5
+                seed(self.episode_count + self.number)
+                use_best_actions = bool(getrandbits(1))
 
                 done = {i:False for i in range(len(self.env.env.agents))}
                 done['__all__'] = False
@@ -127,15 +129,20 @@ class Worker():
 
                 episode_start = time()
                 obs_builder = self.env.env.obs_builder
+                agent_pos = {}
+                cancel_episode = False
 
-                while episode_done == False and episode_step_count < self.env.max_steps:
+                while not episode_done and not cancel_episode and episode_step_count < self.env.max_steps*5:
                     # Figure out, which agents can move
                     obs_dict = {}
+                    handles = []
                     for handle in range(len(self.env.env.agents)):
+                        handles.append((1,self.env.env.agents[handle].position))
                         if info['status'][handle] == RailAgentStatus.READY_TO_DEPART or (
                             info['action_required'][handle] and info['malfunction'][handle] == 0):
                             obs_dict[handle] = obs[handle]
 
+                
                     nn_call_start = time()
                     # Get actions/values
                     if use_best_actions:
@@ -151,6 +158,17 @@ class Worker():
                         start_env_s = time()
                         next_obs, rewards, done, info = self.env.step(actions)
                         tot_env_s += time() - start_env_s
+
+                        agent_pos_key = tuple(handles)
+                        if agent_pos_key in agent_pos:
+                            agent_pos[agent_pos_key] += 1
+                        else:
+                            agent_pos[agent_pos_key] = 0
+
+                        max_pos_repeation = max(agent_pos.values())
+                        if max_pos_repeation > 9:
+                            #print(agent_pos)
+                            cancel_episode = True
 
                         #for agent in self.env.env.agents:
                         #    agent.last_action = 0
@@ -205,6 +223,10 @@ class Worker():
                         # set final reward for all agents
                         episode_buffer[i][-1][2] += 1.0
                         episode_reward += 1.0
+                    elif cancel_episode:
+                        episode_buffer[i][-1][2] -= 1.0
+                        episode_reward -= 1.0
+
 
                 episode_end = time()
                 episode_time = episode_end - episode_start
@@ -230,7 +252,7 @@ class Worker():
                 self.log_in_tensorboard()
                 self.episode_count += 1
                 
-                print('Episode', self.episode_count,'of',self.name,'with',episode_step_count,'steps, reward of',episode_reward,', perc. arrived',agents_arrived, ', mean entropy of', np.mean([l[2] for l in self.stats[-1:]]), ', curriculum level', self.curriculum.current_level, ', using best actions:', use_best_actions, ', time', episode_time, ', Avg. time', avg_episode_time)
+                print('Episode', self.episode_count,'of',self.name,'with',episode_step_count,'steps, reward of',episode_reward,', perc. arrived',agents_arrived, ', mean entropy of', np.mean([l[2] for l in self.stats[-1:]]), ', curriculum level', self.curriculum.current_level, ', using best actions:', use_best_actions,', cancel episode:', cancel_episode, ', time', episode_time, ', Avg. time', avg_episode_time)
 
             return self.episode_count
     

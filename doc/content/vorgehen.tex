@@ -16,7 +16,38 @@
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\chapter{Vorgehen / Methoden}\label{chap.vorgehen}
+\chapter{Approach and methodology}\label{chap.vorgehen}
+\section{Basic considerations}\label{basic_cons}
+As described under (tODO: ref to first mention), our work is based on the work of S. Huschauer (REF). We take his idea of using the A3C algorithm to solve the flatland problem and try various modifications in an attempt to improve its performance. We proceed by giving an intution, what we want to achieve by changing the specified part, followed by an experiment to either prove or disprove our hypothesis.\\
+For training purposes, we started by reimplementing the algorithm by ourselfes. This enabled us from the beginning to gain a deeper understanding of how the algorithm works and where we could find possible areas for improvement. From there, we iteratively added these potential improvements to later compare them against the original version.
+In this work, we proceed by comparing the final version to versions without these features. 
+It is important to note, that the training process of reinforcement learning and especially multi agent reinforcement learning is hard to evaluate. Depending on the initial weights of the neural networks and the shape of the environments, the performance may vary on each restart. Also, the number of workers can 
+
+
+\section{A3C implementation for flatland}\label{enhanced_observations}
+Originally, the asynchronous advantage actor critic algorithm (A3C) has been designed for use in a single agent environment.
+By applying it in a multi agent environment, we implicitly convert the environment into a non-stationary environment.
+While applying A3C in a multi agent setting, the other agents can be viewed as part of the environment. This means, the behaviour of the environment changes while training, due to the fact that the behaviour of the other agents changes. 
+
+Gupta et al. \cite{multiagent_comp_a3c_dqn_etc} finds, that methods like Deep-Q networks (DQN) and Trust region policy optimization (TRPO) are not performing well in a multi agent environment, due to the combination of experience replay and non-stationarity of the environment. We therefore suggest, that it is not recommendable to keep an experience replay buffer with older episodes. Otherwise the sampled experience might represent old agent behaviour which is then learned.
+
+\section{Enhanced observations}\label{enhanced_observations}
+Für die vorliegende Arbeit wurden die unten aufgeführten Programme eingesetzt.
+
+\section{Distrubuted architecture and parallelism}\label{dist_architecture}
+Für die vorliegende Arbeit wurden die unten aufgeführten Programme eingesetzt.
+
+\section{Action space reduction}\label{reduced_action_space}
+Für die vorliegende Arbeit wurden die unten aufgeführten Programme eingesetzt.
+
+\section{Entropy balancing}\label{enhanced_observations}
+Für die vorliegende Arbeit wurden die unten aufgeführten Programme eingesetzt.
+
+\section{Agent communication}\label{reduced_action_space}
+Für die vorliegende Arbeit wurden die unten aufgeführten Programme eingesetzt.
+
+
+
 
 
 \begin{itemize}
