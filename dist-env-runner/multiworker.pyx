@@ -238,10 +238,10 @@ class Worker():
                         episode_buffer_fail.append(episode_buffer[i])
 
                 # Not more than three negative samples
-                num_negative_samples = 3
+                num_negative_samples = np.max([3, num_agents_done])
 
                 # Not more than four positive samples
-                num_positive_samples = np.min([num_agents_done, 5])
+                num_positive_samples = num_agents_done
 
                 episode_buffer_success = sample(episode_buffer_success, np.min([len(episode_buffer_success),num_positive_samples]))
                 episode_buffer_fail = sample(episode_buffer_fail, np.min([len(episode_buffer_fail),num_negative_samples]))

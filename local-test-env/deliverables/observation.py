@@ -576,7 +576,7 @@ class RailObsBuilder(CustomTreeObsForRailEnv):
             agent.is_next_usable_switch = self.is_agent_on_usable_switch(agent.next_pos, agent.direction)
 
             if agent.status == RailAgentStatus.READY_TO_DEPART:
-                pass
+                actions[agent.handle] = RailEnvActions.MOVE_FORWARD
             elif agent.wait > 0 and agent.speed_data['speed'] > 0:
                 actions[agent.handle] = RailEnvActions.STOP_MOVING
 
