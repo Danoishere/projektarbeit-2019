@@ -50,6 +50,7 @@ def post_update_weights():
     gradients = dill.loads(gradient_str)
 
     lock.acquire()
+    state.ckpt_manager.try_save_model(state.episode_count, 0)
     global_vars = state.global_model.model.trainable_variables
     state.trainer.apply_gradients(zip(gradients, global_vars))
     lock.release()

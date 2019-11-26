@@ -44,8 +44,8 @@ def init_global_model(singelton):
     singelton.ckpt_manager = CheckpointManager(
         singelton,
         singelton.global_model, 
-        save_best_after_min=100, 
-        save_ckpt_after_min=300)
+        save_best_after_min=1000, 
+        save_ckpt_after_min=1000)
 
     singelton.episode_count  = 0
     if singelton.resume == True:
