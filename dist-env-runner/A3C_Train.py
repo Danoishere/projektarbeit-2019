@@ -35,7 +35,6 @@ def delete_files(dir_name, extensions):
 
 
 def start_train(resume):
-
     delete_files('./deliverables', ['.c', '.pyd', '.so','.o'])
     delete_files('.', ['.c', '.pyd', '.so','.o'])
 

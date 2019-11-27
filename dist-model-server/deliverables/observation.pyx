@@ -599,8 +599,8 @@ class RailObsBuilder(CustomTreeObsForRailEnv):
         for agent in agents:
             if self.env.action_required(agent) and agent.handle not in actions:
                 agent_obs = self.get(agent.handle)
-                agent_obs, rec_actor, rec_critic = self.reshape_agent_obs(agent.handle, agent_obs, None)
-                obs_dict[agent.handle] = (agent_obs, rec_actor, rec_critic)
+                agent_obs = self.reshape_agent_obs(agent.handle, agent_obs, None)
+                obs_dict[agent.handle] = agent_obs
 
         self.env.next_actions = actions
         return obs_dict
@@ -714,14 +714,7 @@ class RailObsBuilder(CustomTreeObsForRailEnv):
             tree_obs = np.zeros(params.tree_state_size)
             vec_obs = np.zeros(params.vec_state_size)
 
-            if handle in self.actor_rec_state and handle in self.critic_rec_state:
-                agent_actor_rec_state = self.actor_rec_state[handle]
-                agent_critic_rec_state = self.critic_rec_state[handle]
-            else:
-                agent_actor_rec_state = np.zeros((2,params.recurrent_size)).astype(np.float32)
-                agent_critic_rec_state = np.zeros((2,params.recurrent_size)).astype(np.float32)
-
-            return np.concatenate([tree_obs, vec_obs]).astype(np.float32),  agent_actor_rec_state, agent_critic_rec_state
+            return np.concatenate([tree_obs, vec_obs]).astype(np.float32)
         else:
 
             root_node = agent_obs
@@ -791,14 +784,7 @@ class RailObsBuilder(CustomTreeObsForRailEnv):
             vec_obs[12] = 1 if agent.status == RailAgentStatus.READY_TO_DEPART else 0
             vec_obs[13] = 1 if agent.status == RailAgentStatus.ACTIVE else 0
 
-            if handle in self.actor_rec_state and handle in self.critic_rec_state:
-                agent_actor_rec_state = self.actor_rec_state[handle]
-                agent_critic_rec_state = self.critic_rec_state[handle]
-            else:
-                agent_actor_rec_state = np.zeros((2,params.recurrent_size)).astype(np.float32)
-                agent_critic_rec_state = np.zeros((2,params.recurrent_size)).astype(np.float32)
-
-            return np.concatenate([tree_obs, vec_obs]).astype(np.float32),  agent_actor_rec_state, agent_critic_rec_state
+            return np.concatenate([tree_obs, vec_obs]).astype(np.float32)
 
     def is_agent_on_usable_switch(self, position, dir):
         ''' a tile is a switch with more than one possible transitions for the
@@ -902,11 +888,8 @@ class RailObsBuilder(CustomTreeObsForRailEnv):
 
 
 def buffer_to_obs_lists(episode_buffer):
-    vec_obs = np.asarray([row[0][0] for row in episode_buffer])
-    a_rec_obs = np.asarray([row[0][1] for row in episode_buffer])
-    c_rec_obs = np.asarray([row[0][2] for row in episode_buffer])
-
-    return vec_obs, a_rec_obs, c_rec_obs
+    vec_obs = np.asarray([row[0] for row in episode_buffer])
+    return vec_obs
 
 
 
