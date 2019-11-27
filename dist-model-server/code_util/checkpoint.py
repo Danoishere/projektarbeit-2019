@@ -44,8 +44,21 @@ class CheckpointManager:
         else:
             raise ValueError('No checkpoint.json found at', const.checkpoint_file)
 
+    
+    def try_save_checkpoint_model(self, episode_nr):
+        # Save ckpt every 'save_best_after_min' steps
+        if episode_nr % self.save_ckpt_after_min == 0:
+            curr_level = str(self.state.curriculum_level)
+            self.global_model.save_model(const.model_path, const.suffix_checkpoint +'_lvl_'+ curr_level)
+            with open(const.checkpoint_file, 'w') as f:  
+                json.dump({
+                    'curriculum_level' : self.state.curriculum_level,
+                    'best_reward' : float(self.best_reward),
+                    'last_ckpt_on_episode_nr' : int(episode_nr)
+                }, f)
 
-    def try_save_model(self, episode_nr, reward):
+
+    def try_save_best_model(self, episode_nr, reward):
         # Reset best reward on curriculum-level-change
         if self.last_curriculum_level < self.state.curriculum_level:
             self.last_curriculum_level = self.state.curriculum_level
@@ -59,16 +72,7 @@ class CheckpointManager:
                 curr_level = str(self.state.curriculum_level)
                 self.global_model.save_model(const.model_path, const.suffix_best +'_lvl_'+ curr_level)
 
-        # Save ckpt every 'save_best_after_min' steps
-        if episode_nr % self.save_ckpt_after_min == 0:
-            curr_level = str(self.state.curriculum_level)
-            self.global_model.save_model(const.model_path, const.suffix_checkpoint +'_lvl_'+ curr_level)
-            with open(const.checkpoint_file, 'w') as f:  
-                json.dump({
-                    'curriculum_level' : self.state.curriculum_level,
-                    'best_reward' : float(self.best_reward),
-                    'last_ckpt_on_episode_nr' : int(episode_nr)
-                }, f)
+        
 
 
 

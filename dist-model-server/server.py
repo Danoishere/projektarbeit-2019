@@ -50,9 +50,9 @@ def post_update_weights():
     gradients = dill.loads(gradient_str)
 
     lock.acquire()
-    state.ckpt_manager.try_save_model(state.episode_count, 0)
     global_vars = state.global_model.model.trainable_variables
     state.trainer.apply_gradients(zip(gradients, global_vars))
+    state.ckpt_manager.try_save_checkpoint_model(state.episode_count)
     lock.release()
 
     return 'OK'
@@ -60,7 +60,7 @@ def post_update_weights():
 @app.route('/report_success', methods=['POST'])
 def post_success():
     data = request.get_json()
-    state.ckpt_manager.try_save_model(state.episode_count, data['successrate'])
+    state.ckpt_manager.try_save_best_model(state.episode_count, data['successrate'])
     return 'OK'
 
 @app.route('/send_benchmark_report', methods=['POST'])

@@ -106,7 +106,7 @@ class Curriculum:
             max_steps = 1000,
             rail_type = 'sparse',
             rail_gen_params = {
-                'num_cities': 4,
+                'num_cities': 3,
                 'grid_mode': False,
                 'max_rails_between_cities': 2,
                 'max_rails_in_city' : 2

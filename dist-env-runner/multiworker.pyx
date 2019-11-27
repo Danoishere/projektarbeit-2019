@@ -256,7 +256,7 @@ class Worker():
                 self.log_in_tensorboard()
                 self.episode_count += 1
 
-                if self.episode_count % 50 == 0 and self.episode_count != 0:
+                if self.number == 0 and self.episode_count % 100 == 0 and self.episode_count != 0 and self.episode_count > 200:
                     successrate = np.mean(self.episode_agents_arrived[-25:])
                     requests.post(url=const.url + '/report_success', json={'successrate':successrate})
                 
@@ -280,7 +280,7 @@ class Worker():
 
         discounted_rewards = np.concatenate(all_rewards)
         
-        batch_size = 20
+        batch_size = 40
         num_batches = math.ceil(len(all_rollouts)/batch_size)
         for batch in range(num_batches):
             idx_start = batch * batch_size
