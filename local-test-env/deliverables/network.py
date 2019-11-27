@@ -11,6 +11,7 @@ import deliverables.input_params as params
 import random
 from datetime import datetime
 import time
+import msvcrt
 
 from io import StringIO
 from flatland.envs.observations import TreeObsForRailEnv
@@ -144,10 +145,10 @@ class AC_Network():
             url=self.global_model_url + '/send_gradient', 
             data=gradients_str)
 
-        weights_str = resp.content
-        weights_str = zlib.decompress(weights_str)
-        weights = msgpack.loads(weights_str)
-        self.model.set_weights(weights)
+        #weights_str = resp.content
+        #weights_str = zlib.decompress(weights_str)
+        #weights = msgpack.loads(weights_str)
+        #self.model.set_weights(weights)
 
         return v_loss, p_loss, entropy, grad_norms, var_norms
 
@@ -266,6 +267,10 @@ class AC_Network():
             if handle not in actions:
                 agent = agents[handle]
                 nn_action = nn_actions[handle]
+
+                print("Pos:", agent.position,'Handle:', agent.handle)
+                #msvcrt.getch()
+
                 env_action = self.agent_action_to_env_action(agent, nn_action)
                 actions[handle] = env_action
                 trained_actions[handle] = nn_action

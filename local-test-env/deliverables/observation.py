@@ -9,7 +9,6 @@ import collections
 from typing import Optional, List, Dict, Tuple
 
 import numpy as np
-import math
 from time import time
 
 from flatland.core.env import Environment
@@ -87,8 +86,9 @@ class CustomTreeObsForRailEnv(ObservationBuilder):
                     self.predicted_dir.update({t: dir_list})
                 self.max_prediction_depth = len(self.predicted_pos)
 
-        observations = super().get_many(handles)
+        
 
+        observations = super().get_many(handles)
         return observations
 
     def get(self, handle: int = 0) -> Node:
@@ -169,11 +169,6 @@ class CustomTreeObsForRailEnv(ObservationBuilder):
         In case of the root node, the values are [0, 0, 0, 0, distance from agent to target, own malfunction, own speed]
         In case the target node is reached, the values are [0, 0, 0, 0, 0].
         """
-
-        # Update local lookup table for all agents' positions
-        # ignore other agents not in the grid (only status active and done)
-        # self.location_has_agent = {tuple(agent.position): 1 for agent in self.env.agents if
-        #                         agent.status in [RailAgentStatus.ACTIVE, RailAgentStatus.DONE]}
 
         self.location_has_agent = {}
         self.location_has_agent_direction = {}
@@ -558,13 +553,11 @@ class RailObsBuilder(CustomTreeObsForRailEnv):
 
     def get_many(self, handles=None):
         start = time()
-        #obs = super().get_many(handles=handles)
 
         # Set default values
         agents = self.env.agents
         for agent in agents:
             agent.activate = False
-
 
         num_agents = len(agents)
         num_active_agents = 0
@@ -574,13 +567,13 @@ class RailObsBuilder(CustomTreeObsForRailEnv):
                 num_active_agents += 1
             if agent.status == RailAgentStatus.READY_TO_DEPART:
                 num_ready_agents += 1
-                
+
         progress = self.env._elapsed_steps/self.env._max_episode_steps
         departure_rate = np.min([np.max([progress*2,0.2]),  1.0])
         num_target_active_agents = int(num_agents * departure_rate)
 
         next_to_activate = None
-        largest_dist_sum = 0
+        largest_dist_sum = -0.1
         speed_of_largest_dist = 0
 
         if num_active_agents < num_target_active_agents:
@@ -591,15 +584,19 @@ class RailObsBuilder(CustomTreeObsForRailEnv):
                     posx = agent.initial_position[1]
                     agent.dist_sum = 0
                     for other_agent in agents:
-                        dist = np.abs(other_agent.initial_position[0] - posy)+np.abs(other_agent.initial_position[1] - posx)
-                        agent.dist_sum += dist * agent.speed_data['speed']
+                        if other_agent.status == RailAgentStatus.ACTIVE:
+                            dist = np.abs(other_agent.initial_position[0] - posy)+np.abs(other_agent.initial_position[1] - posx)
+                            agent.dist_sum += dist * agent.speed_data['speed']
                         
                 if (agent.dist_sum > largest_dist_sum) or (agent.dist_sum == largest_dist_sum and speed_of_largest_dist < agent.speed_data['speed']):
                     largest_dist_sum = agent.dist_sum
                     speed_of_largest_dist = agent.speed_data['speed']
                     next_to_activate = agent.handle
-                
+                print(agent.handle, 'dist sum: ',agent.dist_sum)
+            
+
         if next_to_activate is not None:
+            print('Activate agent', next_to_activate, 'with dist. sum of', agents[next_to_activate].dist_sum)
             agents[next_to_activate].activate = True
 
         actions = {}
@@ -611,6 +608,7 @@ class RailObsBuilder(CustomTreeObsForRailEnv):
                 agent.wait = 0
 
             agent.next_pos = self.next_pos(agent.position, agent.direction)
+
             agent.is_on_unusable_switch = self.is_agent_on_unusable_switch(agent.position, agent.direction)
             agent.is_on_usable_switch = self.is_agent_on_usable_switch(agent.position, agent.direction)
             agent.is_next_unusable_switch = self.is_agent_on_unusable_switch(agent.next_pos, agent.direction)
@@ -624,18 +622,14 @@ class RailObsBuilder(CustomTreeObsForRailEnv):
 
             elif agent.wait > 0 and agent.moving:
                 actions[agent.handle] = RailEnvActions.STOP_MOVING
-            
             elif agent.wait > 0 and not agent.moving:
                 actions[agent.handle] = RailEnvActions.DO_NOTHING
-
             elif agent.malfunction_data['malfunction'] > 0:
                 actions[agent.handle] = RailEnvActions.DO_NOTHING
-
             elif agent.is_next_unusable_switch:
                 pass 
             elif agent.is_next_usable_switch:
                 pass 
-
             elif not agent.is_on_usable_switch:
                 actions[agent.handle] = RailEnvActions.MOVE_FORWARD
 
@@ -890,7 +884,7 @@ class RailObsBuilder(CustomTreeObsForRailEnv):
             if agent_action == 3:
                 return RailEnvActions.MOVE_FORWARD
             else:
-                if agent.moving > 0:
+                if agent.moving:
                     return RailEnvActions.STOP_MOVING
                 else:
                     return RailEnvActions.DO_NOTHING
@@ -899,8 +893,8 @@ class RailObsBuilder(CustomTreeObsForRailEnv):
             return RailEnvActions.DO_NOTHING
 
         if agent_action == 2:
-            agent.wait = 30
-            if agent.moving > 0:
+            agent.wait = 5
+            if agent.moving:
                 return RailEnvActions.STOP_MOVING
             else:
                 return RailEnvActions.DO_NOTHING

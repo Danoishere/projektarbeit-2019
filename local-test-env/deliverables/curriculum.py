@@ -89,7 +89,7 @@ class Curriculum:
             max_steps = 1000,
             rail_type = 'sparse',
             rail_gen_params = {
-                'num_cities': 2,
+                'num_cities': 3,
                 'grid_mode': False,
                 'max_rails_between_cities': 1,
                 'max_rails_in_city' : 2
@@ -100,15 +100,15 @@ class Curriculum:
 
     def change_grid_round2(self, env):
         env.update_env_with_params(
-            width=50,
-            height=50,
+            width=40,
+            height=40,
             num_agents=20,
             max_steps = 1000,
             rail_type = 'sparse',
             rail_gen_params = {
-                'num_cities': 3,
-                'grid_mode': False,
-                'max_rails_between_cities': 1,
+                'num_cities': 5,
+                'grid_mode': True,
+                'max_rails_between_cities': 2,
                 'max_rails_in_city' : 2
             },
             seed = self.seed       
@@ -122,8 +122,8 @@ class Curriculum:
             max_steps = 450,
             rail_type = 'sparse',
             rail_gen_params = {
-                'num_cities': 4,
-                'grid_mode': False,
+                'num_cities': 5,
+                'grid_mode': True,
                 'max_rails_between_cities': 2,
                 'max_rails_in_city' : 2
             },
@@ -139,7 +139,7 @@ class Curriculum:
             rail_type = 'sparse',
             rail_gen_params = {
                 'num_cities': 10,
-                'grid_mode': False,
+                'grid_mode': True,
                 'max_rails_between_cities': 2,
                 'max_rails_in_city' : 3
             },
@@ -155,7 +155,7 @@ class Curriculum:
             rail_type = 'sparse',
             rail_gen_params = {
                 'num_cities': 15,
-                'grid_mode': False,
+                'grid_mode': True,
                 'max_rails_between_cities': 2,
                 'max_rails_in_city' : 4
             },

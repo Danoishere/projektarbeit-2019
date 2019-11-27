@@ -149,7 +149,7 @@ stochastic_data = {
 #observation_builder = GlobalObsForRailEnv()
 
 model = AC_Network()
-model.load_model('deliverables/model','checkpoint_lvl_0')
+model.load_model('deliverables/model','checkpoint_lvl_1')
 
 # Custom observation builder with predictor, uncomment line below if you want to try this one
 observation_builder = model.get_observation_builder()

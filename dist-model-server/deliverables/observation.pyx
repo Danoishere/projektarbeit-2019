@@ -85,27 +85,7 @@ class CustomTreeObsForRailEnv(ObservationBuilder):
                     self.predicted_pos.update({t: coordinate_to_position(self.env.width, pos_list)})
                     self.predicted_dir.update({t: dir_list})
                 self.max_prediction_depth = len(self.predicted_pos)
-
-        self.location_has_agent = {}
-        self.location_has_agent_direction = {}
-        self.location_has_agent_speed = {}
-        self.location_has_agent_malfunction = {}
-        self.location_has_agent_ready_to_depart = {}
-
-        for _agent in self.env.agents:
-            if _agent.status in [RailAgentStatus.ACTIVE, RailAgentStatus.DONE] and \
-                _agent.position:
-                self.location_has_agent[tuple(_agent.position)] = 1
-                self.location_has_agent_direction[tuple(_agent.position)] = _agent.direction
-                self.location_has_agent_speed[tuple(_agent.position)] = _agent.speed_data['speed']
-                self.location_has_agent_malfunction[tuple(_agent.position)] = _agent.malfunction_data[
-                    'malfunction']
-
-            if _agent.status in [RailAgentStatus.READY_TO_DEPART] and \
-                _agent.initial_position:
-                self.location_has_agent_ready_to_depart[tuple(_agent.initial_position)] = \
-                    self.location_has_agent_ready_to_depart.get(tuple(_agent.initial_position), 0) + 1
-
+        
         observations = super().get_many(handles)
         return observations
 
@@ -187,6 +167,28 @@ class CustomTreeObsForRailEnv(ObservationBuilder):
         In case of the root node, the values are [0, 0, 0, 0, distance from agent to target, own malfunction, own speed]
         In case the target node is reached, the values are [0, 0, 0, 0, 0].
         """
+
+        self.location_has_agent = {}
+        self.location_has_agent_direction = {}
+        self.location_has_agent_speed = {}
+        self.location_has_agent_malfunction = {}
+        self.location_has_agent_ready_to_depart = {}
+        self.location_has_agent_obj = {}
+
+        for _agent in self.env.agents:
+            if _agent.status in [RailAgentStatus.ACTIVE, RailAgentStatus.DONE] and \
+                    _agent.position:
+
+                self.location_has_agent_obj[tuple(_agent.position)] = _agent
+                self.location_has_agent[tuple(_agent.position)] = 1
+                self.location_has_agent_direction[tuple(_agent.position)] = _agent.direction
+                self.location_has_agent_speed[tuple(_agent.position)] = _agent.speed_data['speed']
+                self.location_has_agent_malfunction[tuple(_agent.position)] = _agent.malfunction_data['malfunction']
+
+            if _agent.status in [RailAgentStatus.READY_TO_DEPART] and \
+                    _agent.initial_position:
+                self.location_has_agent_ready_to_depart[tuple(_agent.initial_position)] = \
+                    self.location_has_agent_ready_to_depart.get(tuple(_agent.initial_position), 0) + 1
 
         if handle > len(self.env.agents):
             print("ERROR: obs _get - handle ", handle, " len(agents)", len(self.env.agents))
@@ -580,8 +582,9 @@ class RailObsBuilder(CustomTreeObsForRailEnv):
                     posx = agent.initial_position[1]
                     agent.dist_sum = 0
                     for other_agent in agents:
-                        dist = np.abs(other_agent.initial_position[0] - posy)+np.abs(other_agent.initial_position[1] - posx)
-                        agent.dist_sum += dist * agent.speed_data['speed']
+                        if other_agent.status == RailAgentStatus.ACTIVE:
+                            dist = np.abs(other_agent.initial_position[0] - posy)+np.abs(other_agent.initial_position[1] - posx)
+                            agent.dist_sum += dist * agent.speed_data['speed']
                         
                 if (agent.dist_sum > largest_dist_sum) or (agent.dist_sum == largest_dist_sum and speed_of_largest_dist < agent.speed_data['speed']):
                     largest_dist_sum = agent.dist_sum
