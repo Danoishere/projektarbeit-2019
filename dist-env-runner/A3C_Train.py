@@ -14,7 +14,6 @@ from ctypes import c_bool
 import requests
 import os
 
-
 # import shared directory
 import os, sys; 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), os.pardir)) + os.sep + 'shared')

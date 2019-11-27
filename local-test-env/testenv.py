@@ -105,13 +105,13 @@ def punish_impossible_actions(env, obs, actions, rewards):
             print('right pen')
 
 
-width = 20  # With of map
-height = 20  # Height of map
-nr_trains = 5 # Number of trains that have an assigned task in the env
-cities_in_map = 2  # Number of cities where agents can start or end
+width = 30  # With of map
+height = 30  # Height of map
+nr_trains = 20 # Number of trains that have an assigned task in the env
+cities_in_map = 3  # Number of cities where agents can start or end
 seed = 14  # Random seed
-grid_distribution_of_cities = False  # Type of city distribution, if False cities are randomly placed
-max_rails_between_cities = 1  # Max number of tracks allowed between cities. This is number of entry point to a city
+grid_distribution_of_cities = True  # Type of city distribution, if False cities are randomly placed
+max_rails_between_cities = 2  # Max number of tracks allowed between cities. This is number of entry point to a city
 max_rail_in_cities = 2  # Max number of parallel tracks within a city, representing a realistic trainstation
 
 rail_generator = sparse_rail_generator(max_num_cities=cities_in_map,
@@ -187,15 +187,15 @@ while True:
     episode_reward = 0
     episode_step_count = 0
 
-    obs, info = env.reset()
+    obs, info = env.reset(activate_agents=False)
     obs_builder = env.obs_builder
-    #env_renderer.set_new_rail()
+    env_renderer.set_new_rail()
 
-    while episode_done == False and episode_step_count < 180:
+    while episode_done == False and episode_step_count < 500:
         agents = env.agents
-        env_actions, nn_actions, v, relevant_obs = model.get_agent_actions(env, obs, info, True)
+        env_actions, nn_actions, v, relevant_obs = model.get_agent_actions(env, obs, info, False)
         next_obs, rewards, done, info = env.step(env_actions)
-        #env_renderer.render_env(show=True)
+        env_renderer.render_env(show=True, show_observations=False)
 
         episode_done = done['__all__']
         if episode_done == True:

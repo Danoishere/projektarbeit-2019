@@ -9,6 +9,7 @@ import collections
 from typing import Optional, List, Dict, Tuple
 
 import numpy as np
+import math
 from time import time
 
 from flatland.core.env import Environment
@@ -559,7 +560,48 @@ class RailObsBuilder(CustomTreeObsForRailEnv):
         start = time()
         #obs = super().get_many(handles=handles)
 
+        # Set default values
         agents = self.env.agents
+        for agent in agents:
+            agent.activate = False
+
+
+        num_agents = len(agents)
+        num_active_agents = 0
+        num_ready_agents = 0
+        for agent in agents:
+            if agent.status == RailAgentStatus.ACTIVE:
+                num_active_agents += 1
+            if agent.status == RailAgentStatus.READY_TO_DEPART:
+                num_ready_agents += 1
+                
+        progress = self.env._elapsed_steps/self.env._max_episode_steps
+        departure_rate = np.min([np.max([progress*2,0.2]),  1.0])
+        num_target_active_agents = int(num_agents * departure_rate)
+
+        next_to_activate = None
+        largest_dist_sum = 0
+        speed_of_largest_dist = 0
+
+        if num_active_agents < num_target_active_agents:
+            for agent in agents:
+                agent.dist_sum = 0
+                if agent.status == RailAgentStatus.READY_TO_DEPART:
+                    posy = agent.initial_position[0]
+                    posx = agent.initial_position[1]
+                    agent.dist_sum = 0
+                    for other_agent in agents:
+                        dist = np.abs(other_agent.initial_position[0] - posy)+np.abs(other_agent.initial_position[1] - posx)
+                        agent.dist_sum += dist * agent.speed_data['speed']
+                        
+                if (agent.dist_sum > largest_dist_sum) or (agent.dist_sum == largest_dist_sum and speed_of_largest_dist < agent.speed_data['speed']):
+                    largest_dist_sum = agent.dist_sum
+                    speed_of_largest_dist = agent.speed_data['speed']
+                    next_to_activate = agent.handle
+                
+        if next_to_activate is not None:
+            agents[next_to_activate].activate = True
+
         actions = {}
         for agent in agents:
             try:
@@ -569,19 +611,21 @@ class RailObsBuilder(CustomTreeObsForRailEnv):
                 agent.wait = 0
 
             agent.next_pos = self.next_pos(agent.position, agent.direction)
-
             agent.is_on_unusable_switch = self.is_agent_on_unusable_switch(agent.position, agent.direction)
             agent.is_on_usable_switch = self.is_agent_on_usable_switch(agent.position, agent.direction)
             agent.is_next_unusable_switch = self.is_agent_on_unusable_switch(agent.next_pos, agent.direction)
             agent.is_next_usable_switch = self.is_agent_on_usable_switch(agent.next_pos, agent.direction)
 
             if agent.status == RailAgentStatus.READY_TO_DEPART:
-                actions[agent.handle] = RailEnvActions.MOVE_FORWARD
+                if agent.activate:
+                    actions[agent.handle] = RailEnvActions.MOVE_FORWARD
+                else:
+                    actions[agent.handle] = RailEnvActions.DO_NOTHING
 
-            elif agent.wait > 0 and agent.speed_data['speed'] > 0:
+            elif agent.wait > 0 and agent.moving:
                 actions[agent.handle] = RailEnvActions.STOP_MOVING
-
-            elif agent.wait > 0 and agent.speed_data['speed'] == 0:
+            
+            elif agent.wait > 0 and not agent.moving:
                 actions[agent.handle] = RailEnvActions.DO_NOTHING
 
             elif agent.malfunction_data['malfunction'] > 0:
@@ -846,7 +890,7 @@ class RailObsBuilder(CustomTreeObsForRailEnv):
             if agent_action == 3:
                 return RailEnvActions.MOVE_FORWARD
             else:
-                if agent.speed_data['speed'] > 0:
+                if agent.moving > 0:
                     return RailEnvActions.STOP_MOVING
                 else:
                     return RailEnvActions.DO_NOTHING
@@ -856,7 +900,7 @@ class RailObsBuilder(CustomTreeObsForRailEnv):
 
         if agent_action == 2:
             agent.wait = 30
-            if agent.speed_data['speed'] > 0:
+            if agent.moving > 0:
                 return RailEnvActions.STOP_MOVING
             else:
                 return RailEnvActions.DO_NOTHING
