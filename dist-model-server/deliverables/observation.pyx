@@ -855,7 +855,7 @@ class RailObsBuilder(CustomTreeObsForRailEnv):
             return RailEnvActions.DO_NOTHING
 
         if agent_action == 2:
-            agent.wait = 30
+            agent.wait = 5
             if agent.speed_data['speed'] > 0:
                 return RailEnvActions.STOP_MOVING
             else:
