@@ -11,6 +11,7 @@ import deliverables.input_params as params
 import random
 from datetime import datetime
 import time
+#import msvcrt
 
 from io import StringIO
 from flatland.envs.observations import TreeObsForRailEnv
@@ -283,7 +284,7 @@ class AC_Network():
             else:
                 return RailEnvActions.DO_NOTHING
 
-        if self.is_agent_on_unusable_switch(agent.next_pos, agent.direction):
+        if self.is_agent_on_unusable_switch(agent.next_pos, agent.next_dir):
             if agent_action == 3:
                 return RailEnvActions.MOVE_FORWARD
             else:

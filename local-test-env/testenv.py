@@ -111,8 +111,8 @@ nr_trains = 20 # Number of trains that have an assigned task in the env
 cities_in_map = 5  # Number of cities where agents can start or end
 seed = 14  # Random seed
 grid_distribution_of_cities = True  # Type of city distribution, if False cities are randomly placed
-max_rails_between_cities = 2  # Max number of tracks allowed between cities. This is number of entry point to a city
-max_rail_in_cities = 3  # Max number of parallel tracks within a city, representing a realistic trainstation
+max_rails_between_cities = 3  # Max number of tracks allowed between cities. This is number of entry point to a city
+max_rail_in_cities = 4  # Max number of parallel tracks within a city, representing a realistic trainstation
 
 rail_generator = sparse_rail_generator(max_num_cities=cities_in_map,
                                        seed=seed,
@@ -149,7 +149,7 @@ stochastic_data = {
 #observation_builder = GlobalObsForRailEnv()
 
 model = AC_Network()
-model.load_model('deliverables/model','checkpoint_lvl_1')
+model.load_model('deliverables/model','checkpoint_lvl_2')
 
 # Custom observation builder with predictor, uncomment line below if you want to try this one
 observation_builder = model.get_observation_builder()
@@ -193,7 +193,7 @@ while True:
 
     while episode_done == False and episode_step_count < 500:
         agents = env.agents
-        env_actions, nn_actions, v, relevant_obs = model.get_agent_actions(env, obs, info, False)
+        env_actions, nn_actions, v, relevant_obs = model.get_agent_actions(env, obs, info, True)
         next_obs, rewards, done, info = env.step(env_actions)
         env_renderer.render_env(show=True, show_observations=False)
 

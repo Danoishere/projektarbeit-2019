@@ -266,11 +266,9 @@ class AC_Network():
         for handle in nn_actions:
             if handle not in actions:
                 agent = agents[handle]
+                if handle == 0:
+                    msvcrt.getch()
                 nn_action = nn_actions[handle]
-
-                print("Pos:", agent.position,'Handle:', agent.handle)
-                #msvcrt.getch()
-
                 env_action = self.agent_action_to_env_action(agent, nn_action)
                 actions[handle] = env_action
                 trained_actions[handle] = nn_action
@@ -288,7 +286,7 @@ class AC_Network():
             else:
                 return RailEnvActions.DO_NOTHING
 
-        if self.is_agent_on_unusable_switch(agent.next_pos, agent.direction):
+        if self.is_agent_on_unusable_switch(agent.next_pos, agent.next_dir):
             if agent_action == 3:
                 return RailEnvActions.MOVE_FORWARD
             else:
