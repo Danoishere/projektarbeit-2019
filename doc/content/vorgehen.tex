@@ -18,7 +18,7 @@
 
 \chapter{Approach and methodology}\label{chap.vorgehen}
 \section{Basic considerations}\label{basic_cons}
-As described under (tODO: ref to first mention), our work is based on the work of S. Huschauer (REF). We take his idea of using the A3C algorithm to solve the flatland problem and try various modifications in an attempt to improve its performance. We proceed by giving an intution, what we want to achieve by changing the specified part, followed by an experiment to either prove or disprove our hypothesis.\\
+As described under (tODO: ref to first mention), our work is based on the work of S. Huschauer (REF). We take his idea of using the A3C algorithm to solve the flatland problem and try various modifications in an attempt to improve its performance. \\We proceed by giving an intution, what we want to achieve by changing the specified part, followed by an experiment to either prove or disprove our hypothesis.\\
 For training purposes, we started by reimplementing the algorithm by ourselfes. This enabled us from the beginning to gain a deeper understanding of how the algorithm works and where we could find possible areas for improvement. From there, we iteratively added these potential improvements to later compare them against the original version.
 In this work, we proceed by comparing the final version to versions without these features. 
 It is important to note, that the training process of reinforcement learning and especially multi agent reinforcement learning is hard to evaluate. Depending on the initial weights of the neural networks and the shape of the environments, the performance may vary on each restart. Also, the number of workers can 
@@ -40,8 +40,12 @@ Für die vorliegende Arbeit wurden die unten aufgeführten Programme eingesetzt.
 \section{Action space reduction}\label{reduced_action_space}
 Für die vorliegende Arbeit wurden die unten aufgeführten Programme eingesetzt.
 
+\section{Curriculum learning}\label{curriculum_learning}
+
+
 \section{Entropy balancing}\label{enhanced_observations}
-Für die vorliegende Arbeit wurden die unten aufgeführten Programme eingesetzt.
+In RL, it is of great importance to find the right combination of exploration and explotation. During exploration, the agent explores as much of the state space as possible. This enables the agent to later exploit the found states which are beneficial. Without this exploration, there is a chance that the agent settles on suboptimal policies too quickly and ignores parts of the state space the agent has never seen.\\
+The policy is characterized by a probability distribution of actions.
 
 \section{Agent communication}\label{reduced_action_space}
 Für die vorliegende Arbeit wurden die unten aufgeführten Programme eingesetzt.
