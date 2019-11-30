@@ -193,10 +193,11 @@ while True:
 
     while episode_done == False and episode_step_count < 500:
         agents = env.agents
-        env_actions, nn_actions, v, relevant_obs = model.get_agent_actions(env, obs, info, True)
+        env_actions, nn_actions, v, relevant_obs = model.get_agent_actions(env, obs, info, False)
         next_obs, rewards, done, info = env.step(env_actions)
         env_renderer.render_env(show=True, show_observations=False)
-
+        #msvcrt.getch()
+        
         episode_done = done['__all__']
         if episode_done == True:
             next_obs = obs

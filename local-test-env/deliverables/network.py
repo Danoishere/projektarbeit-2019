@@ -11,7 +11,7 @@ import deliverables.input_params as params
 import random
 from datetime import datetime
 import time
-import msvcrt
+# import msvcrt
 
 from io import StringIO
 from flatland.envs.observations import TreeObsForRailEnv
@@ -145,11 +145,6 @@ class AC_Network():
             url=self.global_model_url + '/send_gradient', 
             data=gradients_str)
 
-        #weights_str = resp.content
-        #weights_str = zlib.decompress(weights_str)
-        #weights = msgpack.loads(weights_str)
-        #self.model.set_weights(weights)
-
         return v_loss, p_loss, entropy, grad_norms, var_norms
 
 
@@ -245,18 +240,41 @@ class AC_Network():
         return actions, values_dict
 
 
-    def get_values(self, obs):
-        obs_list = self.obs_dict_to_lists(obs)
-        return self.model.predict_on_batch(obs_list)[1]
-
-
     def get_observation_builder(self):
         return RailObsBuilder()
 
+
     def get_agent_actions(self, env, obs, info, use_best_actions):
         self.env = env
-        agents = self.env.agents
+        agents = list(self.env.agents)
         actions = dict(self.env.next_actions)
+
+        # Mark all agents that need an action
+        for agent in agents:
+            if agent.handle not in actions: 
+                agent.action_required = True
+            else:
+                agent.action_required = False
+
+            agent.blocked = False
+
+        random.shuffle(agents)
+        for agent in agents:
+            if agent.handle not in actions and agent.action_required: 
+                if not agent.blocked:
+                    for opposite_agent in agent.all_agents_other_dir:
+                        if opposite_agent.action_required:
+                            opposite_agent.blocked = True
+
+        for agent in agents:
+            if agent.blocked and agent.handle not in actions:
+                if agent.handle in obs:
+                    del obs[agent.handle]
+                if agent.moving > 0:
+                    actions[agent.handle] = RailEnvActions.STOP_MOVING
+                else:
+                    actions[agent.handle] = RailEnvActions.DO_NOTHING
+
         if use_best_actions:
             nn_actions, v = self.get_best_actions_and_values(obs, self.env)
         else:
@@ -265,15 +283,27 @@ class AC_Network():
         trained_actions = {}
         for handle in nn_actions:
             if handle not in actions:
-                agent = agents[handle]
-                if handle == 0:
-                    msvcrt.getch()
+                agent = self.env.agents[handle]
                 nn_action = nn_actions[handle]
+                print(handle, 'at', agent.position, 'selects', nn_action)
                 env_action = self.agent_action_to_env_action(agent, nn_action)
                 actions[handle] = env_action
                 trained_actions[handle] = nn_action
+            else:
+                agent = agents[handle]
+                print(handle, 'at', agent.position, 'got assigned', actions[handle])
         
+        print('------------------------------------')
         return actions, trained_actions, v, obs
+
+
+    def next_pos(self, position, transition):
+        posy = position[0] - transition[0]  + transition[2]
+        posx = position[1] + transition[1] - transition[3]
+
+        new_dir = np.argmax(transition)
+        return [posy, posx], new_dir
+
 
     def agent_action_to_env_action(self, agent, agent_action):
         ''' agent actions: left, right, wait
@@ -286,27 +316,89 @@ class AC_Network():
             else:
                 return RailEnvActions.DO_NOTHING
 
-        if self.is_agent_on_unusable_switch(agent.next_pos, agent.next_dir):
-            if agent_action == 3:
+        
+        if agent.is_on_unusable_switch and agent.is_next_unusable_switch:
+            if len(agent.agents_other_dir) > 0:
+                if agent.moving > 0:
+                    actions[agent.handle] = RailEnvActions.STOP_MOVING
+                else:
+                    actions[agent.handle] = RailEnvActions.DO_NOTHING 
+            elif agent_action == 3:
                 return RailEnvActions.MOVE_FORWARD
+
+
+        # Update next_pos of agent after taking an action
+        if agent.is_on_usable_switch:
+            root_node = agent.tree_obs[0][0][1]
+            branch_left = root_node.childs['L']
+            branch_forward = root_node.childs['F']
+            branch_right = root_node.childs['R']
+
+            can_go_forward = False
+            can_go_left = True
+            can_go_right = True
+
+            if branch_left == -np.inf:
+                can_go_forward = True
+                can_go_left = False
+                branch_left = branch_forward
+            elif branch_right == -np.inf:
+                can_go_forward = True
+                can_go_right = False
+                branch_right = branch_forward
+
+            offset = 0
+            if (agent_action == 0 and not can_go_left) or (agent_action == 1 and not can_go_right):
+                pass
+            elif agent_action == 0:
+                # Go left
+                offset = -1
+            elif agent_action == 1:
+                # Go right
+                offset = 1
+
+            transition = np.zeros(4, dtype=int)
+            transition[(agent.direction + offset) % 4] = 1
+
+            # Update next position to the direction we take action to
+            agent.next_pos, agent.next_dir = self.next_pos(agent.position, transition)
+            print('move from', agent.position, 'to', agent.next_pos)
+
+        if self.is_agent_on_unusable_switch(agent.next_pos, agent.next_dir):
+            if len(agent.agents_other_dir) > 0:
+                if agent.moving > 0:
+                    actions[agent.handle] = RailEnvActions.STOP_MOVING
+                else:
+                    actions[agent.handle] = RailEnvActions.DO_NOTHING 
+            elif agent_action == 3:
+                return RailEnvActions.MOVE_FORWARD
+            '''
             else:
-                if agent.speed_data['speed'] > 0:
+                if agent.moving > 0:
                     return RailEnvActions.STOP_MOVING
                 else:
                     return RailEnvActions.DO_NOTHING
+            '''
 
-        if agent_action == 3:
-            return RailEnvActions.DO_NOTHING
+        
 
         if agent_action == 2:
             agent.wait = 30
-            if agent.speed_data['speed'] > 0:
+            if agent.moving > 0:
                 return RailEnvActions.STOP_MOVING
             else:
                 return RailEnvActions.DO_NOTHING
 
         dir = agent.direction
         transition = self.env.rail.get_transitions(*agent.position, agent.direction)
+        if np.sum(transition) == 1:
+            if agent_action == 3:
+                return RailEnvActions.MOVE_FORWARD
+            else:
+                if agent.moving > 0:
+                    return RailEnvActions.STOP_MOVING
+                else:
+                    return RailEnvActions.DO_NOTHING
 
         can_go_left = False
         can_go_forward = False
@@ -318,17 +410,20 @@ class AC_Network():
             can_go_forward = True
         if transition[(1 + dir) % 4] == 1:
             can_go_right = True
-
-        # print('Can go left:', can_go_left)
-        # print('Can go forward:', can_go_forward)
-        # print('Can go right:', can_go_right)
         
         if agent_action == 0 and can_go_left:
             return RailEnvActions.MOVE_LEFT
+        if agent_action == 0 and not can_go_left:
+            return RailEnvActions.MOVE_FORWARD
         if agent_action == 1 and can_go_right:
             return RailEnvActions.MOVE_RIGHT
+        if agent_action == 1 and not can_go_right:
+            return RailEnvActions.MOVE_FORWARD
 
-        return RailEnvActions.MOVE_FORWARD
+        if agent.moving > 0:
+            return RailEnvActions.STOP_MOVING
+        else:
+            return RailEnvActions.DO_NOTHING
 
     def is_agent_on_unusable_switch(self, position, dir):
         ''' a tile is a switch with more than one possible transitions for the
@@ -338,11 +433,9 @@ class AC_Network():
             return False
 
         possible_transitions = np.sum(self.env.rail.get_transitions(*position, dir))
-        #print(env.rail.get_transitions(*position, dir))
         for d in range(4):
             dir_transitions = np.sum(self.env.rail.get_transitions(*position, d))
             if dir_transitions > possible_transitions >= 1:
-                #print(env.rail.get_transitions(*position, d))
                 return True
 
         return False

@@ -631,7 +631,14 @@ class RailObsBuilder(CustomTreeObsForRailEnv):
             elif agent.malfunction_data['malfunction'] > 0:
                 actions[agent.handle] = RailEnvActions.DO_NOTHING
             elif agent.is_next_unusable_switch:
-                pass 
+                if len(agent.agents_other_dir) > 0:
+                    if agent.is_on_usable_switch:
+                        pass
+                    else:
+                        if agent.moving > 0:
+                            actions[agent.handle] = RailEnvActions.STOP_MOVING
+                        else:
+                            actions[agent.handle] = RailEnvActions.DO_NOTHING 
             elif agent.is_next_usable_switch:
                 pass 
             elif not agent.is_on_usable_switch:
@@ -779,6 +786,9 @@ class RailObsBuilder(CustomTreeObsForRailEnv):
 
             tree = self.binary_tree(agent_obs)
 
+            agent = self.env.agents[handle]
+            agent.tree_obs = tree
+            
             tree_obs = []
             for layer in tree:
                 for node in layer:
@@ -786,7 +796,7 @@ class RailObsBuilder(CustomTreeObsForRailEnv):
                     tree_obs.append(node_obs)
 
             tree_obs = np.concatenate(tree_obs)
-            agent = self.env.agents[handle]
+            
 
             # Current info about the train itself
             vec_obs = np.zeros(params.vec_state_size)
