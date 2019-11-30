@@ -939,8 +939,8 @@ def node_to_obs(node_tuple, agent):
 
     node_dir = node_info['turn']
     obs = [
-        1.0,
-        1.0 if node_dir == '.' else 0,
+        1.0 if agent.is_next_usable_switch else 0,
+        1.0 if agent.is_next_unusable_switch else 0,
         1.0 if node_dir == 'F' else 0,
         1.0 if node_dir == 'L' else 0,
         1.0 if node_dir == 'R' else 0,
@@ -949,7 +949,7 @@ def node_to_obs(node_tuple, agent):
         normalize_field(node.dist_min_to_target),
         normalize_field(node.dist_other_agent_encountered),
         one_hot(node.dist_other_agent_encountered),
-        one_hot(node.dist_other_target_encountered),
+        1.0 if agent.is_on_usable_switch else 0,
         1.0 if target_encountered else 0,
         normalize_field(node.dist_potential_conflict),
         one_hot(node.dist_potential_conflict),

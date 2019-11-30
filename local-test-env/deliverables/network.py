@@ -320,9 +320,9 @@ class AC_Network():
         if agent.is_on_unusable_switch and agent.is_next_unusable_switch:
             if len(agent.agents_other_dir) > 0:
                 if agent.moving > 0:
-                    actions[agent.handle] = RailEnvActions.STOP_MOVING
+                    return RailEnvActions.STOP_MOVING
                 else:
-                    actions[agent.handle] = RailEnvActions.DO_NOTHING 
+                    return RailEnvActions.DO_NOTHING 
             elif agent_action == 3:
                 return RailEnvActions.MOVE_FORWARD
 
