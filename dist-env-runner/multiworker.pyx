@@ -121,9 +121,11 @@ class Worker():
                 episode_step_count = 0
                 
                 obs, info = self.env.reset()
+                num_agents = len(self.env.env.agents)
                 all_handles = [i for i in range(len(self.env.env.agents))]
                 no_reward = {i:0 for i in range(len(self.env.env.agents))}
 
+                
                 prep_steps = 0
                 use_best_actions = bool(getrandbits(1))
 
@@ -148,7 +150,7 @@ class Worker():
 
                 while not episode_done and not cancel_episode and episode_step_count < max_steps:
                     agents = self.env.env.agents
-                    env_actions, nn_actions, v, relevant_obs = self.local_model.get_agent_actions(self.env, obs, info, use_best_actions)
+                    env_actions, nn_actions, v, relevant_obs = self.local_model.get_agent_actions(self.env.env, obs, info, use_best_actions)
                     next_obs, rewards, done, info = self.env.step(env_actions)
 
                     #env_renderer.render_env(show=True)
@@ -197,12 +199,14 @@ class Worker():
                     done_last_step = dict(done)
 
                 num_agents_done = 0
-                for i in range(self.env.num_agents):
+                for i in range(num_agents):
                     if done[i]:
                         num_agents_done += 1
 
+                percentage_done = num_agents_done/float(num_agents)
+
                 # Individual rewards
-                for i in range(self.env.num_agents):
+                for i in range(num_agents):
                     if len(episode_buffer[i]) > 0:
                         if self.env.env.agents[i].status == RailAgentStatus.READY_TO_DEPART:
                             episode_buffer[i][-1][2] -= 1.0
@@ -210,8 +214,8 @@ class Worker():
                         if done[i]:
                             # If agents could finish the level, 
                             # set final reward for all agents
-                            episode_buffer[i][-1][2] += 1.0
-                            episode_reward += 1.0
+                            episode_buffer[i][-1][2] += 1.0 + percentage_done
+                            episode_reward += 1.0 + percentage_done
                         elif cancel_episode:
                             episode_buffer[i][-1][2] -= 1.0
                             episode_reward -= 1.0

@@ -17,7 +17,7 @@ import matplotlib.pyplot as plt
 import networkx as nx
 from matplotlib.widgets import Button
 from flatland.envs.rail_env import RailEnvActions, RailAgentStatus
-import msvcrt
+#import msvcrt
 
 def plot_graph(obs):
     G=nx.DiGraph()

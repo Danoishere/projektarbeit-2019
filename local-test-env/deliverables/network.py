@@ -288,22 +288,18 @@ class AC_Network():
 
         if self.is_agent_on_unusable_switch(agent.next_pos, agent.next_dir):
             if agent_action == 3:
+                if self.has_incomming_traffic(agent):
+                    return RailEnvActions.STOP_MOVING
                 return RailEnvActions.MOVE_FORWARD
             else:
-                if agent.speed_data['speed'] > 0:
-                    return RailEnvActions.STOP_MOVING
-                else:
-                    return RailEnvActions.DO_NOTHING
+                return RailEnvActions.STOP_MOVING
 
         if agent_action == 3:
             return RailEnvActions.DO_NOTHING
 
         if agent_action == 2:
             agent.wait = 30
-            if agent.speed_data['speed'] > 0:
-                return RailEnvActions.STOP_MOVING
-            else:
-                return RailEnvActions.DO_NOTHING
+            return RailEnvActions.STOP_MOVING
 
         dir = agent.direction
         transition = self.env.rail.get_transitions(*agent.position, agent.direction)
@@ -329,6 +325,15 @@ class AC_Network():
             return RailEnvActions.MOVE_RIGHT
 
         return RailEnvActions.MOVE_FORWARD
+
+    def has_incomming_traffic(self, agent):
+        obs = agent.tree_obs
+        if obs is not None:
+            root_node = obs[0][0][1]
+            if len(root_node.other_agents) > 0:
+                return True
+        return False
+
 
     def is_agent_on_unusable_switch(self, position, dir):
         ''' a tile is a switch with more than one possible transitions for the

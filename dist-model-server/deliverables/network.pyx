@@ -11,7 +11,7 @@ import deliverables.input_params as params
 import random
 from datetime import datetime
 import time
-#import msvcrt
+import msvcrt
 
 from io import StringIO
 from flatland.envs.observations import TreeObsForRailEnv
@@ -254,7 +254,7 @@ class AC_Network():
         return RailObsBuilder()
 
     def get_agent_actions(self, env, obs, info, use_best_actions):
-        self.env = env.env
+        self.env = env
         agents = self.env.agents
         actions = dict(self.env.next_actions)
         if use_best_actions:
@@ -266,6 +266,8 @@ class AC_Network():
         for handle in nn_actions:
             if handle not in actions:
                 agent = agents[handle]
+                if handle == 0:
+                    msvcrt.getch()
                 nn_action = nn_actions[handle]
                 env_action = self.agent_action_to_env_action(agent, nn_action)
                 actions[handle] = env_action
@@ -286,22 +288,18 @@ class AC_Network():
 
         if self.is_agent_on_unusable_switch(agent.next_pos, agent.next_dir):
             if agent_action == 3:
+                if self.has_incomming_traffic(agent):
+                    return RailEnvActions.STOP_MOVING
                 return RailEnvActions.MOVE_FORWARD
             else:
-                if agent.speed_data['speed'] > 0:
-                    return RailEnvActions.STOP_MOVING
-                else:
-                    return RailEnvActions.DO_NOTHING
+                return RailEnvActions.STOP_MOVING
 
         if agent_action == 3:
             return RailEnvActions.DO_NOTHING
 
         if agent_action == 2:
             agent.wait = 30
-            if agent.speed_data['speed'] > 0:
-                return RailEnvActions.STOP_MOVING
-            else:
-                return RailEnvActions.DO_NOTHING
+            return RailEnvActions.STOP_MOVING
 
         dir = agent.direction
         transition = self.env.rail.get_transitions(*agent.position, agent.direction)
@@ -327,6 +325,15 @@ class AC_Network():
             return RailEnvActions.MOVE_RIGHT
 
         return RailEnvActions.MOVE_FORWARD
+
+    def has_incomming_traffic(self, agent):
+        obs = agent.tree_obs
+        if obs is not None:
+            root_node = obs[0][0][1]
+            if len(root_node.other_agents) > 0:
+                return True
+        return False
+
 
     def is_agent_on_unusable_switch(self, position, dir):
         ''' a tile is a switch with more than one possible transitions for the

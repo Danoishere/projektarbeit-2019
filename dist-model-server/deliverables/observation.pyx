@@ -778,15 +778,17 @@ class RailObsBuilder(CustomTreeObsForRailEnv):
                 agent_obs = agent_obs.childs['F']
 
             tree = self.binary_tree(agent_obs)
-
+            agent = self.env.agents[handle]
+            agent.tree_obs = tree
             tree_obs = []
             for layer in tree:
                 for node in layer:
-                    node_obs = node_to_obs(node)
+                    node_obs = node_to_obs(node, agent)
                     tree_obs.append(node_obs)
 
             tree_obs = np.concatenate(tree_obs)
-            agent = self.env.agents[handle]
+
+            
 
             # Current info about the train itself
             vec_obs = np.zeros(params.vec_state_size)
@@ -872,60 +874,6 @@ class RailObsBuilder(CustomTreeObsForRailEnv):
 
         return False
 
-    def agent_action_to_env_action(self, agent, agent_action):
-        ''' agent actions: left, right, wait
-            env actions: 'do nothing, left, forward, right, brake 
-        '''
-        if agent.position is None:
-            # Ready to depart. Wait or go?
-            if agent_action == 3:
-                return RailEnvActions.MOVE_FORWARD
-            else:
-                return RailEnvActions.DO_NOTHING
-
-        if self.is_agent_on_unusable_switch(agent.next_pos, agent.next_dir):
-            if agent_action == 3:
-                return RailEnvActions.MOVE_FORWARD
-            else:
-                if agent.moving > 0:
-                    return RailEnvActions.STOP_MOVING
-                else:
-                    return RailEnvActions.DO_NOTHING
-
-        if agent_action == 3:
-            return RailEnvActions.DO_NOTHING
-
-        if agent_action == 2:
-            agent.wait = 5
-            if agent.moving > 0:
-                return RailEnvActions.STOP_MOVING
-            else:
-                return RailEnvActions.DO_NOTHING
-
-        dir = agent.direction
-        transition = self.env.rail.get_transitions(*agent.position, agent.direction)
-
-        can_go_left = False
-        can_go_forward = False
-        can_go_right = False
-
-        if transition[(3 + dir) % 4] == 1:
-            can_go_left = True
-        if transition[(0 + dir) % 4] == 1:
-            can_go_forward = True
-        if transition[(1 + dir) % 4] == 1:
-            can_go_right = True
-
-        # print('Can go left:', can_go_left)
-        # print('Can go forward:', can_go_forward)
-        # print('Can go right:', can_go_right)
-        
-        if agent_action == 0 and can_go_left:
-            return RailEnvActions.MOVE_LEFT
-        if agent_action == 1 and can_go_right:
-            return RailEnvActions.MOVE_RIGHT
-
-        return RailEnvActions.MOVE_FORWARD
 
 
     def next_pos(self, position, direction):
@@ -935,7 +883,6 @@ class RailObsBuilder(CustomTreeObsForRailEnv):
         # print('Curr. pos:', position, 'dir', direction)
 
         transition = self.env.rail.get_transitions(*position, direction)
-        # print('From here', transition)
         if np.sum(transition) > 1:
             return None, None
 
@@ -1013,7 +960,7 @@ def one_hot(field):
         return 1.0
 
 
-def node_to_obs(node_tuple):
+def node_to_obs(node_tuple, agent):
     if node_tuple[1] is None:
         return [0]*params.num_features
 
