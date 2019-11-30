@@ -336,6 +336,7 @@ class AC_Network():
             branch_forward = root_node.childs['F']
             branch_right = root_node.childs['R']
 
+
             can_go_forward = False
             can_go_left = True
             can_go_right = True
