@@ -32,7 +32,7 @@ While applying A3C in a multi agent setting, the other agents can be viewed as p
 Gupta et al. \cite{multiagent_comp_a3c_dqn_etc} finds, that methods like Deep-Q networks (DQN) and Trust region policy optimization (TRPO) are not performing well in a multi agent environment, due to the combination of experience replay and non-stationarity of the environment. We therefore suggest, that it is not recommendable to keep an experience replay buffer with older episodes. Otherwise the sampled experience might represent old agent behaviour which is then learned.
 
 \section{Enhanced observations}\label{enhanced_observations}
-Based on the provided observation of the flatland environment (see  \autoref{observations}), we implement a updated version of the tree observations.
+Based on the provided observation of the flatland environment (see  \autoref{observations}), we implement a updated version of the tree observation in form of a binary tree. 
 
 \section{Distrubuted architecture and parallelism}\label{dist_architecture}
 Für die vorliegende Arbeit wurden die unten aufgeführten Programme eingesetzt.
