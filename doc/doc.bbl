@@ -30,6 +30,21 @@
 \bibitem{flatlandstephan}
 S.~Huschauer, ``Multi-agent based traffic routing for railway networks.''
 
+\bibitem{a3c}
+V.~Mnih, A.~P. Badia, M.~Mirza, A.~Graves, T.~P. Lillicrap, T.~Harley,
+  D.~Silver, and K.~Kavukcuoglu, ``Asynchronous methods for deep reinforcement
+  learning,'' 2016.
+
+\bibitem{marltraffica3c}
+G.~Bacchiani, D.~Molinari, and M.~Patander, ``Microscopic traffic simulation by
+  cooperative multi-agent deep reinforcement learning,'' 2019.
+
+\bibitem{flatland_docu}
+\BIBentryALTinterwordspacing
+ [Online]. Available:
+  \url{http://flatland-rl-docs.s3-website.eu-central-1.amazonaws.com/}
+\BIBentrySTDinterwordspacing
+
 \bibitem{mnih2013playing}
 \BIBentryALTinterwordspacing
 V.~Mnih, K.~Kavukcuoglu, D.~Silver, A.~Graves, I.~Antonoglou, D.~Wierstra, and
@@ -68,15 +83,6 @@ R.~S. Sutton, D.~McAllester, S.~Singh, and Y.~Mansour, ``Policy gradient
   Cambridge, MA, USA: MIT Press, 1999, pp. 1057--1063. [Online]. Available:
   \url{http://dl.acm.org/citation.cfm?id=3009657.3009806}
 \BIBentrySTDinterwordspacing
-
-\bibitem{a3c}
-V.~Mnih, A.~P. Badia, M.~Mirza, A.~Graves, T.~P. Lillicrap, T.~Harley,
-  D.~Silver, and K.~Kavukcuoglu, ``Asynchronous methods for deep reinforcement
-  learning,'' 2016.
-
-\bibitem{marltraffica3c}
-G.~Bacchiani, D.~Molinari, and M.~Patander, ``Microscopic traffic simulation by
-  cooperative multi-agent deep reinforcement learning,'' 2019.
 
 \bibitem{multiagent_comp_a3c_dqn_etc}
 J.~K. Gupta, M.~Egorov, and M.~Kochenderfer, ``Cooperative multi-agent control

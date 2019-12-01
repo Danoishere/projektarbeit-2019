@@ -1,21 +1,20 @@
 \chapter{Einleitung}\label{chap.einleitung}
 \section{Baseline}\label{baseline}
-
 \begin{itemize}
 \item Nennt bestehende Arbeiten/Literatur zum Thema -> Literaturrecherche
 \item Stand der Technik: Bisherige Lösungen des Problems und deren Grenzen
 \item (Nennt kurz den Industriepartner und/oder weitere Kooperationspartner und dessen/deren Interesse am Thema Fragestellung)
 \end{itemize}
 This work explores a real world usage of deep reinforcment learning (RL) in a multi agent environment. As part of the flatland challenge, a contest created by the Swiss Federal Railways (SBB AG) and the crowdsourcing platform AICrowd \cite{aicrowd}, we try to improve the performance of RL based train rescheduling.\\
-This work is based on the work of Stefan Huschauer \cite{flatlandstephan} and continues on the idea to use the asynchronous advantage actor critic algorithm, a state of the art RL algorithm to control the scheduling of trains.
-The indirect industry partner during this work was the Swiss Federal Railways (SBB AG) which created the challange on AICrowd .\\
-The challenge consists of 2 parts. Part 1 was about avoiding conflicts with multiple trains (agents) on their given environment. \\
-The aim of part 2 was to optimize train traffic which includes trains with different speeds, broken trains and less switchover facilities.\\
-We could use Stefan Huschauer\cite{flatlandstephan} work as a foundation to build our solution for the challenge.
-%TODO: Stefans Stand
-Stefan used the A3C algorithm with a multi environment and gave the reward at the end of  each simulation to make sure, all agents have terminated.\\
-He used the first version of Flatland to evaluate his models and got a total score of 24.7\% in a local evaluation.%TODO: check
-He trained his model with 2 to 10 agents with a field of view of 10*10. %TODO: fertigmachen
+This work is based on the work of Stefan Huschauer \cite{flatlandstephan} and further investigates on the idea to use the asynchronous advantage actor critic algorithm (A3C) \cite{a3c}, a state of the art RL algorithm, to control the scheduling of trains.
+The challenge consists of 2 parts \cite{aicrowd}.  
+Part 1 includes avoiding conflicts with multiple trains (agents) on a given environment. The difficulty thereby is, that the layout of the environment is not known upfront .\\
+The aim of part 2 is to optimize train traffic which includes trains with different speed profiles, malfunctioning trains, less switchover facilities and in general more scheduled trains in a shorter time.\\
+Besides the work of S. Huschauer, this work is also influenced by the work of Bacchiani, Molinari and Patander \cite{marltraffica3c}. This work also aims to apply the A3C algorithm in a cooperative multi agent environment and investigates communication free cooperation.
+Unlike the flatland challenge, the goal of this work is to cooperate on a road traffic environment. By applying the A3C algorithm, the work shows that it is possible learn cooperation by treating the other agents as part of the environment. Both the works of Bacchiani, Molinari and Patander as well as the work of S. Huschauer use a shared policy for all acting agents.
+
+%He used the first version of Flatland to evaluate his models and got a total score of 24.7\% in a local evaluation.%TODO: check
+%He trained his model with 2 to 10 agents with a field of view of 10*10. %TODO: fertigmachen
 
 
 \section{Goal of this work}\label{zielsetzung}
@@ -29,13 +28,12 @@ He trained his model with 2 to 10 agents with a field of view of 10*10. %TODO: f
 \item (Terminologie: Definiert die in der Arbeit verwendeten Begriffe)
 \end{itemize}
 %Comment: Explore ths use of A3C RL Learning in am cooperative multi agent env.
-
-The aim of the work was to explore the use of the A3C (Asynchronous Actor-Critic Agents) reinforcement learning algorithm in a multi agent environment.\\
+The aim of the work is to explore the use of the A3C algorithm in the flatland multi agent environment and to improve on the approach of S. Huschauer \cite{flatlandstephan}.
 This work is targeted towards an audience with a brief understanding of deep reinforcement learning. A basic introduction into the topic is given in \autoref{reinforcementlearning}.
-
-The target audience of this work are people with a basic knowledge of machine learning, as reinforcement learning is d in short in %TODO: Verlinkung Kapitel ueber reinforcement learning.
+Also, the details of the flatland environment can be found in \autoref{flatland_intro}. For a deeper understanding of the complex flatland environment, it is recommended to study the flatland documentation and specification in \cite{flatland_docu} as well as the official flatland introduction in \cite{aicrowd}.
 %TODO: add verlinkung auf Aufgabenstellung im Anhang.
-The work it self consists out of 3 major parts: first round, second round and the attempt to add communication between the agents to prevent them from blocking each other. \\
+The work itself consists out of 3 major parts: 
+first round, second round and the attempt to add communication between the agents to prevent them from blocking each other. \\
 
 
 \section{Zielsetzung / Aufgabenstellung / Anforderungen}\label{zielsetzung}
