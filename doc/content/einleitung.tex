@@ -1,6 +1,4 @@
 \chapter{Einleitung}\label{chap.einleitung}
-
-
 \section{Baseline}\label{baseline}
 
 \begin{itemize}
@@ -8,7 +6,9 @@
 \item Stand der Technik: Bisherige Lösungen des Problems und deren Grenzen
 \item (Nennt kurz den Industriepartner und/oder weitere Kooperationspartner und dessen/deren Interesse am Thema Fragestellung)
 \end{itemize}
-The indirect industry partner during this work was the Swiss Federal Railways (SBB AG) which created the challange on AICrowd \cite{aicrowd}.\\
+This work explores a real world usage of deep reinforcment learning (RL) in a multi agent environment. As part of the flatland challenge, a contest created by the Swiss Federal Railways (SBB AG) and the crowdsourcing platform AICrowd \cite{aicrowd}, we try to improve the performance of RL based train rescheduling.\\
+This work is based on the work of Stefan Huschauer \cite{flatlandstephan} and continues on the idea to use the asynchronous advantage actor critic algorithm, a state of the art RL algorithm to control the scheduling of trains.
+The indirect industry partner during this work was the Swiss Federal Railways (SBB AG) which created the challange on AICrowd .\\
 The challenge consists of 2 parts. Part 1 was about avoiding conflicts with multiple trains (agents) on their given environment. \\
 The aim of part 2 was to optimize train traffic which includes trains with different speeds, broken trains and less switchover facilities.\\
 We could use Stefan Huschauer\cite{flatlandstephan} work as a foundation to build our solution for the challenge.
@@ -18,8 +18,7 @@ He used the first version of Flatland to evaluate his models and got a total sco
 He trained his model with 2 to 10 agents with a field of view of 10*10. %TODO: fertigmachen
 
 
-\section{Zielsetzung / Aufgabenstellung / Anforderungen}\label{zielsetzung}
-
+\section{Goal of this work}\label{zielsetzung}
 \begin{itemize}
 \item Formuliert das Ziel der Arbeit
 \item Verweist auf die offizielle Aufgabenstellung des/der Dozierenden im Anhang
@@ -31,11 +30,15 @@ He trained his model with 2 to 10 agents with a field of view of 10*10. %TODO: f
 \end{itemize}
 %Comment: Explore ths use of A3C RL Learning in am cooperative multi agent env.
 
-The aim of the work was to explore the use of the A3C (Asynchronous Actor-Critic Agents) reinforcement learning algorithm.\\
+The aim of the work was to explore the use of the A3C (Asynchronous Actor-Critic Agents) reinforcement learning algorithm in a multi agent environment.\\
+This work is targeted towards an audience with a brief understanding of deep reinforcement learning. A basic introduction into the topic is given in \autoref{reinforcementlearning}.
+
 The target audience of this work are people with a basic knowledge of machine learning, as reinforcement learning is d in short in %TODO: Verlinkung Kapitel ueber reinforcement learning.
 %TODO: add verlinkung auf Aufgabenstellung im Anhang.
 The work it self consists out of 3 major parts: first round, second round and the attempt to add communication between the agents to prevent them from blocking each other. \\
 
+
+\section{Zielsetzung / Aufgabenstellung / Anforderungen}\label{zielsetzung}
 
 %Vorwissen
 

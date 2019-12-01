@@ -10,6 +10,7 @@ from flatland.envs.malfunction_generators import malfunction_from_params
 
 import numpy as np
 import time
+import msvcrt
 
 from deliverables.network import AC_Network
 import deliverables.observation as obs_helper
@@ -105,14 +106,14 @@ def punish_impossible_actions(env, obs, actions, rewards):
             print('right pen')
 
 
-width = 20  # With of map
-height = 20  # Height of map
-nr_trains = 5 # Number of trains that have an assigned task in the env
-cities_in_map = 2  # Number of cities where agents can start or end
+width = 50  # With of map
+height = 50  # Height of map
+nr_trains = 40 # Number of trains that have an assigned task in the env
+cities_in_map = 20  # Number of cities where agents can start or end
 seed = 14  # Random seed
-grid_distribution_of_cities = False  # Type of city distribution, if False cities are randomly placed
-max_rails_between_cities = 1  # Max number of tracks allowed between cities. This is number of entry point to a city
-max_rail_in_cities = 2  # Max number of parallel tracks within a city, representing a realistic trainstation
+grid_distribution_of_cities = True  # Type of city distribution, if False cities are randomly placed
+max_rails_between_cities = 2  # Max number of tracks allowed between cities. This is number of entry point to a city
+max_rail_in_cities = 4  # Max number of parallel tracks within a city, representing a realistic trainstation
 
 rail_generator = sparse_rail_generator(max_num_cities=cities_in_map,
                                        seed=seed,
@@ -205,6 +206,7 @@ while True:
         #    actions, values, comm = model.get_best_actions_and_values(obs_dict, env)
         #else:
         actions, values, comm = model.get_actions_and_values(obs_dict, env)
+        msvcrt.getch()
 
         
 
@@ -234,7 +236,7 @@ while True:
         #plt.waitforbuttonpress()
         #plt.draw()
     
-        env_renderer.render_env(show=True)
+        env_renderer.render_env(show=True, show_observations=False, show_predictions=False)
 
         episode_done = done['__all__']
         if episode_done == True:

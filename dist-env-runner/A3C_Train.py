@@ -27,9 +27,6 @@ import urllib
 mp.set_start_method('spawn', True)
 
 def start_train(resume):
-
-
-
     urllib.request.urlretrieve(const.url + '/file/network.pyx', 'deliverables/network.pyx')
     urllib.request.urlretrieve(const.url + '/file/input_params.py', 'deliverables/input_params.py')
     urllib.request.urlretrieve(const.url + '/file/observation.pyx', 'deliverables/observation.pyx')

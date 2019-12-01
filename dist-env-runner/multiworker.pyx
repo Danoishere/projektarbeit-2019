@@ -142,7 +142,6 @@ class Worker():
                             info['action_required'][handle] and info['malfunction'][handle] == 0):
                             obs_dict[handle] = obs[handle]
 
-                
                     nn_call_start = time()
                     # Get actions/values
                     if use_best_actions:
