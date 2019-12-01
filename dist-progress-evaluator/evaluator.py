@@ -100,7 +100,7 @@ def start_train(resume):
             max_steps = env.env._max_episode_steps - 5
             while episode_done == False and episode_step_count < max_steps:
                 agents = env.env.agents
-                env_actions, nn_actions, v, relevant_obs = model.get_agent_actions(env, obs, info, True)
+                env_actions, nn_actions, v, relevant_obs = model.get_agent_actions(env.env, obs, info, True)
 
                 next_obs, rewards, done, info = env.step(env_actions)
 
