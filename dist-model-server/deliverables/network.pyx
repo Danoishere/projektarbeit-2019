@@ -11,7 +11,7 @@ import deliverables.input_params as params
 import random
 from datetime import datetime
 import time
-import msvcrt
+#import msvcrt
 
 from io import StringIO
 from flatland.envs.observations import TreeObsForRailEnv
@@ -266,8 +266,6 @@ class AC_Network():
         for handle in nn_actions:
             if handle not in actions:
                 agent = agents[handle]
-                if handle == 0:
-                    msvcrt.getch()
                 nn_action = nn_actions[handle]
                 env_action = self.agent_action_to_env_action(agent, nn_action)
                 actions[handle] = env_action
