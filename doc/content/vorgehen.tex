@@ -18,7 +18,13 @@
 
 \chapter{Approach and methodology}\label{chap.vorgehen}
 \section{Basic considerations}\label{basic_cons}
-As described under (tODO: ref to first mention), our work is based on the work of S. Huschauer (REF). We take his idea of using the A3C algorithm to solve the flatland problem and try various modifications in an attempt to improve its performance. \\We proceed by giving an intution, what we want to achieve by changing the specified part, followed by an experiment to either prove or disprove our hypothesis.\\
+As described under \autoref{baseline}, our work is based on the work of S. Huschauer \cite{flatland}. We take the idea of using the A3C algorithm to solve the flatland problem and try various modifications in an attempt to improve its performance.\\
+We proceed as follows: 
+\begin{itemize}
+	\item We load the current policy in a test environment which allows us to quickly change the parameters of the rail environment.
+	\item We analy 
+\end{itemize}
+by giving an intution, what we want to achieve by changing the specified part, followed by an experiment to either prove or disprove our hypothesis.\\
 For training purposes, we started by reimplementing the algorithm by ourselfes. This enabled us from the beginning to gain a deeper understanding of how the algorithm works and where we could find possible areas for improvement. From there, we iteratively added these potential improvements to later compare them against the original version.
 In this work, we proceed by comparing the final version to versions without these features. 
 It is important to note, that the training process of reinforcement learning and especially multi agent reinforcement learning is hard to evaluate. Depending on the initial weights of the neural networks and the shape of the environments, the performance may vary on each restart. Also, the number of workers can 
@@ -32,7 +38,15 @@ While applying A3C in a multi agent setting, the other agents can be viewed as p
 Gupta et al. \cite{multiagent_comp_a3c_dqn_etc} finds, that methods like Deep-Q networks (DQN) and Trust region policy optimization (TRPO) are not performing well in a multi agent environment, due to the combination of experience replay and non-stationarity of the environment. We therefore suggest, that it is not recommendable to keep an experience replay buffer with older episodes. Otherwise the sampled experience might represent old agent behaviour which is then learned.
 
 \section{Enhanced observations}\label{enhanced_observations}
-Based on the provided observation of the flatland environment (see  \autoref{observations}), we implement a updated version of the tree observation in form of a binary tree. 
+The flatland environment provides a base to build custom observation builders that can be used to create a state representation for the agents. Based on the provided TreeObsForRailEnv (see \autoref{observations}), we implement a custom observation builder which we use to produce an input vector to our neural network. This observation builder takes the the current state of the environment and produces a fixed size numeric vectors with values between 0 and 1 for each agent. This input vector should fulfil an number of requirements:
+\begin{itemize}
+	\item Each rail section the agent possibly rides on next should be visible to the agent.
+	\item The agent should be able to detect, whether there is another train coming the opposite direction on any section.
+	\item The agent should be able to detect on each switch which turn is closer to his target.
+	\item On switches, the agent should be able to see if a turn does lead to his target, even if it is not the fastest way. If this is the case, taking this turn might even be a good option to evade possibly blocking situations.
+	\item For the next grid tile, the agent should be able to detect if it is a switch and if so, if it is one the agent can make a decision on. (see \autoref{flatland_intro} for non-usable switches).
+	
+\end{itemize}
 
 \section{Distrubuted architecture and parallelism}\label{dist_architecture}
 Für die vorliegende Arbeit wurden die unten aufgeführten Programme eingesetzt.
