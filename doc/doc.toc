@@ -5,34 +5,34 @@
 \contentsline {chapter}{\numberline {2}Technical Foundation}{10}{chapter.2}% 
 \contentsline {section}{\numberline {2.1}Reinforcement Learning}{10}{section.2.1}% 
 \contentsline {section}{\numberline {2.2}The Flatland Rail Environment}{11}{section.2.2}% 
-\contentsline {chapter}{\numberline {3}Approach and methodology}{13}{chapter.3}% 
-\contentsline {section}{\numberline {3.1}Basic considerations}{13}{section.3.1}% 
-\contentsline {section}{\numberline {3.2}A3C implementation for flatland}{13}{section.3.2}% 
-\contentsline {section}{\numberline {3.3}Enhanced observations}{13}{section.3.3}% 
-\contentsline {section}{\numberline {3.4}Distrubuted architecture and parallelism}{14}{section.3.4}% 
-\contentsline {section}{\numberline {3.5}Action space reduction}{14}{section.3.5}% 
-\contentsline {section}{\numberline {3.6}Curriculum learning}{14}{section.3.6}% 
-\contentsline {section}{\numberline {3.7}Entropy balancing}{14}{section.3.7}% 
-\contentsline {section}{\numberline {3.8}Agent communication}{14}{section.3.8}% 
+\contentsline {chapter}{\numberline {3}Approach and methodology}{14}{chapter.3}% 
+\contentsline {section}{\numberline {3.1}Basic considerations}{14}{section.3.1}% 
+\contentsline {section}{\numberline {3.2}A3C implementation for flatland}{14}{section.3.2}% 
+\contentsline {section}{\numberline {3.3}Enhanced observations}{14}{section.3.3}% 
+\contentsline {section}{\numberline {3.4}Distrubuted architecture and parallelism}{15}{section.3.4}% 
+\contentsline {section}{\numberline {3.5}Action space reduction}{15}{section.3.5}% 
+\contentsline {section}{\numberline {3.6}Curriculum learning}{15}{section.3.6}% 
+\contentsline {section}{\numberline {3.7}Entropy balancing}{15}{section.3.7}% 
+\contentsline {section}{\numberline {3.8}Agent communication}{15}{section.3.8}% 
 \contentsline {section}{\numberline {3.9}(Used Software)}{15}{section.3.9}% 
-\contentsline {section}{\numberline {3.10}Basic considerations}{15}{section.3.10}% 
-\contentsline {subsection}{\numberline {3.10.1}Round 1}{15}{subsection.3.10.1}% 
-\contentsline {subsection}{\numberline {3.10.2}Round 2}{16}{subsection.3.10.2}% 
-\contentsline {section}{\numberline {3.11}Measurands}{16}{section.3.11}% 
-\contentsline {section}{\numberline {3.12}Experiments}{16}{section.3.12}% 
-\contentsline {section}{\numberline {3.13}Solution approach}{16}{section.3.13}% 
-\contentsline {section}{\numberline {3.14}Testing and submissions}{16}{section.3.14}% 
-\contentsline {section}{\numberline {3.15}Theoretical derivation of the solution}{16}{section.3.15}% 
-\contentsline {chapter}{\numberline {4}Infrastructure}{17}{chapter.4}% 
-\contentsline {section}{\numberline {4.1}Infrastructure}{17}{section.4.1}% 
-\contentsline {subsection}{\numberline {4.1.1}Distributed training}{17}{subsection.4.1.1}% 
-\contentsline {chapter}{\numberline {5}Resultate}{18}{chapter.5}% 
-\contentsline {chapter}{\numberline {6}Diskussion und Ausblick}{19}{chapter.6}% 
-\contentsline {chapter}{\numberline {7}Verzeichnisse}{20}{chapter.7}% 
-\contentsline {section}{Literaturverzeichnis}{20}{chapter.7}% 
-\contentsline {section}{(Abbildungsverzeichnis)}{22}{chapter*.27}% 
-\contentsline {section}{(Tabellenverzeichnis)}{23}{chapter*.29}% 
-\contentsline {section}{(Abkürzungsverzeichnis)}{24}{chapter*.31}% 
+\contentsline {section}{\numberline {3.10}Basic considerations}{16}{section.3.10}% 
+\contentsline {subsection}{\numberline {3.10.1}Round 1}{16}{subsection.3.10.1}% 
+\contentsline {subsection}{\numberline {3.10.2}Round 2}{17}{subsection.3.10.2}% 
+\contentsline {section}{\numberline {3.11}Measurands}{17}{section.3.11}% 
+\contentsline {section}{\numberline {3.12}Experiments}{17}{section.3.12}% 
+\contentsline {section}{\numberline {3.13}Solution approach}{17}{section.3.13}% 
+\contentsline {section}{\numberline {3.14}Testing and submissions}{17}{section.3.14}% 
+\contentsline {section}{\numberline {3.15}Theoretical derivation of the solution}{17}{section.3.15}% 
+\contentsline {chapter}{\numberline {4}Infrastructure}{18}{chapter.4}% 
+\contentsline {section}{\numberline {4.1}Infrastructure}{18}{section.4.1}% 
+\contentsline {subsection}{\numberline {4.1.1}Distributed training}{18}{subsection.4.1.1}% 
+\contentsline {chapter}{\numberline {5}Resultate}{19}{chapter.5}% 
+\contentsline {chapter}{\numberline {6}Diskussion und Ausblick}{20}{chapter.6}% 
+\contentsline {chapter}{\numberline {7}Verzeichnisse}{21}{chapter.7}% 
+\contentsline {section}{Literaturverzeichnis}{21}{chapter.7}% 
+\contentsline {section}{(Abbildungsverzeichnis)}{23}{chapter*.27}% 
+\contentsline {section}{(Tabellenverzeichnis)}{24}{chapter*.29}% 
+\contentsline {section}{(Abkürzungsverzeichnis)}{25}{chapter*.31}% 
 \contentsline {section}{(Listingverzeichnis)}{I}{chapter*.33}% 
 \contentsline {chapter}{\numberline {A}Anhang}{II}{appendix.A}% 
 \contentsline {section}{\numberline {A.1}Projektmanagement}{II}{section.A.1}% 
