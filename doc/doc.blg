@@ -7,6 +7,7 @@ You're missing a field name---line 119 of file BibTeX-Literaturverzeichnis/liter
 I'm skipping whatever remains of this entry
 Warning--entry type for "flatlandstephan" isn't style-file defined
 --line 141 of file BibTeX-Literaturverzeichnis/literatur.bib
+Warning--I didn't find a database entry for "flatland"
 -- IEEEtran.bst version 1.14 (2015/08/26) by Michael Shell.
 -- http://www.michaelshell.org/tex/ieeetran/bibtex/
 -- See the "IEEEtran_bst_HOWTO.pdf" manual for usage information.
