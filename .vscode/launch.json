@@ -48,6 +48,14 @@
             "cwd": "${workspaceFolder}/dist-progress-evaluator"
         },
         {
+            "name": "Run analyzer",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/dist-progress-analyzer/analyzer.py",
+            "console": "integratedTerminal", 
+            "cwd": "${workspaceFolder}/dist-progress-analyzer"
+        },
+        {
             "name": "Run local test environment",
             "type": "python",
             "request": "launch",

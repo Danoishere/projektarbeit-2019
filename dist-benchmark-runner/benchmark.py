@@ -31,11 +31,14 @@ SEED = 345123
 
 class Benchmark:
     def __init__(self):
-        urllib.request.urlretrieve(const.url + '/network_file', 'deliverables/network.py')
-        urllib.request.urlretrieve(const.url + '/config_file', 'deliverables/input_params.py')
-        urllib.request.urlretrieve(const.url + '/observation_file', 'deliverables/observation.py')
-        urllib.request.urlretrieve(const.url + '/curriculum_file', 'deliverables/curriculum.py')
+        urllib.request.urlretrieve(const.url + '/file/network.pyx', 'deliverables/network.pyx')
+        urllib.request.urlretrieve(const.url + '/file/input_params.py', 'deliverables/input_params.py')
+        urllib.request.urlretrieve(const.url + '/file/observation.pyx', 'deliverables/observation.pyx')
+        urllib.request.urlretrieve(const.url + '/file/curriculum.py', 'deliverables/curriculum.py')
 
+        myCmd = 'python setup.py build_ext --inplace'
+        os.system(myCmd)
+        
         curriculum_mod = __import__("deliverables.curriculum", fromlist=[''])
         curriculum_class =  getattr(curriculum_mod, 'Curriculum')
         self.curriculum = curriculum_class()
