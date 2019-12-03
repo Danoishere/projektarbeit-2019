@@ -157,8 +157,7 @@ def start_train(resume):
             current_successrate = agents_arrived/agents_started
             print('Eval. episode', episode_count,'with',episode_step_count,'steps, reward of',episode_reward,', agents arrived',current_successrate)
 
-            df = df.append(
-                {
+            df = df.append({
                     'round' : round,
                     'departed' : num_agents,
                     'arrived' : agents_arrived,
