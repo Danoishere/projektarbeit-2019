@@ -90,8 +90,8 @@ For training, we only use the experience collected near the switch.\\\\
 		\For{every agent $\mathcal{a}$}{
 			\eIf{agent is near to a switch}{
 				get current state $\mathcal{s\SPSB{a}{t}}$ of agent\\
-				$\tcp{Fetch action for agent, based on current state of agent}$
-				%$\mathcal{A[a]} \leftarrow from policy \pi (\mathcal{s\SPSB{a}{t}})$\\
+				%$\tcp{Fetch action for agent, based on current state of agent}$
+				$\mathcal{A[a]} \leftarrow from policy \pi (\mathcal{s\SPSB{a}{t}})$\\
 			}{
 				$\mathcal{A[a]} \leftarrow \mathcal{u_{forward})}$
 			}
