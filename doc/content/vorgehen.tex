@@ -47,8 +47,8 @@ The flatland environment provides a base to build custom observation builders th
 	\item 
 \end{itemize}
 
-\subsection*{Action Space Reduction}\label{reduced_action_space}
-The flatland environment is designed in a way to resemble a classical RL environement. This means, on every timestep, we receive observations for each agent, calculate an action and hand this action to the environment.
+\subsection*{Action Space Reduction and Script Policy Actions}\label{reduced_action_space}
+The flatland environment is designed in a way to resemble a classical RL environement. This means, on every timestep, we receive observations for each agent, calculate an action and hand this action to the environment, visible in pseudocode \autoref{alg:no_reduction}. 
 
 \begin{algorithm}[H]
 \KwData{initialized flatland environment $\mathcal{E}$, initial observation $\mathcal{s\SPSB{a}{t=0}}$ for all agents }
@@ -57,7 +57,7 @@ The flatland environment is designed in a way to resemble a classical RL environ
 	create empty action array $\mathcal{A}$\\
 	\For{every agent $\mathcal{a}$}{
 		get current state $\mathcal{s\SPSB{a}{t}}$ of agent\\
-		Fetch action  $\mathcal{u}$ for agent $\mathcal{a}$ at timestep $\mathcal{t}$ based on $\mathcal{s\SPSB{a}{t}}$\\
+		Fetch action  $\mathcal{u}$ for agent $\mathcal{a}$ at timestep $\mathcal{t}$ based on $\mathcal{s\SPSB{a}{t}}$ from policy $\pi$\\
 		$\mathcal{A[a]}$ = $\mathcal{u}$
 	}
 	call $\mathcal{step(A)}$ of $\mathcal{E}$\\
@@ -65,10 +65,39 @@ The flatland environment is designed in a way to resemble a classical RL environ
 	retrieve all new states $\mathcal{s_{t+1}}$\\
 }
 \caption{Default episode for flatland environment}
+\label{alg:no_reduction}
 \end{algorithm}
-While this makes sense in an environement where agents need to take an action on every timestep (such as Atari games), in flatland most of the time the only reasonable action is to move forward. Only around switches, the actions of an agent have acutual consequences.
+While this makes sense in an environement where agents need to take an action on every timestep (such as Atari games), in flatland most of the time the only reasonable action is to move forward as visible in \autoref{fig:no_desicion}. Only around switches, the actions of an agent have acutual consequences.
+\begin{figure}
+	\centering
+	\includegraphics[width=300pt]{images/screenshot_no_decision.png}
+	\caption{Screenshot from flatland environment. A train heading east. The only reasonable action is to ride forward.}
+	\label{fig:no_desicion}
+\end{figure}
+Every action that is produced by the neural network should be included for training, so the network can adapt to this type of situation. The problem arises now, that all these actions of riding forward are included into the training of the agent. The influence of the actions that actually matter (e.g. the ones around switches) is thereby not as big as it could be, because a large portion of the training data is actually situations that do not actually require decisions.\\
+To solve this problem, we implement hard coded rules that the agents follow as long as they are not in a situation to make a decision. We  Only around switches, the neural network policy is activated. As a consequence, the data used for training has less samples but the samples available are of higher quality. The training with this mechanism implemented looks like TODO: Ref to algorithm.
 
+\begin{algorithm}[H]
+	\KwData{initialized flatland environment $\mathcal{E}$, initial observation $\mathcal{s\SPSB{a}{t=0}}$ for all agents }
+	\KwResult{flatland environment at timestep $\mathcal{t +1}$}
+	\While{episode not terminal}{
+		create empty action array $\mathcal{A}$\\
+		\For{every agent $\mathcal{a}$}{
+			get current state $\mathcal{s\SPSB{a}{t}}$ of agent\\
+			Fetch action  $\mathcal{u}$ for agent $\mathcal{a}$ at timestep $\mathcal{t}$ based on $\mathcal{s\SPSB{a}{t}}$\\
+			$\mathcal{A[a]}$ = $\mathcal{u}$
+		}
+		call $\mathcal{step(A)}$ of $\mathcal{E}$\\
+		retrieve reward $\mathcal{R}$\\
+		retrieve all new states $\mathcal{s_{t+1}}$\\
+	}
+	\caption{Default episode for flatland environment}
+	\label{alg:no_reduction}
+\end{algorithm}
 
+ This drastically improves training performance.
+
+// TODO: Chart
 
 
 \subsection*{Curriculum Learning and Reward assignment}\label{curriculum_learning}
