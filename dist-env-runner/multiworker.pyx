@@ -150,7 +150,7 @@ class Worker():
 
                 while not episode_done and not cancel_episode and episode_step_count < max_steps:
                     agents = self.env.env.agents
-                    env_actions, nn_actions, v, relevant_obs = self.local_model.get_agent_actions(self.env.env, obs, info, use_best_actions)
+                    env_actions, v = self.local_model.get_actions_and_values(obs, self.env.env)
                     next_obs, rewards, done, info = self.env.step(env_actions)
 
                     #env_renderer.render_env(show=True)
@@ -178,9 +178,9 @@ class Worker():
                     if episode_done == True:
                         next_obs = obs
 
-                    for i in relevant_obs:
+                    for i in env_actions:
                         agent_obs = obs[i]
-                        agent_action = nn_actions[i]
+                        agent_action = env_actions[i]
                         agent_reward = rewards[i]
 
                         if not done_last_step[i]:
