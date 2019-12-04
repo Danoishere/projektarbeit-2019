@@ -74,8 +74,8 @@ def start_train(resume):
         prep_steps = 0
 
         env.update_env_with_params(
-            width=50,
-            height=50,
+            width=100,
+            height=100,
             num_agents=num_agents,
             max_steps = 450,
             rail_type = 'sparse',
