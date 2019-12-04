@@ -32,7 +32,6 @@ Another point that is hard to reproduce is training stability. In A3C, an import
 Originally, the asynchronous advantage actor critic algorithm (A3C) has been designed for use in a single agent environment \cite{a3c}.
 By applying it in a multi agent environment, we implicitly convert the environment into a non-stationary environment.
 While applying A3C in a multi agent setting, the other agents can be viewed as part of the environment. This means, the behaviour of the environment changes while training, due to the fact that the behaviour of the other agents changes.
-
 Gupta et al. \cite{multiagent_comp_a3c_dqn_etc} finds, that RL methods like Deep-Q networks (DQN) and Trust region policy optimization (TRPO) are not performing well in a multi agent environment, due to the combination of experience replay and non-stationarity of the environment. We therefore suggest, that it is not recommendable to keep an experience replay buffer with older episodes. Otherwise the sampled experience might represent old agent behaviour which is then learned.
 
 \subsection*{Observation Design}\label{enhanced_observations}
@@ -53,6 +52,7 @@ The flatland environment is designed in a way to resemble a classical RL environ
 \begin{algorithm}[H]
 	\KwData{initialized flatland environment $\mathcal{E}$, initial observation $\mathcal{s\SPSB{a}{t=0}}$ for all agents }
 	\KwResult{terminal flatland environment}
+	initialize buffer $\mathcal{B}$\\
 	\While{episode not terminal}{
 		create empty action array $\mathcal{A}$\\
 		\For{every agent $\mathcal{a}$}{
@@ -60,10 +60,14 @@ The flatland environment is designed in a way to resemble a classical RL environ
 			Fetch action  $\mathcal{u}$ for agent $\mathcal{a}$ at timestep $\mathcal{t}$ based on $\mathcal{s\SPSB{a}{t}}$ from policy $\pi$\\
 			$\mathcal{A[a]}$ = $\mathcal{u}$
 		}
+		
 		call $\mathcal{step(A)}$ of $\mathcal{E}$\\
 		retrieve reward $\mathcal{R}$\\
-		retrieve all new states $\mathcal{s_{t+1}}$\\
+		append $\mathcal{A}$ to buffer $\mathcal{B}$\\
+		retrieve all new states $\mathcal{s_{t+1}}$\\		
 	}
+
+	use buffer $\mathcal{B}$ for training of policy $\pi$
 	\caption{Default episode for flatland environment}
 	\label{alg:no_reduction}
 \end{algorithm}
@@ -76,10 +80,11 @@ While this makes sense in an environment where agents need to take an action on 
 \end{figure}
 Every action that is produced by the neural network should be included for training, so the network can adapt to this type of situation. The problem arises now, that all these actions of riding forward are included into the training of the agent. The influence of the actions that actually matter (e.g. the ones around switches) is thereby not as big as it could be, because a large portion of the training data is actually situations that do not actually require decisions.\\
 To solve this problem, we implement hard coded rules that the agents follow as long as they are not in a situation to make a decision. Only around switches, the neural network policy is activated. As a consequence, the data used for training has less samples but the samples available are of higher quality. The training with this mechanism implemented looks like \autoref{alg:with_reduction}.
-For training, we only use the experience collected near the switch.
+For training, we only use the experience collected near the switch.\\\\
 \begin{algorithm}[H]
 	\KwData{initialized flatland environment $\mathcal{E}$, initial observation $\mathcal{s\SPSB{a}{t=0}}$ for all agents}
 	\KwResult{terminal flatland environment}
+	initialize buffer $\mathcal{B}$\\
 	\While{episode not terminal}{
 		create empty action array $\mathcal{A}$\\
 		\For{every agent $\mathcal{a}$}{
@@ -93,14 +98,21 @@ For training, we only use the experience collected near the switch.
 		}
 		call $\mathcal{step(A)}$ of $\mathcal{E}$\\
 		retrieve reward $\mathcal{R}$\\
-		retrieve all new states $\mathcal{s_{t+1}}$\\
+		\If{agent was near switch}{
+			append $\mathcal{s_{t}}$, $\mathcal{A}$ and $\mathcal{R}$ to buffer $\mathcal{B}$\\
+		}
+		retrieve all new states $\mathcal{s_{t+1}}$\\		
 	}
+	use buffer $\mathcal{B}$ for training of policy $\pi$
+
 	\caption{Improved learning for flatland environment}
 	\label{alg:with_reduction}
 \end{algorithm}
-This drastically improves training performance as visible in .
+This drastically improves training performance as visible in
 
 // TODO: Chart
+
+
 
 
 \subsection*{Curriculum Learning and Reward assignment}\label{curriculum_learning}
@@ -110,7 +122,6 @@ To improve training times, it makes therefore sense to start with a small enviro
 \subsection*{Entropy Balancing and Hyperparameter Tuning}\label{entropy_balancing_hyperparameter}
 In RL, it is of great importance to find the right combination of exploration and explotation. During exploration, the agent explores as much of the state space as possible. This enables the agent to later exploit the found states which are beneficial. Without this exploration, there is a chance that the agent settles on suboptimal policies too quickly and ignores parts of the state space the agent has never seen.\\
 The policy is characterized by a probability distribution of actions.
-
 
 \subsection*{Agent Communication}\label{reduced_action_space}
 Communication in multi agent RL is a topic of active research and considered very complex
