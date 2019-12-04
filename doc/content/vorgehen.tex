@@ -24,9 +24,8 @@ For training purposes, we started by reimplementing the algorithm by ourselfes. 
 
 \subsection*{Reproducability in Reinforcement Learning}\label{enhanced_observations}
 It is important to note, that the training process of reinforcement learning and especially multi agent reinforcement learning is hard to evaluate and reproduce. Depending on the initial weights of the neural networks and the shape of the environments, the performance may vary on each restart. Also, the number of workers can 
-significantly influence the training performance. To counter the latter, we execute all presented experiments on machines with the same specifications (see TODO-INFRASTRUCTURE).
-
-
+significantly influence the training performance. To counter the latter, we execute all presented experiments on machines with the same specifications (see TODO-INFRASTRUCTURE).\\
+Another point that is hard to reproduce is training stability. In A3C, an important instrument to prevent the policy from converging too early is using an additional entropy term. Our way to maintain stability with changing environments is discussed in \autoref{hy}.
 
 \section{Reinforcement Learning for Flatland}
 \subsection*{A3C Implementation}\label{enhanced_observations}
@@ -48,43 +47,17 @@ The flatland environment provides a base to build custom observation builders th
 \end{itemize}
 
 \subsection*{Action Space Reduction and Script Policy Actions}\label{reduced_action_space}
-The flatland environment is designed in a way to resemble a classical RL environement. This means, on every timestep, we receive observations for each agent, calculate an action and hand this action to the environment, visible in pseudocode \autoref{alg:no_reduction}. 
+The flatland environment is designed in a way to resemble a classical RL environment. This means, on every timestep, we receive observations for each agent, calculate an action and hand this action to the environment, visible in pseudocode \autoref{alg:no_reduction}. 
 
-\begin{algorithm}[H]
-\KwData{initialized flatland environment $\mathcal{E}$, initial observation $\mathcal{s\SPSB{a}{t=0}}$ for all agents }
-\KwResult{flatland environment at timestep $\mathcal{t +1}$}
-\While{episode not terminal}{
-	create empty action array $\mathcal{A}$\\
-	\For{every agent $\mathcal{a}$}{
-		get current state $\mathcal{s\SPSB{a}{t}}$ of agent\\
-		Fetch action  $\mathcal{u}$ for agent $\mathcal{a}$ at timestep $\mathcal{t}$ based on $\mathcal{s\SPSB{a}{t}}$ from policy $\pi$\\
-		$\mathcal{A[a]}$ = $\mathcal{u}$
-	}
-	call $\mathcal{step(A)}$ of $\mathcal{E}$\\
-	retrieve reward $\mathcal{R}$\\
-	retrieve all new states $\mathcal{s_{t+1}}$\\
-}
-\caption{Default episode for flatland environment}
-\label{alg:no_reduction}
-\end{algorithm}
-While this makes sense in an environement where agents need to take an action on every timestep (such as Atari games), in flatland most of the time the only reasonable action is to move forward as visible in \autoref{fig:no_desicion}. Only around switches, the actions of an agent have acutual consequences.
-\begin{figure}
-	\centering
-	\includegraphics[width=300pt]{images/screenshot_no_decision.png}
-	\caption{Screenshot from flatland environment. A train heading east. The only reasonable action is to ride forward.}
-	\label{fig:no_desicion}
-\end{figure}
-Every action that is produced by the neural network should be included for training, so the network can adapt to this type of situation. The problem arises now, that all these actions of riding forward are included into the training of the agent. The influence of the actions that actually matter (e.g. the ones around switches) is thereby not as big as it could be, because a large portion of the training data is actually situations that do not actually require decisions.\\
-To solve this problem, we implement hard coded rules that the agents follow as long as they are not in a situation to make a decision. We  Only around switches, the neural network policy is activated. As a consequence, the data used for training has less samples but the samples available are of higher quality. The training with this mechanism implemented looks like TODO: Ref to algorithm.
 
 \begin{algorithm}[H]
 	\KwData{initialized flatland environment $\mathcal{E}$, initial observation $\mathcal{s\SPSB{a}{t=0}}$ for all agents }
-	\KwResult{flatland environment at timestep $\mathcal{t +1}$}
+	\KwResult{terminal flatland environment}
 	\While{episode not terminal}{
 		create empty action array $\mathcal{A}$\\
 		\For{every agent $\mathcal{a}$}{
 			get current state $\mathcal{s\SPSB{a}{t}}$ of agent\\
-			Fetch action  $\mathcal{u}$ for agent $\mathcal{a}$ at timestep $\mathcal{t}$ based on $\mathcal{s\SPSB{a}{t}}$\\
+			Fetch action  $\mathcal{u}$ for agent $\mathcal{a}$ at timestep $\mathcal{t}$ based on $\mathcal{s\SPSB{a}{t}}$ from policy $\pi$\\
 			$\mathcal{A[a]}$ = $\mathcal{u}$
 		}
 		call $\mathcal{step(A)}$ of $\mathcal{E}$\\
@@ -94,17 +67,47 @@ To solve this problem, we implement hard coded rules that the agents follow as l
 	\caption{Default episode for flatland environment}
 	\label{alg:no_reduction}
 \end{algorithm}
-
- This drastically improves training performance.
+While this makes sense in an environment where agents need to take an action on every timestep (such as Atari games), in flatland most of the time the only reasonable action is to move forward as visible in \autoref{fig:no_desicion}. Only around switches, the actions of an agent have acutual consequences.
+\begin{figure}
+	\centering
+	\includegraphics[width=300pt]{images/screenshot_no_decision.png}
+	\caption{Screenshot from flatland environment. A train heading east. The only reasonable action is to ride forward.}
+	\label{fig:no_desicion}
+\end{figure}
+Every action that is produced by the neural network should be included for training, so the network can adapt to this type of situation. The problem arises now, that all these actions of riding forward are included into the training of the agent. The influence of the actions that actually matter (e.g. the ones around switches) is thereby not as big as it could be, because a large portion of the training data is actually situations that do not actually require decisions.\\
+To solve this problem, we implement hard coded rules that the agents follow as long as they are not in a situation to make a decision. Only around switches, the neural network policy is activated. As a consequence, the data used for training has less samples but the samples available are of higher quality. The training with this mechanism implemented looks like \autoref{alg:with_reduction}.
+For training, we only use the experience collected near the switch.
+\begin{algorithm}[H]
+	\KwData{initialized flatland environment $\mathcal{E}$, initial observation $\mathcal{s\SPSB{a}{t=0}}$ for all agents}
+	\KwResult{terminal flatland environment}
+	\While{episode not terminal}{
+		create empty action array $\mathcal{A}$\\
+		\For{every agent $\mathcal{a}$}{
+			\eIf{agent is near to a switch}{
+				get current state $\mathcal{s\SPSB{a}{t}}$ of agent\\
+				Fetch action  $\mathcal{u}$ for agent $\mathcal{a}$ at timestep $\mathcal{t}$ based on $\mathcal{s\SPSB{a}{t}}$ from policy $\pi$\\
+				$\mathcal{A[a]}$ = $\mathcal{u}$
+			}{
+				$\mathcal{A[a]}$ = $\mathcal{u_{forward})}$
+			}
+		}
+		call $\mathcal{step(A)}$ of $\mathcal{E}$\\
+		retrieve reward $\mathcal{R}$\\
+		retrieve all new states $\mathcal{s_{t+1}}$\\
+	}
+	\caption{Improved learning for flatland environment}
+	\label{alg:with_reduction}
+\end{algorithm}
+This drastically improves training performance as visible in .
 
 // TODO: Chart
 
 
 \subsection*{Curriculum Learning and Reward assignment}\label{curriculum_learning}
-The reward assignment in flatland can be freely configured. But as long as there is not some distance-to-target dependent reward function, the probability, that an agent with an uninformed policy finds its target is small. This is especially the case for large environments with many trains on it. For example, most evaluation environments of flatland round 2 have up to 200 individual agents and are up 100x100 tiles large (SOURCE!). The rollout of such an environment takes a lot more time than the rollout of a 20x20 environment with 5 trains. Also, the probability, that a train arrives in a small environement is larger and therefore, the experience is more valuable for training.
+The reward assignment in flatland can be freely configured. But as long as there is not some distance-to-target dependent reward function, the probability, that an agent with an uninformed policy finds its target is small. This is especially the case for large environments with many trains on it. For example, most evaluation environments of flatland round 2 have up to 200 individual agents and are up 100x100 tiles large (SOURCE!). The rollout of such an environment takes a lot more time than the rollout of a 20x20 environment with 5 trains. Also, the probability, that a train arrives in a small environment is larger and therefore, the experience is more valuable for training.
 To improve training times, it makes therefore sense to start with a small environment and move to larget ones, once the agents mastered pathfinding and basic collision avoidance.
 
-\subsection*{Entropy Balancing and Hyperparameter Tuning}\label{enhanced_observations}
+\subsection*{Entropy Balancing and Hyperparameter Tuning}\label{entropy_balancing_hyperparameter}
 In RL, it is of great importance to find the right combination of exploration and explotation. During exploration, the agent explores as much of the state space as possible. This enables the agent to later exploit the found states which are beneficial. Without this exploration, there is a chance that the agent settles on suboptimal policies too quickly and ignores parts of the state space the agent has never seen.\\
 The policy is characterized by a probability distribution of actions.
 
