@@ -100,16 +100,16 @@ class Curriculum:
 
     def change_grid_round2(self, env):
         env.update_env_with_params(
-            width=40,
-            height=40,
-            num_agents=20,
+            width=100,
+            height=100,
+            num_agents=100,
             max_steps = 1000,
             rail_type = 'sparse',
             rail_gen_params = {
-                'num_cities': 9,
+                'num_cities': 20,
                 'grid_mode': True,
                 'max_rails_between_cities': 2,
-                'max_rails_in_city' : 3
+                'max_rails_in_city' : 4
             },
             seed = self.seed       
         )
