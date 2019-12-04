@@ -1,11 +1,10 @@
 max_episode_length = 40
 gamma = 1.0
 
-
 entropy_factor = 0.05
-learning_rate = 1e-4
+learning_rate = 5e-5
 
-gradient_norm = 1.0
+gradient_norm = 2.0
 
 number_of_actions = 4
 number_of_comm = 5

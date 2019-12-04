@@ -11,7 +11,6 @@ import deliverables.input_params as params
 import random
 from datetime import datetime
 import time
-#import msvcrt
 
 from io import StringIO
 from flatland.envs.observations import TreeObsForRailEnv
@@ -51,30 +50,25 @@ class AC_Network():
     def build_network(self):
         input_vec = layers.Input(shape=params.tot_obs_size,dtype=tf.float32)
 
-        input_actor_rec = layers.Input(shape=(2,params.recurrent_size),dtype=tf.float32)
-        input_critic_rec = layers.Input(shape=(2,params.recurrent_size),dtype=tf.float32)
-
-        actor_out, actor_out_rec = self.create_network(input_vec, input_actor_rec)
-        critic_out, critic_out_rec = self.create_network(input_vec, input_critic_rec)
+        actor_out = self.create_network(input_vec)
+        critic_out = self.create_network(input_vec)
 
         policy = layers.Dense(params.number_of_actions, activation='softmax')(actor_out)
         value = layers.Dense(1)(critic_out)
 
         model = Model(
-            inputs=[input_vec, input_actor_rec, input_critic_rec],
-            outputs=[policy, value, actor_out_rec, critic_out_rec])
+            inputs=input_vec,
+            outputs=[policy, value])
 
         return model
 
 
-    def create_network(self, input, input_rec):
+    def create_network(self, input):
         hidden = layers.Dense(128, activation='relu')(input)
         hidden = layers.Dense(64, activation='relu')(hidden)
-        hidden = layers.Reshape((1,64))(hidden)
-        hidden, state_h, state_c = layers.LSTM(64, return_state=True, return_sequences=False)(hidden, initial_state=[input_rec[:,0], input_rec[:,1]])
-        hidden = layers.Dense(64, activation='relu')(hidden)
+        hidden = layers.Dense(32, activation='relu')(hidden)
 
-        return hidden, [state_h, state_c]
+        return hidden
 
 
     def update_from_global_model(self):
@@ -125,7 +119,7 @@ class AC_Network():
 
         # Value loss
         with tf.GradientTape() as tape:
-            policy,value,_,_ = self.model(obs)
+            policy,value = self.model(obs)
             v_loss = self.value_loss(target_v, value)
             p_loss, entropy = self.policy_loss(advantages, actions, policy)
             tot_loss = p_loss + v_loss
@@ -166,20 +160,13 @@ class AC_Network():
 
     def obs_dict_to_lists(self, obs):
         all_vec_obs = []
-        all_rec_actor_obs = []
-        all_rec_critic_obs = []
 
         for handle in obs:
             agent_obs = obs[handle]
-            vec_obs = agent_obs[0]
-            rec_actor_obs = agent_obs[1]
-            rec_critic_obs = agent_obs[2]
+            #vec_obs = agent_obs[0]
+            all_vec_obs.append(agent_obs)
 
-            all_vec_obs.append(vec_obs)
-            all_rec_actor_obs.append(rec_actor_obs)
-            all_rec_critic_obs.append(rec_critic_obs)
-
-        return [all_vec_obs, all_rec_actor_obs, all_rec_critic_obs]
+        return np.asarray(all_vec_obs)
 
 
     def get_best_actions_and_values(self, obs, env):
@@ -193,7 +180,7 @@ class AC_Network():
             idx += 1
 
         obs_list = self.obs_dict_to_lists(obs)
-        predcition, values, a_rec_h, a_rec_c, c_rec_h, c_rec_c = self.model.predict_on_batch(obs_list)
+        predcition, values  = self.model.predict_on_batch(obs_list)
         actions = {}
         values_dict = {}
 
@@ -204,10 +191,6 @@ class AC_Network():
             a_dist = predcition[idx]
             actions[handle] = np.argmax(a_dist)
             values_dict[handle] = values[idx,0]
-
-            obs_builder.actor_rec_state[handle] = [a_rec_h[idx], a_rec_c[idx]]
-            obs_builder.critic_rec_state[handle] = [c_rec_h[idx], c_rec_c[idx]]
-
             env.agents[handle].last_action = actions[handle]
 
         return actions, values_dict
@@ -225,7 +208,7 @@ class AC_Network():
             idx += 1
 
         obs_list = self.obs_dict_to_lists(obs)
-        predcition, values, a_rec_h, a_rec_c, c_rec_h, c_rec_c = self.model.predict_on_batch(obs_list)
+        predcition, values  = self.model.predict_on_batch(obs_list)
         actions = {}
         values_dict = {}
 
@@ -235,11 +218,7 @@ class AC_Network():
             idx = mapping[handle]
             a_dist = predcition[idx]
             actions[handle] = np.random.choice([0,1,2,3], p = a_dist)
-            
             values_dict[handle] = values[idx,0]
-            obs_builder.actor_rec_state[handle] = [a_rec_h[idx], a_rec_c[idx]]
-            obs_builder.critic_rec_state[handle] = [c_rec_h[idx], c_rec_c[idx]]
-
             env.agents[handle].last_action = actions[handle]
 
         return actions, values_dict
@@ -284,20 +263,24 @@ class AC_Network():
             else:
                 return RailEnvActions.DO_NOTHING
 
-        if self.is_agent_on_unusable_switch(agent.next_pos, agent.next_dir):
+        if self.is_agent_on_unusable_switch(agent.next_pos, agent.direction):
             if agent_action == 3:
-                if self.has_incomming_traffic(agent):
-                    return RailEnvActions.STOP_MOVING
                 return RailEnvActions.MOVE_FORWARD
             else:
-                return RailEnvActions.STOP_MOVING
+                if agent.speed_data['speed'] > 0:
+                    return RailEnvActions.STOP_MOVING
+                else:
+                    return RailEnvActions.DO_NOTHING
 
         if agent_action == 3:
             return RailEnvActions.DO_NOTHING
 
         if agent_action == 2:
             agent.wait = 30
-            return RailEnvActions.STOP_MOVING
+            if agent.speed_data['speed'] > 0:
+                return RailEnvActions.STOP_MOVING
+            else:
+                return RailEnvActions.DO_NOTHING
 
         dir = agent.direction
         transition = self.env.rail.get_transitions(*agent.position, agent.direction)
@@ -323,15 +306,6 @@ class AC_Network():
             return RailEnvActions.MOVE_RIGHT
 
         return RailEnvActions.MOVE_FORWARD
-
-    def has_incomming_traffic(self, agent):
-        obs = agent.tree_obs
-        if obs is not None:
-            root_node = obs[0][0][1]
-            if len(root_node.other_agents) > 0:
-                return True
-        return False
-
 
     def is_agent_on_unusable_switch(self, position, dir):
         ''' a tile is a switch with more than one possible transitions for the

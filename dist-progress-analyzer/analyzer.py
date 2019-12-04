@@ -80,7 +80,7 @@ def start_train(resume):
             max_steps = 450,
             rail_type = 'sparse',
             rail_gen_params = {
-                'num_cities': 20,
+                'num_cities': 10,
                 'grid_mode': False,
                 'max_rails_between_cities': 3,
                 'max_rails_in_city' : 4
@@ -163,7 +163,7 @@ def start_train(resume):
                     'arrived' : agents_arrived,
                     'reward' : episode_reward,
                     'steps' : episode_step_count,
-                    'time' : datetime()
+                    'time' : datetime.now()
                 }, ignore_index=True)
             
         df.to_csv('analysis_round_' + str(round) + '.csv')

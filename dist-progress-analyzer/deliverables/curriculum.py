@@ -18,7 +18,7 @@ class Curriculum:
                 },
             2: {
                 'level_generator' : lambda env: self.change_grid_round2(env),
-                'switch_on_successrate': 0.70
+                'switch_on_successrate': 0.75
                 },
             3: {
                 'level_generator' : lambda env: self.change_grid_round3(env),
@@ -100,16 +100,16 @@ class Curriculum:
 
     def change_grid_round2(self, env):
         env.update_env_with_params(
-            width=40,
-            height=40,
+            width=50,
+            height=50,
             num_agents=20,
             max_steps = 1000,
             rail_type = 'sparse',
             rail_gen_params = {
-                'num_cities': 9,
-                'grid_mode': True,
+                'num_cities': 3,
+                'grid_mode': False,
                 'max_rails_between_cities': 2,
-                'max_rails_in_city' : 3
+                'max_rails_in_city' : 2
             },
             seed = self.seed       
         )
@@ -123,7 +123,7 @@ class Curriculum:
             rail_type = 'sparse',
             rail_gen_params = {
                 'num_cities': 5,
-                'grid_mode': True,
+                'grid_mode': False,
                 'max_rails_between_cities': 2,
                 'max_rails_in_city' : 2
             },
@@ -139,7 +139,7 @@ class Curriculum:
             rail_type = 'sparse',
             rail_gen_params = {
                 'num_cities': 10,
-                'grid_mode': True,
+                'grid_mode': False,
                 'max_rails_between_cities': 2,
                 'max_rails_in_city' : 3
             },
@@ -155,7 +155,7 @@ class Curriculum:
             rail_type = 'sparse',
             rail_gen_params = {
                 'num_cities': 15,
-                'grid_mode': True,
+                'grid_mode': False,
                 'max_rails_between_cities': 2,
                 'max_rails_in_city' : 4
             },

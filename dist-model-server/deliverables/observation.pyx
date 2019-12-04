@@ -545,21 +545,57 @@ class CustomTreeObsForRailEnv(ObservationBuilder):
 class RailObsBuilder(CustomTreeObsForRailEnv):
     def __init__(self):
         super().__init__(params.tree_depth)
-        self.actor_rec_state = {}
-        self.critic_rec_state = {}
         self.prep_step = 0
 
     def reset(self):
-        self.actor_rec_state = {}
-        self.critic_rec_state = {}
         self.prep_step = 0
         return super().reset()
 
     def get_many(self, handles=None):
         start = time()
-        #obs = super().get_many(handles=handles)
 
+        # Set default values
         agents = self.env.agents
+        for agent in agents:
+            agent.activate = False
+
+        num_agents = len(agents)
+        num_active_agents = 0
+        num_ready_agents = 0
+        for agent in agents:
+            if agent.status == RailAgentStatus.ACTIVE:
+                num_active_agents += 1
+            if agent.status == RailAgentStatus.READY_TO_DEPART:
+                num_ready_agents += 1
+
+        progress = self.env._elapsed_steps/self.env._max_episode_steps
+        departure_rate = np.min([np.max([progress*2,0.2]),  1.0])
+        num_target_active_agents = np.max([1, int(num_agents * departure_rate)])
+
+        next_to_activate = None
+        largest_dist_sum = 0
+        speed_of_largest_dist = 0
+
+        if num_active_agents < num_target_active_agents:
+            for agent in agents:
+                agent.dist_sum = 0
+                if agent.status == RailAgentStatus.READY_TO_DEPART:
+                    posy = agent.initial_position[0]
+                    posx = agent.initial_position[1]
+                    agent.dist_sum = 0
+                    for other_agent in agents:
+                        if other_agent.status == RailAgentStatus.ACTIVE:
+                            dist = np.abs(other_agent.initial_position[0] - posy)+np.abs(other_agent.initial_position[1] - posx)
+                            agent.dist_sum += dist * agent.speed_data['speed']
+                        
+                if (agent.dist_sum > largest_dist_sum) or (agent.dist_sum == largest_dist_sum and speed_of_largest_dist < agent.speed_data['speed']):
+                    largest_dist_sum = agent.dist_sum
+                    speed_of_largest_dist = agent.speed_data['speed']
+                    next_to_activate = agent.handle
+                
+        if next_to_activate is not None:
+            agents[next_to_activate].activate = True
+
         actions = {}
         for agent in agents:
             try:
@@ -568,30 +604,38 @@ class RailObsBuilder(CustomTreeObsForRailEnv):
             except:
                 agent.wait = 0
 
-            agent.next_pos = self.next_pos(agent.position, agent.direction)
+            agent.next_pos, agent.next_dir = self.next_pos(agent.position, agent.direction)
 
             agent.is_on_unusable_switch = self.is_agent_on_unusable_switch(agent.position, agent.direction)
             agent.is_on_usable_switch = self.is_agent_on_usable_switch(agent.position, agent.direction)
-            agent.is_next_unusable_switch = self.is_agent_on_unusable_switch(agent.next_pos, agent.direction)
-            agent.is_next_usable_switch = self.is_agent_on_usable_switch(agent.next_pos, agent.direction)
+            agent.is_next_unusable_switch = self.is_agent_on_unusable_switch(agent.next_pos, agent.next_dir)
+            agent.is_next_usable_switch = self.is_agent_on_usable_switch(agent.next_pos, agent.next_dir)
+
+            '''
+            print('----------------------------------')
+            print('curr unus:', agent.is_on_unusable_switch)
+            print('curr us:', agent.is_on_usable_switch)
+            print('nxt unus:', agent.is_next_unusable_switch)
+            print('nxt us:', agent.is_next_usable_switch)
+            print('----------------------------------')
+            '''
 
             if agent.status == RailAgentStatus.READY_TO_DEPART:
-                actions[agent.handle] = RailEnvActions.MOVE_FORWARD
+                if agent.activate:
+                    actions[agent.handle] = RailEnvActions.MOVE_FORWARD
+                else:
+                    actions[agent.handle] = RailEnvActions.DO_NOTHING
 
-            elif agent.wait > 0 and agent.speed_data['speed'] > 0:
+            elif agent.wait > 0 and agent.moving > 0:
                 actions[agent.handle] = RailEnvActions.STOP_MOVING
-
-            elif agent.wait > 0 and agent.speed_data['speed'] == 0:
+            elif agent.wait > 0 and not agent.moving > 0:
                 actions[agent.handle] = RailEnvActions.DO_NOTHING
-
             elif agent.malfunction_data['malfunction'] > 0:
                 actions[agent.handle] = RailEnvActions.DO_NOTHING
-
             elif agent.is_next_unusable_switch:
                 pass 
             elif agent.is_next_usable_switch:
                 pass 
-
             elif not agent.is_on_usable_switch:
                 actions[agent.handle] = RailEnvActions.MOVE_FORWARD
 
@@ -729,15 +773,15 @@ class RailObsBuilder(CustomTreeObsForRailEnv):
                 agent_obs = agent_obs.childs['F']
 
             tree = self.binary_tree(agent_obs)
-
+            agent = self.env.agents[handle]
             tree_obs = []
             for layer in tree:
                 for node in layer:
-                    node_obs = node_to_obs(node)
+                    node_obs = node_to_obs(node, agent)
                     tree_obs.append(node_obs)
 
             tree_obs = np.concatenate(tree_obs)
-            agent = self.env.agents[handle]
+            
 
             # Current info about the train itself
             vec_obs = np.zeros(params.vec_state_size)
@@ -798,6 +842,7 @@ class RailObsBuilder(CustomTreeObsForRailEnv):
         if np.sum(transition) == 1:
             return False
         else:
+            #print(transition)
             return True
 
     def is_agent_on_unusable_switch(self, position, dir):
@@ -817,74 +862,24 @@ class RailObsBuilder(CustomTreeObsForRailEnv):
 
         return False
 
-    def agent_action_to_env_action(self, agent, agent_action):
-        ''' agent actions: left, right, wait
-            env actions: 'do nothing, left, forward, right, brake 
-        '''
-        if agent.position is None:
-            # Ready to depart. Wait or go?
-            if agent_action == 3:
-                return RailEnvActions.MOVE_FORWARD
-            else:
-                return RailEnvActions.DO_NOTHING
-
-        if self.is_agent_on_unusable_switch(agent.next_pos, agent.direction):
-            if agent_action == 3:
-                return RailEnvActions.MOVE_FORWARD
-            else:
-                if agent.speed_data['speed'] > 0:
-                    return RailEnvActions.STOP_MOVING
-                else:
-                    return RailEnvActions.DO_NOTHING
-
-        if agent_action == 3:
-            return RailEnvActions.DO_NOTHING
-
-        if agent_action == 2:
-            agent.wait = 5
-            if agent.speed_data['speed'] > 0:
-                return RailEnvActions.STOP_MOVING
-            else:
-                return RailEnvActions.DO_NOTHING
-
-        dir = agent.direction
-        transition = self.env.rail.get_transitions(*agent.position, agent.direction)
-
-        can_go_left = False
-        can_go_forward = False
-        can_go_right = False
-
-        if transition[(3 + dir) % 4] == 1:
-            can_go_left = True
-        if transition[(0 + dir) % 4] == 1:
-            can_go_forward = True
-        if transition[(1 + dir) % 4] == 1:
-            can_go_right = True
-
-        # print('Can go left:', can_go_left)
-        # print('Can go forward:', can_go_forward)
-        # print('Can go right:', can_go_right)
-        
-        if agent_action == 0 and can_go_left:
-            return RailEnvActions.MOVE_LEFT
-        if agent_action == 1 and can_go_right:
-            return RailEnvActions.MOVE_RIGHT
-
-        return RailEnvActions.MOVE_FORWARD
 
 
     def next_pos(self, position, direction):
         if position is None:
-            return None
+            return None, None
+
+        # print('Curr. pos:', position, 'dir', direction)
 
         transition = self.env.rail.get_transitions(*position, direction)
         if np.sum(transition) > 1:
-            None
+            return None, None
 
         posy = position[0] - transition[0]  + transition[2]
         posx = position[1] + transition[1] - transition[3]
 
-        return [posy, posx]
+        new_dir = np.argmax(transition)
+        # print('Next pos:', [posy, posx], 'dir', new_dir)
+        return [posy, posx], new_dir
 
 
 def buffer_to_obs_lists(episode_buffer):
@@ -950,7 +945,7 @@ def one_hot(field):
         return 1.0
 
 
-def node_to_obs(node_tuple):
+def node_to_obs(node_tuple, agent):
     if node_tuple[1] is None:
         return [0]*params.num_features
 
@@ -1019,6 +1014,7 @@ def node_to_obs(node_tuple):
             clostest_agent.last_action = 0
 
         agent_action_onehot[np.arange(0,4) == clostest_agent.last_action] = 1
+        obs[-5] = clostest_agent.moving
         obs[-4:] = agent_action_onehot
 
     return obs

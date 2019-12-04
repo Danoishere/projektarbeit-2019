@@ -40,6 +40,14 @@
             "cwd": "${workspaceFolder}/dist-benchmark-runner"
         },
         {
+            "name": "Run analyzer",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/dist-progress-analyzer/analyzer.py",
+            "console": "integratedTerminal", 
+            "cwd": "${workspaceFolder}/dist-progress-analyzer"
+        },
+        {
             "name": "Run progress evaluator",
             "type": "python",
             "request": "launch",

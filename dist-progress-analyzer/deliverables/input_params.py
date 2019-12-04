@@ -1,7 +1,6 @@
 max_episode_length = 40
 gamma = 1.0
 
-
 entropy_factor = 0.05
 learning_rate = 5e-5
 

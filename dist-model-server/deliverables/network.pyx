@@ -233,7 +233,7 @@ class AC_Network():
         return RailObsBuilder()
 
     def get_agent_actions(self, env, obs, info, use_best_actions):
-        self.env = env.env
+        self.env = env
         agents = self.env.agents
         actions = dict(self.env.next_actions)
         if use_best_actions:
