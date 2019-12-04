@@ -49,7 +49,7 @@ def start_train(resume):
     # Wait with this import until we compiled all required modules!
     from multiworker import create_worker
 
-    num_workers = mp.cpu_count() - 1
+    num_workers = np.min([mp.cpu_count() - 1, 10])
     should_stop = mp.Value(c_bool, False)
 
     while True:
