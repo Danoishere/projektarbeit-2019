@@ -163,7 +163,7 @@ def start_train(resume):
                     'arrived' : agents_arrived,
                     'reward' : episode_reward,
                     'steps' : episode_step_count,
-                    'time' : datetime()
+                    'time' : datetime.now()
                 }, ignore_index=True)
             
         df.to_csv('analysis_round_' + str(round) + '.csv')
