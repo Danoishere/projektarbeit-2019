@@ -51,15 +51,17 @@ The flatland environment provides a base to build custom observation builders th
 The flatland environment is designed in a way to resemble a classical RL environement. This means, on every timestep, we receive observations for each agent, calculate an action and hand this action to the environment.
 
 \begin{algorithm}[H]
-\KwData{flatland environment at timestep $\mathcal{t}$}
-\KwResult{flatland environment at timestep $\mathcal{t+1}$}
-$\mathcal{A}$\\
-\For{every agent}{
-	\eIf{understand}{
-		go to next section\;
-		current section becomes this one\;
-	}{
-		go back to the beginning of current section\;
+\KwData{initialized flatland environment, initial observation {}}
+\KwResult{flatland environment at timestep $\mathcal{t +1}$}
+\While{episode not terminal}{
+	$\mathcal{A}$\\
+	\For{every agent $\mathcal{a}$}{
+		\eIf{understand}{
+			go to next section\;
+			current section becomes this one\;
+		}{
+			go back to the beginning of current section\;
+		}
 	}
 }
 \caption{How to write algorithms}
