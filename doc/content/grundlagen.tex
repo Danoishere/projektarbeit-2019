@@ -43,7 +43,7 @@ loss_{policy}=log \pi(s_{t})*\mathcal{A}
 This means that for actions where the received reward $\mathcal{R}$ exceeds the expected reward $\mathcal{V(s)}$ the policy update gets multiplied by a positive advantage. Therefore, the update of the neural network gets update into a direction that favors the experienced actions based on the seen states.
 
 \subsection*{Relation to this Work}\label{rl_relation_work}
-The goal of this work is to apply an RL algorithm to the vehicle rescheduling problem. Based on the work of S. Hubacher (source!!!), we use a distributed RL algorithm that learns a policy to control the traffic of trains on a rail grid. To do so, we use the asynchronous advantage actor critic algorithm \cite{a3c} and expand its definiton to the use case of multiple agents, similar to \cite{marltraffica3c}.
+The goal of this work is to apply an RL algorithm to the vehicle rescheduling problem. Based on the work of S. Hubacher \cite{flatlandstephan}, we use a distributed RL algorithm that learns a policy to control the traffic of trains on a rail grid. To do so, we use the asynchronous advantage actor critic algorithm \cite{a3c} and expand its definiton to the use case of multiple agents, similar to \cite{marltraffica3c}.
 
 \section{The Flatland Rail Environment}\label{flatland_intro}
 The flatland environment is a virtual simulation environment provided by the Swiss Federal Railway SBB and the crowdsourcing platform AICrowd.

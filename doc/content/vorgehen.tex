@@ -24,15 +24,15 @@ For training purposes, we started by reimplementing the algorithm by ourselfes. 
 In this work, we proceed by comparing the final version to versions without these features. 
 It is important to note, that the training process of reinforcement learning and especially multi agent reinforcement learning is hard to evaluate. Depending on the initial weights of the neural networks and the shape of the environments, the performance may vary on each restart. Also, the number of workers can 
 
-
-\section{A3C Implementation for Flatland}\label{enhanced_observations}
+\section{Reinforcement Learning for Faltland}
+\subsection{A3C Implementation for Flatland}\label{enhanced_observations}
 Originally, the asynchronous advantage actor critic algorithm (A3C) has been designed for use in a single agent environment \cite{a3c}.
 By applying it in a multi agent environment, we implicitly convert the environment into a non-stationary environment.
 While applying A3C in a multi agent setting, the other agents can be viewed as part of the environment. This means, the behaviour of the environment changes while training, due to the fact that the behaviour of the other agents changes. 
 
 Gupta et al. \cite{multiagent_comp_a3c_dqn_etc} finds, that RL methods like Deep-Q networks (DQN) and Trust region policy optimization (TRPO) are not performing well in a multi agent environment, due to the combination of experience replay and non-stationarity of the environment. We therefore suggest, that it is not recommendable to keep an experience replay buffer with older episodes. Otherwise the sampled experience might represent old agent behaviour which is then learned.
 
-\section{Enhanced Observations}\label{enhanced_observations}
+\subsection{Observation Design}\label{enhanced_observations}
 The flatland environment provides a base to build custom observation builders that can be used to create a state representation for the agents. Based on the provided TreeObsForRailEnv (see \autoref{observations}), we implement a custom observation builder which we use to produce an input vector to our neural network. This observation builder takes the the current state of the environment and produces a fixed size numeric vectors with values between 0 and 1 for each agent. This input vector should fulfil an number of requirements:
 \begin{itemize}
 	\item Each rail section the agent possibly rides on next should be visible to the agent.
@@ -43,25 +43,29 @@ The flatland environment provides a base to build custom observation builders th
 	\item 
 \end{itemize}
 
-\section{Distrubuted Architecture and Parallelism}\label{dist_architecture}
+\subsection{Action Space Reduction}\label{reduced_action_space}
 Für die vorliegende Arbeit wurden die unten aufgeführten Programme eingesetzt.
 
-\section{Action Space Reduction}\label{reduced_action_space}
-Für die vorliegende Arbeit wurden die unten aufgeführten Programme eingesetzt.
 
-\section{Curriculum Learning and Reward assignment}\label{curriculum_learning}
+\subsection{Curriculum Learning and Reward assignment}\label{curriculum_learning}
 The reward assignment in flatland can be freely configured. But as long as there is not some distance-to-target dependent reward function, the probability, that an agent with an uninformed policy finds its target is small. This is especially the case for large environments with many trains on it. For example, most evaluation environments of flatland round 2 have up to 200 individual agents and are up 100x100 tiles large (SOURCE!). The rollout of such an environment takes a lot more time than the rollout of a 20x20 environment with 5 trains. Also, the probability, that a train arrives in a small environement is larger and therefore, the experience is more valuable for training.
 To improve training times, it makes therefore sense to start with a small environment and move to larget ones, once the agents mastered pathfinding and basic collision avoidance.
 
-
-\section{Entropy balancing}\label{enhanced_observations}
+\subsection{Entropy Balancing and Hyperparameter Tuning}\label{enhanced_observations}
 In RL, it is of great importance to find the right combination of exploration and explotation. During exploration, the agent explores as much of the state space as possible. This enables the agent to later exploit the found states which are beneficial. Without this exploration, there is a chance that the agent settles on suboptimal policies too quickly and ignores parts of the state space the agent has never seen.\\
 The policy is characterized by a probability distribution of actions.
 
-\section{Agent communication}\label{reduced_action_space}
+
+\section{Distrubuted Architecture and Parallelism}\label{dist_architecture}
 Für die vorliegende Arbeit wurden die unten aufgeführten Programme eingesetzt.
 
 
+
+
+
+\section{Agent communication}\label{reduced_action_space}
+
+Communication in multi agent RL is a topic of active research and considered very complex
 
 
 
