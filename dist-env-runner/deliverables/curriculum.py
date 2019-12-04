@@ -18,7 +18,7 @@ class Curriculum:
                 },
             2: {
                 'level_generator' : lambda env: self.change_grid_round2(env),
-                'switch_on_successrate': 0.75
+                'switch_on_successrate': 0.70
                 },
             3: {
                 'level_generator' : lambda env: self.change_grid_round3(env),
@@ -106,10 +106,10 @@ class Curriculum:
             max_steps = 1000,
             rail_type = 'sparse',
             rail_gen_params = {
-                'num_cities': 5,
+                'num_cities': 9,
                 'grid_mode': True,
                 'max_rails_between_cities': 2,
-                'max_rails_in_city' : 2
+                'max_rails_in_city' : 3
             },
             seed = self.seed       
         )
