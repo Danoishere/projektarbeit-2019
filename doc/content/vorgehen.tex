@@ -1,3 +1,5 @@
+\usepackage{hyperref}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %  _____   ____  _____                                          %
 % |_   _| /  __||  __ \    Institute of Computitional Physics   %
@@ -18,13 +20,13 @@
 
 \chapter{Approach and Methodology}\label{chap.vorgehen}
 \section{Basic Considerations}\label{basic_cons}
-As described under \autoref{baseline}, our work is based on the work of S. Huschauer \cite{flatland}. We take the idea of using the A3C algorithm to solve the flatland problem and try various modifications in an attempt to improve its performance.\\
+As described under \autoref{baseline}, our work is based on the work of S. Huschauer \cite{flatlandstephan}. We take the idea of using the A3C algorithm to solve the flatland problem and try various modifications in an attempt to improve its performance.\\
 We proceed by giving an intution, what we want to achieve by changing the specified part, followed by an experiment to either prove or disprove our hypothesis.\\
 For training purposes, we started by reimplementing the algorithm by ourselfes. This enabled us from the beginning to gain a deeper understanding of how the algorithm works and where we could find possible areas for improvement. From there, we iteratively added these potential improvements to later compare them against the version without this feature.
 
 \subsection*{Reproducability in Reinforcement Learning}\label{enhanced_observations}
 It is important to note, that the training process of reinforcement learning and especially multi agent reinforcement learning is hard to evaluate and reproduce. Depending on the initial weights of the neural networks and the shape of the environments, the performance may vary on each restart. Also, the number of workers can 
-significantly influence the training performance. To counter the latter, we execute all presented experiments on machines with the same specifications (see TODO-INFRASTRUCTURE).\\
+significantly influence the training performance. To counter the latter, we execute all presented experiments on machines with the same specifications (see \autoref{infrastructure}).\\
 Another point that is hard to reproduce is training stability. In A3C, an important instrument to prevent the policy from converging too early is using an additional entropy term. Our way to maintain stability with changing environments is discussed in \autoref{hy}.
 
 \section{Reinforcement Learning for Flatland}
@@ -44,28 +46,34 @@ The flatland environment provides a base to build custom observation builders th
 	\item For the next grid tile, the agent should be able to detect if it is a switch and if so, if it is one the agent can make a decision on. (see \autoref{flatland_intro} for non-usable switches).
 	\item 
 \end{itemize}
-\section{Distributed Architecture and Parallelism}\label{dist_architecture}
+
+\section{Distributed Architecture and Parallelism}\label{dist_architecture}
 \subsection{Infrastructure}\label{infrastructure}
 We use various computers and servers to train our model. Most of the time we run the training of our model on a test infrastructure server of the ZHAW School of Engineering.
 The server consists out of 56 CPU cores and 721Gb memory. We connect 3 Openstack machines with 8 CPU cores each to this server, to increase our training. \\
-The flatland environment is running on each cpu core and the results are sent to a web server which updates the model and sent the new neuronal network weights back to the clients. \\
+The flatland environment is running on each cpu core and the results are sent to a web server which updates the model and sent the updated neuronal network weights back to the client. \\
 The reason why we are using CPU cores over GPU performance is that the reinforcement algorithm A3C performs better on CPUs instead of GPUs. \\  %TODO: Grund eventuell erweitern?
 
 \begin{gather*}
 	\includegraphics[width=300pt]{images/visio/architecture.png}
 \end{gather*}
 
+All experiments (mentioned in \autoref{enhanced_observations}) are made on a Openstack Machine with 8 CPU cores and 64Gb memory. Each experiment ran for 12 hours.
+
 \subsection{Distributed training}
 We decided during round 1 of the Flatland challenge to change the training of the neuronal network to a distributed approach. \\
 We use the computer with the most memory and cores to run a web server, which distributes the neuronal network, the observation builder and also certain input parameters at training start. \\
-The workers, all other CPUs on which an instance of the Flatland environment is running, receive the files and compile them into C code with Cython to execute them.\\
+The workers, all other CPUs on which an instance of the Flatland environment is running, receive the files and compile them into C code with Cython.\\
 After the training start the general cycle for each worker is as following:
+
 \begin{enumerate}
 	\item Get current model from web server
 	\item Execute episode on Flatland environment
 	\item Calculate gradient and upload weights
 	\item Repeat
-\end{enumerate}\subsection*{Action Space Reduction and Script Policy Actions}\label{reduced_action_space}
+\end{enumerate}
+
+\subsection*{Action Space Reduction and Script Policy Actions}\label{reduced_action_space}
 The flatland environment is designed in a way to resemble a classical RL environment. This means, on every timestep, we receive observations for each agent, calculate an action and hand this action to the environment, visible in pseudocode \autoref{alg:no_reduction}. 
 
 
@@ -145,8 +153,24 @@ To improve training times, it makes therefore sense to start with a small enviro
 In RL, it is of great importance to find the right combination of exploration and explotation. During exploration, the agent explores as much of the state space as possible. This enables the agent to later exploit the found states which are beneficial. Without this exploration, there is a chance that the agent settles on suboptimal policies too quickly and ignores parts of the state space the agent has never seen.\\
 The policy is characterized by a probability distribution of actions.
 
-\subsection*{Agent Communication}\label{reduced_action_space}
-Communication in multi agent RL is a topic of active research and considered very complex
+\subsection*{Agent Communication}\label{agent_communication}
+We asked ourselves how blocking is avoided in the real world?\\
+On the SBB rail environment traffic lights are used to prevent collisions between trains. The traffic lights are controlled by a central control point.\\
+On the streets signs, traffic lights and basic rules like right before left are used to prevent collisions. \\
+If signs and traffic lights are missing for example high up in the mountains, buses are using their horn to inform upcoming vehicles. \\
+Our idea was to implement such a communication between the agents.
+We consider 3 different options of communication:
+\begin{itemize}
+	\item Agents can choose what they communicate
+	\item Agents communicate their next action
+	\item Implicit communication
+\end{itemize}
+
+We start with open communication, which means the agent can decide by himself what he is going to communicate to the other agents... %TODO: continue
+
+Communication in multi agent RL is a topic of active research and considered very complex. As we could not reach the same performance with communication as without using communication, we deciced to remove the explicit communication.
+
+
 
 
 \section{Distrubuted Architecture and Parallelism}\label{dist_architecture}

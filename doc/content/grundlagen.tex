@@ -40,7 +40,7 @@ This advantage is then used to update the policy.
 \begin{gather*}
 loss_{policy}=log \pi(s_{t})*\mathcal{A}
 \end{gather*}
-This means that for actions where the received reward $\mathcal{R}$ exceeds the expected reward $\mathcal{V(s)}$ the policy update gets multiplied by a positive advantage. Therefore, the update of the neural network gets update into a direction that favors the experienced actions based on the seen states.
+This means that for actions where the received reward $\mathcal{R}$ exceeds the expected reward $\mathcal{V(s)}$ the policy update gets multiplied by a positive advantage. Therefore, the update of the neural network gets adjust into a direction that favors the experienced actions based on the seen states.
 
 \subsection*{Relation to this Work}\label{rl_relation_work}
 The goal of this work is to apply an RL algorithm to the vehicle rescheduling problem. Based on the work of S. Hubacher \cite{flatlandstephan}, we use a distributed RL algorithm that learns a policy to control the traffic of trains on a rail grid. To do so, we use the asynchronous advantage actor critic algorithm \cite{a3c} and expand its definiton to the use case of multiple agents, similar to \cite{marltraffica3c}.
@@ -68,7 +68,7 @@ U = \{ \text{Do nothing, go left, go forward, go right, brake} \}
 It is important to note that trains do not have the ability to go backwards and therefore need to plan ahead to avoid getting stuck. To learn which actions to take, the agents have to learn to adapt to an unknown environment due to the fact that the environments are randomly generated and differ on each episode. Depending on the given parameters, the size and complexity of the grid can be adjusted. This allows for dynamically changing the difficulty for the agents.\\
 The goal of each agent is to reach an assigned target train station as fast as possible. Agents that reach this destination are removed from the grid which means, they can no longer obstruct the path of other trains.
 \subsection*{Agent Evaluation}\label{rl_agent_eval}
-AICrowd an SBB provide a system for agent evaluation. This system evaluates the policy on a number of unknown environments and outputs the percentage of agents that reached their destination as well as the received reward while doing so. The evaluation reward scheme is thereby as follows:
+AICrowd and SBB provide a system for agent evaluation. This system evaluates the policy on a number of unknown environments and outputs the percentage of agents that reached their destination as well as the received reward while doing so. The evaluation reward scheme is thereby as follows:
 \begin{gather*}
 R_{t}= 
 \begin{cases}
@@ -79,7 +79,7 @@ R_{t}=
 All submissions to the flatland challenge are getting graded by the percentage of agents that made it to destionation. (Source) Additionally we use our own evaluation parcour with an increasing difficulty of environments to get more insight into the agents strenghts and weaknesses.
 \subsection*{Observations}\label{observations}
 The flatland environment allows to create observation builders to observe the environment for each agent. While it is possible to observe the whole grid, this does usually not make sense due to the fact that many parts of the rail grid are not relevant to a single train. Flatland offers by default two different observation builders.\\\\
-\textbf{GlobalObsForRailEnv} creates three arrays with the dimensions of the rectangular rail grid. The first array contains the transition information of the rail grid. For each cells, there are 16 bit values, 4 for each possible direction a train is facing.\\\\
+\textbf{GlobalObsForRailEnv} creates three arrays with the dimensions of the rectangular rail grid. The first array contains the transition information of the rail grid. For each cells, there are 16 bit values, 4 bit for each possible direction a train is facing.\\\\
 \textbf{TreeObsForRailEnv} creates a graph with sections of the grid as nodes from the perspective of the train.
 This means, only the switches which the train is actually able to take define a single node. As an example, a train on a \textit{case 0} switch heading from north to south is not able to make a decision on this switch and therefore, the TreeObservation does not put the sections before and after the switch into two different nodes but just into a single node.
 \\
