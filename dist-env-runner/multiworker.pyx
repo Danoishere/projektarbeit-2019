@@ -78,7 +78,23 @@ class Worker():
             self.local_model.update_from_global_model()
             self.local_model.update_entropy_factor()
             self.episode_count = 0
-            self.curriculum.update_env_to_curriculum_level(self.env)
+
+            env.update_env_with_params(
+                width=100,
+                height=100,
+                num_agents=50,
+                max_steps = 700,
+                rail_type = 'sparse',
+                rail_gen_params = {
+                    'num_cities': 30,
+                    'grid_mode': True,
+                    'max_rails_between_cities': 2,
+                    'max_rails_in_city' : 4
+                },
+                seed = self.seed       
+            )
+
+            #self.curriculum.update_env_to_curriculum_level(self.env)
             use_best_actions = False
 
             time_start = time()
@@ -92,20 +108,7 @@ class Worker():
             '''
             
 
-            while not bool(self.should_stop.value):    
-
-                # Check with server if there is a new curriculum level available
-                if self.episode_count % 50 == 0:
-                    self.local_model.update_entropy_factor()
-                    old_curriculum_level = self.curriculum.current_level
-                    self.curriculum.update_curriculum_level()
-
-                    # Only regenerate env on curriculum level change. Otherwise just reset
-                    # Important, because otherwise the player doens't see all levels
-                    if self.curriculum.current_level != old_curriculum_level:
-                        self.curriculum.update_env_to_curriculum_level(self.env)
-                        self.episode_count = 0
-                        self.stats = []
+            while not bool(self.should_stop.value):
 
                 episode_done = False
 
@@ -124,7 +127,6 @@ class Worker():
                 num_agents = len(self.env.env.agents)
                 all_handles = [i for i in range(len(self.env.env.agents))]
                 no_reward = {i:0 for i in range(len(self.env.env.agents))}
-
                 
                 prep_steps = 0
                 use_best_actions = bool(getrandbits(1))

@@ -76,16 +76,16 @@ def start_train(resume):
         env.update_env_with_params(
             width=100,
             height=100,
-            num_agents=num_agents,
-            max_steps = 450,
+            num_agents=50,
+            max_steps = 700,
             rail_type = 'sparse',
             rail_gen_params = {
-                'num_cities': 20,
-                'grid_mode': False,
-                'max_rails_between_cities': 3,
+                'num_cities': 30,
+                'grid_mode': True,
+                'max_rails_between_cities': 2,
                 'max_rails_in_city' : 4
             },
-            seed = 0
+            seed = 1
         )
 
         for r in range(num_repeat):
