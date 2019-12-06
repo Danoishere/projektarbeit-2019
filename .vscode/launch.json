@@ -48,6 +48,14 @@
             "cwd": "${workspaceFolder}/dist-progress-evaluator"
         },
         {
+            "name": "Plotting",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/analysis-and-plotting/plottraining.py",
+            "console": "integratedTerminal", 
+            "cwd": "${workspaceFolder}/analysis-and-plotting"
+        },
+        {
             "name": "Run local test environment",
             "type": "python",
             "request": "launch",
