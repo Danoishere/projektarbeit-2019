@@ -105,13 +105,13 @@ def punish_impossible_actions(env, obs, actions, rewards):
             print('right pen')
 
 
-width = 30  # With of map
-height = 30  # Height of map
-nr_trains = 20 # Number of trains that have an assigned task in the env
-cities_in_map = 5  # Number of cities where agents can start or end
+width = 40  # With of map
+height = 40  # Height of map
+nr_trains = 50 # Number of trains that have an assigned task in the env
+cities_in_map = 10  # Number of cities where agents can start or end
 seed = 14  # Random seed
 grid_distribution_of_cities = True  # Type of city distribution, if False cities are randomly placed
-max_rails_between_cities = 3  # Max number of tracks allowed between cities. This is number of entry point to a city
+max_rails_between_cities = 2  # Max number of tracks allowed between cities. This is number of entry point to a city
 max_rail_in_cities = 4  # Max number of parallel tracks within a city, representing a realistic trainstation
 
 rail_generator = sparse_rail_generator(max_num_cities=cities_in_map,
@@ -139,7 +139,7 @@ schedule_generator = sparse_schedule_generator(speed_ration_map)
 # during an episode.
 
 stochastic_data = {
-                   'prop_malfunction': 0.3,  # Percentage of defective agents
+                   'prop_malfunction': 0.0,  # Percentage of defective agents
                    'malfunction_rate': 30,  # Rate of malfunction occurence
                    'min_duration': 3,  # Minimal duration of malfunction
                    'max_duration': 20  # Max duration of malfunction

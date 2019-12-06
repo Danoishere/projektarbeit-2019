@@ -11,7 +11,7 @@ import deliverables.input_params as params
 import random
 from datetime import datetime
 import time
-import msvcrt
+#import msvcrt
 
 from io import StringIO
 from flatland.envs.observations import TreeObsForRailEnv
@@ -234,6 +234,11 @@ class AC_Network():
         for handle in obs:
             idx = mapping[handle]
             a_dist = predcition[idx]
+
+            a_dist *= 2.0
+            a_dist += np.array([0.25,0.25,0.25,0.25])
+            a_dist /= 3.0
+
             actions[handle] = np.random.choice([0,1,2,3], p = a_dist)
             
             values_dict[handle] = values[idx,0]
@@ -244,6 +249,17 @@ class AC_Network():
 
         return actions, values_dict
 
+
+    def get_all_values(self, env):
+        obs = env.obs_builder.get_all_obs()
+        obs_list = self.obs_dict_to_lists(obs)
+
+        values = self.model.predict_on_batch(obs_list)[1]
+        for agent in env.agents:
+            if agent.status == RailAgentStatus.DONE or agent.status == RailAgentStatus.DONE_REMOVED:
+                values = np.append(values,1.0)
+
+        return values
 
     def get_values(self, obs):
         obs_list = self.obs_dict_to_lists(obs)
@@ -257,6 +273,7 @@ class AC_Network():
         self.env = env
         agents = self.env.agents
         actions = dict(self.env.next_actions)
+
         if use_best_actions:
             nn_actions, v = self.get_best_actions_and_values(obs, self.env)
         else:
@@ -266,8 +283,6 @@ class AC_Network():
         for handle in nn_actions:
             if handle not in actions:
                 agent = agents[handle]
-                if handle == 0:
-                    msvcrt.getch()
                 nn_action = nn_actions[handle]
                 env_action = self.agent_action_to_env_action(agent, nn_action)
                 actions[handle] = env_action
