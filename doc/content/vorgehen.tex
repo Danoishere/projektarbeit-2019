@@ -23,11 +23,11 @@
 As described under \autoref{baseline}, our work is based on the work of S. Huschauer \cite{flatlandstephan}. We take the idea of using the A3C algorithm to solve the flatland problem and try various modifications in an attempt to improve its performance.\\
 We proceed by giving an intution, what we want to achieve by changing the specified part, followed by an experiment to either prove or disprove our hypothesis.\\
 For training purposes, we started by reimplementing the algorithm by ourselfes. This enabled us from the beginning to gain a deeper understanding of how the algorithm works and where we could find possible areas for improvement. From there, we iteratively added these potential improvements to later compare them against the version without this feature.
-
+Our work can be categorized into a section about RL for flatland and a section about infrastructure and scaling up the training process.
 \subsection*{Reproducability in Reinforcement Learning}\label{enhanced_observations}
 It is important to note, that the training process of reinforcement learning and especially multi agent reinforcement learning is hard to evaluate and reproduce. Depending on the initial weights of the neural networks and the shape of the environments, the performance may vary on each restart. Also, the number of workers can 
 significantly influence the training performance. To counter the latter, we execute all presented experiments on machines with the same specifications (see \autoref{infrastructure}).\\
-Another point that is hard to reproduce is training stability. In A3C, an important instrument to prevent the policy from converging too early is using an additional entropy term. Our way to maintain stability with changing environments is discussed in \autoref{hy}.
+Another aspect that is hard to reproduce is training stability. In A3C, an important instrument to prevent the policy from converging too early is using an additional entropy term \cite{a3c}. Our way to maintain stability with changing environments is discussed in \autoref{entropy_balancing_hyperparameter}.
 
 \section{Reinforcement Learning for Flatland}
 \subsection*{A3C Implementation}\label{enhanced_observations}
@@ -47,31 +47,6 @@ The flatland environment provides a base to build custom observation builders th
 	\item 
 \end{itemize}
 
-\section{Distributed Architecture and Parallelism}\label{dist_architecture}
-\subsection{Infrastructure}\label{infrastructure}
-We use various computers and servers to train our model. Most of the time we run the training of our model on a test infrastructure server of the ZHAW School of Engineering.
-The server consists out of 56 CPU cores and 721Gb memory. We connect 3 Openstack machines with 8 CPU cores each to this server, to increase our training. \\
-The flatland environment is running on each cpu core and the results are sent to a web server which updates the model and sent the updated neuronal network weights back to the client. \\
-The reason why we are using CPU cores over GPU performance is that the reinforcement algorithm A3C performs better on CPUs instead of GPUs. \\  %TODO: Grund eventuell erweitern?
-
-\begin{gather*}
-	\includegraphics[width=300pt]{images/visio/architecture.png}
-\end{gather*}
-
-All experiments (mentioned in \autoref{enhanced_observations}) are made on a Openstack Machine with 8 CPU cores and 64Gb memory. Each experiment ran for 12 hours.
-
-\subsection{Distributed training}
-We decided during round 1 of the Flatland challenge to change the training of the neuronal network to a distributed approach. \\
-We use the computer with the most memory and cores to run a web server, which distributes the neuronal network, the observation builder and also certain input parameters at training start. \\
-The workers, all other CPUs on which an instance of the Flatland environment is running, receive the files and compile them into C code with Cython.\\
-After the training start the general cycle for each worker is as following:
-
-\begin{enumerate}
-	\item Get current model from web server
-	\item Execute episode on Flatland environment
-	\item Calculate gradient and upload weights
-	\item Repeat
-\end{enumerate}
 
 \subsection*{Action Space Reduction and Script Policy Actions}\label{reduced_action_space}
 The flatland environment is designed in a way to resemble a classical RL environment. This means, on every timestep, we receive observations for each agent, calculate an action and hand this action to the environment, visible in pseudocode \autoref{alg:no_reduction}. 
@@ -142,7 +117,7 @@ This drastically improves training performance as visible in
 
 
 \subsection*{Neural Network Architecture}\label{network_architecture}
-In RL, neural networks are usually rather simple
+In RL, the architecture of neural networks is often very primitive. The reason for this is, that 
 
 
 \subsection*{Curriculum Learning and Reward assignment}\label{curriculum_learning}
@@ -172,12 +147,31 @@ Communication in multi agent RL is a topic of active research and considered ver
 
 
 
+\section{Distributed Architecture and Parallelism}\label{dist_architecture}
+\subsection*{Infrastructure}\label{infrastructure}
+We use various computers and servers to train our model. Most of the time we run the training of our model on a test infrastructure server of the ZHAW School of Engineering.
+The server consists out of 56 CPU cores and 721Gb memory. We connect 3 Openstack machines with 8 CPU cores each to this server, to increase our training. \\
+The flatland environment is running on each cpu core and the results are sent to a web server which updates the model and sent the updated neuronal network weights back to the client. \\
+The reason why we are using CPU cores over GPU performance is that the reinforcement algorithm A3C performs better on CPUs instead of GPUs. \\  %TODO: Grund eventuell erweitern?
 
-\section{Distrubuted Architecture and Parallelism}\label{dist_architecture}
-Für die vorliegende Arbeit wurden die unten aufgeführten Programme eingesetzt.
+\begin{gather*}
+\includegraphics[width=300pt]{images/visio/architecture.png}
+\end{gather*}
 
+All experiments (mentioned in \autoref{enhanced_observations}) are made on a Openstack Machine with 8 CPU cores and 64Gb memory. Each experiment ran for 12 hours.
 
+\subsection*{Distributed training}
+We decided during round 1 of the Flatland challenge to change the training of the neuronal network to a distributed approach. \\
+We use the computer with the most memory and cores to run a web server, which distributes the neuronal network, the observation builder and also certain input parameters at training start. \\
+The workers, all other CPUs on which an instance of the Flatland environment is running, receive the files and compile them into C code with Cython.\\
+After the training start the general cycle for each worker is as following:
 
+\begin{enumerate}
+	\item Get current model from web server
+	\item Execute episode on Flatland environment
+	\item Calculate gradient and upload weights
+	\item Repeat
+\end{enumerate}
 
 
 

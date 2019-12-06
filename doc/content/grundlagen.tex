@@ -20,19 +20,21 @@
 \section{Reinforcement Learning}\label{reinforcementlearning}
 \subsection*{Basic Definitions}\label{basic_rl_definitions}
 In recent years, major progress has been achieved in the field of reinforcement learning (RL) \cite{mnih2013playing},\cite{alphazero}, \cite{hideandseek}.
-In RL, an agent learns to perform a task by interacting with an environment $\mathcal{E}$. On every timestep $\mathcal{t}$ the agent $\mathcal{a}$ needs to take an action $\mathcal{u}$. The selection of this action $\mathcal{u}$ is based on the current observation $\mathcal{s}$. The success of the agent is measured by reward $\mathcal{R}$ received. If the agent does well, it receives positive reward from the environment, if it does something bad, there is no or negative reward. The goal of the agent is now to take an action that maximizes the expected future reward  $\EX[\mathcal{R}_{t+1}+\mathcal{R}_{t+1}+\mathcal{R}_{t+1}+...|\mathcal{s}_{t}]$ given the current observation $\mathcal{s}$.\\
+In RL, an agent learns to perform a task by interacting with an environment $\mathcal{E}$. On every timestep $\mathcal{t}$ the agent $\mathcal{a}$ needs to take an action $\mathcal{u}$. The selection of this action $\mathcal{u}$ is based on the current observation $\mathcal{s}$. The success of the agent is measured by reward $\mathcal{R}$ received. If the agent does well, it receives positive reward from the environment, if it does something bad, there is no or negative reward. The goal of the agent is now to take an action that maximizes the expected reward for all future timesteps. $\EX[\mathcal{R}_{t+1}+\mathcal{R}_{t+1}+\mathcal{R}_{t+1}+...|\mathcal{s}_{t}]$ given the current observation $\mathcal{s}$.\\
+This estimation should be as close as possible to the sum of actually received rewards. Often, these received rewards are discounted with a constant factor $\mathcal{\gamma}$ to the power of timestep $\mathcal{t}$. With $\mathcal{\gamma}$ being something slightly less than one, this accounts for the fact that rewards far in the future are hard to estimate.
 The current observation $\mathcal{s}_{t}$, also known as the current state is used to determine which action $\mathcal{u}$ to take next. An agent can observe its environment either fully or partially.
 
 \subsection*{Value Based vs. Policy Gradient Based Methods}\label{value_policy_based_methods}
-Reinforcement learning methods are categorized into value-based methods and policy-based methods \cite{tdlearning},\cite{policygradient}. Those variants differ on how they select an action $\mathcal{u}$ from a given state $\mathcal{s}$.
+Reinforcement learning methods are categorized into value-based methods and policy gradient-based methods \cite{tdlearning},\cite{policygradient}. Those variants differ on how they select an action $\mathcal{u}$ from a given state $\mathcal{s}$.\\
 Value-based RL algorithms work by learning a value function $\mathcal{V(s)}$ through repeated rollouts of the environment. $\mathcal{V(s)}$ aims to estimate the future expected reward for any given state $\mathcal{s}$ as precisely as possible. Using this approximation $\mathcal{V(s)}$ we can now select the action $\mathcal{u}$ that takes the agent into the next state $\mathcal{s}_{t+1}$ with the highest expected future reward. This estimation $\mathcal{V(s)}$ is achieved by either a lookup table for all possible states or a function approximator. In this work, we solely focus on the case that $\mathcal{V(s)}$ is implemented in form of a neural network as function approximator. To train the neural network, we try to minimize the squared difference between the estimated reward $\mathcal{V(s)}$ and the actual reward:
 \begin{gather*}
 loss_{value}=(\mathcal{R}-\mathcal{V(s)})^2
 \end{gather*}
+In some value-based algorithms such as DQN \cite{mnih2013playing}, a $\mathcal{Q(s,u)}$-function is used. This function tries to estimate the expected future reward on taking action $\mathcal{u}$ from the given state $\mathcal{s}$.\\
 The second category of reinfocement learning algrithms are the so called policy gradient based methods. These methods aim to aquire a stochastic policy $\pi$ that maximizes the expected future reward $\mathcal{R}$ by taking actions with certain probabilities. Taking actions based on probabilities solves an important issue of value based methods, which is, that by taking greedy actions with respect to state  $\mathcal{s}$, the agent might not explore the whole state space and misses out on better ways to act in the environment.
 
 \subsection*{Asynchronous Advantage Actor Critic Algorithm}\label{a3c_intro}
-The progress in RL has led to algorithms that combine value based and policy gradient based methods. To enhance the process of learning policy $\pi$, the policy loss gets multiplied by the difference between actually received reward $\mathcal{R}$ and the estimated future reward $\mathcal{V(s)}$. This difference is called the advantage $\mathcal{A}$.
+The progress in RL has led to algorithms that combine value based and policy gradient based methods \cite{a3c}. To enhance the process of learning policy $\pi$, the policy loss gets multiplied by the difference between actually received reward $\mathcal{R}$ and the estimated future reward $\mathcal{V(s)}$. This difference is called the advantage $\mathcal{A}$.
 \begin{gather*}
 \mathcal{A}=\mathcal{R}-\mathcal{V(s)}
 \end{gather*}
@@ -57,7 +59,7 @@ Using flatland, we can train RL algrithms to control the actions of trains, base
 \begin{figure}
 	\centering
 	\includegraphics[width=300pt]{images/transition_nips_proposal.png}
-	\caption{Possible switches in the flatland environment from \cite{flatland}.}
+	\caption{Possible switches in the flatland environment from \cite{flatland_docu}.}
 \end{figure}
 An exception poses switches that are approached from a side that does not allow to take an action, e.g. approaching a \textit{case 2} switch from the north side.
 All rail parts, independent of if it is a switch also allow to take the actions to do nothing (remain halted, or keep riding), to go forward or to brake.
