@@ -1,4 +1,3 @@
-\usepackage{hyperref}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %  _____   ____  _____                                          %
@@ -50,7 +49,6 @@ The flatland environment provides a base to build custom observation builders th
 
 \subsection*{Action Space Reduction and Script Policy Actions}\label{reduced_action_space}
 The flatland environment is designed in a way to resemble a classical RL environment. This means, on every timestep, we receive observations for each agent, calculate an action and hand this action to the environment, visible in pseudocode \autoref{alg:no_reduction}. 
-
 
 \begin{algorithm}[H]
 	\KwData{initialized flatland environment $\mathcal{E}$, initial observation $\mathcal{s\SPSB{a}{t=0}}$ for all agents }
@@ -111,10 +109,14 @@ For training, we only use the experience collected near the switch.\\\\
 	\caption{Improved learning for flatland environment}
 	\label{alg:with_reduction}
 \end{algorithm}
-This drastically improves training performance as visible in
-
-// TODO: Chart
-
+This drastically improves training performance as visible in \autoref{chart:action_reduction_comparison}
+\begin{figure}
+	\begin{center}
+		\input{diagrams/comparison_action_reduction.pgf}
+	\end{center}
+	\caption{Comparison of training with and without action reduction}
+	\label{chart:action_reduction_comparison}
+\end{figure}
 
 \subsection*{Neural Network Architecture}\label{network_architecture}
 In RL, the architecture of neural networks is often very primitive. The reason for this is, that 

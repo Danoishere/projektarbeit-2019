@@ -1,6 +1,18 @@
 import pandas as pd
 import matplotlib.pyplot as plt
+import matplotlib
 import numpy as np
+
+matplotlib.use("pgf")
+matplotlib.rcParams.update({
+    "pgf.texsystem": "xelatex",
+    'font.family': 'serif',
+    'text.usetex': True,
+    'pgf.rcfonts': False,
+})
+
+
+plt.rcParams["figure.figsize"] = (5,3)
 
 t1 = pd.read_csv('train_withactionreduction.csv', delimiter=',')
 t2 = pd.read_csv('train_noactionreduction.csv', delimiter=',')
@@ -22,11 +34,12 @@ group_by_round(t1, 'With action reduction')
 group_by_round(t2, 'Without action reduction')
 
 plt.ylabel('Number of agents arriving')
-plt.xlabel('Number training episodes')
+plt.xlabel('Number of training episodes')
 plt.legend()
-plt.show()
+plt.tight_layout()
+#plt.show()
 
-
+plt.savefig('comparison_action_reduction.pgf')
 
 
 
