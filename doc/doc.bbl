@@ -91,9 +91,10 @@ J.~K. Gupta, M.~Egorov, and M.~Kochenderfer, ``Cooperative multi-agent control
   1em plus 0.5em minus 0.4em\relax Cham: Springer International Publishing,
   2017, pp. 66--83.
 
-\bibitem{zhaw}
+\bibitem{flatland_spec}
 \BIBentryALTinterwordspacing
- [Online]. Available: \url{https://www.zhaw.ch/en/university/}
+ [Online]. Available:
+  \url{http://flatland-rl-docs.s3-website.eu-central-1.amazonaws.com/04_specifications.html/}
 \BIBentrySTDinterwordspacing
 
 \end{thebibliography}

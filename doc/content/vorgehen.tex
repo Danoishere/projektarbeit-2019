@@ -20,36 +20,38 @@
 \chapter{Approach and Methodology}\label{chap.vorgehen}
 \section{Basic Considerations}\label{basic_cons}
 As described under \autoref{baseline}, our work is based on the work of S. Huschauer \cite{flatlandstephan}. We take the idea of using the A3C algorithm to solve the flatland problem and try various modifications in an attempt to improve its performance.\\
-We proceed by giving an intution, what we want to achieve by changing the specified part, followed by an experiment to either prove or disprove our hypothesis.\\
+To do so, we identify parts of the implementation where we suspect possibility for improvement. We proceed by giving an idea, what we want to achieve by changing the specified part, followed by an experiment to either prove or disprove our hypothesis.\\
 For training purposes, we started by reimplementing the algorithm by ourselfes. This enabled us from the beginning to gain a deeper understanding of how the algorithm works and where we could find possible areas for improvement. From there, we iteratively added these potential improvements to later compare them against the version without this feature.
 Our work can be categorized into a section about RL for flatland and a section about infrastructure and scaling up the training process.
-\subsection*{Reproducability in Reinforcement Learning}\label{enhanced_observations}
-It is important to note, that the training process of reinforcement learning and especially multi agent reinforcement learning is hard to evaluate and reproduce. Depending on the initial weights of the neural networks and the shape of the environments, the performance may vary on each restart. Also, the number of workers can 
+\subsection*{Reproducability in Reinforcement Learning}\label{reproducability}
+It is important to note, that the training process of reinforcement learning and especially multi agent reinforcement learning is hard to evaluate and reproduce. Depending on the initial weights of the neural networks and the layout of the environments, the performance may vary on each restart. Also, the number of workers can 
 significantly influence the training performance. To counter the latter, we execute all presented experiments on machines with the same specifications (see \autoref{infrastructure}).\\
 Another aspect that is hard to reproduce is training stability. In A3C, an important instrument to prevent the policy from converging too early is using an additional entropy term \cite{a3c}. Our way to maintain stability with changing environments is discussed in \autoref{entropy_balancing_hyperparameter}.
-
+\chapter{Experiment Design and Analysis}\label{chap.experiment}
 \section{Reinforcement Learning for Flatland}
-\subsection*{A3C Implementation}\label{enhanced_observations}
+\subsection*{A3C Implementation}\label{a3c_implementation}
 Originally, the asynchronous advantage actor critic algorithm (A3C) has been designed for use in a single agent environment \cite{a3c}.
 By applying it in a multi agent environment, we implicitly convert the environment into a non-stationary environment.
 While applying A3C in a multi agent setting, the other agents can be viewed as part of the environment. This means, the behaviour of the environment changes while training, due to the fact that the behaviour of the other agents changes.
 Gupta et al.finds in \cite{multiagent_comp_a3c_dqn_etc}, that RL methods like Deep-Q networks (DQN) and Trust region policy optimization (TRPO) are not performing well in a multi agent environment, due to the combination of experience replay and non-stationarity of the environment. We therefore suggest, that it is not recommendable to keep an experience replay buffer with older episodes. Otherwise the sampled experience might represent old agent behaviour which is then learned.
-
 \subsection*{Observation Design}\label{enhanced_observations}
-The flatland environment provides a base to build custom observation builders that can be used to create a state representation for the agents. Based on the provided TreeObsForRailEnv (see \autoref{observations}), we implement a custom observation builder which we use to produce an input vector to our neural network. This observation builder takes the the current state of the environment and produces a fixed size numeric vectors with values between 0 and 1 for each agent. This input vector should fulfil an number of requirements:
+The flatland environment provides a base to build custom observation builders that can be used to create a state representation for the agents as explained in \autoref{observations}. In this work, we do not consider the usage of the grid-based observation builders.
+Both the flatland development team as well as S. Huschauer find, that tree based observations work better in their experiments. The flatland specification states \cite{flatland_spec}:
+\begin{quote}
+Considering, that the actions and directions an agent can chose in any given cell, it becomes clear that a grid like observation around an agent will not contain much useful information, as most of the observed cells are not reachable nor play a significant role in for the agents decisions.
+\end{quote}
+Based on the provided TreeObsForRailEnv (see \autoref{observations}), we implement a custom observation builder which we use to produce an input vector for our neural network. This observation builder takes the the current state of the environment and produces a fixed size numeric vector with values between 0.0 and 1.0 for each agent. This input vector should fulfil an number of requirements:
 \begin{itemize}
 	\item Each rail section the agent possibly rides on next should be visible to the agent.
 	\item The agent should be able to detect, whether there is another train coming the opposite direction on any section.
-	\item The agent should be able to detect on each switch which turn is closer to his target.
+	\item The agent should be able to detect on each switch which turn is the faster way to his target.
 	\item On switches, the agent should be able to see if a turn does lead to his target, even if it is not the fastest way. If this is the case, taking this turn might even be a good option to evade possibly blocking situations.
 	\item For the next grid tile, the agent should be able to detect if it is a switch and if so, if it is one the agent can make a decision on. (see \autoref{flatland_intro} for non-usable switches).
-	\item 
 \end{itemize}
 
 
 \subsection*{Action Space Reduction and Script Policy Actions}\label{reduced_action_space}
-The flatland environment is designed in a way to resemble a classical RL environment. This means, on every timestep, we receive observations for each agent, calculate an action and hand this action to the environment, visible in pseudocode \autoref{alg:no_reduction}. 
-
+The flatland environment is designed in a way to resemble a classical RL environment. This means, on every timestep, we receive observations for each agent, calculate an action and hand this action to the environment, visible in pseudocode \autoref{alg:no_reduction}.\\\\
 \begin{algorithm}[H]
 	\KwData{initialized flatland environment $\mathcal{E}$, initial observation $\mathcal{s\SPSB{a}{t=0}}$ for all agents }
 	\KwResult{terminal flatland environment}
@@ -73,7 +75,7 @@ The flatland environment is designed in a way to resemble a classical RL environ
 	\label{alg:no_reduction}
 \end{algorithm}
 While this makes sense in an environment where agents need to take an action on every timestep (such as Atari games), in flatland most of the time the only reasonable action is to move forward as visible in \autoref{fig:no_desicion}. Only around switches, the actions of an agent have acutual consequences.
-\begin{figure}
+\begin{figure}[H]
 	\centering
 	\includegraphics[width=300pt]{images/screenshot_no_decision.png}
 	\caption{Screenshot from flatland environment. A train heading east. The only reasonable action is to ride forward.}
@@ -81,7 +83,7 @@ While this makes sense in an environment where agents need to take an action on 
 \end{figure}
 Every action that is produced by the neural network should be included for training, so the network can adapt to this type of situation. The problem arises now, that all these actions of riding forward are included into the training of the agent. The influence of the actions that actually matter (e.g. the ones around switches) is thereby not as big as it could be, because a large portion of the training data is actually situations that do not actually require decisions.\\
 To solve this problem, we implement hard coded rules that the agents follow as long as they are not in a situation to make a decision. Only around switches, the neural network policy is activated. As a consequence, the data used for training has less samples but the samples available are of higher quality. The training with this mechanism implemented looks like \autoref{alg:with_reduction}.
-For training, we only use the experience collected near the switch.\\\\
+For training, we only use the experience collected near the switch.\\
 \begin{algorithm}[H]
 	\KwData{initialized flatland environment $\mathcal{env}$, initial observation $\mathcal{s\SPSB{a}{t=0}}$ for all agents}
 	\KwResult{terminal flatland environment}
@@ -110,7 +112,7 @@ For training, we only use the experience collected near the switch.\\\\
 	\label{alg:with_reduction}
 \end{algorithm}
 This drastically improves training performance as visible in \autoref{chart:action_reduction_comparison}
-\begin{figure}
+\begin{figure}[H]
 	\begin{center}
 		\input{diagrams/comparison_action_reduction.pgf}
 	\end{center}
@@ -146,7 +148,6 @@ We consider 3 different options of communication:
 We start with open communication, which means the agent can decide by himself what he is going to communicate to the other agents... %TODO: continue
 
 Communication in multi agent RL is a topic of active research and considered very complex. As we could not reach the same performance with communication as without using communication, we deciced to remove the explicit communication.
-
 
 
 \section{Distributed Architecture and Parallelism}\label{dist_architecture}
@@ -189,7 +190,7 @@ After the training start the general cycle for each worker is as following:
 \item (Theoretische Herleitung der Lösung)
 \end{itemize}
 
-\section{(Used Software)}\label{software}
+\section{Technical Implementation Aspects}\label{software}
 We used the following tools in our project.
 
 \subsection*{Working Environment}\label{os}
