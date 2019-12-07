@@ -35,7 +35,7 @@
 \usepackage[plainpages=false]{hyperref}
 \usepackage{wallpaper} %\ThisTileWallPaper{}
 \usepackage[square,numbers]{natbib} %für BibTeX Literaturverzeichnis
-
+\usepackage{svg}
 \usepackage{hyperref}
 \usepackage{pgf}
 
@@ -43,7 +43,10 @@
 \usepackage{fontspec}
 \usepackage{unicode-math}
 \usepackage{amsfonts}
-\setmainfont{TeX Gyre Pagella}
+
+
+%\fontspec{TeX Gyre Pagella}
+
 
 \usepackage{fixltx2e}
 \usepackage{xcolor}
@@ -52,7 +55,9 @@
 \def\SB#1{\textsubscript{{#1}}}
 
 % Any of the following work, and probably many more
+\setmainfont{TeX Gyre Pagella}
 \setmathfont{TeX Gyre Pagella Math}
+
 %\setmathfont{TeX Gyre Termes Math}
 %\setmathfont{STIX}
 %\setmathfont{Asana Math}
@@ -62,7 +67,7 @@
 \DeclareMathOperator{\EX}{\mathbb{E}}% expected value
 
 
-
+\usepackage[svgpath=./chapters/figures/]{svg}
 
 %***********************************************************************
 % various styles
@@ -142,15 +147,3 @@
 
 \lstloadlanguages{C++}
 
-%\lstdefinelanguage{xc}{
-%     keywords={printstr, printhexln, attributes, class, classend, do, empty, endif, endwhile, fail, function, functionend, if, implements, in, inherit, inout, not, of, operations, out, return, set, then, types, while, use},
-%     keywordstyle=\color{lred}\bfseries,
-%     ndkeywords={},
-%     ndkeywordstyle=\color{yellow}\bfseries,
-%     identifierstyle=\color{black},
-%     sensitive=false,
-%     comment=[l]{//},
-%     commentstyle=\color{lgreen}\ttfamily,
-%     string=[l]{"},
-%     stringstyle=\color{lblue}\ttfamily
-%  }

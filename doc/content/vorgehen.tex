@@ -33,10 +33,11 @@ Another aspect that is hard to reproduce is training stability. In A3C, an impor
 Originally, the asynchronous advantage actor critic algorithm (A3C) has been designed for use in a single agent environment \cite{a3c}.
 By applying it in a multi agent environment, we implicitly convert the environment into a non-stationary environment.
 While applying A3C in a multi agent setting, the other agents can be viewed as part of the environment. This means, the behaviour of the environment changes while training, due to the fact that the behaviour of the other agents changes.
-Gupta et al.finds in \cite{multiagent_comp_a3c_dqn_etc}, that RL methods like Deep-Q networks (DQN) and Trust region policy optimization (TRPO) are not performing well in a multi agent environment, due to the combination of experience replay and non-stationarity of the environment. We therefore suggest, that it is not recommendable to keep an experience replay buffer with older episodes. Otherwise the sampled experience might represent old agent behaviour which is then learned.
+Gupta et al.finds in \cite{multiagent_comp_a3c_dqn_etc}, that RL methods like Deep-Q networks (DQN) and Trust region policy optimization (TRPO) are not performing well in a multi agent environment, due to the combination of experience replay and non-stationarity of the environment. We therefore suggest, that it is not recommendable to keep an experience replay buffer with older episodes. Otherwise the sampled experience might represent old agent behaviour which is then learned to deal with.\\
+An important implementation detail in our version is, that we do not perform updates during episodes but only at their end. The reason for this is, that the only possibility for an agent to receive reward is at the end of the episode. Therefore would any earlier update have a reward of 0 and not help the training process.
 \subsection*{Observation Design}\label{enhanced_observations}
 The flatland environment provides a base to build custom observation builders that can be used to create a state representation for the agents as explained in \autoref{observations}. In this work, we do not consider the usage of the grid-based observation builders.
-Both the flatland development team as well as S. Huschauer find, that tree based observations work better in their experiments. The flatland specification states \cite{flatland_spec}:
+Both the flatland development team as well as S. Huschauer find, that tree based observations work better in their experiments \cite{flatlandstephan}. The flatland specification states \cite{flatland_spec}:
 \begin{quote}
 Considering, that the actions and directions an agent can chose in any given cell, it becomes clear that a grid like observation around an agent will not contain much useful information, as most of the observed cells are not reachable nor play a significant role in for the agents decisions.
 \end{quote}
@@ -48,7 +49,15 @@ Based on the provided TreeObsForRailEnv (see \autoref{observations}), we impleme
 	\item On switches, the agent should be able to see if a turn does lead to his target, even if it is not the fastest way. If this is the case, taking this turn might even be a good option to evade possibly blocking situations.
 	\item For the next grid tile, the agent should be able to detect if it is a switch and if so, if it is one the agent can make a decision on. (see \autoref{flatland_intro} for non-usable switches).
 \end{itemize}
+The provided TreeObsForRailEnv produce a graph with a node for each section of the rail. We extend these nodes with additional information about train traffic coming the other direction than the one the agent is heading. We take the information from these nodes and convert them into a numeric vector. In case that there is a dead end, we fill the observation with zeros (this could only happen in Flatland round 1, round 2 does not have dead ends). After the conversion, we concatenate all section observations into one large vector with information for all upcoming sections.\\
+While this vector already contains all required information outside of the agent, we add another vector with information regarding the agent itself (train specific observation in \autoref{obs_descr}). This vector contains the speed of the agent, the max. speed of the agent, the type of the current tile, the direction the agent is heading and 
 
+\begin{figure}
+	\centering
+	\includegraphics[width=300pt]{diagrams/tree_obs_mapping.pdf}
+	\caption{Mapping of the observations onto the Flatland environment.}
+	%\label{obs_descr}
+\end{figure}
 
 \subsection*{Action Space Reduction and Script Policy Actions}\label{reduced_action_space}
 The flatland environment is designed in a way to resemble a classical RL environment. This means, on every timestep, we receive observations for each agent, calculate an action and hand this action to the environment, visible in pseudocode \autoref{alg:no_reduction}.\\\\
@@ -121,7 +130,7 @@ This drastically improves training performance as visible in \autoref{chart:acti
 \end{figure}
 
 \subsection*{Neural Network Architecture}\label{network_architecture}
-In RL, the architecture of neural networks is often very primitive. The reason for this is, that 
+In RL, the architecture of neural networks is often rather simple \cite{mnih2013playing}\cite{a3c}. The already sample inefficient process of reinforcement learning should not be slowed down by a difficult architecture.
 
 
 \subsection*{Curriculum Learning and Reward assignment}\label{curriculum_learning}
