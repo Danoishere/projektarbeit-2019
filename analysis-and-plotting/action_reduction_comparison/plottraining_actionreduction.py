@@ -1,8 +1,8 @@
 import pandas as pd
 import matplotlib.pyplot as plt
-import matplotlib
 import numpy as np
 
+import matplotlib
 matplotlib.use("pgf")
 matplotlib.rcParams.update({
     "pgf.texsystem": "xelatex",
@@ -11,11 +11,12 @@ matplotlib.rcParams.update({
     'pgf.rcfonts': False,
 })
 
+path = 'action_reduction_comparison/'
 
 plt.rcParams["figure.figsize"] = (5,3)
 
-t1 = pd.read_csv('train_withactionreduction.csv', delimiter=',')
-t2 = pd.read_csv('train_noactionreduction.csv', delimiter=',')
+t1 = pd.read_csv(path + 'train_withactionreduction.csv', delimiter=',')
+t2 = pd.read_csv(path + 'train_noactionreduction.csv', delimiter=',')
 
 def group_by_round(df:pd.DataFrame, label):
 
@@ -39,7 +40,7 @@ plt.legend()
 plt.tight_layout()
 #plt.show()
 
-plt.savefig('comparison_action_reduction.pgf')
+plt.savefig(path + 'comparison_action_reduction.pgf')
 
 
 
