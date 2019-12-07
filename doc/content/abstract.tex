@@ -20,33 +20,29 @@
 \chapter*{Zusammenfassung}\label{chap.zusammenfassung}
 Zusammenfassung in Deutsch
 
-Diese Arbeit befasst sich mit der Steuerung von komplexen Zugverkehrssystemen mittels Reinforcement Learning.
-Die Aufgabenstellung hat die Schweizerische Bundesbahn im Rahmen einer Challenge auf AICrowd ausgeschrieben.
-Im Fokus steht eine Lösung zu entwicklen, welche die Verspätung bei technischen Störrungen oder defekten Zügen verringert und es ihnen zudem ermöglicht in Zukunft mehr Züge auf die gleiche Infrastruktur zu bringen.
-
-
 %1. Einleitung («Problemstellung»): Definiert die Problematik und begründet die Relevanz der Arbeit. Die Situation (eine problematische Situation oder technische Problematik) und die wissenschaftliche/fachliche Untersuchungs-Fragestellung (folgt logischer- weise aus der festgestellten Problematik) werden kurz beschrieben.
-
+Diese Arbeit befasst sich mit der Steuerung von komplexen Zugverkehrssystemen mittels Reinforcement Learning.\\
+Die Aufgabenstellung hat die Schweizerische Bundesbahn (SBB) im Rahmen einer Challenge auf AICrowd ausgeschrieben.
+Im Fokus steht eine Lösung zu entwicklen, welche die Verspätung bei technischen Störrungen oder defekten Zügen verringert und es ihnen zudem ermöglicht in Zukunft mehr Züge auf die gleiche Infrastruktur zu bringen.
+Aufgrund der steigenden Anzahl an Pendlern in den letzen Jahren hat die Erhöhung der Anzahl Züge auf dem heutigen Schienennetz eine hohe Relevanz.
 %2. Methodische Einordnung der Arbeit: Art, Datenbasis und Ziel der Arbeit. Die Untersu- chungsmethode (Umfrage, Analyse, Versuch, Test etc.), das untersuchte „Material“ und das dabei verfolgte Ziel wird thematisiert.
-
-%3. Vorgehen («Problembehandlung»): Informiert über das Vorgehen und über die Unter- suchungsanlage.
-
-%4. Ergebnis («Problemlösung»): Beschreibt die wichtigsten Resultate, Erkenntnisse, of- fenen Fragen. Die Ergebnisse werden aufgeführt und dabei wird auf die unter 1. auf- geführte Fragestellung Bezug genommen (konnte sie beantwortet werden, gibt es of- fene Punkte?).
-
+Die SBB stellt in Zusammenarbeit mit AICrowd die Simulationsumgebung Flatland zur Verfügung. Mittels Flatland kann ein komplexes Schienennetz simuliert werden, mit welchem die Agents (Züge) interagieren können.
+Es handelt sich hierbei um ein kollaboratives Muli-Agent Problem, welches mit Machine Learning genauer gesagt Reinforcement Learning gelöst werden sollte.
+Als Basis dieser Arbeit diente uns die Vertiefungsarbeit 2 von S. Huschauer, welche zu der gleichen Challenge gemacht wurde.
+Wir konnten die Auswahl des A3C Algorithmus und einige weitere Überlegungen von ihm übernehmen.
+%3. Vorgehen («Problembehandlung»): Informiert über das Vorgehen und über die Untersuchungsanlage.
+Wir bauten die Lösung von S. Huschauer nach und erweiterten diesen Stand nach und nach mit unterschiedlichen Features wie Long short-term memory, Curriculum Learning oder Parallelisierung.
+Wir kontrollierten unsere Änderungen mittels Experimenten, welche die Auswirkungen aufzeigten.
+%TODO: erweitern?
+%4. Ergebnis («Problemlösung»): Beschreibt die wichtigsten Resultate, Erkenntnisse, offenen Fragen. Die Ergebnisse werden aufgeführt und dabei wird auf die unter 1. auf- geführte Fragestellung Bezug genommen (konnte sie beantwortet werden, gibt es of- fene Punkte?).
+Durch das Hinzufügen von unterschiedlichen Features konnten wir ein Resultat von XX.X\% in Runde 1 erzielen.
+In Runde 2 veränderten wir den Aktionspace, was die Anzahl Abfragen vom neuronalen Netzwerk deutlich reduzierte. Dies verbesserte die Laufzeit sowie den Lernfortschritt stark.
+Durch den Einsatz von Regeln, welche spezielle Fälle verhindern, konnten wir eine Ankunftwahrscheinlichkeit von 29.1\% erreichen, was aktuell Platz 4 entspricht.
 
 \newpage
 \thispagestyle{empty}
 \chapter*{Abstract}\label{abstract}
 Abstract in English
-
-
-
-\chapter*{(Deutschsprachiges Management Summary)}\label{ManagementSummaryDE}
-
-
-
-\chapter*{(Englischsprachiges Management Summary)}\label{ManagementSummaryEN}
-
 
 
 \chapter*{Vorwort}\label{vorwort}
