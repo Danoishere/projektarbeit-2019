@@ -24,12 +24,15 @@ def group_by_round(df:pd.DataFrame, label):
     x = x[:140]
     y = y[:140]
 
+
     plt.plot(x, y, label=label)
 
 group_by_round(t1, 'With LSTM')
 group_by_round(t2, 'No LSTM')
 group_by_round(t3, 'No action reduction')
 
+plt.ylabel('Number of agents arriving')
+plt.xlabel('Number of evaluation rounds (20 episodes/round)')
 plt.legend()
 plt.show()
 

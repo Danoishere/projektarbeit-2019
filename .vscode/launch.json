@@ -5,6 +5,14 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Python: Aktuelle Datei",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}/analysis-and-plotting"
+        },
+        {
             "name": "Run server",
             "type": "python",
             "request": "launch",
@@ -36,7 +44,7 @@
             "type": "python",
             "request": "launch",
             "program": "${workspaceFolder}/dist-benchmark-runner/benchmark.py",
-            "console": "integratedTerminal", 
+            "console": "integratedTerminal",
             "cwd": "${workspaceFolder}/dist-benchmark-runner"
         },
         {
@@ -44,7 +52,7 @@
             "type": "python",
             "request": "launch",
             "program": "${workspaceFolder}/dist-progress-evaluator/evaluator.py",
-            "console": "integratedTerminal", 
+            "console": "integratedTerminal",
             "cwd": "${workspaceFolder}/dist-progress-evaluator"
         },
         {
@@ -52,7 +60,7 @@
             "type": "python",
             "request": "launch",
             "program": "${workspaceFolder}/analysis-and-plotting/plottraining.py",
-            "console": "integratedTerminal", 
+            "console": "integratedTerminal",
             "cwd": "${workspaceFolder}/analysis-and-plotting"
         },
         {
@@ -60,7 +68,7 @@
             "type": "python",
             "request": "launch",
             "program": "${workspaceFolder}/local-test-env/testenv.py",
-            "console": "integratedTerminal", 
+            "console": "integratedTerminal",
             "cwd": "${workspaceFolder}/local-test-env"
         }
     ]
