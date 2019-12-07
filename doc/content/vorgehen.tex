@@ -161,7 +161,22 @@ The reason why we are using CPU cores over GPU performance is that the reinforce
 \includegraphics[width=300pt]{images/visio/architecture.png}
 \end{gather*}
 
-All experiments (mentioned in \autoref{enhanced_observations}) are made on a Openstack Machine with 8 CPU cores and 64Gb memory. Each experiment ran for 12 hours.
+All experiments (mentioned in \autoref{enhanced_observations}) are made on a Openstack Machine with 8 CPU cores and 64Gb memory.
+Each experiment ran for 12 hours.\\
+
+We ran an experiment to compare the learning progress between a single worker and 7 workers.\\
+The experiment shows that the learning progress with 7 workers is over 2.5 times faster than the learning progress with a single worker.\\
+It also shows that the learning curve fluctuates more with a higher amount of workers.\\
+%TODO: Update plot with 55 workers and compare it.
+%TODO: Fix problem with misplaced image.
+
+\begin{figure}
+	\begin{center}
+		\input{diagrams/singlemany_comparison.pgf}
+	\end{center}
+	\caption{Comparison of training with 1 worker and with 7 workers}
+	\label{chart:singlemany_comparison}
+\end{figure}
 
 \subsection*{Distributed training}
 We decided during round 1 of the Flatland challenge to change the training of the neuronal network to a distributed approach. \\
