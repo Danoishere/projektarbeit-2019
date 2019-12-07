@@ -6,6 +6,7 @@
 \addvspace {10\p@ }
 \contentsline {figure}{\numberline {4.1}{\ignorespaces Screenshot from flatland environment. A train heading east. The only reasonable action is to ride forward.}}{16}{figure.4.1}% 
 \contentsline {figure}{\numberline {4.2}{\ignorespaces Comparison of training with and without action reduction}}{17}{figure.4.2}% 
+\contentsline {figure}{\numberline {4.3}{\ignorespaces Comparison of training with 1 worker and with 7 workers}}{19}{figure.4.3}% 
 \addvspace {10\p@ }
 \addvspace {10\p@ }
 \addvspace {10\p@ }
