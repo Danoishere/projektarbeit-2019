@@ -106,17 +106,17 @@ def punish_impossible_actions(env, obs, actions, rewards):
             print('right pen')
 
 
-width = 50  # With of map
-height = 50  # Height of map
-nr_trains = 40 # Number of trains that have an assigned task in the env
-cities_in_map = 20  # Number of cities where agents can start or end
+width = 25  # With of map
+height = 25  # Height of map
+nr_trains = 12 # Number of trains that have an assigned task in the env
+cities_in_map = 7  # Number of cities where agents can start or end
 seed = 14  # Random seed
 grid_distribution_of_cities = True  # Type of city distribution, if False cities are randomly placed
-max_rails_between_cities = 2  # Max number of tracks allowed between cities. This is number of entry point to a city
-max_rail_in_cities = 4  # Max number of parallel tracks within a city, representing a realistic trainstation
+max_rails_between_cities = 5  # Max number of tracks allowed between cities. This is number of entry point to a city
+max_rail_in_cities = 5 # Max number of parallel tracks within a city, representing a realistic trainstation
 
 rail_generator = sparse_rail_generator(max_num_cities=cities_in_map,
-                                       seed=seed,
+                                       seed=0,
                                        grid_mode=grid_distribution_of_cities,
                                        max_rails_between_cities=max_rails_between_cities,
                                        max_rails_in_city=max_rail_in_cities
