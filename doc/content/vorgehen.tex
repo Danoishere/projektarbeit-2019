@@ -18,20 +18,21 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \chapter{Approach and Methodology}\label{chap.vorgehen}
-\section{Basic Considerations}\label{basic_cons}
+\section{Work Approach}\label{basic_cons}
 As described under \autoref{baseline}, our work is based on the work of S. Huschauer \cite{flatlandstephan}. We take the idea of using the A3C algorithm to solve the flatland problem and try various modifications in an attempt to improve its performance.\\
-To do so, we identify parts of the implementation where we suspect possibility for improvement. We proceed by giving an idea, what we want to achieve by changing the specified part, followed by an experiment to either prove or disprove our hypothesis.\\
+To do so, we identify parts of the implementation where we suspect room for improvement. We proceed by giving an idea, what we want to achieve by changing the specified part, followed by an experiment to either prove or disprove our hypothesis.\\
 For training purposes, we started by reimplementing the algorithm by ourselfes. This enabled us from the beginning to gain a deeper understanding of how the algorithm works and where we could find possible areas for improvement. From there, we iteratively added these potential improvements to later compare them against the version without this feature.
-Our work can be categorized into a section about RL for flatland and a section about infrastructure and scaling up the training process.
-\subsection*{Reproducability in Reinforcement Learning}\label{reproducability}
-It is important to note, that the training process of reinforcement learning and especially multi agent reinforcement learning is hard to evaluate and reproduce. Depending on the initial weights of the neural networks and the layout of the environments, the performance may vary on each restart. Also, the number of workers can 
-significantly influence the training performance. To counter the latter, we execute all presented experiments on machines with the same specifications (see \autoref{infrastructure}).\\
+Our work can be categorized into a section about reinforcement learning for Flatland (\autoref{rl_flatland}) and a section about infrastructure and scaling up the training process (\autoref{dist_architecture}).
+\section{Reproducability in Reinforcement Learning}\label{reproducability}
+It is important to note, that the training process of reinforcement learning and especially multi agent reinforcement learning can be hard to reproduce. Depending on the initial weights of the neural networks and the layout of the environments, the performance may vary on each restart. Also, the number of workers can 
+significantly influence the training performance. If not differently specified, we execute all presented experiments on machines with the same specifications (see \autoref{infrastructure}).\\
 Another aspect that is hard to reproduce is training stability. In A3C, an important instrument to prevent the policy from converging too early is using an additional entropy term \cite{a3c}. Our way to maintain stability with changing environments is discussed in \autoref{entropy_balancing_hyperparameter}.
+% TODO: Explain how we do experiments
 \chapter{Experiment Design and Analysis}\label{chap.experiment}
-\section{Reinforcement Learning for Flatland}
+\section{Reinforcement Learning for Flatland}\label{rl_flatland}
 \subsection*{A3C Implementation}\label{a3c_implementation}
 Originally, the asynchronous advantage actor critic algorithm (A3C) has been designed for use in a single agent environment \cite{a3c}.
-By applying it in a multi agent environment, we implicitly convert the environment into a non-stationary environment.
+By applying it in a multi agent environment, we implicitly convert the environment into a non-stationary system.
 While applying A3C in a multi agent setting, the other agents can be viewed as part of the environment. This means, the behaviour of the environment changes while training, due to the fact that the behaviour of the other agents changes.
 Gupta et al.finds in \cite{multiagent_comp_a3c_dqn_etc}, that RL methods like Deep-Q networks (DQN) and Trust region policy optimization (TRPO) are not performing well in a multi agent environment, due to the combination of experience replay and non-stationarity of the environment. We therefore suggest, that it is not recommendable to keep an experience replay buffer with older episodes. Otherwise the sampled experience might represent old agent behaviour which is then learned to deal with.\\
 An important implementation detail in our version is, that we do not perform updates during episodes but only at their end. The reason for this is, that the only possibility for an agent to receive reward is at the end of the episode. Therefore would any earlier update have a reward of 0 and not help the training process.
@@ -142,22 +143,19 @@ In RL, it is of great importance to find the right combination of exploration an
 The policy is characterized by a probability distribution of actions.
 
 \subsection*{Agent Communication}\label{agent_communication}
-We asked ourselves how blocking is avoided in the real world?\\
-On the SBB rail environment traffic lights are used to prevent collisions between trains. The traffic lights are controlled by a central control point.\\
-On the streets signs, traffic lights and basic rules like right before left are used to prevent collisions. \\
-If signs and traffic lights are missing for example high up in the mountains, buses are using their horn to inform upcoming vehicles. \\
-Our idea was to implement such a communication between the agents.
-We consider 3 different options of communication:
+The topic if of communication in multi agent RL is a topic of ongoing research. As a starting point for this work we asked ourselves how blocking is avoided in the real world. On the SBB rail environment railroad signals are used to prevent collisions between trains. These signals are controlled by a central control instance that directs the traffic of all trains on the grid.
+The Flatland environment does not provide a communication channel nor a rail road signal system, but participants of the challenge are allowed to implement one themselfes. In the following discussion, we summarize these options under the topic of communication and centralized planning. An initial intuition for the problem gives the question, if it was a human guiding the train, would she/he be able to successfully steer the train to its assigend target without communication?
+We assume that this is not the case. While classical traffic rules (like right has priority over left) can help to avoid collisions, we do think that in the case of railroad traffic this does not suffice. In the real world, rail traffic is controlled by a control center that gives the trains permission to go or tells them to wait. Having one central control instances solves one of the big problems of such a system which is, that there is a chance that two agents take an action at the same moment which does bring both of them into a non resolvable situation. An example for such a situation would be two agents, that enter a rail section at the same timestep. Both of them would have had the possibility to choose a different path, but both perceived the section as empty and decided to enter. Combined with the fact that trains cannot drive backwards, both trains will not be able to arrive at their assigned targets. As a solution to this dilemma, we discuss three solutions that could work to resolve such situations.
 \begin{itemize}
-	\item Agents can choose what they communicate
-	\item Agents communicate their next action
-	\item Implicit communication
+	\item \textbf{Negotiation:} To solve the problem of conflicting actions at the same timestep, it would be possible to introduce a iterative communication channel, on which the agents can negotiate, what agent is allowed to take an action next and who has to wait another timestep. The number of iterations could be determined by the outcome of the process. As long as there is no resolution about who is allowed to take an action and who is not, another negotiation round is added.\\
+	While this procedure might help to avoid blocking situations, it could certainly not completely remove them. Especially complex situations with many agents could still prove to be difficult, even with a negotiation mechanism in place.
+
+	\item \textbf{Prioritized planning:} An approach to solve the dilemma of conflicting actions at the same timestep could be to introduce an artifical order of importance among the agents. Then the next $\mathcal{n}$ timesteps could be planned for the most important agent. The second agent now takes the planning of the first agent into account and tries to come up with a policy that does not obstruct the planned route of the first agent. This process is repeated for all following agents.\\
+	We think that possible conflicts could maybe be resolved by backtracking and adjusting the priorities of the trains.	
+	
+	\item \textbf{Unconstrained communication:} While negotiation would prevent an agent from taking an action, the goal of unconstrained actions would not be to constrain the action space but rather to convince the agent to choose an action \textit{stop} or \textit{do nothing} and wait for the next timestep if the situation is uncertain. Also for unconstrainted actions, it would make sense to be an iterative process, similar to the negotiation approach. As long as not all agents mark their communication as completed, another communication round is added.\\
+	We suspect that a problem with this approach could be that it would have much slower convergence than the negotiation approach. The reason for this assumption is the fact, that such an unconstrained communication would not directly influcence the actions of the agents. It would be nescessary to learn both the "speaking" and the "interpretation", without a direct consequences.
 \end{itemize}
-
-We start with open communication, which means the agent can decide by himself what he is going to communicate to the other agents... %TODO: continue
-
-Communication in multi agent RL is a topic of active research and considered very complex. As we could not reach the same performance with communication as without using communication, we deciced to remove the explicit communication.
-
 
 \section{Distributed Architecture and Parallelism}\label{dist_architecture}
 \subsection*{Infrastructure}\label{infrastructure}

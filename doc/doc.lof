@@ -1,13 +1,13 @@
 \addvspace {10\p@ }
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {2.1}{\ignorespaces Screenshot from a running flatland environment.}}{12}{figure.2.1}% 
-\contentsline {figure}{\numberline {2.2}{\ignorespaces Possible switches in the flatland environment from \cite {flatland_docu}.}}{12}{figure.2.2}% 
+\contentsline {figure}{\numberline {2.1}{\ignorespaces Screenshot from a running flatland environment.}}{10}{figure.2.1}% 
+\contentsline {figure}{\numberline {2.2}{\ignorespaces Possible switches in the flatland environment from \cite {flatland_docu}.}}{10}{figure.2.2}% 
 \addvspace {10\p@ }
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {4.1}{\ignorespaces Screenshot from a running flatland environment.}}{16}{figure.4.1}% 
-\contentsline {figure}{\numberline {4.2}{\ignorespaces Screenshot from flatland environment. A train heading east. The only reasonable action is to ride forward.}}{17}{figure.4.2}% 
-\contentsline {figure}{\numberline {4.3}{\ignorespaces Comparison of training with and without action reduction}}{18}{figure.4.3}% 
-\contentsline {figure}{\numberline {4.4}{\ignorespaces Comparison of training with 1 worker and with 7 workers}}{21}{figure.4.4}% 
+\contentsline {figure}{\numberline {4.1}{\ignorespaces Mapping of the observations onto the Flatland environment.}}{14}{figure.4.1}% 
+\contentsline {figure}{\numberline {4.2}{\ignorespaces Screenshot from flatland environment. A train heading east. The only reasonable action is to ride forward.}}{15}{figure.4.2}% 
+\contentsline {figure}{\numberline {4.3}{\ignorespaces Comparison of training with and without action reduction}}{16}{figure.4.3}% 
+\contentsline {figure}{\numberline {4.4}{\ignorespaces Comparison of training with 1 worker and with 7 workers}}{20}{figure.4.4}% 
 \addvspace {10\p@ }
 \addvspace {10\p@ }
 \addvspace {10\p@ }
