@@ -21,8 +21,8 @@
 \section{Work Approach}\label{basic_cons}
 As described under \autoref{baseline}, our work is based on the work of S. Huschauer \cite{flatlandstephan}. We take the idea of using the A3C algorithm to solve the flatland problem and try various modifications in an attempt to improve its performance.\\
 To do so, we identify parts of the implementation where we suspect room for improvement. We proceed by giving an idea, what we want to achieve by changing the specified part, followed by an experiment to either prove or disprove our hypothesis.\\
-For training purposes, we started by reimplementing the algorithm by ourselfes. This enabled us from the beginning to gain a deeper understanding of how the algorithm works and where we could find possible areas for improvement. From there, we iteratively added these potential improvements to later compare them against the version without this feature.
-Our work can be categorized into a section about reinforcement learning for Flatland (\autoref{rl_flatland}) and a section about infrastructure and scaling up the training process (\autoref{dist_architecture}).
+For training purposes, we started by reimplementing the algorithm by ourselfes. This enabled us from the beginning to gain a deeper understanding of how the algorithm works and where we could find possible areas for improvement. From there, we iteratively added these potential improvements to later compare them against the version without this feature.\\For our experiments, we focus exclusively on Flatland round 2. While we compare our solution for round 1 in \autoref{chap.resultate}, all technical improvements are also part of our solution for round 2.\\
+Our work can be categorized into a section about reinforcement learning for Flatland (\autoref{rl_flatland}) and a section about infrastructure and scaling up the training process (\autoref{dist_architecture}).\\
 \section{Reproducability in Reinforcement Learning}\label{reproducability}
 It is important to note, that the training process of reinforcement learning and especially multi agent reinforcement learning can be hard to reproduce. Depending on the initial weights of the neural networks and the layout of the environments, the performance may vary on each restart. Also, the number of workers can 
 significantly influence the training performance. If not differently specified, we execute all presented experiments on machines with the same specifications (see \autoref{infrastructure}).\\
@@ -52,14 +52,12 @@ Based on the provided TreeObsForRailEnv (see \autoref{observations}), we impleme
 \end{itemize}
 The provided TreeObsForRailEnv produce a graph with a node for each section of the rail. We extend these nodes with additional information about train traffic coming the other direction than the one the agent is heading. We take the information from these nodes and convert them into a numeric vector. In case that there is a dead end, we fill the observation with zeros (this could only happen in Flatland round 1, round 2 does not have dead ends). After the conversion, we concatenate all section observations into one large vector with information for all upcoming sections.\\
 While this vector already contains all required information outside of the agent, we add another vector with information regarding the agent itself (train specific observation in \autoref{obs_descr}). This vector contains the speed of the agent, the max. speed of the agent, the type of the current tile, the direction the agent is heading and 
-
 \begin{figure}
 	\centering
 	\includegraphics[width=300pt]{diagrams/tree_obs_mapping.pdf}
-	\caption{Mapping of the observations onto the Flatland environment.}
-	%\label{obs_descr}
+	\caption{Illustration of the tree observation mapped onto the flatland enviornment. Each colored bar represents information about a section.}
+	\label{obs_descr}
 \end{figure}
-
 \subsection*{Action Space Reduction and Script Policy Actions}\label{reduced_action_space}
 The flatland environment is designed in a way to resemble a classical RL environment. This means, on every timestep, we receive observations for each agent, calculate an action and hand this action to the environment, visible in pseudocode \autoref{alg:no_reduction}.\\\\
 \begin{algorithm}[H]
@@ -70,11 +68,11 @@ The flatland environment is designed in a way to resemble a classical RL environ
 		create empty action array $\mathcal{A}$\\
 		\For{every agent $\mathcal{a}$}{
 			get current state $\mathcal{s\SPSB{a}{t}}$ of agent\\
-			Fetch action  $\mathcal{u}$ for agent $\mathcal{a}$ at timestep $\mathcal{t}$ based on $\mathcal{s\SPSB{a}{t}}$ from policy $\pi$\\
-			$\mathcal{A[a]}$ = $\mathcal{u}$
+			// Fetch action for agent, based on current state\\
+			$\mathcal{A[a]} \leftarrow from policy \pi (\mathcal{s\SPSB{a}{t}})$\\
 		}
 		
-		call $\mathcal{step(A)}$ of $\mathcal{E}$\\
+		call $\mathcal{env.step(A)}$ \\
 		retrieve reward $\mathcal{R}$\\
 		append $\mathcal{A}$ to buffer $\mathcal{B}$\\
 		retrieve all new states $\mathcal{s_{t+1}}$\\		
@@ -103,7 +101,7 @@ For training, we only use the experience collected near the switch.\\
 		\For{every agent $\mathcal{a}$}{
 			\eIf{agent is near to a switch}{
 				get current state $\mathcal{s\SPSB{a}{t}}$ of agent\\
-				%$\tcp{Fetch action for agent, based on current state of agent}$
+				// Fetch action for agent, based on current state\\
 				$\mathcal{A[a]} \leftarrow from policy \pi (\mathcal{s\SPSB{a}{t}})$\\
 			}{
 				$\mathcal{A[a]} \leftarrow \mathcal{u_{forward})}$
@@ -199,9 +197,6 @@ After the training start the general cycle for each worker is as following:
 \end{enumerate}
 
 
-
-
-
 \begin{itemize}
 \item (Beschreibt die Grundüberlegungen der realisierten Lösung (Konstruktion/Entwurf) und die Realisierung als Simulation, als Prototyp oder als Software-Komponente)
 \item (Definiert Messgrössen, beschreibt Mess- oder Versuchsaufbau, beschreibt und dokumentiert Durchführung der Messungen/Versuche)
@@ -246,40 +241,5 @@ We used the following tools in our project.
 	\item Cython x.x
 	\item %TODO: finish this
 \end{itemize}
-
-
-\section{Basic considerations}
-%split into round 1 / round 2
-
-\subsection{Round 1}
-%Observations
-%Convolutional network + Global observations
-%Early stopping
-%Reward vergabe angepasst
-We started with rebuilding the A3C algorithm from S. Huschauer to get a better knowledge how A3C works.\\
-We made some experiments with different observations: TreeObservations and GlobalOberservations.
-Because we made better and faster progress with GlobalObservatione we continued with those and combind them with a convolutional network.
-Right after starting this project, we faced a problem regarding the reward distribution.\\
-
-
-\subsection{Round 2}
-
-
-
-
-\section{Measurands}
-%Messgrössen: Evaluator, benchmark
-
-\section{Experiments}
-%
-
-\section{Solution approach}
-%Neue Actions
-
-
-\section{Testing and submissions}
-
-\section{Theoretical derivation of the solution}
-
 
 

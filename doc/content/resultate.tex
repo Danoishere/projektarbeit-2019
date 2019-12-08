@@ -17,8 +17,19 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \chapter{Results}\label{chap.resultate}
-
 \section{Round 1}
+Our submission for Flatland round 1 does not include all algorithmic improvements discussed in this work. None the less, we were able to achieve a significant improvement in performance compared to the baseline version from \cite{flatlandstephan}.
+Our submission for round 1 contains the following components:
+\begin{itemize}
+	\item Custom A3C implementation without experience replay buffer.
+	\item Default TreeObsForRailEnv (in round 1, this was a numeric vector by default).
+	\item Policy learned by curriculum learning.
+	\item Distributed training over multiple processes on the same machine (no cross-machine distribution possible yet).
+\end{itemize}
+Using the performance evaluation system provided together with the Flatland environment, we reach the following performance metrics:
+
+
+
 
 %Vergleich mit Stefan:
 %He used the first version of Flatland to evaluate his models and got a total score of 24.7\% in a local evaluation.
