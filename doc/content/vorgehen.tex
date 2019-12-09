@@ -19,7 +19,8 @@
 
 \chapter{Approach and Methodology}\label{chap.vorgehen}
 \section{Work Approach}\label{basic_cons}
-As described under \autoref{baseline}, our work is based on the work of S. Huschauer \cite{flatlandstephan}. We take the idea of using the A3C algorithm to solve the Flatland problem and try various modifications in an attempt to improve its performance. We proceed by giving an idea, what we want to achieve by changing the specified part, followed by an experiment to either prove or disprove our hypothesis. We do this in an iterative manner, to gradually come closer to a well-performing solution for Flatland.\\In our experiments, we focus exclusively on Flatland round 2. While we compare our solution for round 1 in \autoref{chap.resultate}, all technical improvements are also part of our solution for round 2.\\
+As described under \autoref{baseline}, our work is based on the work of S. Huschauer \cite{flatlandstephan}. We take the idea of using the A3C algorithm to solve the Flatland problem and try various modifications in an attempt to improve its performance. We proceed by giving an idea, what we want to achieve by changing the specified part, followed by an experiment to either prove or disprove our hypothesis. We do this in an iterative manner, to gradually come closer to a well-performing solution for Flatland.\\
+In our experiments, we focus exclusively on Flatland round 2. While we compare our solution for round 1 in \autoref{chap.resultate}, all technical improvements are also part of our solution for round 2.\\
 Our work can be categorized into a section about reinforcement learning for Flatland (\autoref{rl_flatland}) and a section about infrastructure and scaling up the training process (\autoref{dist_architecture}).\\
 \section{Reproducability in Reinforcement Learning}\label{reproducability}
 It is important to note, that the training process of reinforcement learning and especially multi agent reinforcement learning can be hard to reproduce. Depending on the initial weights of the neural networks and the layout of the environments, the performance may vary on each restart. Also in a distributed algorithm, the number of workers can significantly influence the training performance. If not differently specified, we execute all presented experiments on machines with the same specifications (see \autoref{infrastructure}).\\
@@ -154,7 +155,7 @@ In order to verify the meaningfulness of such a curriculum, we run an experiment
 
 \begin{figure}[H]
 	\begin{center}
-		\input{diagrams/.pgf}
+		\input{diagrams/lstm_comparison.pgf}
 	\end{center}
 	\caption{Comparison of training performance between a version with an LSTM-layer and a version without. It is evident that the version with LSTM performs better than the version without.}
 	\label{chart:curriculum_comparison}
