@@ -11,15 +11,15 @@
 \contentsline {section}{\numberline {4.1}Reinforcement Learning for Flatland}{13}{section.4.1}% 
 \contentsline {section}{\numberline {4.2}Distributed Architecture and Parallelism}{19}{section.4.2}% 
 \contentsline {section}{\numberline {4.3}Technical Implementation Aspects}{21}{section.4.3}% 
-\contentsline {chapter}{\numberline {5}Results}{23}{chapter.5}% 
-\contentsline {section}{\numberline {5.1}Round 1}{23}{section.5.1}% 
-\contentsline {section}{\numberline {5.2}Round 2}{23}{section.5.2}% 
-\contentsline {chapter}{\numberline {6}Diskussion und Ausblick}{24}{chapter.6}% 
-\contentsline {chapter}{\numberline {7}Verzeichnisse}{25}{chapter.7}% 
-\contentsline {section}{Literaturverzeichnis}{25}{chapter.7}% 
-\contentsline {section}{(Abbildungsverzeichnis)}{27}{chapter*.32}% 
-\contentsline {section}{(Tabellenverzeichnis)}{28}{chapter*.34}% 
-\contentsline {section}{(Abkürzungsverzeichnis)}{29}{chapter*.36}% 
+\contentsline {chapter}{\numberline {5}Results}{22}{chapter.5}% 
+\contentsline {section}{\numberline {5.1}Round 1}{22}{section.5.1}% 
+\contentsline {section}{\numberline {5.2}Round 2}{22}{section.5.2}% 
+\contentsline {chapter}{\numberline {6}Diskussion und Ausblick}{23}{chapter.6}% 
+\contentsline {chapter}{\numberline {7}Verzeichnisse}{24}{chapter.7}% 
+\contentsline {section}{Literaturverzeichnis}{24}{chapter.7}% 
+\contentsline {section}{(Abbildungsverzeichnis)}{26}{chapter*.32}% 
+\contentsline {section}{(Tabellenverzeichnis)}{27}{chapter*.34}% 
+\contentsline {section}{(Abkürzungsverzeichnis)}{28}{chapter*.36}% 
 \contentsline {section}{(Listingverzeichnis)}{I}{chapter*.38}% 
 \contentsline {chapter}{\numberline {A}Anhang}{II}{appendix.A}% 
 \contentsline {section}{\numberline {A.1}Projektmanagement}{II}{section.A.1}% 
