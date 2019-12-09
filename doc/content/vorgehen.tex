@@ -19,7 +19,7 @@
 
 \chapter{Approach and Methodology}\label{chap.vorgehen}
 \section{Work Approach}\label{basic_cons}
-As described under \autoref{baseline}, our work is based on the work of S. Huschauer \cite{flatlandstephan}. We take the idea of using the A3C algorithm to solve the flatland problem and try various modifications in an attempt to improve its performance.\\
+As described under \autoref{baseline}, our work is based on the work of S. Huschauer \cite{flatlandstephan}. We take the idea of using the A3C algorithm to solve the Flatland problem and try various modifications in an attempt to improve its performance.\\
 To do so, we identify parts of the implementation where we suspect room for improvement. We proceed by giving an idea, what we want to achieve by changing the specified part, followed by an experiment to either prove or disprove our hypothesis.\\
 For training purposes, we started by reimplementing the algorithm by ourselfes. This enabled us from the beginning to gain a deeper understanding of how the algorithm works and where we could find possible areas for improvement. From there, we iteratively added these potential improvements to later compare them against the version without this feature.\\For our experiments, we focus exclusively on Flatland round 2. While we compare our solution for round 1 in \autoref{chap.resultate}, all technical improvements are also part of our solution for round 2.\\
 Our work can be categorized into a section about reinforcement learning for Flatland (\autoref{rl_flatland}) and a section about infrastructure and scaling up the training process (\autoref{dist_architecture}).\\
@@ -37,8 +37,8 @@ While applying A3C in a multi agent setting, the other agents can be viewed as p
 Gupta et al.finds in \cite{multiagent_comp_a3c_dqn_etc}, that RL methods like Deep-Q networks (DQN) and Trust region policy optimization (TRPO) are not performing well in a multi agent environment, due to the combination of experience replay and non-stationarity of the environment. We therefore suggest, that it is not recommendable to keep an experience replay buffer with older episodes. Otherwise the sampled experience might represent old agent behaviour which is then learned to deal with.\\
 An important implementation detail in our version is, that we do not perform updates during episodes but only at their end. The reason for this is, that the only possibility for an agent to receive reward is at the end of the episode. Therefore would any earlier update have a reward of 0 and not help the training process.
 \subsection*{Observation Design}\label{enhanced_observations}
-The flatland environment provides a base to build custom observation builders that can be used to create a state representation for the agents as explained in \autoref{observations}. In this work, we do not consider the usage of the grid-based observation builders.
-Both the flatland development team as well as S. Huschauer find, that tree based observations work better in their experiments \cite{flatlandstephan}. The flatland specification states \cite{flatland_spec}:
+The Flatland environment provides a base to build custom observation builders that can be used to create a state representation for the agents as explained in \autoref{observations}. In this work, we do not consider the usage of the grid-based observation builders.
+Both the Flatland development team as well as S. Huschauer find, that tree based observations work better in their experiments \cite{flatlandstephan}. The Flatland specification states \cite{flatland_spec}:
 \begin{quote}
 Considering, that the actions and directions an agent can chose in any given cell, it becomes clear that a grid like observation around an agent will not contain much useful information, as most of the observed cells are not reachable nor play a significant role in for the agents decisions.
 \end{quote}
@@ -55,14 +55,14 @@ While this vector already contains all required information outside of the agent
 \begin{figure}
 	\centering
 	\includegraphics[width=300pt]{diagrams/tree_obs_mapping.pdf}
-	\caption{Illustration of the tree observation mapped onto the flatland enviornment. Each colored bar represents information about a section.}
+	\caption{Illustration of the tree observation mapped onto the Flatland enviornment. Each colored bar represents information about a section.}
 	\label{obs_descr}
 \end{figure}
 \subsection*{Action Space Reduction and Script Policy Actions}\label{reduced_action_space}
-The flatland environment is designed in a way to resemble a classical RL environment. This means, on every timestep, we receive observations for each agent, calculate an action and hand this action to the environment, visible in pseudocode \autoref{alg:no_reduction}.\\\\
+The Flatland environment is designed in a way to resemble a classical RL environment. This means, on every timestep, we receive observations for each agent, calculate an action and hand this action to the environment, visible in pseudocode \autoref{alg:no_reduction}.\\\\
 \begin{algorithm}[H]
-	\KwData{initialized flatland environment $\mathcal{E}$, initial observation $\mathcal{s\SPSB{a}{t=0}}$ for all agents }
-	\KwResult{terminal flatland environment}
+	\KwData{initialized Flatland environment $\mathcal{E}$, initial observation $\mathcal{s\SPSB{a}{t=0}}$ for all agents }
+	\KwResult{terminal Flatland environment}
 	initialize buffer $\mathcal{B}$\\
 	\While{episode not terminal}{
 		create empty action array $\mathcal{A}$\\
@@ -79,22 +79,22 @@ The flatland environment is designed in a way to resemble a classical RL environ
 	}
 
 	use buffer $\mathcal{B}$ for training of policy $\pi$
-	\caption{Default episode for flatland environment}
+	\caption{Default episode for Flatland environment}
 	\label{alg:no_reduction}
 \end{algorithm}
-While this makes sense in an environment where agents need to take an action on every timestep (such as Atari games), in flatland most of the time the only reasonable action is to move forward as visible in \autoref{fig:no_desicion}. Only around switches, the actions of an agent have acutual consequences.
+While this makes sense in an environment where agents need to take an action on every timestep (such as Atari games), in Flatland most of the time the only reasonable action is to move forward as visible in \autoref{fig:no_desicion}. Only around switches, the actions of an agent have acutual consequences.
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=300pt]{images/screenshot_no_decision.png}
-	\caption{Screenshot from flatland environment. A train heading east. The only reasonable action is to ride forward.}
+	\caption{Screenshot from Flatland environment. A train heading east. The only reasonable action is to ride forward.}
 	\label{fig:no_desicion}
 \end{figure}
 Every action that is produced by the neural network should be included for training, so the network can adapt to this type of situation. The problem arises now, that all these actions of riding forward are included into the training of the agent. The influence of the actions that actually matter (e.g. the ones around switches) is thereby not as big as it could be, because a large portion of the training data is actually situations that do not actually require decisions.\\
 To solve this problem, we implement hard coded rules that the agents follow as long as they are not in a situation to make a decision. Only around switches, the neural network policy is activated. As a consequence, the data used for training has less samples but the samples available are of higher quality. The training with this mechanism implemented looks like \autoref{alg:with_reduction}.
 For training, we only use the experience collected near the switch.\\
 \begin{algorithm}[H]
-	\KwData{initialized flatland environment $\mathcal{env}$, initial observation $\mathcal{s\SPSB{a}{t=0}}$ for all agents}
-	\KwResult{terminal flatland environment}
+	\KwData{initialized Flatland environment $\mathcal{env}$, initial observation $\mathcal{s\SPSB{a}{t=0}}$ for all agents}
+	\KwResult{terminal Flatland environment}
 	initialize buffer $\mathcal{B}$\\
 	\While{episode not terminal}{
 		create empty action array $\mathcal{A}$\\
@@ -133,7 +133,7 @@ In RL, the architecture of neural networks is often rather simple \cite{mnih2013
 
 
 \subsection*{Curriculum Learning and Reward assignment}\label{curriculum_learning}
-The reward assignment in flatland can be freely configured. But as long as there is not some distance-to-target dependent reward function, the probability, that an agent with an uninformed policy finds its target is small. This is especially the case for large environments with many trains on it. For example, most evaluation environments of flatland round 2 have up to 200 individual agents and are up 100x100 tiles large (SOURCE!). The rollout of such an environment takes a lot more time than the rollout of a 20x20 environment with 5 trains. Also, the probability, that a train arrives in a small environment is larger and therefore, the experience is more valuable for training.
+The reward assignment in Flatland can be freely configured. But as long as there is not some distance-to-target dependent reward function, the probability, that an agent with an uninformed policy finds its target is small. This is especially the case for large environments with many trains on it. For example, most evaluation environments of Flatland round 2 have up to 200 individual agents and are up 100x100 tiles large (SOURCE!). The rollout of such an environment takes a lot more time than the rollout of a 20x20 environment with 5 trains. Also, the probability, that a train arrives in a small environment is larger and therefore, the experience is more valuable for training.
 To improve training times, it makes therefore sense to start with a small environment and move to larget ones, once the agents mastered pathfinding and basic collision avoidance.
 
 \subsection*{Entropy Balancing and Hyperparameter Tuning}\label{entropy_balancing_hyperparameter}
@@ -168,7 +168,7 @@ The server consists out of 56 CPU cores and 721Gb memory. We connect 3 Openstack
 \end{figure}
 
 
-The flatland environment is running on each cpu core and the results are sent to a web server which updates the model and sent the updated neural network weights back to the client. \\
+The Flatland environment is running on each cpu core and the results are sent to a web server which updates the model and sent the updated neural network weights back to the client. \\
 The reason why we are using CPU cores over GPU performance is that the reinforcement algorithm A3C performs better on CPUs instead of GPUs. \\  %TODO: Grund eventuell erweitern?
 
 All experiments (mentioned in \autoref{enhanced_observations}) are made on a Openstack Machine with 8 CPU cores and 64Gb memory.

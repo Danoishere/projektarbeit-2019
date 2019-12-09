@@ -6,7 +6,7 @@
 \item (Nennt kurz den Industriepartner und/oder weitere Kooperationspartner und dessen/deren Interesse am Thema Fragestellung)
 \end{itemize}
 This work explores a real world usage of multi agent reinforcment learning (MARL) for controlling train traffic in a complex railway system.
-As part of the flatland challenge, a contest created by the Swiss Federal Railways (SBB AG) and the crowdsourcing platform AICrowd \cite{aicrowd}, we try to improve the performance of RL based train guidance and rescheduling. The goal of the challenge is to successfully guide all trains to their assigned target stations in a simulated environment called Flatland environment. 
+As part of the Flatland challenge, a contest created by the Swiss Federal Railways (SBB AG) and the crowdsourcing platform AICrowd \cite{aicrowd}, we try to improve the performance of RL based train guidance and rescheduling. The goal of the challenge is to successfully guide all trains to their assigned target stations in a simulated environment called Flatland environment.
 This is challenging because a single wrong decision can cause a chain reaction that makes it impossible for many other trains to sucessfully reach their destinations. The endeavour is further complicated by trains with different speed profiles and the possibility of malfunctioning trains. In the words of SBB and AICrowd, the challenge is described as follows \cite{aicrowd}:
 \begin{quote}
 	The Flatland Challenge is a competition to foster progress in multi-agent reinforcement learning for any re-scheduling problem (RSP). The challenge addresses a real-world problem faced by many transportation and logistics companies around the world (such as the Swiss Federal Railways, SBB). Different tasks related to RSP on a simplified 2D multi-agent railway simulation must be solved. Your contribution may shape the way modern traffic management systems (TMS) are implemented not only in railway but also in other areas of transportation and logistics. This will be the first of a series of challenges related to re-scheduling and complex transportation systems.
@@ -18,7 +18,7 @@ The challenge consists of two parts \cite{aicrowd}.
 \end{itemize}
 This work is based on the work of Stefan Huschauer \cite{flatlandstephan} and further investigates on the idea to use the asynchronous advantage actor critic algorithm (A3C) \cite{a3c}, a state of the art RL algorithm, to solve the task.
 Besides the work of S. Huschauer, this work is also related to the work of Bacchiani, Molinari and Patander \cite{marltraffica3c}. Their work also aims to apply the A3C algorithm in a cooperative multi-agent environment and investigates communication free cooperation.
-Unlike the flatland challenge, the goal of this work is to cooperate on a road traffic environment. By applying the A3C algorithm, the work shows that it is possible learn cooperation by treating the other agents as part of the environment. Both the works of Bacchiani, Molinari and Patander as well as the work of S. Huschauer use a shared policy for all acting agents.
+Unlike the Flatland challenge, the goal of this work is to cooperate on a road traffic environment. By applying the A3C algorithm, the work shows that it is possible learn cooperation by treating the other agents as part of the environment. Both the works of Bacchiani, Molinari and Patander as well as the work of S. Huschauer use a shared policy for all acting agents.
 
 
 \section{Goal of this work}\label{zielsetzung}
@@ -32,7 +32,7 @@ Unlike the flatland challenge, the goal of this work is to cooperate on a road t
 \item (Terminologie: Definiert die in der Arbeit verwendeten Begriffe)
 \end{itemize}
 %Comment: Explore ths use of A3C RL Learning in am cooperative multi agent env.
-The aim of the work is to explore the use of the A3C algorithm in the flatland multi-agent environment and to improve on the approach of S. Huschauer \cite{flatlandstephan}.\\
+The aim of the work is to explore the use of the A3C algorithm in the Flatland multi-agent environment and to improve on the approach of S. Huschauer \cite{flatlandstephan}.\\
 While it could be argued that there are better ways to solve the given problem than RL, we mainly focus on pure RL but give in the \autoref{chap.resultate} our intuition on how the explored approach could work together with other techniques to improve its success.
 This work is targeted towards an audience with a brief understanding of deep reinforcement learning. A basic introduction into the topic is given in \autoref{reinforcementlearning}. This introduction is focused on the techniques required to understand the applied A3C algorithm and does not cover the whole field of RL.
-Also, the details of the flatland environment can be found in \autoref{flatland_intro}. For a deeper understanding of the complex flatland environment, it is recommended to study the flatland documentation and specification \cite{flatland_docu} as well as the official flatland introduction \cite{aicrowd}.
+Also, the details of the Flatland environment can be found in \autoref{flatland_intro}. For a deeper understanding of the complex Flatland environment, it is recommended to study the Flatland documentation and specification \cite{flatland_docu} as well as the official Flatland introduction \cite{aicrowd}.
