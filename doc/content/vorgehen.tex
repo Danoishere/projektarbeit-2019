@@ -155,12 +155,11 @@ In order to verify the meaningfulness of such a curriculum, we run an experiment
 
 \begin{figure}[H]
 	\begin{center}
-		\input{diagrams/lstm_comparison.pgf}
+		\input{diagrams/curriculum_comparison.pgf}
 	\end{center}
-	\caption{Comparison of training performance between a version with an LSTM-layer and a version without. It is evident that the version with LSTM performs better than the version without.}
+	\caption{Comparison of training performance between a version with and a version without curriculum learning. It appears, that the version without curriculum is not able to generalize well in larger environments.}
 	\label{chart:curriculum_comparison}
 \end{figure}
-
 
 \subsection*{Entropy Balancing and Hyperparameter Tuning}\label{entropy_balancing_hyperparameter}
 In RL, it is of great importance to find the right combination of exploration and explotation. During exploration, the agent explores as much of the state space as possible. This enables the agent to later exploit the found states which are beneficial. Without this exploration, there is a chance that the agent settles on suboptimal policies too quickly and ignores parts of the state space the agent has never seen.\\

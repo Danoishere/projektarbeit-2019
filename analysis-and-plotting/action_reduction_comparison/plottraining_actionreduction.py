@@ -31,14 +31,13 @@ def group_by_round(df:pd.DataFrame, label, time_start):
 
     x = df['elapsed_hrs'].to_numpy()
     y = df['Value'].to_numpy()
-    y *= 14
 
     plt.plot(x, y, label=label)
 
 group_by_round(t1, 'With action reduction', t1_start)
 group_by_round(t2, 'Without action reduction', t2_start)
 
-plt.ylabel('Number of agents arriving')
+plt.ylabel('Percentage of agents arriving')
 plt.xlabel('Hours of training')
 
 myFmt = matplotlib.dates.DateFormatter("%Hh")

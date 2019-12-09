@@ -41,11 +41,11 @@ def group_by_round(df:pd.DataFrame, label, time_start):
 
     plt.plot(x, y, label=label)
 
-group_by_round(t1, '7 workers', t1)
-group_by_round(t2, '1 worker', t2)
+group_by_round(t1, '7 workers', t1_start)
+group_by_round(t2, '1 worker', t2_start)
 
 plt.ylabel('Number of agents arriving')
-plt.xlabel('Number of evaluation rounds (20 episodes/round)')
+plt.xlabel('Hours of training')
 
 myFmt = matplotlib.dates.DateFormatter("%H:%Mh")
 plt.gca().xaxis.set_major_formatter(myFmt)

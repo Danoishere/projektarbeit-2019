@@ -16,7 +16,6 @@ path = 'curriculum_comparison/'
 
 plt.rcParams["figure.figsize"] = (5,3)
 
-
 t1 = pd.read_csv(path + 'analysis_round_53_enabledcurriculum.csv', delimiter=',')
 t2 = pd.read_csv(path + 'analysis_round_53_disabledcurriculum.csv', delimiter=',')
 
@@ -45,11 +44,11 @@ def group_by_round(df:pd.DataFrame, label, time_start):
 
     plt.plot(x, y, label=label)
 
-group_by_round(t1, 'Enabled curriculum', t1)
-group_by_round(t2, 'Disabled curriculum', t2)
+group_by_round(t1, 'Enabled curriculum', t1_start)
+group_by_round(t2, 'Disabled curriculum', t2_start)
 
 plt.ylabel('Number of agents arriving')
-plt.xlabel('Number of evaluation rounds (20 episodes/round)')
+plt.xlabel('Hours of training')
 
 myFmt = matplotlib.dates.DateFormatter("%H:%Mh")
 plt.gca().xaxis.set_major_formatter(myFmt)
