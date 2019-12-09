@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 import matplotlib
-'''
+
 matplotlib.use("pgf")
 matplotlib.rcParams.update({
     "pgf.texsystem": "xelatex",
@@ -11,7 +11,7 @@ matplotlib.rcParams.update({
     'text.usetex': True,
     'pgf.rcfonts': False,
 })
-'''
+
 
 plt.rcParams["figure.figsize"] = (5,3)
 
@@ -45,11 +45,11 @@ def group_by_round(df:pd.DataFrame, label, time_start):
 
     plt.plot(x, y, label=label)
 
-group_by_round(t1, 'With LSTM', t1)
-group_by_round(t2, 'No LSTM', t2)
+group_by_round(t1, 'With LSTM', t1_start)
+group_by_round(t2, 'No LSTM', t2_start)
 
 plt.ylabel('Number of agents arriving')
-plt.xlabel('Number of evaluation rounds (20 episodes/round)')
+plt.xlabel('Hours of training')
 
 myFmt = matplotlib.dates.DateFormatter("%H:%Mh")
 plt.gca().xaxis.set_major_formatter(myFmt)
@@ -57,9 +57,9 @@ plt.gcf().autofmt_xdate()
 
 plt.legend()
 plt.tight_layout()
-plt.show()
+# plt.show()
 
-#plt.savefig(path + 'lstm_comparison.pgf')
+plt.savefig(path + 'lstm_comparison.pgf')
 
 
 
