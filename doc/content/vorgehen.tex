@@ -19,15 +19,20 @@
 
 \chapter{Approach and Methodology}\label{chap.vorgehen}
 \section{Work Approach}\label{basic_cons}
-As described under \autoref{baseline}, our work is based on the work of S. Huschauer \cite{flatlandstephan}. We take the idea of using the A3C algorithm to solve the Flatland problem and try various modifications in an attempt to improve its performance.\\
-To do so, we identify parts of the implementation where we suspect room for improvement. We proceed by giving an idea, what we want to achieve by changing the specified part, followed by an experiment to either prove or disprove our hypothesis.\\
-For training purposes, we started by reimplementing the algorithm by ourselfes. This enabled us from the beginning to gain a deeper understanding of how the algorithm works and where we could find possible areas for improvement. From there, we iteratively added these potential improvements to later compare them against the version without this feature.\\For our experiments, we focus exclusively on Flatland round 2. While we compare our solution for round 1 in \autoref{chap.resultate}, all technical improvements are also part of our solution for round 2.\\
+As described under \autoref{baseline}, our work is based on the work of S. Huschauer \cite{flatlandstephan}. We take the idea of using the A3C algorithm to solve the Flatland problem and try various modifications in an attempt to improve its performance. We proceed by giving an idea, what we want to achieve by changing the specified part, followed by an experiment to either prove or disprove our hypothesis. We do this in an iterative manner, to gradually come closer to a well-performing solution for Flatland.\\In our experiments, we focus exclusively on Flatland round 2. While we compare our solution for round 1 in \autoref{chap.resultate}, all technical improvements are also part of our solution for round 2.\\
 Our work can be categorized into a section about reinforcement learning for Flatland (\autoref{rl_flatland}) and a section about infrastructure and scaling up the training process (\autoref{dist_architecture}).\\
 \section{Reproducability in Reinforcement Learning}\label{reproducability}
-It is important to note, that the training process of reinforcement learning and especially multi agent reinforcement learning can be hard to reproduce. Depending on the initial weights of the neural networks and the layout of the environments, the performance may vary on each restart. Also, the number of workers can 
-significantly influence the training performance. If not differently specified, we execute all presented experiments on machines with the same specifications (see \autoref{infrastructure}).\\
-Another aspect that is hard to reproduce is training stability. In A3C, an important instrument to prevent the policy from converging too early is using an additional entropy term \cite{a3c}. Our way to maintain stability with changing environments is discussed in \autoref{entropy_balancing_hyperparameter}.
-% TODO: Explain how we do experiments
+It is important to note, that the training process of reinforcement learning and especially multi agent reinforcement learning can be hard to reproduce. Depending on the initial weights of the neural networks and the layout of the environments, the performance may vary on each restart. Also in a distributed algorithm, the number of workers can significantly influence the training performance. If not differently specified, we execute all presented experiments on machines with the same specifications (see \autoref{infrastructure}).\\
+Another aspect that is hard to reproduce is training stability. In A3C, an important instrument to prevent the policy from converging too early is using an additional entropy term \cite{a3c}. Our way to maintain stability with changing environments is discussed in \autoref{entropy_balancing_hyperparameter}.\\
+For better comparability, we try to keep our experimental versions of the training as similar to each other as possible. If not differently specified, we run evaluations with the following setup:
+\begin{itemize}
+	\item We use an environment of the size 100x100 tiles with 14 individual agents.
+	\item The map contains 20 cities
+	\item There is a maximum of 3 rails between cities and a maximum of 4 rails inside cities
+	\item Based on the flatland specification, the maximum allowed number of timesteps is 1608 \cite{flatland_spec}.
+\end{itemize}
+To analyze the performance of the solution, we run an analyzer that executes 20 rollouts of the environment using the same neural network parameters. After the these 20 rollouts, we update the neural network parameters. For each evaluation round, we use the same 20 environment layouts. 
+To compare the performance in a graph, we now take the mean number of agents arrived at their target and plot that in our graph.
 \chapter{Experiment Design and Analysis}\label{chap.experiment}
 \section{Reinforcement Learning for Flatland}\label{rl_flatland}
 \subsection*{A3C Implementation}\label{a3c_implementation}
@@ -69,7 +74,7 @@ The Flatland environment is designed in a way to resemble a classical RL environ
 		\For{every agent $\mathcal{a}$}{
 			get current state $\mathcal{s\SPSB{a}{t}}$ of agent\\
 			// Fetch action for agent, based on current state\\
-			$\mathcal{A[a]} \leftarrow from policy \pi (\mathcal{s\SPSB{a}{t}})$\\
+			$\mathcal{A[a]} \leftarrow$ from policy $\pi (\mathcal{s\SPSB{a}{t}})$\\
 		}
 		
 		call $\mathcal{env.step(A)}$ \\
@@ -102,7 +107,7 @@ For training, we only use the experience collected near the switch.\\
 			\eIf{agent is near to a switch}{
 				get current state $\mathcal{s\SPSB{a}{t}}$ of agent\\
 				// Fetch action for agent, based on current state\\
-				$\mathcal{A[a]} \leftarrow from policy \pi (\mathcal{s\SPSB{a}{t}})$\\
+				$\mathcal{A[a]} \leftarrow$ from policy $\pi (\mathcal{s\SPSB{a}{t}})$\\
 			}{
 				$\mathcal{A[a]} \leftarrow \mathcal{u_{forward})}$
 			}
@@ -119,7 +124,7 @@ For training, we only use the experience collected near the switch.\\
 	\caption{Improved learning for flatland environment}
 	\label{alg:with_reduction}
 \end{algorithm}
-This drastically improves training performance as visible in \autoref{chart:action_reduction_comparison}
+This drastically improves training performance as visible in \autoref{chart:action_reduction_comparison}. While both versions have the potential to perform well, based on the observation data, we observe that the version without the action reduction is not able to performe nearly as well as the improved version with reduced actions.
 \begin{figure}[H]
 	\begin{center}
 		\input{diagrams/comparison_action_reduction.pgf}
@@ -127,14 +132,34 @@ This drastically improves training performance as visible in \autoref{chart:acti
 	\caption{Comparison of training with and without action reduction}
 	\label{chart:action_reduction_comparison}
 \end{figure}
-
+As a consequence, we keep the reduced action mechanism as part of our final solution.
 \subsection*{Neural Network Architecture}\label{network_architecture}
-In RL, the architecture of neural networks is often rather simple \cite{mnih2013playing}\cite{a3c}. The already sample inefficient process of reinforcement learning should not be slowed down by a difficult architecture.
+In RL, the architecture of neural networks is often rather simple \cite{mnih2013playing}\cite{a3c}. The already sample inefficient process of reinforcement learning should not be slowed down by a difficult architecture. Differently than S. Huschauer in \cite{flatlandstephan}, we do not use a convolutional neural network. The reason for this is the way our observation vector is composed (see \autoref{enhanced_observations}). In this vector, every element corresponds with an actual information in the mapped rail section. Convolutional layers would especially make sense if there were patterns to extract from the observation vector.\\
+Another more relevant aspect of neural networks is the topic of recurrent layers. Recurrent layers allow the agent to remember information from previous timesteps. The original A3C publication shows, that it is possible to achieve a significant performance improvement using long short-term memory layers (LSTM) \cite{a3c}. Also S. Huschauer uses an LSTM-block to improve training. To quantify this improvement, we run an experiment in \autoref{chart:lstm_comparison} to compare a version with recurrent layer to a version without.
 
+\begin{figure}[H]
+	\begin{center}
+		\input{diagrams/lstm_comparison.pgf}
+	\end{center}
+	\caption{Comparison of training performance between a version with an LSTM-layer and a version without. It is evident that the version with LSTM performs better than the version without.}
+	\label{chart:lstm_comparison}
+\end{figure}
+
+It is clearly visible that an LSTM-layer helps the training process and we therefore keep the LSTM-layer as part of our solution.
 
 \subsection*{Curriculum Learning and Reward assignment}\label{curriculum_learning}
 The reward assignment in Flatland can be freely configured. But as long as there is not some distance-to-target dependent reward function, the probability, that an agent with an uninformed policy finds its target is small. This is especially the case for large environments with many trains on it. For example, most evaluation environments of Flatland round 2 have up to 200 individual agents and are up 100x100 tiles large (SOURCE!). The rollout of such an environment takes a lot more time than the rollout of a 20x20 environment with 5 trains. Also, the probability, that a train arrives in a small environment is larger and therefore, the experience is more valuable for training.
 To improve training times, it makes therefore sense to start with a small environment and move to larget ones, once the agents mastered pathfinding and basic collision avoidance.
+In order to verify the meaningfulness of such a curriculum, we run an experiment with a large environment with dimensions 100x100 and 50 individual agents. As visible in \autoref{chart:curriculum_comparison}, the version
+
+\begin{figure}[H]
+	\begin{center}
+		\input{diagrams/.pgf}
+	\end{center}
+	\caption{Comparison of training performance between a version with an LSTM-layer and a version without. It is evident that the version with LSTM performs better than the version without.}
+	\label{chart:curriculum_comparison}
+\end{figure}
+
 
 \subsection*{Entropy Balancing and Hyperparameter Tuning}\label{entropy_balancing_hyperparameter}
 In RL, it is of great importance to find the right combination of exploration and explotation. During exploration, the agent explores as much of the state space as possible. This enables the agent to later exploit the found states which are beneficial. Without this exploration, there is a chance that the agent settles on suboptimal policies too quickly and ignores parts of the state space the agent has never seen.\\
