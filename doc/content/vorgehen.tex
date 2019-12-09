@@ -185,12 +185,17 @@ We assume that this is not the case. While classical traffic rules (like right h
 \subsection*{Infrastructure}\label{infrastructure}
 We use various computers and servers to train our model. Most of the time we run the training of our model on a test infrastructure server of the ZHAW School of Engineering.
 The server consists out of 56 CPU cores and 721Gb memory. We connect 3 Openstack machines with 8 CPU cores each to this server, to increase our training. \\
-The flatland environment is running on each cpu core and the results are sent to a web server which updates the model and sent the updated neuronal network weights back to the client. \\
-The reason why we are using CPU cores over GPU performance is that the reinforcement algorithm A3C performs better on CPUs instead of GPUs. \\  %TODO: Grund eventuell erweitern?
 
-\begin{gather*}
-\includegraphics[width=400pt]{images/visio/architecture.png}
-\end{gather*}
+\begin{figure}[H]
+	\centering
+		\includegraphics[width=400pt]{images/visio/architecture.png}
+	\caption{Illustration of distributed architectures with main node (node 1) and several additional nodes (2-w) connected over HTTP.}
+	\label{dist_architecture_img}
+\end{figure}
+
+
+The flatland environment is running on each cpu core and the results are sent to a web server which updates the model and sent the updated neural network weights back to the client. \\
+The reason why we are using CPU cores over GPU performance is that the reinforcement algorithm A3C performs better on CPUs instead of GPUs. \\  %TODO: Grund eventuell erweitern?
 
 All experiments (mentioned in \autoref{enhanced_observations}) are made on a Openstack Machine with 8 CPU cores and 64Gb memory.
 Each experiment ran for 12 hours.\\
@@ -210,8 +215,8 @@ It also shows that the learning curve fluctuates more with a higher amount of wo
 \end{figure}
 
 \subsection*{Distributed training}
-We decided during round 1 of the Flatland challenge to change the training of the neuronal network to a distributed approach. \\
-We use the computer with the most memory and cores to run a web server, which distributes the neuronal network, the observation builder and also certain input parameters at training start. \\
+We decided during round 1 of the Flatland challenge to change the training of the neural network to a distributed approach. \\
+We use the computer with the most memory and cores to run a web server, which distributes the neural network, the observation builder and also certain input parameters at training start. \\
 The workers, all other CPUs on which an instance of the Flatland environment is running, receive the files and compile them into C code with Cython.\\
 After the training start the general cycle for each worker is as following:
 
