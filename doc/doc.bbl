@@ -84,6 +84,18 @@ R.~S. Sutton, D.~McAllester, S.~Singh, and Y.~Mansour, ``Policy gradient
   \url{http://dl.acm.org/citation.cfm?id=3009657.3009806}
 \BIBentrySTDinterwordspacing
 
+\bibitem{flatland_faq}
+\BIBentryALTinterwordspacing
+ [Online]. Available:
+  \url{https://gitlab.aicrowd.com/flatland/flatland/blob/master/FAQ_Challenge.md/}
+\BIBentrySTDinterwordspacing
+
+\bibitem{flatland_spec}
+\BIBentryALTinterwordspacing
+ [Online]. Available:
+  \url{http://flatland-rl-docs.s3-website.eu-central-1.amazonaws.com/04_specifications.html/}
+\BIBentrySTDinterwordspacing
+
 \bibitem{multiagent_comp_a3c_dqn_etc}
 J.~K. Gupta, M.~Egorov, and M.~Kochenderfer, ``Cooperative multi-agent control
   using deep reinforcement learning,'' in \emph{Autonomous Agents and
@@ -91,10 +103,8 @@ J.~K. Gupta, M.~Egorov, and M.~Kochenderfer, ``Cooperative multi-agent control
   1em plus 0.5em minus 0.4em\relax Cham: Springer International Publishing,
   2017, pp. 66--83.
 
-\bibitem{flatland_spec}
-\BIBentryALTinterwordspacing
- [Online]. Available:
-  \url{http://flatland-rl-docs.s3-website.eu-central-1.amazonaws.com/04_specifications.html/}
-\BIBentrySTDinterwordspacing
+\bibitem{explorationexploitation}
+L.~Rusch, ``Exploration-exploitation trade-off in deep reinforcement
+  learning.''
 
 \end{thebibliography}

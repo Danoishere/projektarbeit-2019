@@ -21,7 +21,7 @@
 \subsection*{Basic Definitions}\label{basic_rl_definitions}
 In recent years, major progress has been achieved in the field of reinforcement learning (RL) \cite{mnih2013playing},\cite{alphazero},\cite{hideandseek}.
 In RL, an agent learns to perform a task by interacting with an environment $\mathcal{E}$. On every timestep $\mathcal{t}$ the agent $\mathcal{a}$ needs to take an action $\mathcal{u}$. The selection of this action $\mathcal{u}$ is based on the current observation $\mathcal{s}$. The success of the agent is measured by reward $\mathcal{R}$ received. If the agent does well, it receives positive reward from the environment, if it does something bad, there is no or negative reward. The goal of the agent is now to take an action that maximizes the expected reward for all future timesteps. $\EX[\mathcal{R}_{t+1}+\mathcal{R}_{t+1}+\mathcal{R}_{t+1}+...|\mathcal{s}_{t}]$ given the current observation $\mathcal{s}$.\\
-This estimation should be as close as possible to the sum of actually received rewards. Often, these received rewards are discounted with a constant factor $\mathcal{\gamma}$ to the power of timestep $\mathcal{t}$. With $\mathcal{\gamma}$ being something slightly less than one, this accounts for the fact that rewards far in the future are hard to estimate.
+This estimation should be as close as possible to the sum of actually received rewards. Often, these received rewards are discounted with a constant factor $\mathcal{\gamma}$ to the power of timestep $\mathcal{t}$. With $\mathcal{\gamma}$ being something slightly less than 1, this accounts for the fact that rewards far in the future are hard to estimate.
 The current observation $\mathcal{s}_{t}$, also known as the current state is used to determine which action $\mathcal{u}$ to take next. An agent can observe its environment either fully or partially.
 \subsection*{Value Based vs. Policy Gradient Based Methods}\label{value_policy_based_methods}
 Reinforcement learning methods are categorized into value-based methods and policy gradient-based methods \cite{tdlearning},\cite{policygradient}. Those variants differ on how they select an action $\mathcal{u}$ from a given state $\mathcal{s}$.\\
@@ -70,12 +70,12 @@ An exception poses switches that are approached from a side that does not allow 
 All rail parts, independent of if it is a switch also allow to take the actions to do nothing (remain halted, or keep riding), to go forward or to brake.
 The action space is therefore defined by:
 \begin{gather*}
-U = \{ \text{Do nothing, go left, go forward, go right, brake} \}
+U = \{ \text{do nothing, go left, go forward, go right, brake} \}
 \end{gather*}
 It is important to note that trains do not have the ability to go backwards and therefore need to plan ahead to avoid getting stuck. To learn which actions to take, the agents have to learn to adapt to an unknown environment due to the fact that the environments are randomly generated and differ on each episode. Depending on the given parameters, the size and complexity of the grid can be adjusted. This allows for dynamically changing the difficulty for the agents.\\
 The goal of each agent is to reach an assigned target train station as fast as possible. Agents that reach this destination are removed from the grid which means, they can no longer obstruct the path of other trains.
 \subsection*{Agent Evaluation}\label{rl_agent_eval}
-AICrowd and SBB provide a system for agent evaluation. This system evaluates the policy on a number of unknown environments and outputs the percentage of agents that reached their destination as well as the received reward while doing so. The evaluation reward scheme is thereby as follows:
+AICrowd and SBB provide a system for agent evaluation. This system evaluates the policy on a number of unknown environments and outputs the percentage of agents that reached their assigned destination as well as the received reward while doing so. The evaluation reward scheme is thereby as follows \cite{flatland_faq}:
 \begin{gather*}
 R_{t}= 
 \begin{cases}
@@ -83,15 +83,31 @@ R_{t}=
 10,             & \text{otherwise}
 \end{cases}
 \end{gather*}
-All submissions to the Flatland challenge are getting graded by the percentage of agents that made it to destionation. (Source) Additionally we use our own evaluation parcour with an increasing difficulty of environments to get more insight into the agents strenghts and weaknesses.
+The difficulty of the evaluation level does differ between round 1 and round 2. While round 1 offered many connecting rails between the starting position and the assigned target of an agent, round 2 has more sparse connections and usually only provides 2 to 4 rails between cities. While round 1 does not have the concept of cities.
+
+\begin{figure}[H]
+	\centering
+	\begin{subfigure}{.5\textwidth}
+		\centering
+		\includegraphics[width=200pt]{images/example_eval_round1.png}
+		\caption{Screenshot from Flatland evaluation system for round 1.}
+		\label{fig:eval_round1}
+	\end{subfigure}%
+	\begin{subfigure}{.5\textwidth}
+		\centering
+		\includegraphics[width=200pt]{images/example_eval_round2.png}
+		\caption{Screenshot from Flatland evaluation system for round 2.}
+		\label{fig:eval_round2}
+	\end{subfigure}
+	\caption{Comparison between evaluation environments from Flatland round 1 and round 2.}
+	\label{fig:eval_comp}
+\end{figure}
+
 \subsection*{Observations}\label{observations}
 The Flatland environment allows to create observation builders to observe the environment for each agent. While it is possible to observe the whole grid, this does usually not make sense due to the fact that many parts of the rail grid are not relevant to a single train. Flatland offers by default two different observation builders.\\\\
 \textbf{GlobalObsForRailEnv} creates three arrays with the dimensions of the rectangular rail grid. The first array contains the transition information of the rail grid. For each cells, there are 16 bit values, 4 bit for each possible direction a train is facing.\\\\
 \textbf{TreeObsForRailEnv} creates a graph with sections of the grid as nodes from the perspective of the train.
-This means, only the switches which the train is actually able to take define a single node. As an example, a train on a \textit{case 0} switch heading from north to south is not able to make a decision on this switch and therefore, the TreeObservation does not put the sections before and after the switch into two different nodes but just into a single node.
-\\
-IMAGE mapping TreeObservations
-\\
+This means, only the switches which the train is actually able to take define a single node. As an example, a train on a \textit{case 0} switch heading from north to south is not able to make a decision on this switch and therefore, the TreeObservation does not put the sections before and after the switch into two different nodes but just into a single node.\\
 The nodes of the tree observation offer a number of fields that allow to select specific features to create numeric input vectors for function approximator such as neural networks. The tree observation builder offers 14 distinct features for each rail section. This includes:
 \begin{itemize}
 	\item Dist. own target encountered: Cell distance to the own target railway station. Inf. if target railway station for agent is not in this section.

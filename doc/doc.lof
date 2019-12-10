@@ -1,16 +1,17 @@
 \addvspace {10\p@ }
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {2.1}{\ignorespaces Screenshot from a running Flatland environment.}}{10}{figure.2.1}% 
-\contentsline {figure}{\numberline {2.2}{\ignorespaces Possible switches in the Flatland environment from \cite {flatland_docu}.}}{10}{figure.2.2}% 
+\contentsline {figure}{\numberline {2.1}{\ignorespaces Screenshot from a running Flatland environment.\relax }}{10}{figure.caption.13}% 
+\contentsline {figure}{\numberline {2.2}{\ignorespaces Possible switches in the Flatland environment from \cite {flatland_docu}.\relax }}{10}{figure.caption.14}% 
+\contentsline {figure}{\numberline {2.3}{\ignorespaces Comparison between evaluation environments from Flatland round 1 and round 2.\relax }}{11}{figure.caption.16}% 
 \addvspace {10\p@ }
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {4.1}{\ignorespaces Illustration of the tree observation mapped onto the Flatland enviornment. Each colored bar represents information about a section.}}{14}{figure.4.1}% 
-\contentsline {figure}{\numberline {4.2}{\ignorespaces Screenshot from Flatland environment. A train heading east. The only reasonable action is to ride forward.}}{15}{figure.4.2}% 
-\contentsline {figure}{\numberline {4.3}{\ignorespaces Comparison of training with and without action reduction}}{16}{figure.4.3}% 
-\contentsline {figure}{\numberline {4.4}{\ignorespaces Comparison of training performance between a version with an LSTM-layer and a version without. It is evident that the version with LSTM performs better than the version without.}}{17}{figure.4.4}% 
-\contentsline {figure}{\numberline {4.5}{\ignorespaces Comparison of training performance between a version with and a version without curriculum learning. It appears, that the version without curriculum is not able to generalize well in larger environments.}}{18}{figure.4.5}% 
-\contentsline {figure}{\numberline {4.6}{\ignorespaces Illustration of distributed architectures with main node (node 1) and several additional nodes (2-w) connected over HTTP.}}{19}{figure.4.6}% 
-\contentsline {figure}{\numberline {4.7}{\ignorespaces Comparison of training with 1 worker and with 7 workers}}{20}{figure.4.7}% 
+\contentsline {figure}{\numberline {4.1}{\ignorespaces Illustration of the tree observation mapped onto the Flatland enviornment. Each colored bar represents information about a section.\relax }}{16}{figure.caption.20}% 
+\contentsline {figure}{\numberline {4.2}{\ignorespaces Screenshot from Flatland environment. A train heading east. The only reasonable action is to ride forward.\relax }}{17}{figure.caption.22}% 
+\contentsline {figure}{\numberline {4.3}{\ignorespaces Comparison of training with and without action reduction\relax }}{18}{figure.caption.23}% 
+\contentsline {figure}{\numberline {4.4}{\ignorespaces Comparison of training performance between a version with an LSTM-layer and a version without. It is evident that the version with LSTM performs better than the version without.\relax }}{19}{figure.caption.25}% 
+\contentsline {figure}{\numberline {4.5}{\ignorespaces Comparison of training performance between a version with and a version without curriculum learning. It appears, that the version without curriculum is not able to generalize well in larger environments.\relax }}{20}{figure.caption.27}% 
+\contentsline {figure}{\numberline {4.6}{\ignorespaces Illustration of distributed architectures with main node (node 1) and several additional nodes (2-w) connected over HTTP.\relax }}{22}{figure.caption.31}% 
+\contentsline {figure}{\numberline {4.7}{\ignorespaces Comparison of training with 1 worker and with 7 workers\relax }}{23}{figure.caption.32}% 
 \addvspace {10\p@ }
 \addvspace {10\p@ }
 \addvspace {10\p@ }
