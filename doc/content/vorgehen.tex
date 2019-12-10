@@ -34,7 +34,7 @@ For better comparability, we try to keep our experimental versions of the traini
 \end{itemize}
 To analyze the performance of the solution, we run an analyzer that executes 20 rollouts of the environment using the same neural network parameters. After the these 20 rollouts, we update the neural network parameters. For each evaluation round, we use the same 20 environment layouts. 
 To compare the performance in a graph, we now take the mean number of agents arrived at their target and plot that in our graph.
-\chapter{Experiment Design and Analysis}\label{chap.experiment}
+\chapter[Experiments]{Experiment Design and Analysis}\label{chap.experiment}
 \section[RL for Flatland]{Reinforcement Learning for Flatland}\label{rl_flatland}
 \subsection*{A3C Implementation}\label{a3c_implementation}
 Originally, the asynchronous advantage actor critic algorithm (A3C) has been designed for use in a single agent environment \cite{a3c}.
@@ -151,7 +151,7 @@ It is clearly visible that an LSTM-layer helps the training process and we there
 \subsection*{Curriculum Learning and Reward assignment}\label{curriculum_learning}
 The reward assignment in Flatland can be freely configured. But as long as there is not some distance-to-target dependent reward function, the probability, that an agent with an uninformed policy finds its target is small. This is especially the case for large environments with many trains on it. For example, most evaluation environments of Flatland round 2 have up to 200 individual agents and are up 100x100 tiles large (SOURCE!). The rollout of such an environment takes a lot more time than the rollout of a 20x20 environment with 5 trains. Also, the probability, that a train arrives in a small environment is larger and therefore, the experience is more valuable for training.
 To improve training times, it makes therefore sense to start with a small environment and move to larget ones, once the agents mastered pathfinding and basic collision avoidance.
-In order to verify the meaningfulness of such a curriculum, we run an experiment with a large environment with dimensions 100x100 and 50 individual agents. On experiment tries to learn its policy directly using this environment. The other experiment uses a curriculum that gradually gets more difficult.
+In order to verify the meaningfulness of such a curriculum, we run an experiment with a large environment with dimensions 100x100 and 50 individual agents. One experiment tries to learn its policy directly using this environment. The other experiment uses a curriculum that gradually gets more difficult.
 As visible in \autoref{chart:curriculum_comparison}, the version without curriculum is not able to learn from the experience. We suspect that is is caused by too much variance in the environment and not enough successful experience to learn from. After all, an agent needs to reach its target to get reward, and in a large environment combined with an uninformed policy, this is potentially very difficult.
 \begin{figure}[H]
 	\begin{center}
@@ -201,18 +201,39 @@ We assume that this is not the case. While classical traffic rules (like right h
 	We suspect that a problem with this approach could be that it would have much slower convergence than the negotiation approach. The reason for this assumption is the fact, that such an unconstrained communication would not directly influcence the actions of the agents. It would be nescessary to learn both the "speaking" and the "interpretation", without a direct consequences.
 \end{itemize}
 
-\section[Dist. Training]{Distributed Architecture and Parallelism}\label{dist_architecture}
-\subsection*{Infrastructure}\label{infrastructure}
-We use various computers and servers to train our model. Most of the time we run the training of our model on a test infrastructure server of the ZHAW School of Engineering.
-The server consists out of 56 CPU cores and 721Gb memory. We connect 3 Openstack machines with 8 CPU cores each to this server, to increase our training. \\
-
+\section[Distributed Training]{Distributed Architecture and Parallelism}\label{dist_architecture}
+\subsection*{Distributed training}
+One of the main advantages of the A3C algorithm is its ability to be used in a distributed manner. This allows to run multiple versions of the environment asynchronously and collect the updates for both the actor and the critic network in a central place. To fully take advantage of this mechanism, we implemented a system that allows to run a large number of environements at the same time. All running training instances contribute to the same central network. Thanks to HTTP-based connections, we can use this mechanism even between computers or even networks. This approach is only limited by the capability of the central model server and the network throughput.\\
+Additionally, our central model server not only handles the update of the neural network but also distributes both the code for building observations and a file with all hyperparameter required for training on startup. The startup process of the worker node then converts the code for building observations into native C-code using Cython. This code converted code then gets dynamically imported.\\
+Using native C-code speeds up the rollout of the environment and therefore the training process by a factor of 2 to 5.
 \begin{figure}[H]
 	\centering
-		\includegraphics[width=400pt]{images/visio/architecture.png}
+	\includegraphics[width=300pt]{diagrams/distributed_training_update.pdf}
+	\caption{Simplified procedure of training of a single worker process. The communication between the worker and the model server works by using HTTP. The compilation of the observation.pyx file is only done once on each machine.}
+	\label{obs_descr}
+\end{figure}
+To improve the performance of the system, we compress both the weights (server to worker) and the gradient update (worker to server) using ZLIB. This reduces the size of the transmitted data by (COMPLETE WITH PERCENTAGE).
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=400pt]{images/visio/architecture.png}
 	\caption{Illustration of distributed architectures with main node (node 1) and several additional nodes (2-w) connected over HTTP.}
 	\label{dist_architecture_img}
 \end{figure}
-
+To analyze the impact of training a policy with multiple workers a the same time, we run an experiment that compares having a single worker to training with 7 workers at the same time.
+While it is appearant in \autoref{chart:singlemany_comparison} that having mulitple workers does speed up the training process, we do not observe any impact of the number of workers on the quality of the policy.
+\begin{figure}
+	\begin{center}
+		\input{diagrams/singlemany_comparison.pgf}
+	\end{center}
+	\caption{Comparison of training with 1 worker and with 7 workers}
+	\label{chart:singlemany_comparison}
+\end{figure}
+\subsection*{Infrastructure}\label{infrastructure}
+The infrastructure used for this project consists of 4 machines used in various combinations.
+\begin{itemize}
+	\item \textbf{Draft Animal (DRAN):} Server with 56 CPUS and 721 GB of RAM. This machine is mainly used to train the current submission model.
+	\item \textbf{Openstack machines:} 3 servers with 8 CPUS each. One machine has 16 GB of RAM, the other two have 64 GB each.
+\end{itemize}
 
 The Flatland environment is running on each cpu core and the results are sent to a web server which updates the model and sent the updated neural network weights back to the client. \\
 The reason why we are using CPU cores over GPU performance is that the reinforcement algorithm A3C performs better on CPUs instead of GPUs. \\  %TODO: Grund eventuell erweitern?
@@ -226,26 +247,6 @@ It also shows that the learning curve fluctuates more with a higher amount of wo
 %TODO: Update plot with 55 workers and compare it.
 %TODO: Fix problem with misplaced image.
 
-\begin{figure}
-	\begin{center}
-		\input{diagrams/singlemany_comparison.pgf}
-	\end{center}
-	\caption{Comparison of training with 1 worker and with 7 workers}
-	\label{chart:singlemany_comparison}
-\end{figure}
-
-\subsection*{Distributed training}
-We decided during round 1 of the Flatland challenge to change the training of the neural network to a distributed approach. \\
-We use the computer with the most memory and cores to run a web server, which distributes the neural network, the observation builder and also certain input parameters at training start. \\
-The workers, all other CPUs on which an instance of the Flatland environment is running, receive the files and compile them into C code with Cython.\\
-After the training start the general cycle for each worker is as following:
-
-\begin{enumerate}
-	\item Get current model from web server
-	\item Execute episode on Flatland environment
-	\item Calculate gradient and upload weights
-	\item Repeat
-\end{enumerate}
 
 
 \begin{itemize}

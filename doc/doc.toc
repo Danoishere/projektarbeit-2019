@@ -7,20 +7,20 @@
 \contentsline {chapter}{\numberline {3}Approach and Methodology}{13}{chapter.3}% 
 \contentsline {section}{\numberline {3.1}Iterative Work Approach}{13}{section.3.1}% 
 \contentsline {section}{\numberline {3.2}Reproducibility}{13}{section.3.2}% 
-\contentsline {chapter}{\numberline {4}Experiment Design and Analysis}{15}{chapter.4}% 
+\contentsline {chapter}{\numberline {4}Experiments}{15}{chapter.4}% 
 \contentsline {section}{\numberline {4.1}RL for Flatland}{15}{section.4.1}% 
-\contentsline {section}{\numberline {4.2}Dist. Training}{22}{section.4.2}% 
-\contentsline {section}{\numberline {4.3}Technical Implementation Aspects}{24}{section.4.3}% 
+\contentsline {section}{\numberline {4.2}Distributed Training}{22}{section.4.2}% 
+\contentsline {section}{\numberline {4.3}Technical Implementation Aspects}{25}{section.4.3}% 
 \contentsline {chapter}{\numberline {5}Results}{26}{chapter.5}% 
 \contentsline {section}{\numberline {5.1}Round 1}{26}{section.5.1}% 
 \contentsline {section}{\numberline {5.2}Round 2}{26}{section.5.2}% 
 \contentsline {chapter}{\numberline {6}Diskussion und Ausblick}{27}{chapter.6}% 
 \contentsline {chapter}{\numberline {7}Verzeichnisse}{28}{chapter.7}% 
 \contentsline {section}{Literaturverzeichnis}{28}{chapter.7}% 
-\contentsline {section}{(Abbildungsverzeichnis)}{30}{chapter*.43}% 
-\contentsline {section}{(Tabellenverzeichnis)}{31}{chapter*.45}% 
-\contentsline {section}{(Abkürzungsverzeichnis)}{32}{chapter*.47}% 
-\contentsline {section}{(Listingverzeichnis)}{I}{chapter*.49}% 
+\contentsline {section}{(Abbildungsverzeichnis)}{30}{chapter*.44}% 
+\contentsline {section}{(Tabellenverzeichnis)}{31}{chapter*.46}% 
+\contentsline {section}{(Abkürzungsverzeichnis)}{32}{chapter*.48}% 
+\contentsline {section}{(Listingverzeichnis)}{I}{chapter*.50}% 
 \contentsline {chapter}{\numberline {A}Anhang}{II}{appendix.A}% 
 \contentsline {section}{\numberline {A.1}Projektmanagement}{II}{section.A.1}% 
 \contentsline {section}{\numberline {A.2}Weiteres}{II}{section.A.2}% 

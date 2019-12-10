@@ -21,7 +21,7 @@
 \HyPL@Entry{1<</S/D>>}
 \newlabel{chap.zusammenfassung}{{}{1}{Zusammenfassung}{chapter*.2}{}}
 \newlabel{abstract}{{}{2}{Abstract}{chapter*.4}{}}
-\newlabel{vorwort}{{}{3}{Vorwort}{chapter*.6}{}}
+\newlabel{preface}{{}{3}{Preface}{chapter*.6}{}}
 \citation{aicrowd}
 \citation{aicrowd}
 \citation{aicrowd}
@@ -96,12 +96,12 @@
 \citation{multiagent_comp_a3c_dqn_etc}
 \citation{flatlandstephan}
 \citation{flatland_spec}
-\@writefile{toc}{\contentsline {chapter}{\numberline {4}Experiment Design and Analysis}{15}{chapter.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {chapter}{\numberline {4}Experiments}{15}{chapter.4}\protected@file@percent }
 \@writefile{lof}{\addvspace {10\p@ }}
 \@writefile{lot}{\addvspace {10\p@ }}
 \@writefile{lol}{\addvspace {10\p@ }}
 \@writefile{loa}{\addvspace {10\p@ }}
-\newlabel{chap.experiment}{{4}{15}{Experiment Design and Analysis}{chapter.4}{}}
+\newlabel{chap.experiment}{{4}{15}{Experiments}{chapter.4}{}}
 \@writefile{toc}{\contentsline {section}{\numberline {4.1}RL for Flatland}{15}{section.4.1}\protected@file@percent }
 \newlabel{rl_flatland}{{4.1}{15}{RL for Flatland}{section.4.1}{}}
 \newlabel{a3c_implementation}{{4.1}{15}{A3C Implementation}{section*.18}{}}
@@ -132,20 +132,22 @@
 \citation{explorationexploitation}
 \newlabel{entropy_balancing_hyperparameter}{{4.1}{21}{Entropy Balancing and Hyperparameter Tuning}{section*.29}{}}
 \newlabel{agent_communication}{{4.1}{21}{Agent Communication}{section*.30}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {4.2}Dist. Training}{22}{section.4.2}\protected@file@percent }
-\newlabel{dist_architecture}{{4.2}{22}{Dist. Training}{section.4.2}{}}
-\newlabel{infrastructure}{{4.2}{22}{Infrastructure}{section*.31}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {4.6}{\ignorespaces Illustration of distributed architectures with main node (node 1) and several additional nodes (2-w) connected over HTTP.\relax }}{22}{figure.caption.32}\protected@file@percent }
-\newlabel{dist_architecture_img}{{4.6}{22}{Illustration of distributed architectures with main node (node 1) and several additional nodes (2-w) connected over HTTP.\relax }{figure.caption.32}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {4.7}{\ignorespaces Comparison of training with 1 worker and with 7 workers\relax }}{23}{figure.caption.33}\protected@file@percent }
-\newlabel{chart:singlemany_comparison}{{4.7}{23}{Comparison of training with 1 worker and with 7 workers\relax }{figure.caption.33}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {4.3}Technical Implementation Aspects}{24}{section.4.3}\protected@file@percent }
-\newlabel{software}{{4.3}{24}{Technical Implementation Aspects}{section.4.3}{}}
-\newlabel{os}{{4.3}{24}{Working Environment}{section*.35}{}}
-\newlabel{vsc}{{4.3}{24}{Visual Studio Code}{section*.36}{}}
-\newlabel{dokutools}{{4.3}{24}{Documentation}{section*.37}{}}
-\newlabel{programminglanguages}{{4.3}{24}{Programming language}{section*.38}{}}
-\newlabel{modules}{{4.3}{25}{Python modules}{section*.39}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {4.2}Distributed Training}{22}{section.4.2}\protected@file@percent }
+\newlabel{dist_architecture}{{4.2}{22}{Distributed Training}{section.4.2}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4.6}{\ignorespaces Simplified procedure of training of a single worker process. The communication between the worker and the model server works by using HTTP. The compilation of the observation.pyx file is only done once on each machine.\relax }}{23}{figure.caption.32}\protected@file@percent }
+\newlabel{obs_descr}{{4.6}{23}{Simplified procedure of training of a single worker process. The communication between the worker and the model server works by using HTTP. The compilation of the observation.pyx file is only done once on each machine.\relax }{figure.caption.32}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4.7}{\ignorespaces Illustration of distributed architectures with main node (node 1) and several additional nodes (2-w) connected over HTTP.\relax }}{23}{figure.caption.33}\protected@file@percent }
+\newlabel{dist_architecture_img}{{4.7}{23}{Illustration of distributed architectures with main node (node 1) and several additional nodes (2-w) connected over HTTP.\relax }{figure.caption.33}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4.8}{\ignorespaces Comparison of training with 1 worker and with 7 workers\relax }}{24}{figure.caption.34}\protected@file@percent }
+\newlabel{chart:singlemany_comparison}{{4.8}{24}{Comparison of training with 1 worker and with 7 workers\relax }{figure.caption.34}{}}
+\newlabel{infrastructure}{{4.2}{24}{Infrastructure}{section*.35}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {4.3}Technical Implementation Aspects}{25}{section.4.3}\protected@file@percent }
+\newlabel{software}{{4.3}{25}{Technical Implementation Aspects}{section.4.3}{}}
+\newlabel{os}{{4.3}{25}{Working Environment}{section*.36}{}}
+\newlabel{vsc}{{4.3}{25}{Visual Studio Code}{section*.37}{}}
+\newlabel{dokutools}{{4.3}{25}{Documentation}{section*.38}{}}
+\newlabel{programminglanguages}{{4.3}{25}{Programming language}{section*.39}{}}
+\newlabel{modules}{{4.3}{25}{Python modules}{section*.40}{}}
 \citation{flatlandstephan}
 \@writefile{toc}{\contentsline {chapter}{\numberline {5}Results}{26}{chapter.5}\protected@file@percent }
 \@writefile{lof}{\addvspace {10\p@ }}
@@ -185,16 +187,16 @@
 \bibcite{multiagent_comp_a3c_dqn_etc}{{13}{}{{}}{{}}}
 \bibcite{explorationexploitation}{{14}{}{{}}{{}}}
 \citation{flatland_docu}
-\@writefile{toc}{\contentsline {section}{(Abbildungsverzeichnis)}{30}{chapter*.43}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{(Tabellenverzeichnis)}{31}{chapter*.45}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{(Abbildungsverzeichnis)}{30}{chapter*.44}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{(Tabellenverzeichnis)}{31}{chapter*.46}\protected@file@percent }
 \gdef \LT@i {\LT@entry 
     {1}{98.15825pt}\LT@entry 
     {1}{325.3803pt}}
-\newlabel{chap.glossar}{{7}{32}{(Glossar)}{chapter*.47}{}}
-\@writefile{toc}{\contentsline {section}{(Abkürzungsverzeichnis)}{32}{chapter*.47}\protected@file@percent }
-\newlabel{cha:abkürzungsverzeichnis}{{7}{32}{(Glossar)}{chapter*.47}{}}
+\newlabel{chap.glossar}{{7}{32}{(Glossar)}{chapter*.48}{}}
+\@writefile{toc}{\contentsline {section}{(Abkürzungsverzeichnis)}{32}{chapter*.48}\protected@file@percent }
+\newlabel{cha:abkürzungsverzeichnis}{{7}{32}{(Glossar)}{chapter*.48}{}}
 \HyPL@Entry{33<</S/R>>}
-\@writefile{toc}{\contentsline {section}{(Listingverzeichnis)}{I}{chapter*.49}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{(Listingverzeichnis)}{I}{chapter*.50}\protected@file@percent }
 \@writefile{toc}{\contentsline {chapter}{\numberline {A}Anhang}{II}{appendix.A}\protected@file@percent }
 \@writefile{lof}{\addvspace {10\p@ }}
 \@writefile{lot}{\addvspace {10\p@ }}
