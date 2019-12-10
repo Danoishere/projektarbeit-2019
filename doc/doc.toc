@@ -4,23 +4,23 @@
 \contentsline {chapter}{\numberline {2}Technical Foundation}{8}{chapter.2}% 
 \contentsline {section}{\numberline {2.1}Reinforcement Learning}{8}{section.2.1}% 
 \contentsline {section}{\numberline {2.2}The Flatland Rail Environment}{9}{section.2.2}% 
-\contentsline {chapter}{\numberline {3}Approach and Methodology}{12}{chapter.3}% 
-\contentsline {section}{\numberline {3.1}Work Approach}{12}{section.3.1}% 
-\contentsline {section}{\numberline {3.2}Reproducability in Reinforcement Learning}{12}{section.3.2}% 
-\contentsline {chapter}{\numberline {4}Experiment Design and Analysis}{13}{chapter.4}% 
-\contentsline {section}{\numberline {4.1}Reinforcement Learning for Flatland}{13}{section.4.1}% 
-\contentsline {section}{\numberline {4.2}Distributed Architecture and Parallelism}{19}{section.4.2}% 
-\contentsline {section}{\numberline {4.3}Technical Implementation Aspects}{21}{section.4.3}% 
-\contentsline {chapter}{\numberline {5}Results}{22}{chapter.5}% 
-\contentsline {section}{\numberline {5.1}Round 1}{22}{section.5.1}% 
-\contentsline {section}{\numberline {5.2}Round 2}{22}{section.5.2}% 
-\contentsline {chapter}{\numberline {6}Diskussion und Ausblick}{23}{chapter.6}% 
-\contentsline {chapter}{\numberline {7}Verzeichnisse}{24}{chapter.7}% 
-\contentsline {section}{Literaturverzeichnis}{24}{chapter.7}% 
-\contentsline {section}{(Abbildungsverzeichnis)}{26}{chapter*.32}% 
-\contentsline {section}{(Tabellenverzeichnis)}{27}{chapter*.34}% 
-\contentsline {section}{(Abkürzungsverzeichnis)}{28}{chapter*.36}% 
-\contentsline {section}{(Listingverzeichnis)}{I}{chapter*.38}% 
+\contentsline {chapter}{\numberline {3}Approach and Methodology}{13}{chapter.3}% 
+\contentsline {section}{\numberline {3.1}Iterative Work Approach}{13}{section.3.1}% 
+\contentsline {section}{\numberline {3.2}Reproducability in Reinforcement Learning}{13}{section.3.2}% 
+\contentsline {chapter}{\numberline {4}Experiment Design and Analysis}{15}{chapter.4}% 
+\contentsline {section}{\numberline {4.1}Reinforcement Learning for Flatland}{15}{section.4.1}% 
+\contentsline {section}{\numberline {4.2}Distributed Architecture and Parallelism}{22}{section.4.2}% 
+\contentsline {section}{\numberline {4.3}Technical Implementation Aspects}{23}{section.4.3}% 
+\contentsline {chapter}{\numberline {5}Results}{25}{chapter.5}% 
+\contentsline {section}{\numberline {5.1}Round 1}{25}{section.5.1}% 
+\contentsline {section}{\numberline {5.2}Round 2}{25}{section.5.2}% 
+\contentsline {chapter}{\numberline {6}Diskussion und Ausblick}{26}{chapter.6}% 
+\contentsline {chapter}{\numberline {7}Verzeichnisse}{27}{chapter.7}% 
+\contentsline {section}{Literaturverzeichnis}{27}{chapter.7}% 
+\contentsline {section}{(Abbildungsverzeichnis)}{29}{chapter*.42}% 
+\contentsline {section}{(Tabellenverzeichnis)}{30}{chapter*.44}% 
+\contentsline {section}{(Abkürzungsverzeichnis)}{31}{chapter*.46}% 
+\contentsline {section}{(Listingverzeichnis)}{I}{chapter*.48}% 
 \contentsline {chapter}{\numberline {A}Anhang}{II}{appendix.A}% 
 \contentsline {section}{\numberline {A.1}Projektmanagement}{II}{section.A.1}% 
 \contentsline {section}{\numberline {A.2}Weiteres}{II}{section.A.2}% 
