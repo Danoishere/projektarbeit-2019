@@ -82,7 +82,12 @@ class AC_Network():
         '''
         resp = requests.get(url=self.global_model_url + '/get_global_weights')
         weights_str = resp.content
+        before = len(weights_str)
         weights_str = zlib.decompress(weights_str)
+        after = len(weights_str)
+
+        print('Weight update from', before, 'to', after,' -> ', before/(1.0*after))
+
         weights = msgpack.loads(weights_str)
         self.model.set_weights(weights)
 
@@ -138,7 +143,11 @@ class AC_Network():
         gradients_new, grad_norms = tf.clip_by_global_norm(gradients_new, gradient_norm)
 
         gradients_str = dill.dumps(gradients_new)
+        before = len(gradients_str)
         gradients_str = zlib.compress(gradients_str)
+        after = len(gradients_str)
+
+        print('Gradient update from', before, 'to', after,' -> ', after/(1.0*before))
 
         # Send gradient update and receive new global weights
         resp = requests.post(
