@@ -12,7 +12,7 @@
 % Title       : 
 % File        : vorgehen.tex Rev. 00
 % Date        : 7.5.12
-% Author      : Remo Ritzmann
+%       : Remo Ritzmann
 % Feedback bitte an Email: remo.ritzmann@pfunzle.ch
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -22,10 +22,10 @@
 As described under \autoref{baseline}, our work is based on the work of S. Huschauer \cite{flatlandstephan}. We take the idea of using the A3C algorithm to solve the Flatland problem and try various modifications in an attempt to improve its performance. We proceed by giving an idea, what we want to achieve by changing the specified part, followed by an experiment to either prove or disprove our hypothesis. We do this in an iterative manner, to gradually come closer to a well-performing solution for Flatland.\\
 In our experiments, we focus exclusively on Flatland round 2. While we compare our solution for round 1 in \autoref{chap.resultate}, all technical improvements are also part of our solution for round 2.\\
 Our work can be categorized into a section about reinforcement learning for Flatland (\autoref{rl_flatland}) and a section about infrastructure and scaling up the training process (\autoref{dist_architecture}).\\
-\section[Reproducibility]{Reproducibility in Reinforcement Learning}\label{reproducability}
+\section[Reproducibility]{Reproducibility and Experiment Specification}\label{reproducability}
 It is important to note, that the training process of reinforcement learning and especially multi agent reinforcement learning can be hard to reproduce. Depending on the initial weights of the neural networks and the layout of the environments, the performance may vary on each restart. Also in a distributed algorithm, the number of workers can significantly influence the training performance. If not differently specified, we execute all presented experiments on machines with the same specifications (see \autoref{infrastructure}).\\
 Another aspect that is hard to reproduce is training stability. In A3C, an important instrument to prevent the policy from converging too early is using an additional entropy term \cite{a3c}. Our way to maintain stability with changing environments is discussed in \autoref{entropy_balancing_hyperparameter}.\\
-For better comparability, we try to keep our experimental versions of the training as similar to each other as possible. If not differently specified, we run evaluations with the following setup:
+For better comparability, we try to keep our evaluation versions for the training as similar to each other as possible. If not differently specified, we run evaluations with the following setup:
 \begin{itemize}
 	\item We use an environment of the size 100x100 tiles with 14 individual agents.
 	\item The map contains 20 cities
@@ -212,7 +212,7 @@ Using native C-code speeds up the rollout of the environment and therefore the t
 	\caption{Simplified procedure of training of a single worker process. The communication between the worker and the model server works by using HTTP. The compilation of the observation.pyx file is only done once on each machine.}
 	\label{obs_descr}
 \end{figure}
-To improve the performance of the system, we compress both the weights (server to worker) and the gradient update (worker to server) using ZLIB. This reduces the size of the transmitted data by (COMPLETE WITH PERCENTAGE).
+To improve the performance of the system, we compress both the weights (server to worker) and the gradient update (worker to server) using ZLIB. This reduces the size of the transmitted data between 10\% to 80\%.
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=400pt]{images/visio/architecture.png}
@@ -234,20 +234,7 @@ The infrastructure used for this project consists of 4 machines used in various 
 	\item \textbf{Draft Animal (DRAN):} Server with 56 CPUS and 721 GB of RAM. This machine is mainly used to train the current submission model.
 	\item \textbf{Openstack machines:} 3 servers with 8 CPUS each. One machine has 16 GB of RAM, the other two have 64 GB each.
 \end{itemize}
-
-The Flatland environment is running on each cpu core and the results are sent to a web server which updates the model and sent the updated neural network weights back to the client. \\
-The reason why we are using CPU cores over GPU performance is that the reinforcement algorithm A3C performs better on CPUs instead of GPUs. \\  %TODO: Grund eventuell erweitern?
-
-All experiments (mentioned in \autoref{enhanced_observations}) are made on a Openstack Machine with 8 CPU cores and 64Gb memory.
-Each experiment ran for 12 hours.\\
-
-We ran an experiment to compare the learning progress between a single worker and 7 workers.\\
-The experiment shows that the learning progress with 7 workers is over 2.5 times faster than the learning progress with a single worker.\\
-It also shows that the learning curve fluctuates more with a higher amount of workers.\\
-%TODO: Update plot with 55 workers and compare it.
-%TODO: Fix problem with misplaced image.
-
-
+The A3C algorithm is not able to take advantage of GPUs. The reason for this is fragmented update process. Differently than with an experience replay buffer, the training data is only used once and gets then discarded.
 
 \begin{itemize}
 \item (Beschreibt die Grundüberlegungen der realisierten Lösung (Konstruktion/Entwurf) und die Realisierung als Simulation, als Prototyp oder als Software-Komponente)
