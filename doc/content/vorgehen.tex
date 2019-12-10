@@ -22,7 +22,7 @@
 As described under \autoref{baseline}, our work is based on the work of S. Huschauer \cite{flatlandstephan}. We take the idea of using the A3C algorithm to solve the Flatland problem and try various modifications in an attempt to improve its performance. We proceed by giving an idea, what we want to achieve by changing the specified part, followed by an experiment to either prove or disprove our hypothesis. We do this in an iterative manner, to gradually come closer to a well-performing solution for Flatland.\\
 In our experiments, we focus exclusively on Flatland round 2. While we compare our solution for round 1 in \autoref{chap.resultate}, all technical improvements are also part of our solution for round 2.\\
 Our work can be categorized into a section about reinforcement learning for Flatland (\autoref{rl_flatland}) and a section about infrastructure and scaling up the training process (\autoref{dist_architecture}).\\
-\section{Reproducability in Reinforcement Learning}\label{reproducability}
+\section{Reproducibility in Reinforcement Learning}\label{reproducability}
 It is important to note, that the training process of reinforcement learning and especially multi agent reinforcement learning can be hard to reproduce. Depending on the initial weights of the neural networks and the layout of the environments, the performance may vary on each restart. Also in a distributed algorithm, the number of workers can significantly influence the training performance. If not differently specified, we execute all presented experiments on machines with the same specifications (see \autoref{infrastructure}).\\
 Another aspect that is hard to reproduce is training stability. In A3C, an important instrument to prevent the policy from converging too early is using an additional entropy term \cite{a3c}. Our way to maintain stability with changing environments is discussed in \autoref{entropy_balancing_hyperparameter}.\\
 For better comparability, we try to keep our experimental versions of the training as similar to each other as possible. If not differently specified, we run evaluations with the following setup:
@@ -35,7 +35,7 @@ For better comparability, we try to keep our experimental versions of the traini
 To analyze the performance of the solution, we run an analyzer that executes 20 rollouts of the environment using the same neural network parameters. After the these 20 rollouts, we update the neural network parameters. For each evaluation round, we use the same 20 environment layouts. 
 To compare the performance in a graph, we now take the mean number of agents arrived at their target and plot that in our graph.
 \chapter{Experiment Design and Analysis}\label{chap.experiment}
-\section{Reinforcement Learning for Flatland}\label{rl_flatland}
+\section[RL for Flatland]{Reinforcement Learning for Flatland}\label{rl_flatland}
 \subsection*{A3C Implementation}\label{a3c_implementation}
 Originally, the asynchronous advantage actor critic algorithm (A3C) has been designed for use in a single agent environment \cite{a3c}.
 By applying it in a multi agent environment, we implicitly convert the environment into a non-stationary system.
@@ -151,8 +151,8 @@ It is clearly visible that an LSTM-layer helps the training process and we there
 \subsection*{Curriculum Learning and Reward assignment}\label{curriculum_learning}
 The reward assignment in Flatland can be freely configured. But as long as there is not some distance-to-target dependent reward function, the probability, that an agent with an uninformed policy finds its target is small. This is especially the case for large environments with many trains on it. For example, most evaluation environments of Flatland round 2 have up to 200 individual agents and are up 100x100 tiles large (SOURCE!). The rollout of such an environment takes a lot more time than the rollout of a 20x20 environment with 5 trains. Also, the probability, that a train arrives in a small environment is larger and therefore, the experience is more valuable for training.
 To improve training times, it makes therefore sense to start with a small environment and move to larget ones, once the agents mastered pathfinding and basic collision avoidance.
-In order to verify the meaningfulness of such a curriculum, we run an experiment with a large environment with dimensions 100x100 and 50 individual agents. As visible in \autoref{chart:curriculum_comparison}, the version
-
+In order to verify the meaningfulness of such a curriculum, we run an experiment with a large environment with dimensions 100x100 and 50 individual agents. On experiment tries to learn its policy directly using this environment. The other experiment uses a curriculum that gradually gets more difficult.
+As visible in \autoref{chart:curriculum_comparison}, the version without curriculum is not able to learn from the experience. We suspect that is is caused by too much variance in the environment and not enough successful experience to learn from. After all, an agent needs to reach its target to get reward, and in a large environment combined with an uninformed policy, this is potentially very difficult.
 \begin{figure}[H]
 	\begin{center}
 		\input{diagrams/curriculum_comparison.pgf}
@@ -160,9 +160,27 @@ In order to verify the meaningfulness of such a curriculum, we run an experiment
 	\caption{Comparison of training performance between a version with and a version without curriculum learning. It appears, that the version without curriculum is not able to generalize well in larger environments.}
 	\label{chart:curriculum_comparison}
 \end{figure}
-
+\begin{tabular}{ |l|c|c|c|c|c| } 
+	\hline
+	& \textbf{Level 0} 
+	& \textbf{Level 1}  
+	& \textbf{Level 2} 
+	& \textbf{Level 3} 
+	& \textbf{Level 4}\\
+	\hline
+	\textbf{Next level on successrate} & 70\% & 70\% & 75\% & 70\% & 60\% \\  
+	\textbf{Nr. of agent} & 4 & 8 & 12 & 16 & 20 \\  
+	\textbf{Env. size} & 25x25 & 30x30  & 40x40 & 50x50 & 50x50 \\ 
+	\textbf{Num. cities} & 5 & 8 & 10  & 12 & 16 \\ 
+	\textbf{Max. rails between cities} & 1 & 2 & 2 & 2 & 2  \\ 
+	\textbf{Max. rails in city} & 2 & 2 & 3 & 3 & 3  \\ 
+	\hline
+	%\caption{Curriculum level specifications for our experiment to compare a version with curriculum to a version without.}
+\end{tabular}\label{table:curriculum_data}
+\\
+While it is clearly visible in \autoref{chart:curriculum_comparison} that directly training on difficult levels is not feasible, it also appears that the learning speed is slowed down on higher curriculum levels. With increasingly more difficult levels and more agents, the frequency of available network updates is being slowed down due to the fact that a rollout of the environment takes longer. We therefore think, it is desirable to keep the curriculum levels small and primarily increase the number of agents instead of the size of the environment.
 \subsection*{Entropy Balancing and Hyperparameter Tuning}\label{entropy_balancing_hyperparameter}
-In RL, it is of great importance to find the right combination of exploration and explotation. During exploration, the agent explores as much of the state space as possible. This enables the agent to later exploit the found states which are beneficial. Without this exploration, there is a chance that the agent settles on suboptimal policies too quickly and ignores parts of the state space the agent has never seen.\\
+In RL, it is of great importance to find the right combination of exploration and explotation \cite{explorationexploitation}. During exploration, the agent explores as much of the state space as possible. This enables the agent to later exploit the found states which are beneficial. Without this exploration phase, there is a chance that the agent settles on suboptimal policies too quickly and ignores parts of the state space the agent has never seen and therefore does not consider.\\
 The policy is characterized by a probability distribution of actions.
 
 \subsection*{Agent Communication}\label{agent_communication}
@@ -180,7 +198,7 @@ We assume that this is not the case. While classical traffic rules (like right h
 	We suspect that a problem with this approach could be that it would have much slower convergence than the negotiation approach. The reason for this assumption is the fact, that such an unconstrained communication would not directly influcence the actions of the agents. It would be nescessary to learn both the "speaking" and the "interpretation", without a direct consequences.
 \end{itemize}
 
-\section{Distributed Architecture and Parallelism}\label{dist_architecture}
+\section[Dist. Training]{Distributed Architecture and Parallelism}\label{dist_architecture}
 \subsection*{Infrastructure}\label{infrastructure}
 We use various computers and servers to train our model. Most of the time we run the training of our model on a test infrastructure server of the ZHAW School of Engineering.
 The server consists out of 56 CPU cores and 721Gb memory. We connect 3 Openstack machines with 8 CPU cores each to this server, to increase our training. \\

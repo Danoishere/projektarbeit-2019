@@ -21,7 +21,7 @@
 \subsection*{Basic Definitions}\label{basic_rl_definitions}
 In recent years, major progress has been achieved in the field of reinforcement learning (RL) \cite{mnih2013playing},\cite{alphazero},\cite{hideandseek}.
 In RL, an agent learns to perform a task by interacting with an environment $\mathcal{E}$. On every timestep $\mathcal{t}$ the agent $\mathcal{a}$ needs to take an action $\mathcal{u}$. The selection of this action $\mathcal{u}$ is based on the current observation $\mathcal{s}$. The success of the agent is measured by reward $\mathcal{R}$ received. If the agent does well, it receives positive reward from the environment, if it does something bad, there is no or negative reward. The goal of the agent is now to take an action that maximizes the expected reward for all future timesteps. $\EX[\mathcal{R}_{t+1}+\mathcal{R}_{t+1}+\mathcal{R}_{t+1}+...|\mathcal{s}_{t}]$ given the current observation $\mathcal{s}$.\\
-This estimation should be as close as possible to the sum of actually received rewards. Often, these received rewards are discounted with a constant factor $\mathcal{\gamma}$ to the power of timestep $\mathcal{t}$. With $\mathcal{\gamma}$ being something slightly less than one, this accounts for the fact that rewards far in the future are hard to estimate.
+This estimation should be as close as possible to the sum of actually received rewards. Often, these received rewards are discounted with a constant factor $\mathcal{\gamma}$ to the power of timestep $\mathcal{t}$. With $\mathcal{\gamma}$ being something slightly less than 1, this accounts for the fact that rewards far in the future are hard to estimate.
 The current observation $\mathcal{s}_{t}$, also known as the current state is used to determine which action $\mathcal{u}$ to take next. An agent can observe its environment either fully or partially.
 \subsection*{Value Based vs. Policy Gradient Based Methods}\label{value_policy_based_methods}
 Reinforcement learning methods are categorized into value-based methods and policy gradient-based methods \cite{tdlearning},\cite{policygradient}. Those variants differ on how they select an action $\mathcal{u}$ from a given state $\mathcal{s}$.\\
@@ -70,7 +70,7 @@ An exception poses switches that are approached from a side that does not allow 
 All rail parts, independent of if it is a switch also allow to take the actions to do nothing (remain halted, or keep riding), to go forward or to brake.
 The action space is therefore defined by:
 \begin{gather*}
-U = \{ \text{Do nothing, go left, go forward, go right, brake} \}
+U = \{ \text{do nothing, go left, go forward, go right, brake} \}
 \end{gather*}
 It is important to note that trains do not have the ability to go backwards and therefore need to plan ahead to avoid getting stuck. To learn which actions to take, the agents have to learn to adapt to an unknown environment due to the fact that the environments are randomly generated and differ on each episode. Depending on the given parameters, the size and complexity of the grid can be adjusted. This allows for dynamically changing the difficulty for the agents.\\
 The goal of each agent is to reach an assigned target train station as fast as possible. Agents that reach this destination are removed from the grid which means, they can no longer obstruct the path of other trains.
@@ -91,16 +91,16 @@ The difficulty of the evaluation level does differ between round 1 and round 2. 
 		\centering
 		\includegraphics[width=200pt]{images/example_eval_round1.png}
 		\caption{Screenshot from Flatland evaluation system for round 1.}
-		\label{fig:sub1}
+		\label{fig:eval_round1}
 	\end{subfigure}%
 	\begin{subfigure}{.5\textwidth}
 		\centering
 		\includegraphics[width=200pt]{images/example_eval_round2.png}
 		\caption{Screenshot from Flatland evaluation system for round 2.}
-		\label{fig:sub2}
+		\label{fig:eval_round2}
 	\end{subfigure}
-	\caption{A figure with two subfigures}
-	\label{fig:test}
+	\caption{Comparison between evaluation environments from Flatland round 1 and round 2.}
+	\label{fig:eval_comp}
 \end{figure}
 
 \subsection*{Observations}\label{observations}

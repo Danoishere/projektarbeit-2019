@@ -103,4 +103,8 @@ J.~K. Gupta, M.~Egorov, and M.~Kochenderfer, ``Cooperative multi-agent control
   1em plus 0.5em minus 0.4em\relax Cham: Springer International Publishing,
   2017, pp. 66--83.
 
+\bibitem{explorationexploitation}
+L.~Rusch, ``Exploration-exploitation trade-off in deep reinforcement
+  learning.''
+
 \end{thebibliography}

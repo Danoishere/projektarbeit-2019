@@ -6,11 +6,11 @@
 \contentsline {section}{\numberline {2.2}The Flatland Rail Environment}{9}{section.2.2}% 
 \contentsline {chapter}{\numberline {3}Approach and Methodology}{13}{chapter.3}% 
 \contentsline {section}{\numberline {3.1}Iterative Work Approach}{13}{section.3.1}% 
-\contentsline {section}{\numberline {3.2}Reproducability in Reinforcement Learning}{13}{section.3.2}% 
+\contentsline {section}{\numberline {3.2}Reproducibility in Reinforcement Learning}{13}{section.3.2}% 
 \contentsline {chapter}{\numberline {4}Experiment Design and Analysis}{15}{chapter.4}% 
-\contentsline {section}{\numberline {4.1}Reinforcement Learning for Flatland}{15}{section.4.1}% 
-\contentsline {section}{\numberline {4.2}Distributed Architecture and Parallelism}{22}{section.4.2}% 
-\contentsline {section}{\numberline {4.3}Technical Implementation Aspects}{23}{section.4.3}% 
+\contentsline {section}{\numberline {4.1}RL for Flatland}{15}{section.4.1}% 
+\contentsline {section}{\numberline {4.2}Dist. Training}{22}{section.4.2}% 
+\contentsline {section}{\numberline {4.3}Technical Implementation Aspects}{24}{section.4.3}% 
 \contentsline {chapter}{\numberline {5}Results}{25}{chapter.5}% 
 \contentsline {section}{\numberline {5.1}Round 1}{25}{section.5.1}% 
 \contentsline {section}{\numberline {5.2}Round 2}{25}{section.5.2}% 
