@@ -22,7 +22,7 @@
 As described under \autoref{baseline}, our work is based on the work of S. Huschauer \cite{flatlandstephan}. We take the idea of using the A3C algorithm to solve the Flatland problem and try various modifications in an attempt to improve its performance. We proceed by giving an idea, what we want to achieve by changing the specified part, followed by an experiment to either prove or disprove our hypothesis. We do this in an iterative manner, to gradually come closer to a well-performing solution for Flatland.\\
 In our experiments, we focus exclusively on Flatland round 2. While we compare our solution for round 1 in \autoref{chap.resultate}, all technical improvements are also part of our solution for round 2.\\
 Our work can be categorized into a section about reinforcement learning for Flatland (\autoref{rl_flatland}) and a section about infrastructure and scaling up the training process (\autoref{dist_architecture}).\\
-\section{Reproducibility in Reinforcement Learning}\label{reproducability}
+\section[Reproducibility]{Reproducibility in Reinforcement Learning}\label{reproducability}
 It is important to note, that the training process of reinforcement learning and especially multi agent reinforcement learning can be hard to reproduce. Depending on the initial weights of the neural networks and the layout of the environments, the performance may vary on each restart. Also in a distributed algorithm, the number of workers can significantly influence the training performance. If not differently specified, we execute all presented experiments on machines with the same specifications (see \autoref{infrastructure}).\\
 Another aspect that is hard to reproduce is training stability. In A3C, an important instrument to prevent the policy from converging too early is using an additional entropy term \cite{a3c}. Our way to maintain stability with changing environments is discussed in \autoref{entropy_balancing_hyperparameter}.\\
 For better comparability, we try to keep our experimental versions of the training as similar to each other as possible. If not differently specified, we run evaluations with the following setup:
@@ -88,7 +88,7 @@ The Flatland environment is designed in a way to resemble a classical RL environ
 	\caption{Default episode for Flatland environment}
 	\label{alg:no_reduction}
 \end{algorithm}
-While this makes sense in an environment where agents need to take an action on every timestep (such as Atari games), in Flatland most of the time the only reasonable action is to move forward as visible in \autoref{fig:no_desicion}. Only around switches, the actions of an agent have acutual consequences.
+While this makes sense in an environment where agents need to take an action on every timestep (such as Atari games), in Flatland most of the time the only reasonable action is to move forward as visible in \autoref{fig:no_desicion}. Only around switches, an agent needs to take actions other than just keep going forward.
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=300pt]{images/screenshot_no_decision.png}
@@ -160,24 +160,27 @@ As visible in \autoref{chart:curriculum_comparison}, the version without curricu
 	\caption{Comparison of training performance between a version with and a version without curriculum learning. It appears, that the version without curriculum is not able to generalize well in larger environments.}
 	\label{chart:curriculum_comparison}
 \end{figure}
-\begin{tabular}{ |l|c|c|c|c|c| } 
-	\hline
-	& \textbf{Level 0} 
-	& \textbf{Level 1}  
-	& \textbf{Level 2} 
-	& \textbf{Level 3} 
-	& \textbf{Level 4}\\
-	\hline
-	\textbf{Next level on successrate} & 70\% & 70\% & 75\% & 70\% & 60\% \\  
-	\textbf{Nr. of agent} & 4 & 8 & 12 & 16 & 20 \\  
-	\textbf{Env. size} & 25x25 & 30x30  & 40x40 & 50x50 & 50x50 \\ 
-	\textbf{Num. cities} & 5 & 8 & 10  & 12 & 16 \\ 
-	\textbf{Max. rails between cities} & 1 & 2 & 2 & 2 & 2  \\ 
-	\textbf{Max. rails in city} & 2 & 2 & 3 & 3 & 3  \\ 
-	\hline
-	%\caption{Curriculum level specifications for our experiment to compare a version with curriculum to a version without.}
-\end{tabular}\label{table:curriculum_data}
-\\
+\begin{table}
+	\centering
+	\begin{tabular}{ |l|c|c|c|c|c| } 
+		\hline
+		& \textbf{Level 0} 
+		& \textbf{Level 1}  
+		& \textbf{Level 2} 
+		& \textbf{Level 3} 
+		& \textbf{Level 4}\\
+		\hline
+		\textbf{Next level on successrate} & 70\% & 70\% & 75\% & 70\% & 60\% \\  
+		\textbf{Nr. of agent} & 4 & 8 & 12 & 16 & 20 \\  
+		\textbf{Env. size} & 25x25 & 30x30  & 40x40 & 50x50 & 50x50 \\ 
+		\textbf{Num. cities} & 5 & 8 & 10  & 12 & 16 \\ 
+		\textbf{Max. rails between cities} & 1 & 2 & 2 & 2 & 2  \\ 
+		\textbf{Max. rails in city} & 2 & 2 & 3 & 3 & 3  \\ 
+		\hline
+	\end{tabular}
+	\label{table:curriculum_data}
+	\caption{Curriculum level specifications for our experiment to compare a version with curriculum to a version without.}
+\end{table}
 While it is clearly visible in \autoref{chart:curriculum_comparison} that directly training on difficult levels is not feasible, it also appears that the learning speed is slowed down on higher curriculum levels. With increasingly more difficult levels and more agents, the frequency of available network updates is being slowed down due to the fact that a rollout of the environment takes longer. We therefore think, it is desirable to keep the curriculum levels small and primarily increase the number of agents instead of the size of the environment.
 \subsection*{Entropy Balancing and Hyperparameter Tuning}\label{entropy_balancing_hyperparameter}
 In RL, it is of great importance to find the right combination of exploration and explotation \cite{explorationexploitation}. During exploration, the agent explores as much of the state space as possible. This enables the agent to later exploit the found states which are beneficial. Without this exploration phase, there is a chance that the agent settles on suboptimal policies too quickly and ignores parts of the state space the agent has never seen and therefore does not consider.\\
