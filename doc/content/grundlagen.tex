@@ -117,10 +117,10 @@ The Flatland environment allows to create observation builders to observe the en
 This means, only the switches which the train is actually able to take define a single node. As an example, a train on a \textit{case 0} switch heading from north to south is not able to make a decision on this switch and therefore, the TreeObservation does not put the sections before and after the switch into two different nodes but just into a single node.\\
 The nodes of the tree observation offer a number of fields that allow to select specific features to create numeric input vectors for function approximator such as neural networks. The tree observation builder offers 14 distinct features for each rail section. This includes:
 \begin{itemize}
-	\item Dist. own target encountered: Cell distance to the own target railway station. Inf. if target railway station for agent is not in this section.
-	\item Dist. other agent encountered: Cell distance to the next other agent on this section.
-	\item Dist. to next branch: The length of this section.
-	\item Dist. min to target: The cell distance to the target after this section is finished.
+	\item Distance until own target encountered: Cell distance to the own target railway station. Inf. if target railway station for agent is not in this section.
+	\item Distance to other agent encountered: Cell distance to the next other agent on this section.
+	\item Distance to next branch: The length of this section.
+	\item Min. distance to target: The minimal cell distance to the target after this section is finished.
 	\item Child nodes: The nodes the agent is able to take after this section ends. Each child node is associated with a direction (left, forward, right).
 \end{itemize}
 

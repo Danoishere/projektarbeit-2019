@@ -30,7 +30,7 @@ For better comparability, we try to keep our evaluation versions for the trainin
 	\item We use an environment of the size 100x100 tiles with 14 individual agents.
 	\item The map contains 20 cities
 	\item There is a maximum of 3 rails between cities and a maximum of 4 rails inside cities
-	\item Based on the flatland specification, the maximum allowed number of timesteps is 1608 \cite{flatland_spec}.
+	\item Based on the Flatland specification, the maximum allowed number of timesteps is 1608 \cite{flatland_spec}.
 \end{itemize}
 To analyze the performance of the solution, we run an analyzer that executes 20 rollouts of the environment using the same neural network parameters. After the these 20 rollouts, we update the neural network parameters. For each evaluation round, we use the same 20 environment layouts. 
 To compare the performance in a graph, we now take the mean number of agents arrived at their target and plot that in our graph.
@@ -122,7 +122,7 @@ For training, we only use the experience collected near the switch.\\
 	}
 	use buffer $\mathcal{B}$ for training of policy $\pi$
 
-	\caption{Improved learning for flatland environment}
+	\caption{Improved learning algorithm for Flatland environment}
 	\label{alg:with_reduction}
 \end{algorithm}
 This drastically improves training performance as visible in \autoref{chart:action_reduction_comparison}. While both versions have the potential to perform well, based on the observation data, we observe that the version without the action reduction is not able to performe nearly as well as the improved version with reduced actions.
@@ -187,9 +187,9 @@ In RL, it is of great importance to find the right combination of exploration an
 The policy is characterized by a probability distribution of actions.
 
 \subsection*{Agent Communication}\label{agent_communication}
-The topic if of communication in multi agent RL is a topic of ongoing research. As a starting point for this work we asked ourselves how blocking is avoided in the real world. On the SBB rail environment railroad signals are used to prevent collisions between trains. These signals are controlled by a central control instance that directs the traffic of all trains on the grid.
+The topic if of communication in multi agent RL is a topic of ongoing research. While we implement only very limited communication in this work, in this section we discuss a number of ideas regarding the use of communication in the Flatland environment. As a starting point for this work we asked ourselves how blocking is avoided in the real world. On the SBB rail environment railroad signals are used to prevent collisions between trains. These signals are controlled by a central control instance that directs the traffic of all trains on the grid.
 The Flatland environment does not provide a communication channel nor a rail road signal system, but participants of the challenge are allowed to implement one themselfes. In the following discussion, we summarize these options under the topic of communication and centralized planning. An initial intuition for the problem gives the question, if it was a human guiding the train, would she/he be able to successfully steer the train to its assigend target without communication?
-We assume that this is not the case. While classical traffic rules (like right has priority over left) can help to avoid collisions, we do think that in the case of railroad traffic this does not suffice. In the real world, rail traffic is controlled by a control center that gives the trains permission to go or tells them to wait. Having one central control instances solves one of the big problems of such a system which is, that there is a chance that two agents take an action at the same moment which does bring both of them into a non resolvable situation. An example for such a situation would be two agents, that enter a rail section at the same timestep. Both of them would have had the possibility to choose a different path, but both perceived the section as empty and decided to enter. Combined with the fact that trains cannot drive backwards, both trains will not be able to arrive at their assigned targets. As a solution to this dilemma, we discuss three solutions that could work to resolve such situations.
+We assume that this is not the case. While classical traffic rules (like right has priority over left) can help to avoid collisions, we do think that in the case of railroad traffic this does not suffice. In the real world, rail traffic is controlled by a control center that gives the trains permission to go or tells them to wait. Having one central control instances solves one of the big problems of such a system which is, that there is a chance that two agents take an action at the same moment which does bring both of them into a non resolvable situation. An example for such a situation would be two agents, that enter a rail section at the same timestep. Both of them would have had the possibility to choose a different path, but both perceived the section as empty and decided to enter. Combined with the fact that trains cannot drive backwards, both trains will not be able to arrive at their assigned targets. As a solution to this dilemma, we discuss four ideas that could potentially improve the situation.
 \begin{itemize}
 	\item \textbf{Negotiation:} To solve the problem of conflicting actions at the same timestep, it would be possible to introduce a iterative communication channel, on which the agents can negotiate, what agent is allowed to take an action next and who has to wait another timestep. The number of iterations could be determined by the outcome of the process. As long as there is no resolution about who is allowed to take an action and who is not, another negotiation round is added.\\
 	While this procedure might help to avoid blocking situations, it could certainly not completely remove them. Especially complex situations with many agents could still prove to be difficult, even with a negotiation mechanism in place.
@@ -199,6 +199,8 @@ We assume that this is not the case. While classical traffic rules (like right h
 	
 	\item \textbf{Unconstrained communication:} While negotiation would prevent an agent from taking an action, the goal of unconstrained actions would not be to constrain the action space but rather to convince the agent to choose an action \textit{stop} or \textit{do nothing} and wait for the next timestep if the situation is uncertain. Also for unconstrainted actions, it would make sense to be an iterative process, similar to the negotiation approach. As long as not all agents mark their communication as completed, another communication round is added.\\
 	We suspect that a problem with this approach could be that it would have much slower convergence than the negotiation approach. The reason for this assumption is the fact, that such an unconstrained communication would not directly influcence the actions of the agents. It would be nescessary to learn both the "speaking" and the "interpretation", without a direct consequences.
+	
+	\item \textbf{Announcing communication:} Differently than unconstrained communication, under \textit{announcing} communication we mean agents that announce their next action over a shared communication channel. As a metaphor, one can imagine a bus on a narrow mountain street honking before each turn. A mechanism like this would, similar to \textit{prioritized planning} require to receive the agent actions in a sequential way, so that each following agent could react to the actions of the previous agents.
 \end{itemize}
 
 \section[Distributed Training]{Distributed Architecture and Parallelism}\label{dist_architecture}
@@ -235,50 +237,33 @@ The infrastructure used for this project consists of 4 machines used in various 
 	\item \textbf{Openstack machines:} 3 servers with 8 CPUS each. One machine has 16 GB of RAM, the other two have 64 GB each.
 \end{itemize}
 The A3C algorithm is not able to take advantage of GPUs. The reason for this is fragmented update process. Differently than with an experience replay buffer, the training data is only used once and gets then discarded.
-
-\begin{itemize}
-\item (Beschreibt die Grundüberlegungen der realisierten Lösung (Konstruktion/Entwurf) und die Realisierung als Simulation, als Prototyp oder als Software-Komponente)
-\item (Definiert Messgrössen, beschreibt Mess- oder Versuchsaufbau, beschreibt und dokumentiert Durchführung der Messungen/Versuche)
-\item (Experimente)
-\item (Lösungsweg)
-\item (Modell)
-\item (Tests und Validierung)
-\item (Theoretische Herleitung der Lösung)
-\end{itemize}
-
+\newpage
 \section{Technical Implementation Aspects}\label{software}
-We used the following tools in our project.
+In this section, we discuss the most important implementation aspects of our work. 
+\subsection*{Used Frameworks and Libraries}\label{framework_and_libraries}
+In \autoref{table:used_technologies}, we list the most important used libraries and frameworks in this work.
+\begin{table}[H]
+	\centering
+	\begin{tabularx}{\textwidth}{ |l|c|X| } 
+		\hline
+		\textbf{Technology}	& \textbf{Version} & \textbf{Description}\\
+		\hline
+		Python & 3.6 & The whole code for our project is written in Python.\\
+		\hline
+		Tensorflow & 2.0.0 & Tensorflow provides a framework for both deep learning as well as monitoring the learning process of RL using Tensorboard.\\
+		\hline
+		MessagegPack & 0.6.2 & MessagePack allows very fast serialization. The resulting binary data is also considerably smaller than serialization with formats like JSON. We use MessagePack to serialize both weights- and gradient-update before sending between worker and model server.\\
+		\hline
+		Cython & 0.29.14 & Cython allows to compile Python code to natively running C code. We use Cython to speed up our observations on the rail environment.\\
+		\hline
+		ZLib & (built-in) & ZLib allows to compress in Python. We use ZLib to reduce our payload-size while sending gradient- and weight updates.\\
+		\hline
+	\end{tabularx}
+	\caption{The most important technologies used in this work.}
+	\label{table:used_technologies}
+\end{table}
 
-\subsection*{Working Environment}\label{os}
-\begin{itemize}
-	\item Microsoft Windows 10
-	\item Ubuntu 19.04
-\end{itemize}
-
-\subsection*{Visual Studio Code}\label{vsc}
-\begin{itemize}
-	\item Visual Studio Code 1.40
-\end{itemize}
-
-\subsection*{Documentation}\label{dokutools}
-\begin{itemize}
-	\item XeLateX with Visual Studio Code
-	\item XeLateX with WebStorm
-\end{itemize}
 
 
-\subsection*{Programming language}\label{programminglanguages}
-\begin{itemize}
-	\item Python 3.6
-\end{itemize}
-
-\subsection*{Python modules}\label{modules}
-\begin{itemize}
-	\item Flatland-rl 1.3 - 2.1.10
-	\item Tensorboard 2.0
-	\item Keras x.x
-	\item Cython x.x
-	\item %TODO: finish this
-\end{itemize}
 
 

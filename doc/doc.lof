@@ -15,7 +15,7 @@
 \contentsline {figure}{\numberline {4.7}{\ignorespaces Illustration of distributed architectures with main node (node 1) and several additional nodes (2-w) connected over HTTP.\relax }}{24}{figure.caption.34}% 
 \contentsline {figure}{\numberline {4.8}{\ignorespaces Comparison of training with 1 worker and with 7 workers\relax }}{25}{figure.caption.35}% 
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {5.1}{\ignorespaces Agents departing vs. agents arriving on a 30x30 environment.\relax }}{28}{figure.caption.42}% 
+\contentsline {figure}{\numberline {5.1}{\ignorespaces Agents departing vs. agents arriving on a 30x30 environment.\relax }}{28}{figure.caption.39}% 
 \addvspace {10\p@ }
 \addvspace {10\p@ }
 \addvspace {10\p@ }
