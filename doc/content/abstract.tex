@@ -18,31 +18,39 @@
 
 \thispagestyle{empty}
 \chapter*{Zusammenfassung}\label{chap.zusammenfassung}
-Zusammenfassung in Deutsch
 
 %1. Einleitung («Problemstellung»): Definiert die Problematik und begründet die Relevanz der Arbeit. Die Situation (eine problematische Situation oder technische Problematik) und die wissenschaftliche/fachliche Untersuchungs-Fragestellung (folgt logischer- weise aus der festgestellten Problematik) werden kurz beschrieben.
-Diese Arbeit befasst sich mit der Steuerung von komplexen Zugverkehrssystemen mittels Reinforcement Learning.\\
-Die Aufgabenstellung hat die Schweizerische Bundesbahn (SBB) im Rahmen einer Challenge auf AICrowd ausgeschrieben.
-Im Fokus steht eine Lösung zu entwicklen, welche die Verspätung bei technischen Störrungen oder defekten Zügen verringert und es ihnen zudem ermöglicht in Zukunft mehr Züge auf die gleiche Infrastruktur zu bringen.
-Aufgrund der steigenden Anzahl an Pendlern in den letzen Jahren hat die Erhöhung der Menge der Züge auf dem heutigen Schienennetz eine hohe Relevanz.
-%2. Methodische Einordnung der Arbeit: Art, Datenbasis und Ziel der Arbeit. Die Untersu- chungsmethode (Umfrage, Analyse, Versuch, Test etc.), das untersuchte „Material“ und das dabei verfolgte Ziel wird thematisiert.
-Die SBB stellt in Zusammenarbeit mit AICrowd die Simulationsumgebung Flatland zur Verfügung. Mittels Flatland kann ein komplexes Schienennetz simuliert werden, mit welchem die Agents (Züge) interagieren können.
-Es handelt sich hierbei um ein kollaboratives Muli-Agent Problem, welches mit Machine Learning genauer gesagt Reinforcement Learning gelöst werden sollte.
-Als Basis dieser Arbeit diente uns die Vertiefungsarbeit 2 von S. Huschauer, welche zu der gleichen Challenge gemacht wurde.
-Wir konnten die Auswahl des A3C Algorithmus und einige weitere Überlegungen von ihm übernehmen.
+Aufgrund der steigenden Anzahl an Pendlern in den letzen Jahren hat die Verdichtung des Schienenverkehrs auf dem bestehenden Schienennetz der SBB eine hohe Priorität.
+Eine eben so hohe Relevanz hat die Verminderung der Verspätungen durch defekte Züge oder technische Störrungen.
+Daher befassen wir uns in dieser Arbeit mit der Steuerung komplexer Zugverkehrssysteme mittel Maschine Learning, genauer gesagt Reinforcement Learning.\\
+%2. Methodische Einordnung der Arbeit: Art, Datenbasis und Ziel der Arbeit. Die Untersuchungsmethode (Umfrage, Analyse, Versuch, Test etc.), das untersuchte „Material“ und das dabei verfolgte Ziel wird thematisiert.
+Diese Projektarbeit findet indirekt mit der Schweizerischen Bundesbahn (SBB AG) statt, da sie eine Challenge zu diesem Thema auf AICrowd ausgeschrieben haben.
+Die SBB stellt in Zusammenarbeit mit AICrowd die Simulationsumgebung Flatland zur Verfügung. Mittels Flatland kann ein komplexes Schienennetz simuliert werden, mit welchem die durch künstliche Intelligenz gesteuerten Züge interagieren können.
+Beim zu lösenden Problem handelt es sich um ein kollaboratives Multi-Agent Problem. Das Ziel ist, dass alle Züge so schnell wie möglich an ihrem Zielbahnhof ankommen und sich nicht gegenseitig blockieren. Wenn es zu einer Blockade kommt, zieht dies meist eine Kettenreaktion mit sich. Folglich kommen etliche Züge erst gar nicht an.
 %3. Vorgehen («Problembehandlung»): Informiert über das Vorgehen und über die Untersuchungsanlage.
-Wir bauten die Lösung von S. Huschauer nach und erweiterten diesen Stand nach und nach mit unterschiedlichen Features wie Long short-term memory, Curriculum Learning oder Parallelisierung.
-Wir kontrollierten unsere Änderungen mittels Experimenten, welche die Auswirkungen aufzeigten.
-%TODO: erweitern?
+Wir implementierten unseren Lösungsansatz mit dem Asynchronous Advantage Actor Critic Algorithmus (A3C), einer der derzeit besten RL-Algorithmen, welcher verteiltes Lernen ermöglicht.
+Nach der ersten lauffähigen Version erweiterten wir unseren Stand nach und nach mit unterschiedlichen Features wie Long short-term memory, Curriculum Learning oder verteiltem Lernen.
+Unsere Änderungen kontrollierten wir stetig mit Experimenten um Fortschritt zu gewährleisten.
 %4. Ergebnis («Problemlösung»): Beschreibt die wichtigsten Resultate, Erkenntnisse, offenen Fragen. Die Ergebnisse werden aufgeführt und dabei wird auf die unter 1. auf- geführte Fragestellung Bezug genommen (konnte sie beantwortet werden, gibt es of- fene Punkte?).
 Durch das Hinzufügen von unterschiedlichen Features konnten wir ein Resultat von 48.9\% in Runde 1 erzielen.
 In Runde 2 veränderten wir den Aktionspace, was die Anzahl Abfragen vom neuronalen Netzwerk deutlich reduzierte. Dies verbesserte die Laufzeit sowie den Lernfortschritt stark.
-Durch den Einsatz von Regeln, welche spezielle Fälle verhindern, konnten wir eine Ankunftwahrscheinlichkeit von 29.1\% erreichen, was aktuell Platz 4 entspricht.
+Durch den Einsatz von Regeln, welche spezielle Fälle verhindern, konnten wir eine Ankunftwahrscheinlichkeit von 29.1\% erreichen, was aktuell dem 4. Platz entspricht.
 
 \newpage
 \thispagestyle{empty}
 \chapter*{Abstract}\label{abstract}
-Abstract in English
+Due to the increasing number of commuters in recent years, the consolidation of rail traffic on SBB's existing rail network has a high priority.
+The reduction of delays caused by defective trains or technical faults is just as relevant.
+Therefore, in this thesis we deal with the control of complex train traffic systems by means of machine learning, or more precisely reinforcement learning.
+This project work takes place indirectly with the Swiss Federal Railways (SBB AG), as they have put out a challenge on this topic on AICrowd.
+SBB provides the simulation environment Flatland in cooperation with AICrowd. Flatland can be used to simulate a complex rail network with which trains controlled by artificial intelligence can interact.
+The problem to be solved is a collaborative multi-agent problem. The goal is that all trains arrive at their destination station as quickly as possible and do not block each other. When a blockade occurs, it usually involves a chain reaction. As a result, many trains do not arrive at all.
+We implemented our solution with the Asynchronous Advantage Actor Critic Algorithm (A3C), one of the currently best RL algorithms, which enables distributed learning.
+After the first executable version, we gradually expanded our stand with various features such as long short-term memory, curriculum learning or distributed learning.
+We constantly controlled our changes with experiments to ensure progress.
+By adding different features we were able to achieve a result of 48.9\% in round 1.
+In round 2 we changed the action space, which significantly reduced the number of queries to the neural network. This greatly improved the runtime and learning progress.
+By using rules that prevent special cases, we were able to achieve an arrival probability of 29.1\%, which currently corresponds to 4th place.
 
 
 \chapter*{Preface}\label{preface}
