@@ -8,6 +8,7 @@ from flatland.envs.schedule_generators import sparse_schedule_generator
 from flatland.utils.rendertools import RenderTool, AgentRenderVariant
 from flatland.envs.malfunction_generators import malfunction_from_params
 
+import pandas as pd
 import numpy as np
 import time
 
@@ -15,6 +16,7 @@ from deliverables.network import AC_Network
 import deliverables.observation as obs_helper
 import matplotlib.pyplot as plt
 import networkx as nx
+from datetime import datetime
 from matplotlib.widgets import Button
 from flatland.envs.rail_env import RailEnvActions, RailAgentStatus
 #import msvcrt
@@ -108,7 +110,7 @@ def punish_impossible_actions(env, obs, actions, rewards):
 width = 30  # With of map
 height = 30  # Height of map
 nr_trains = 20 # Number of trains that have an assigned task in the env
-cities_in_map = 5  # Number of cities where agents can start or end
+cities_in_map = 10  # Number of cities where agents can start or end
 seed = 14  # Random seed
 grid_distribution_of_cities = True  # Type of city distribution, if False cities are randomly placed
 max_rails_between_cities = 3  # Max number of tracks allowed between cities. This is number of entry point to a city
@@ -126,10 +128,10 @@ rail_generator = sparse_rail_generator(max_num_cities=cities_in_map,
 # distribution of speed profiles
 
 # Different agent types (trains) with different speeds.
-speed_ration_map = {1.: 0.25,  # Fast passenger train
-                    1. / 2.: 0.25,  # Fast freight train
-                    1. / 3.: 0.25,  # Slow commuter train
-                    1. / 4.: 0.25}  # Slow freight train
+speed_ration_map = {1.: 0.5,  # Fast passenger train
+                    1. / 2.: 0.5,  # Fast freight train
+                    1. / 3.: 0.0,  # Slow commuter train
+                    1. / 4.: 0.0}  # Slow freight train
 
 # We can now initiate the schedule generator with the given speed profiles
 
@@ -139,7 +141,7 @@ schedule_generator = sparse_schedule_generator(speed_ration_map)
 # during an episode.
 
 stochastic_data = {
-                   'prop_malfunction': 0.3,  # Percentage of defective agents
+                   'prop_malfunction': 0.0,  # Percentage of defective agents
                    'malfunction_rate': 30,  # Rate of malfunction occurence
                    'min_duration': 3,  # Minimal duration of malfunction
                    'max_duration': 20  # Max duration of malfunction
@@ -166,12 +168,13 @@ env = RailEnv(width=width,
               random_seed=None)
 
 # Initiate the renderer
+'''
 env_renderer = RenderTool(env, gl="PILSVG",
                           agent_render_variant=AgentRenderVariant.AGENT_SHOWS_OPTIONS_AND_BOX,
                           show_debug=False,
                           screen_height=800,  # Adjust these parameters to fit your resolution
                           screen_width=800)  # Adjust these parameters to fit your resolution
-
+'''
 plt.ion()
 plt.show()
 
@@ -181,40 +184,67 @@ succ_stoch = 1
 tries_stoch = 1
 use_best = False
 
+df = pd.DataFrame()
 
-while True:
-    episode_done = False
-    episode_reward = 0
-    episode_step_count = 0
+for num_agents in range(20, 31):
+    env = RailEnv(
+              width=30,
+              height=30,
+              rail_generator=rail_generator,
+              schedule_generator=schedule_generator,
+              number_of_agents=num_agents,
+              malfunction_generator_and_process_data=malfunction_from_params(stochastic_data),  # Malfunction data generator
+              obs_builder_object=observation_builder,
+              remove_agents_at_target=True,  # Removes agents at the end of their journey to make space for others
+              random_seed=0)
 
-    obs, info = env.reset(activate_agents=False)
-    obs_builder = env.obs_builder
-    env_renderer.set_new_rail()
+    for repeat_nr in range(20):
+        episode_done = False
+        episode_reward = 0
+        episode_step_count = 0
 
-    while episode_done == False and episode_step_count < 500:
-        agents = env.agents
-        env_actions, nn_actions, v, relevant_obs = model.get_agent_actions(env, obs, info, True)
-        next_obs, rewards, done, info = env.step(env_actions)
-        env_renderer.render_env(show=True, show_observations=False)
+        obs, info = env.reset(activate_agents=False)
+        obs_builder = env.obs_builder
 
-        episode_done = done['__all__']
-        if episode_done == True:
-            next_obs = obs
-        
-        obs = next_obs               
-        episode_step_count += 1
+        max_steps = env._max_episode_steps - 5
+        while episode_done == False and episode_step_count < max_steps:
+            agents = env.agents
+            env_actions, nn_actions, v, relevant_obs = model.get_agent_actions(env, obs, info, True)
+            next_obs, rewards, done, info = env.step(env_actions)
+            #env_renderer.render_env(show=True, show_observations=False)
+
+            episode_done = done['__all__']
+            if episode_done == True:
+                next_obs = obs
+            
+            obs = next_obs               
+            episode_step_count += 1
 
 
-    if use_best:
-        if episode_done:
-            succ_best += 1
-        tries_best +=1
-    else:
-        if episode_done:
-            succ_stoch += 1
-        tries_stoch +=1
+        if use_best:
+            if episode_done:
+                succ_best += 1
+            tries_best +=1
+        else:
+            if episode_done:
+                succ_stoch += 1
+            tries_stoch +=1
 
-    use_best = not use_best
+        use_best = not use_best
 
-    print('Best - Succ:',succ_best, 'of', tries_best, ', Ratio =',succ_best/tries_best)
-    print('Stoch - Succ:',succ_stoch, 'of', tries_stoch, ', Ratio =',succ_stoch/tries_stoch)
+        print('Best - Succ:',succ_best, 'of', tries_best, ', Ratio =',succ_best/tries_best)
+        print('Stoch - Succ:',succ_stoch, 'of', tries_stoch, ', Ratio =',succ_stoch/tries_stoch)
+
+        num_successful_agents = 0
+        for i in range(num_agents):
+            if done[i]:
+                num_successful_agents += 1
+
+        df = df.append({
+                    'departed' : num_agents,
+                    'arrived' : num_successful_agents,
+                    'steps' : episode_step_count,
+                    'time' : datetime.now()
+                }, ignore_index=True)
+            
+    df.to_csv('analysis_num_agents_' + str(num_agents) + '.csv')
