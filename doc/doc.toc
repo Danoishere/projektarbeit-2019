@@ -3,24 +3,24 @@
 \contentsline {section}{\numberline {1.2}Goal of this work}{7}{section.1.2}% 
 \contentsline {chapter}{\numberline {2}Technical Foundation}{8}{chapter.2}% 
 \contentsline {section}{\numberline {2.1}Reinforcement Learning}{8}{section.2.1}% 
-\contentsline {section}{\numberline {2.2}The Flatland Rail Environment}{9}{section.2.2}% 
-\contentsline {chapter}{\numberline {3}Approach and Methodology}{13}{chapter.3}% 
-\contentsline {section}{\numberline {3.1}Iterative Work Approach}{13}{section.3.1}% 
-\contentsline {section}{\numberline {3.2}Reproducibility}{13}{section.3.2}% 
-\contentsline {chapter}{\numberline {4}Experiments}{15}{chapter.4}% 
-\contentsline {section}{\numberline {4.1}RL for Flatland}{15}{section.4.1}% 
-\contentsline {section}{\numberline {4.2}Distributed Training}{22}{section.4.2}% 
-\contentsline {section}{\numberline {4.3}Technical Implementation Aspects}{25}{section.4.3}% 
-\contentsline {chapter}{\numberline {5}Results}{26}{chapter.5}% 
-\contentsline {section}{\numberline {5.1}Round 1}{26}{section.5.1}% 
-\contentsline {section}{\numberline {5.2}Round 2}{26}{section.5.2}% 
-\contentsline {chapter}{\numberline {6}Diskussion und Ausblick}{27}{chapter.6}% 
-\contentsline {chapter}{\numberline {7}Verzeichnisse}{28}{chapter.7}% 
-\contentsline {section}{Literaturverzeichnis}{28}{chapter.7}% 
-\contentsline {section}{(Abbildungsverzeichnis)}{30}{chapter*.44}% 
-\contentsline {section}{(Tabellenverzeichnis)}{31}{chapter*.46}% 
-\contentsline {section}{(Abkürzungsverzeichnis)}{32}{chapter*.48}% 
-\contentsline {section}{(Listingverzeichnis)}{I}{chapter*.50}% 
+\contentsline {section}{\numberline {2.2}The Flatland Rail Environment}{10}{section.2.2}% 
+\contentsline {chapter}{\numberline {3}Approach and Methodology}{14}{chapter.3}% 
+\contentsline {section}{\numberline {3.1}Iterative Work Approach}{14}{section.3.1}% 
+\contentsline {section}{\numberline {3.2}Reproducibility}{14}{section.3.2}% 
+\contentsline {chapter}{\numberline {4}Experiments}{16}{chapter.4}% 
+\contentsline {section}{\numberline {4.1}RL for Flatland}{16}{section.4.1}% 
+\contentsline {section}{\numberline {4.2}Distributed Training}{23}{section.4.2}% 
+\contentsline {section}{\numberline {4.3}Technical Implementation Aspects}{26}{section.4.3}% 
+\contentsline {chapter}{\numberline {5}Results}{27}{chapter.5}% 
+\contentsline {section}{\numberline {5.1}Round 1}{27}{section.5.1}% 
+\contentsline {section}{\numberline {5.2}Round 2}{27}{section.5.2}% 
+\contentsline {chapter}{\numberline {6}Diskussion and Outlook}{29}{chapter.6}% 
+\contentsline {chapter}{\numberline {7}Verzeichnisse}{30}{chapter.7}% 
+\contentsline {section}{Literaturverzeichnis}{30}{chapter.7}% 
+\contentsline {section}{(Abbildungsverzeichnis)}{32}{chapter*.46}% 
+\contentsline {section}{(Tabellenverzeichnis)}{33}{chapter*.48}% 
+\contentsline {section}{(Abkürzungsverzeichnis)}{34}{chapter*.50}% 
+\contentsline {section}{(Listingverzeichnis)}{I}{chapter*.52}% 
 \contentsline {chapter}{\numberline {A}Anhang}{II}{appendix.A}% 
 \contentsline {section}{\numberline {A.1}Projektmanagement}{II}{section.A.1}% 
 \contentsline {section}{\numberline {A.2}Weiteres}{II}{section.A.2}% 

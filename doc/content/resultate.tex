@@ -28,7 +28,6 @@ Our submission for round 1 contains the following components:
 \end{itemize}
 Using the performance evaluation system provided together with the Flatland environment, we reach the following performance metrics:
 
-
 \begin{tabular}{ |c|c|c|c| } 
 	\hline
 	\textbf{Author} & \textbf{Observation type} & \textbf{Local Evaluation Score} & \textbf{Submission Score} \\
@@ -38,13 +37,28 @@ Using the performance evaluation system provided together with the Flatland envi
 	We & tree observation & 69.3\% & 48.9\% \\
 	\hline
 \end{tabular}
-
-%Vergleich mit Stefan:
-%He used the first version of Flatland to evaluate his models and got a total score of 24.7\% in a local evaluation.
-%He trained his model with 2 to 10 agents with a field of view of 10*10.
-
 \section{Round 2}
 Our submission for Flatland round 2 contains all in this work discussed improvements of the algorithm. While a direct comparison is difficult due to a lack of a baseline version for round 2, we could still show in our experiments how our adjustments to the implementation improved the performance of our algorithm.\\
+To evaluate the performance of the final model, we create an experiment with an increasing number of agents. We use an environment of the dimensions 30x30 tiles and keep all other environment parameters to a fixed value. Only the number of agents gets increased. For each number of agents, we run 20 episodes and evaluate the median, the 0.25-quantile and the 0.75-quantile.
+\begin{figure}[H]
+	\begin{center}
+		\input{diagrams/final_comparison_departing_arrival.pgf}
+	\end{center}
+	\caption{Agents departing vs. agents arriving on a 30x30 environment.}
+	\label{chart:departing_arriving}
+\end{figure}
+In \autoref{chart:departing_arriving}, it can be observed that our model is performing very well for environments with 10 agents or less. For environments with more agents, the performance gradually gets worse. It is important to note that this change in performance is not only dependent on the absolut number of agents but also on the density of of agents relative to the size of the environment.\\
+The evaluation system for Flatland round 2 uses 250 different environments with sizes between 20x20 to 150x150 \cite{flatland_faq}. The number of agents varies from 50 to 200.
+Evaluated with the Flatland round 2 evaluator, we achieve a score of \textbf{29.1\%} of arriving agents.\\
+When analyzing our solution on selected example environments, it can be observed that agents especially struggle in two cases:
+\begin{enumerate}
+	\item Two agents have to take a decision at the same time.
+	\item Agents deadlock each other in ares with many switches.
+\end{enumerate}
+Possible solutions for case 1 have been discussed in \autoref{agent_communication}. We think, that case 2 requires upfront planning, especially in situations with many agents involved. Possiblities to solve situation of this kind are discussed in \autoref{chap.diskussion}.
+
+
+
 
 
 
