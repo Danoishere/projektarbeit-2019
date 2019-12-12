@@ -27,13 +27,13 @@ class RailObsBuilder(ObservationBuilder):
         self.actor_rec_state = {}
         self.critic_rec_state = {}
         self.prep_step = 0
-        self.comm = np.zeros(5)
+        self.comm = np.zeros(6)
 
     def reset(self):
         self.actor_rec_state = {}
         self.critic_rec_state = {}
         self.prep_step = 0
-        self.comm = np.zeros(5)
+        self.comm = np.zeros(6)
 
     def get_many(self, handles=None):
         obs_dict = {}

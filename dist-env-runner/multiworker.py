@@ -5,7 +5,7 @@ import tensorflow as tf
 from ctypes import c_bool
 import requests
 
-from flatland.utils.rendertools import RenderTool, AgentRenderVariant
+#from flatland.utils.rendertools import RenderTool, AgentRenderVariant
 import scipy.signal
 from tensorflow.keras.optimizers import RMSprop
 
@@ -76,16 +76,18 @@ class Worker():
 
             time_start = time()
             
+            '''
             env_renderer = RenderTool(self.env.env, gl="PILSVG",
                           agent_render_variant=AgentRenderVariant.AGENT_SHOWS_OPTIONS_AND_BOX,
                           show_debug=False,
                           screen_height=800,  # Adjust these parameters to fit your resolution
                           screen_width=800) 
+            '''
 
-        
-            
 
             while not bool(self.should_stop.value):    
+
+                seed(datetime.now())
 
                 episode_done = False
 
@@ -105,7 +107,6 @@ class Worker():
                 all_handles = [i for i in range(len(self.env.env.agents))]
                 no_reward = {i:0 for i in range(len(self.env.env.agents))}
 
-                
                 prep_steps = 0
                 use_best_actions = bool(getrandbits(1))
 
@@ -121,23 +122,91 @@ class Worker():
                 obs_builder = self.env.env.obs_builder
                 agent_pos = {}
                 cancel_episode = False
-
                 
-                env_renderer.env = self.env.env
-                env_renderer.reset()
-                
+                # env_renderer.env = self.env.env
+                # env_renderer.reset()
+                agents = self.env.env.agents
                 max_steps = self.env.env._max_episode_steps - 5
 
+                actions = {}
+                for agent in agents:
+                    actions[agent.handle] = RailEnvActions.MOVE_FORWARD
+                obs, rewards, done, info = self.env.step(actions) 
+
+                agent_pos = {}
+                is_communicating = True
+
+                obs_builder.comm = np.zeros(6)
                 while not episode_done and not cancel_episode and episode_step_count < max_steps:
-                    agents = self.env.env.agents
-
-
+                    rail = self.env.env.rail
+                    active_agents = {}
                     for agent in agents:
+                        if agent.status == RailAgentStatus.ACTIVE:
+                            transitions = rail.get_transitions(*agent.position, agent.direction)
+                            if np.sum(transitions) > 1 :
+                                active_agents[agent.handle] = 1
 
-                    actions, values = self.local_model.get_actions_and_values(obs ,self.env.env)
-                    next_obs, rewards, done, info = self.env.step(actions)
+                    values = {}
+                    actions = {}
 
-                    env_renderer.render_env(show=True, show_observations=False)
+                    keys = list(active_agents.keys())
+                    #shuffle(keys)
+                    
+                    if is_communicating and len(keys) > 0:
+                        # print('Comm round')
+                        ready_for_action = True
+                        for handle in keys:
+                            agent_obs = {}
+                            agent_obs[handle] = obs[handle]
+                            agent_obs[handle][0][:] = obs_builder.comm
+                            agent_obs[handle] = (np.append(agent_obs[handle][0], 1), agent_obs[handle][1], agent_obs[handle][2])
+                            agent_action, agent_value = self.local_model.get_actions_and_values(agent_obs ,self.env.env)
+                            obs[handle] = agent_obs[handle]
+                            actions[handle] = agent_action[handle]
+                            values[handle] = agent_value[handle]
+
+                            # We need action 5 to continue
+                            if actions[handle] != 5:
+                                ready_for_action = False
+
+                        if ready_for_action:
+                            is_communicating = False
+
+                        next_obs = obs_builder.get_many()
+                    else:
+                        obs_builder.comm = np.zeros(6)
+                        # print('Action round')
+                        for handle in keys:
+                            agent_obs = {}
+                            agent_obs[handle] = obs[handle]
+                            agent_obs[handle][0][:] = obs_builder.comm
+                            agent_obs[handle] = (np.append(agent_obs[handle][0], 0), agent_obs[handle][1], agent_obs[handle][2])
+                            obs[handle] = agent_obs[handle]
+                            agent_action, agent_value = self.local_model.get_actions_and_values(agent_obs ,self.env.env)
+                            
+                            actions[handle] = agent_action[handle]
+                            values[handle] = agent_value[handle]
+
+                        for agent in agents:
+                            if agent.handle not in actions and agent.status == RailAgentStatus.ACTIVE:
+                                actions[agent.handle] = RailEnvActions.MOVE_FORWARD
+
+                        next_obs, rewards, done, info = self.env.step(actions)
+                        for agent in agents:
+                            if agent.status == RailAgentStatus.ACTIVE:
+                                key = (agent.handle, *agent.position)
+                                if key not in agent_pos:
+                                    agent_pos[key] = 1
+                                else:
+                                    agent_pos[key] += 1
+
+                                if agent_pos[key] > 5:
+                                    cancel_episode = True
+                                    break
+                            
+                        is_communicating = True
+
+                    # env_renderer.render_env(show=True, show_observations=False)
 
                     prep_steps = 0
                     obs_builder.prep_steps = prep_steps
@@ -147,14 +216,14 @@ class Worker():
                     if episode_done == True:
                         next_obs = obs
 
-                    for i in range(len(agents)):
-                        agent_obs = obs[i]
+                    for i in active_agents:
+                        handle = obs[i]
                         agent_action = actions[i]
                         agent_reward = rewards[i]
 
                         if not done_last_step[i]:
                             episode_buffer[i].append([
-                                agent_obs,
+                                handle,
                                 agent_action,
                                 agent_reward,
                                 episode_done,

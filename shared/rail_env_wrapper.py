@@ -128,8 +128,6 @@ def comm_rail_generator() -> RailGenerator:
         start_goal = [[station1, station2],[station2, station1]]
         start_dir = [1,3]
 
-        print(grid_map.grid)
-
         return grid_map, {'agents_hints': {
             'start_goal': start_goal,
             'start_dir': start_dir
@@ -145,26 +143,13 @@ class RailEnvWrapper():
     
     def __init__(self, observation_builder, width=12, height=12, num_agents=2):
         self.num_agents = num_agents
-
-
         self.schedule_gen = comm_schedule_generator()
-
-        '''
-        self.schedule_gen = sparse_schedule_generator({   
-                    1.: 1.0,       # Fast passenger train
-                    1. / 2.: 0,  # Fast freight train
-                    1. / 3.: 0,  # Slow commuter train
-                    1. / 4.: 0
-                })
-        '''
-
         self.stochastic_data = {
                 'prop_malfunction': 0.0,  # Percentage of defective agents
                 'malfunction_rate': 0,  # Rate of malfunction occurence
                 'min_duration': 0,  # Minimal duration of malfunction
                 'max_duration': 0  # Max duration of malfunction
         }
-        
 
         self.done_last_step = {}
         self.observation_builder = observation_builder

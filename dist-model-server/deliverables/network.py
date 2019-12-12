@@ -49,7 +49,7 @@ class AC_Network():
 
 
     def build_network(self):
-        input_vec = layers.Input(shape=5,dtype=tf.float32)
+        input_vec = layers.Input(shape=7,dtype=tf.float32)
 
         input_actor_rec = layers.Input(shape=(2,params.recurrent_size),dtype=tf.float32)
         input_critic_rec = layers.Input(shape=(2,params.recurrent_size),dtype=tf.float32)
@@ -57,7 +57,7 @@ class AC_Network():
         actor_out, actor_out_rec = self.create_network(input_vec, input_actor_rec)
         critic_out, critic_out_rec = self.create_network(input_vec, input_critic_rec)
 
-        policy = layers.Dense(params.number_of_actions, activation='softmax')(actor_out)
+        policy = layers.Dense(6, activation='softmax')(actor_out)
         value = layers.Dense(1)(critic_out)
 
         model = Model(
@@ -86,7 +86,7 @@ class AC_Network():
         weights_str = zlib.decompress(weights_str)
         after = len(weights_str)
 
-        print('Weight update from', before, 'to', after,' -> ', before/(1.0*after))
+        #print('Weight update from', before, 'to', after,' -> ', before/(1.0*after))
 
         weights = msgpack.loads(weights_str)
         self.model.set_weights(weights)
@@ -147,7 +147,7 @@ class AC_Network():
         gradients_str = zlib.compress(gradients_str)
         after = len(gradients_str)
 
-        print('Gradient update from', before, 'to', after,' -> ', after/(1.0*before))
+        # print('Gradient update from', before, 'to', after,' -> ', after/(1.0*before))
 
         # Send gradient update and receive new global weights
         resp = requests.post(
@@ -197,13 +197,14 @@ class AC_Network():
         for handle in obs:
             idx = mapping[handle]
             a_dist = predcition[idx]
-            actions[handle] = np.random.choice([0,1,2,3], p = a_dist)
+            actions[handle] = np.random.choice([0,1,2,3,4,5], p = a_dist)
             
             values_dict[handle] = values[idx,0]
             obs_builder.actor_rec_state[handle] = [a_rec_h[idx], a_rec_c[idx]]
             obs_builder.critic_rec_state[handle] = [c_rec_h[idx], c_rec_c[idx]]
 
             env.agents[handle].last_action = actions[handle]
+            obs_builder.comm = a_dist
 
         return actions, values_dict
 
