@@ -34,13 +34,9 @@ def delete_files(dir_name, extensions):
 
 
 def start_train(resume):
-
-    delete_files('./deliverables', ['.c', '.pyd', '.so','.o'])
-    delete_files('.', ['.c', '.pyd', '.so','.o'])
-
-    urllib.request.urlretrieve(const.url + '/file/network.pyx', 'deliverables/network.pyx')
+    urllib.request.urlretrieve(const.url + '/file/network.py', 'deliverables/network.py')
     urllib.request.urlretrieve(const.url + '/file/input_params.py', 'deliverables/input_params.py')
-    urllib.request.urlretrieve(const.url + '/file/observation.pyx', 'deliverables/observation.pyx')
+    urllib.request.urlretrieve(const.url + '/file/observation.py', 'deliverables/observation.py')
     urllib.request.urlretrieve(const.url + '/file/curriculum.py', 'deliverables/curriculum.py')
 
     myCmd = 'python setup.py build_ext --inplace'
