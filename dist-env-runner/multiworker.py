@@ -5,7 +5,7 @@ import tensorflow as tf
 from ctypes import c_bool
 import requests
 
-#from flatland.utils.rendertools import RenderTool, AgentRenderVariant
+from flatland.utils.rendertools import RenderTool, AgentRenderVariant
 import scipy.signal
 from tensorflow.keras.optimizers import RMSprop
 
@@ -49,19 +49,13 @@ class Worker():
         network_mod = __import__("deliverables.network", fromlist=[''])
         network_class = getattr(network_mod, 'AC_Network')
 
-        curriculum_mod = __import__("deliverables.curriculum", fromlist=[''])
-        curriculum_class =  getattr(curriculum_mod, 'Curriculum')
-        self.curriculum = curriculum_class()
-        # Not only create levels with the current curriculum level but also
-        # the levels below
-        self.curriculum.randomize_level_generation = True
-
         self.params = __import__("deliverables.input_params", fromlist=[''])
         self.obs_helper = __import__("deliverables.observation", fromlist=[''])
         
         #Create the local copy of the network and the tensorflow op to copy global paramters to local network
         self.local_model = network_class(True,const.url, self.number)
         self.env = RailEnvWrapper(self.local_model.get_observation_builder())
+        self.env.generate_env()
         
 
     def work(self):
@@ -78,34 +72,20 @@ class Worker():
             self.local_model.update_from_global_model()
             self.local_model.update_entropy_factor()
             self.episode_count = 0
-            self.curriculum.update_env_to_curriculum_level(self.env)
             use_best_actions = False
 
             time_start = time()
-            '''
+            
             env_renderer = RenderTool(self.env.env, gl="PILSVG",
                           agent_render_variant=AgentRenderVariant.AGENT_SHOWS_OPTIONS_AND_BOX,
                           show_debug=False,
                           screen_height=800,  # Adjust these parameters to fit your resolution
                           screen_width=800) 
 
-            '''
+        
             
 
             while not bool(self.should_stop.value):    
-
-                # Check with server if there is a new curriculum level available
-                if self.episode_count % 50 == 0:
-                    self.local_model.update_entropy_factor()
-                    old_curriculum_level = self.curriculum.current_level
-                    self.curriculum.update_curriculum_level()
-
-                    # Only regenerate env on curriculum level change. Otherwise just reset
-                    # Important, because otherwise the player doens't see all levels
-                    if self.curriculum.current_level != old_curriculum_level:
-                        self.curriculum.update_env_to_curriculum_level(self.env)
-                        self.episode_count = 0
-                        self.stats = []
 
                 episode_done = False
 
@@ -143,8 +123,8 @@ class Worker():
                 cancel_episode = False
 
                 
-                # env_renderer.env = self.env.env
-                # env_renderer.set_new_rail()
+                env_renderer.env = self.env.env
+                env_renderer.reset()
                 
                 max_steps = self.env.env._max_episode_steps - 5
 
@@ -153,7 +133,7 @@ class Worker():
                     env_actions, nn_actions, v, relevant_obs = self.local_model.get_agent_actions(self.env.env, obs, info, use_best_actions)
                     next_obs, rewards, done, info = self.env.step(env_actions)
 
-                    #env_renderer.render_env(show=True)
+                    env_renderer.render_env(show=True, show_observations=False)
 
                     handles = []
                     for agent in agents:
@@ -264,7 +244,7 @@ class Worker():
                     successrate = np.mean(self.episode_agents_arrived[-25:])
                     requests.post(url=const.url + '/report_success', json={'successrate':successrate})
                 
-                print('Episode', self.episode_count,'of',self.name,'with',episode_step_count,'steps, reward of',episode_reward,', perc. arrived',agents_arrived, ', mean entropy of', np.mean([l[2] for l in self.stats[-1:]]), ', curriculum level', self.curriculum.current_level, ', using best actions:', use_best_actions,', cancel episode:', cancel_episode, ', time', episode_time, ', Avg. time', avg_episode_time)
+                print('Episode', self.episode_count,'of',self.name,'with',episode_step_count,'steps, reward of',episode_reward,', perc. arrived',agents_arrived, ', mean entropy of', np.mean([l[2] for l in self.stats[-1:]]),', using best actions:', use_best_actions,', cancel episode:', cancel_episode, ', time', episode_time, ', Avg. time', avg_episode_time)
 
             return self.episode_count
     
@@ -319,7 +299,7 @@ class Worker():
 
             with self.summary_writer.as_default():
                 episode_count = np.int32(self.episode_count)
-                lvl = str(self.curriculum.active_level)
+                lvl = '0'
                 tf.summary.scalar('Lvl '+ lvl+' - Perf/Reward', mean_reward, step=episode_count)
                 tf.summary.scalar('Lvl '+ lvl+' - Perf/Length', mean_length, step=episode_count)
                 tf.summary.scalar('Lvl '+ lvl+' - Perf/Value', mean_value, step=episode_count)

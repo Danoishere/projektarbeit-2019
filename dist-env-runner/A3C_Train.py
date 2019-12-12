@@ -39,8 +39,8 @@ def start_train(resume):
     urllib.request.urlretrieve(const.url + '/file/observation.py', 'deliverables/observation.py')
     urllib.request.urlretrieve(const.url + '/file/curriculum.py', 'deliverables/curriculum.py')
 
-    myCmd = 'python setup.py build_ext --inplace'
-    os.system(myCmd)
+    #myCmd = 'python setup.py build_ext --inplace'
+    #os.system(myCmd)
 
     # Wait with this import until we compiled all required modules!
     from multiworker import create_worker
