@@ -50,8 +50,15 @@ def comm_schedule_generator() -> ScheduleGenerator:
         agents_direction = start_dir[:num_agents]
         speeds = [1.0] * len(agents_position)
 
+        stochastic_data = {
+                'prop_malfunction': 0.0,  # Percentage of defective agents
+                'malfunction_rate': 0,  # Rate of malfunction occurence
+                'min_duration': 0,  # Minimal duration of malfunction
+                'max_duration': 0  # Max duration of malfunction
+        }
+
         return Schedule(agent_positions=agents_position, agent_directions=agents_direction,
-                        agent_targets=agents_target, agent_speeds=speeds, agent_malfunction_rates=None)
+                        agent_targets=agents_target, agent_speeds=speeds, agent_malfunction_rates=malfunction_from_params(stochastic_data))
 
     return generator
 
@@ -113,18 +120,7 @@ def comm_rail_generator() -> RailGenerator:
         connect(wait_point_2_l, wait_out_2)
         connect_straight(wait_point_2_r, wait_point_2_l)
         connect(wait_point_2_r, wait_in_2)
-
-        #connect(wait_out_1 - offset_y, wait_point_1)
-
-
-        #connect(wait_out_1 - offset_x, wait_point_1)
-        #connect(wait_point_1, wait_point_1 + offset_x + offset_x, True)
-        #connect(wait_point_1, wait_in_1)
-
-        
-        #connect(wait_out_2, wait_point_2)
-        #connect(wait_point_2, wait_in_2)
-        
+       
 
         station1 = tuple(station1)
         station2 = tuple(station2)
@@ -138,111 +134,6 @@ def comm_rail_generator() -> RailGenerator:
             'start_goal': start_goal,
             'start_dir': start_dir
         }}
-
-
-        # generate rail array
-        # step 1:
-        # - generate a start and goal position
-        #   - validate min/max distance allowed
-        #   - validate that start/goals are not placed too close to other start/goals
-        #   - draw a rail from [start,goal]
-        #     - if rail crosses existing rail then validate new connection
-        #     - possibility that this fails to create a path to goal
-        #     - on failure generate new start/goal
-        #
-        # step 2:
-        # - add more rails to map randomly between cells that have rails
-        #   - validate all new rails, on failure don't add new rails
-        #
-        # step 3:
-        # - return transition map + list of [start_pos, start_dir, goal_pos] points
-        #
-        '''
-        rail_trans = grid_map.transitions
-        start_goal = []
-        start_dir = []
-        nr_created = 0
-        created_sanity = 0
-        sanity_max = 9000
-        while nr_created < nr_start_goal and created_sanity < sanity_max:
-            all_ok = False
-            for _ in range(sanity_max):
-                start = (np.random.randint(0, height), np.random.randint(0, width))
-                goal = (np.random.randint(0, height), np.random.randint(0, width))
-
-                # check to make sure start,goal pos is empty?
-                if rail_array[goal] != 0 or rail_array[start] != 0:
-                    continue
-                # check min/max distance
-                dist_sg = distance_on_rail(start, goal)
-                if dist_sg < min_dist:
-                    continue
-                if dist_sg > max_dist:
-                    continue
-                # check distance to existing points
-                sg_new = [start, goal]
-
-                def check_all_dist(sg_new):
-                    """
-                    Function to check the distance betweens start and goal
-                    :param sg_new: start and goal tuple
-                    :return: True if distance is larger than 2, False otherwise
-                    """
-                    for sg in start_goal:
-                        for i in range(2):
-                            for j in range(2):
-                                dist = distance_on_rail(sg_new[i], sg[j])
-                                if dist < 2:
-                                    return False
-                    return True
-
-                if check_all_dist(sg_new):
-                    all_ok = True
-                    break
-
-            if not all_ok:
-                # we might as well give up at this point
-                break
-
-            new_path = connect_rail_in_grid_map(grid_map, start, goal, rail_trans, Vec2d.get_chebyshev_distance,
-                                                flip_start_node_trans=True, flip_end_node_trans=True,
-                                                respect_transition_validity=True, forbidden_cells=None)
-            if len(new_path) >= 2:
-                nr_created += 1
-                start_goal.append([start, goal])
-                start_dir.append(mirror(get_direction(new_path[0], new_path[1])))
-            else:
-                # after too many failures we will give up
-                created_sanity += 1
-
-        # add extra connections between existing rail
-        created_sanity = 0
-        nr_created = 0
-        while nr_created < nr_extra and created_sanity < sanity_max:
-            all_ok = False
-            for _ in range(sanity_max):
-                start = (np.random.randint(0, height), np.random.randint(0, width))
-                goal = (np.random.randint(0, height), np.random.randint(0, width))
-                # check to make sure start,goal pos are not empty
-                if rail_array[goal] == 0 or rail_array[start] == 0:
-                    continue
-                else:
-                    all_ok = True
-                    break
-            if not all_ok:
-                break
-            new_path = connect_rail_in_grid_map(grid_map, start, goal, rail_trans, Vec2d.get_chebyshev_distance,
-                                                flip_start_node_trans=True, flip_end_node_trans=True,
-                                                respect_transition_validity=True, forbidden_cells=None)
-
-            if len(new_path) >= 2:
-                nr_created += 1
-
-        return grid_map, {'agents_hints': {
-            'start_goal': start_goal,
-            'start_dir': start_dir
-        }}
-        '''
 
     return generator
 
@@ -269,9 +160,9 @@ class RailEnvWrapper():
 
         self.stochastic_data = {
                 'prop_malfunction': 0.0,  # Percentage of defective agents
-                'malfunction_rate': 30,  # Rate of malfunction occurence
-                'min_duration': 3,  # Minimal duration of malfunction
-                'max_duration': 20  # Max duration of malfunction
+                'malfunction_rate': 0,  # Rate of malfunction occurence
+                'min_duration': 0,  # Minimal duration of malfunction
+                'max_duration': 0  # Max duration of malfunction
         }
         
 

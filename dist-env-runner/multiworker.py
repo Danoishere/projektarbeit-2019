@@ -130,25 +130,14 @@ class Worker():
 
                 while not episode_done and not cancel_episode and episode_step_count < max_steps:
                     agents = self.env.env.agents
-                    env_actions, nn_actions, v, relevant_obs = self.local_model.get_agent_actions(self.env.env, obs, info, use_best_actions)
-                    next_obs, rewards, done, info = self.env.step(env_actions)
+
+
+                    for agent in agents:
+
+                    actions, values = self.local_model.get_actions_and_values(obs ,self.env.env)
+                    next_obs, rewards, done, info = self.env.step(actions)
 
                     env_renderer.render_env(show=True, show_observations=False)
-
-                    handles = []
-                    for agent in agents:
-                        if agent.position is not None:
-                            handles.append((agent.handle, *agent.position, agent.malfunction_data['malfunction'], agent.wait))
-
-                    agent_pos_key = tuple(handles)
-                    if agent_pos_key in agent_pos:
-                        agent_pos[agent_pos_key] += 1
-                    else:
-                        agent_pos[agent_pos_key] = 0
-
-                    max_pos_repeation = max(agent_pos.values())
-                    if max_pos_repeation > 10:
-                        cancel_episode = True
 
                     prep_steps = 0
                     obs_builder.prep_steps = prep_steps
@@ -158,9 +147,9 @@ class Worker():
                     if episode_done == True:
                         next_obs = obs
 
-                    for i in relevant_obs:
+                    for i in range(len(agents)):
                         agent_obs = obs[i]
-                        agent_action = nn_actions[i]
+                        agent_action = actions[i]
                         agent_reward = rewards[i]
 
                         if not done_last_step[i]:
@@ -169,9 +158,9 @@ class Worker():
                                 agent_action,
                                 agent_reward,
                                 episode_done,
-                                v[i]])
+                                values[i]])
                             
-                            episode_values.append(v[i])
+                            episode_values.append(values[i])
                             episode_reward += agent_reward
                 
                     obs = next_obs              
@@ -275,7 +264,7 @@ class Worker():
             
             batch_actions = np.asarray([row[1] for row in batch_rollout]) 
             batch_values = np.asarray([row[4] for row in batch_rollout])
-            batch_obs = self.obs_helper.buffer_to_obs_lists(batch_rollout)
+            batch_obs = self.env.env.obs_builder.buffer_to_obs_lists(batch_rollout)
             batch_advantages = batch_rewards - batch_values
 
             v_l,p_l,e_l, g_n, v_n = self.local_model.train(batch_rewards, batch_advantages, batch_actions, batch_obs, episode_done)

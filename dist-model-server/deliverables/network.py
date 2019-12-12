@@ -49,7 +49,7 @@ class AC_Network():
 
 
     def build_network(self):
-        input_vec = layers.Input(shape=params.tot_obs_size,dtype=tf.float32)
+        input_vec = layers.Input(shape=5,dtype=tf.float32)
 
         input_actor_rec = layers.Input(shape=(2,params.recurrent_size),dtype=tf.float32)
         input_critic_rec = layers.Input(shape=(2,params.recurrent_size),dtype=tf.float32)
@@ -68,7 +68,7 @@ class AC_Network():
 
 
     def create_network(self, input, input_rec):
-        hidden = layers.Dense(128, activation='relu')(input)
+        hidden = layers.Dense(32, activation='relu')(input)
         hidden = layers.Dense(64, activation='relu')(hidden)
         hidden = layers.Reshape((1,64))(hidden)
         hidden, state_h, state_c = layers.LSTM(64, return_state=True, return_sequences=False)(hidden, initial_state=[input_rec[:,0], input_rec[:,1]])
@@ -157,16 +157,6 @@ class AC_Network():
         return v_loss, p_loss, entropy, grad_norms, var_norms
 
 
-    def get_best_actions(self, obs):
-        obs_list = self.obs_dict_to_lists(obs)
-        predcition, _ = self.model.predict_on_batch(obs_list)
-        actions = {}
-        for i in obs:
-            a_dist = predcition[i]
-            actions[i] = np.argmax(a_dist)
-
-        return actions
-
 
     def obs_dict_to_lists(self, obs):
         all_vec_obs = []
@@ -184,37 +174,6 @@ class AC_Network():
             all_rec_critic_obs.append(rec_critic_obs)
 
         return [all_vec_obs, all_rec_actor_obs, all_rec_critic_obs]
-
-
-    def get_best_actions_and_values(self, obs, env):
-        if len(obs) == 0:
-            return {},{}
-
-        mapping = {}
-        idx = 0
-        for handle in obs:
-            mapping[handle] = idx
-            idx += 1
-
-        obs_list = self.obs_dict_to_lists(obs)
-        predcition, values, a_rec_h, a_rec_c, c_rec_h, c_rec_c = self.model.predict_on_batch(obs_list)
-        actions = {}
-        values_dict = {}
-
-        obs_builder = env.obs_builder
-
-        for handle in obs:
-            idx = mapping[handle]
-            a_dist = predcition[idx]
-            actions[handle] = np.argmax(a_dist)
-            values_dict[handle] = values[idx,0]
-
-            obs_builder.actor_rec_state[handle] = [a_rec_h[idx], a_rec_c[idx]]
-            obs_builder.critic_rec_state[handle] = [c_rec_h[idx], c_rec_c[idx]]
-
-            env.agents[handle].last_action = actions[handle]
-
-        return actions, values_dict
 
 
     def get_actions_and_values(self, obs, env):
