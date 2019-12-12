@@ -19,7 +19,7 @@
 \chapter{Technical Foundation}\label{chap.grundlagen}
 \section{Reinforcement Learning}\label{reinforcementlearning}
 \subsection*{Basic Definitions}\label{basic_rl_definitions}
-In recent years, major progress has been achieved in the field of reinforcement learning (RL) \cite{mnih2013playing},\cite{alphazero},\cite{hideandseek}.
+In recent years, major progress has been achieved in the field of reinforcement learning (RL) \cite{mnih2013playing,alphazero,hideandseek}.
 In RL, an agent learns to perform a task by interacting with an environment $\mathcal{E}$. On every timestep $\mathcal{t}$ the agent $\mathcal{a}$ needs to take an action $\mathcal{u}$. The selection of this action $\mathcal{u}$ is based on the current observation $\mathcal{s}$. The success of the agent is measured by reward $\mathcal{R}$ received. If the agent does well, it receives positive reward from the environment, if it does something bad, there is no or negative reward.
 
 \begin{figure}[H]
@@ -36,7 +36,7 @@ Value-based RL algorithms work by learning a value function $\mathcal{V(s)}$ thr
 \begin{gather*}
 loss_{value}=(\mathcal{R}-\mathcal{V(s)})^2
 \end{gather*}
-In some value-based algorithms such as DQN \cite{mnih2013playing}, a $\mathcal{Q(s,u)}$-function is used. This function tries to estimate the expected future reward on taking action $\mathcal{u}$ from the given state $\mathcal{s}$.\\
+In some value-based algorithms such as Deep Q-Networks \cite{mnih2013playing}, a $\mathcal{Q(s,u)}$-function is used. This function tries to estimate the expected future reward on taking action $\mathcal{u}$ from the given state $\mathcal{s}$.\\
 The second category of reinfocement learning algrithms are the so called policy gradient based methods. These methods aim to aquire a stochastic policy $\pi$ that maximizes the expected future reward $\mathcal{R}$ by taking actions with certain probabilities. Taking actions based on probabilities solves an important issue of value based methods, which is, that by taking greedy actions with respect to state  $\mathcal{s}$, the agent might not explore the whole state space and misses out on better ways to act in the environment.
 
 \subsection*{Asynchronous Advantage Actor Critic Algorithm}\label{a3c_intro}
