@@ -17,12 +17,67 @@
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\chapter{Approach and Methodology}\label{chap.vorgehen}
-\section{Iterative Work Approach}\label{basic_cons}
-As described under \autoref{baseline}, our work is based on the work of S. Huschauer \cite{flatlandstephan}. We take the idea of using the A3C algorithm to solve the Flatland problem and try various modifications in an attempt to improve its performance. We proceed by giving an idea, what we want to achieve by changing the specified part, followed by an experiment to either prove or disprove our hypothesis. We do this in an iterative manner, to gradually come closer to a well-performing solution for Flatland.\\
-In our experiments, we focus exclusively on Flatland round 2. While we compare our solution for round 1 in \autoref{chap.resultate}, all technical improvements are also part of our solution for round 2.\\
-Our work can be categorized into a section about reinforcement learning for Flatland (\autoref{rl_flatland}) and a section about infrastructure and scaling up the training process (\autoref{dist_architecture}).\\
-\section[Reproducibility]{Reproducibility and Experiment Specification}\label{reproducability}
+\chapter{Basic Implementation}\label{chap.vorgehen}
+\section{A3C Implementation}\label{a3c_implementation}
+Originally, the asynchronous advantage actor critic algorithm (A3C) has been designed for use in a single agent environment \cite{a3c}.
+By applying it in a multi agent environment, we implicitly convert the environment into a non-stationary system.
+While applying A3C in a multi agent setting, the other agents can be viewed as part of the environment. This means, the behaviour of the environment changes while training, due to the fact that the behaviour of the other agents changes.
+Gupta et al.finds in \cite{multiagent_comp_a3c_dqn_etc}, that RL methods like Deep-Q networks (DQN) and Trust region policy optimization (TRPO) are not performing well in a multi agent environment, due to the combination of experience replay and non-stationarity of the environment. We therefore suggest, that it is not recommendable to keep an experience replay buffer with older episodes. Otherwise the sampled experience might represent old agent behaviour which is then learned to deal with.\\
+An important implementation detail in our version is, that we do not perform updates during episodes but only at their end. The reason for this is, that the only possibility for an agent to receive reward is at the end of the episode. Therefore would any earlier update have a reward of 0 and not help the training process.
+
+\section{Entropy Balancing and Hyperparameter Tuning}\label{entropy_balancing_hyperparameter}
+In RL, it is of great importance to find the right combination of exploration and explotation \cite{explorationexploitation}. During exploration, the agent explores as much of the state space as possible. This enables the agent to later exploit the found states which are beneficial. Without this exploration phase, there is a chance that the agent settles on suboptimal policies too quickly and ignores parts of the state space the agent has never seen and therefore does not consider.\\
+The policy is characterized by a probability distribution of actions.
+
+\section{Observation Design}\label{enhanced_observations}
+The Flatland environment provides a base to build custom observation builders that can be used to create a state representation for the agents as explained in \autoref{observations}. In this work, we do not consider the usage of the grid-based observation builders.
+Both the Flatland development team as well as S. Huschauer find, that tree based observations work better in their experiments \cite{flatlandstephan}. The Flatland specification states \cite{flatland_spec}:
+\begin{quote}
+	Considering, that the actions and directions an agent can chose in any given cell, it becomes clear that a grid like observation around an agent will not contain much useful information, as most of the observed cells are not reachable nor play a significant role in for the agents decisions.
+\end{quote}
+Based on the provided TreeObsForRailEnv (see \autoref{observations}), we implement a custom observation builder which we use to produce an input vector for our neural network. This observation builder takes the the current state of the environment and produces a fixed size numeric vector with values between 0.0 and 1.0 for each agent. This input vector should fulfil an number of requirements:
+\begin{itemize}
+	\item Each rail section the agent possibly rides on next should be visible to the agent.
+	\item The agent should be able to detect, whether there is another train coming the opposite direction on any section.
+	\item The agent should be able to detect on each switch which turn is the faster way to his target.
+	\item On switches, the agent should be able to see if a turn does lead to his target, even if it is not the fastest way. If this is the case, taking this turn might even be a good option to evade possibly blocking situations.
+	\item For the next grid tile, the agent should be able to detect if it is a switch and if so, if it is one the agent can make a decision on. (see \autoref{flatland_intro} for non-usable switches).
+\end{itemize}
+The provided TreeObsForRailEnv produce a graph with a node for each section of the rail. We extend these nodes with additional information about train traffic coming the other direction than the one the agent is heading. We take the information from these nodes and convert them into a numeric vector. In case that there is a dead end, we fill the observation with zeros (this could only happen in Flatland round 1, round 2 does not have dead ends). After the conversion, we concatenate all section observations into one large vector with information for all upcoming sections.\\
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=300pt]{diagrams/tree_obs_mapping.pdf}
+	\caption{Illustration of the tree observation mapped onto the Flatland enviornment. Each colored bar represents information about a section.}
+	\label{obs_descr}
+\end{figure}
+While this vector already contains all required information outside of the agent, we add another vector with information regarding the agent itself (train specific observation in \autoref{obs_descr}). This vector contains the speed of the agent, the max. speed of the agent, the type of the current tile, the direction the agent is heading and 
+
+\section{Technical Implementation Aspects}\label{software}
+In this section, we discuss the most important implementation aspects of our work. 
+\subsection*{Used Frameworks and Libraries}\label{framework_and_libraries}
+In \autoref{table:used_technologies}, we list the most important used libraries and frameworks in this work.
+\begin{table}[H]
+	\centering
+	\begin{tabularx}{\textwidth}{ |l|c|X| } 
+		\hline
+		\textbf{Technology}	& \textbf{Version} & \textbf{Description}\\
+		\hline
+		Python & 3.6 & The whole code for our project is written in Python.\\
+		\hline
+		Tensorflow & 2.0.0 & Tensorflow provides a framework for both deep learning as well as monitoring the learning process of RL using Tensorboard.\\
+		\hline
+		MessagegPack & 0.6.2 & MessagePack allows very fast serialization. The resulting binary data is also considerably smaller than serialization with formats like JSON. We use MessagePack to serialize both weights- and gradient-update before sending between worker and model server.\\
+		\hline
+		Cython & 0.29.14 & Cython allows to compile Python code to natively running C code. We use Cython to speed up our observations on the rail environment.\\
+		\hline
+		ZLib & (built-in) & ZLib allows to compress in Python. We use ZLib to reduce our payload-size while sending gradient- and weight updates.\\
+		\hline
+	\end{tabularx}
+	\caption{The most important technologies used in this work.}
+	\label{table:used_technologies}
+\end{table}
+\chapter[Experiments]{Experiment Design and Analysis}\label{chap.experiment}
+\section[Reproducibility]{Reproducibility and Experiment Setup}\label{reproducability}
 It is important to note, that the training process of reinforcement learning and especially multi agent reinforcement learning can be hard to reproduce. Depending on the initial weights of the neural networks and the layout of the environments, the performance may vary on each restart. Also in a distributed algorithm, the number of workers can significantly influence the training performance. If not differently specified, we execute all presented experiments on machines with the same specifications (see \autoref{infrastructure}).\\
 Another aspect that is hard to reproduce is training stability. In A3C, an important instrument to prevent the policy from converging too early is using an additional entropy term \cite{a3c}. Our way to maintain stability with changing environments is discussed in \autoref{entropy_balancing_hyperparameter}.\\
 For better comparability, we try to keep our evaluation versions for the training as similar to each other as possible. If not differently specified, we run evaluations with the following setup:
@@ -34,36 +89,7 @@ For better comparability, we try to keep our evaluation versions for the trainin
 \end{itemize}
 To analyze the performance of the solution, we run an analyzer that executes 20 rollouts of the environment using the same neural network parameters. After the these 20 rollouts, we update the neural network parameters. For each evaluation round, we use the same 20 environment layouts. 
 To compare the performance in a graph, we now take the mean number of agents arrived at their target and plot that in our graph.
-\chapter[Experiments]{Experiment Design and Analysis}\label{chap.experiment}
 \section[RL for Flatland]{Reinforcement Learning for Flatland}\label{rl_flatland}
-\subsection*{A3C Implementation}\label{a3c_implementation}
-Originally, the asynchronous advantage actor critic algorithm (A3C) has been designed for use in a single agent environment \cite{a3c}.
-By applying it in a multi agent environment, we implicitly convert the environment into a non-stationary system.
-While applying A3C in a multi agent setting, the other agents can be viewed as part of the environment. This means, the behaviour of the environment changes while training, due to the fact that the behaviour of the other agents changes.
-Gupta et al.finds in \cite{multiagent_comp_a3c_dqn_etc}, that RL methods like Deep-Q networks (DQN) and Trust region policy optimization (TRPO) are not performing well in a multi agent environment, due to the combination of experience replay and non-stationarity of the environment. We therefore suggest, that it is not recommendable to keep an experience replay buffer with older episodes. Otherwise the sampled experience might represent old agent behaviour which is then learned to deal with.\\
-An important implementation detail in our version is, that we do not perform updates during episodes but only at their end. The reason for this is, that the only possibility for an agent to receive reward is at the end of the episode. Therefore would any earlier update have a reward of 0 and not help the training process.
-\subsection*{Observation Design}\label{enhanced_observations}
-The Flatland environment provides a base to build custom observation builders that can be used to create a state representation for the agents as explained in \autoref{observations}. In this work, we do not consider the usage of the grid-based observation builders.
-Both the Flatland development team as well as S. Huschauer find, that tree based observations work better in their experiments \cite{flatlandstephan}. The Flatland specification states \cite{flatland_spec}:
-\begin{quote}
-Considering, that the actions and directions an agent can chose in any given cell, it becomes clear that a grid like observation around an agent will not contain much useful information, as most of the observed cells are not reachable nor play a significant role in for the agents decisions.
-\end{quote}
-Based on the provided TreeObsForRailEnv (see \autoref{observations}), we implement a custom observation builder which we use to produce an input vector for our neural network. This observation builder takes the the current state of the environment and produces a fixed size numeric vector with values between 0.0 and 1.0 for each agent. This input vector should fulfil an number of requirements:
-\begin{itemize}
-	\item Each rail section the agent possibly rides on next should be visible to the agent.
-	\item The agent should be able to detect, whether there is another train coming the opposite direction on any section.
-	\item The agent should be able to detect on each switch which turn is the faster way to his target.
-	\item On switches, the agent should be able to see if a turn does lead to his target, even if it is not the fastest way. If this is the case, taking this turn might even be a good option to evade possibly blocking situations.
-	\item For the next grid tile, the agent should be able to detect if it is a switch and if so, if it is one the agent can make a decision on. (see \autoref{flatland_intro} for non-usable switches).
-\end{itemize}
-The provided TreeObsForRailEnv produce a graph with a node for each section of the rail. We extend these nodes with additional information about train traffic coming the other direction than the one the agent is heading. We take the information from these nodes and convert them into a numeric vector. In case that there is a dead end, we fill the observation with zeros (this could only happen in Flatland round 1, round 2 does not have dead ends). After the conversion, we concatenate all section observations into one large vector with information for all upcoming sections.\\
-While this vector already contains all required information outside of the agent, we add another vector with information regarding the agent itself (train specific observation in \autoref{obs_descr}). This vector contains the speed of the agent, the max. speed of the agent, the type of the current tile, the direction the agent is heading and 
-\begin{figure}
-	\centering
-	\includegraphics[width=300pt]{diagrams/tree_obs_mapping.pdf}
-	\caption{Illustration of the tree observation mapped onto the Flatland enviornment. Each colored bar represents information about a section.}
-	\label{obs_descr}
-\end{figure}
 \subsection*{Action Space Reduction and Script Policy Actions}\label{reduced_action_space}
 The Flatland environment is designed in a way to resemble a classical RL environment. This means, on every timestep, we receive observations for each agent, calculate an action and hand this action to the environment, visible in pseudocode \autoref{alg:no_reduction}.\\\\
 \begin{algorithm}[H]
@@ -182,9 +208,7 @@ As visible in \autoref{chart:curriculum_comparison}, the version without curricu
 	\caption{Curriculum level specifications for our experiment to compare a version with curriculum to a version without.}
 \end{table}
 While it is clearly visible in \autoref{chart:curriculum_comparison} that directly training on difficult levels is not feasible, it also appears that the learning speed is slowed down on higher curriculum levels. With increasingly more difficult levels and more agents, the frequency of available network updates is being slowed down due to the fact that a rollout of the environment takes longer. We therefore think, it is desirable to keep the curriculum levels small and primarily increase the number of agents instead of the size of the environment.
-\subsection*{Entropy Balancing and Hyperparameter Tuning}\label{entropy_balancing_hyperparameter}
-In RL, it is of great importance to find the right combination of exploration and explotation \cite{explorationexploitation}. During exploration, the agent explores as much of the state space as possible. This enables the agent to later exploit the found states which are beneficial. Without this exploration phase, there is a chance that the agent settles on suboptimal policies too quickly and ignores parts of the state space the agent has never seen and therefore does not consider.\\
-The policy is characterized by a probability distribution of actions.
+
 
 \subsection*{Agent Communication}\label{agent_communication}
 Communication in multi agent reinforcement learning is a topic of active research (SOURCE)) While we implement only very limited communication in this work, in this section we discuss a number of ideas regarding the use of communication in the Flatland environment. As a starting point for this work we asked the question how blocking is avoided in the real world. On the SBB rail environment railroad signals are used to prevent collisions between trains. These signals are controlled by a central control instance that directs the flow of traffic for all trains on the grid.
@@ -249,29 +273,6 @@ The infrastructure used for this project consists of 4 machines used in various 
 \end{itemize}
 The A3C algorithm is not able to take advantage of GPUs. The reason for this is fragmented update process. Differently than with an experience replay buffer, the training data is only used once and gets then discarded.
 \newpage
-\section{Technical Implementation Aspects}\label{software}
-In this section, we discuss the most important implementation aspects of our work. 
-\subsection*{Used Frameworks and Libraries}\label{framework_and_libraries}
-In \autoref{table:used_technologies}, we list the most important used libraries and frameworks in this work.
-\begin{table}[H]
-	\centering
-	\begin{tabularx}{\textwidth}{ |l|c|X| } 
-		\hline
-		\textbf{Technology}	& \textbf{Version} & \textbf{Description}\\
-		\hline
-		Python & 3.6 & The whole code for our project is written in Python.\\
-		\hline
-		Tensorflow & 2.0.0 & Tensorflow provides a framework for both deep learning as well as monitoring the learning process of RL using Tensorboard.\\
-		\hline
-		MessagegPack & 0.6.2 & MessagePack allows very fast serialization. The resulting binary data is also considerably smaller than serialization with formats like JSON. We use MessagePack to serialize both weights- and gradient-update before sending between worker and model server.\\
-		\hline
-		Cython & 0.29.14 & Cython allows to compile Python code to natively running C code. We use Cython to speed up our observations on the rail environment.\\
-		\hline
-		ZLib & (built-in) & ZLib allows to compress in Python. We use ZLib to reduce our payload-size while sending gradient- and weight updates.\\
-		\hline
-	\end{tabularx}
-	\caption{The most important technologies used in this work.}
-	\label{table:used_technologies}
-\end{table}
+
 
 

@@ -16,12 +16,11 @@
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\chapter{Technical Foundation}\label{chap.grundlagen}
+\chapter[Foundation]{Technical and Theoretical Foundation}\label{chap.grundlagen}
 \section{Reinforcement Learning}\label{reinforcementlearning}
 \subsection*{Basic Definitions}\label{basic_rl_definitions}
 In recent years, major progress has been achieved in the field of reinforcement learning (RL) \cite{mnih2013playing,alphazero,hideandseek}.
 In RL, an agent learns to perform a task by interacting with an environment $\mathcal{E}$. On every timestep $\mathcal{t}$ the agent $\mathcal{a}$ needs to take an action $\mathcal{u}$. The selection of this action $\mathcal{u}$ is based on the current observation $\mathcal{s}$. The success of the agent is measured by reward $\mathcal{R}$ received. If the agent does well, it receives positive reward from the environment, if it does something bad, there is no or negative reward.
-
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=300pt]{images/rl_overview.png}
@@ -56,8 +55,6 @@ loss_{policy}=log \pi(s_{t})*\mathcal{A}
 \end{gather*}
 This means that for actions where the received reward $\mathcal{R}$ exceeds the expected reward $\mathcal{V(s)}$ the policy update gets multiplied by a positive advantage. Therefore, the update of the neural network gets adjusted into a direction that favors the experienced actions based on the seen states.\\
 What makes A3C different from other actor-critic algorithms is, that it can be used in a distributed way. Many workers work at the same time on a centralized model.
-\subsection*{Relation to this Work}\label{rl_relation_work}
-The goal of this work is to apply an RL algorithm to the vehicle rescheduling problem. Based on the work of S. Hubacher \cite{flatlandstephan}, we use a distributed RL algorithm that learns a policy to control the traffic of trains on a rail grid. To do so, we use the asynchronous advantage actor critic algorithm \cite{a3c} and expand its definiton to the use case of multiple agents, similar to \cite{marltraffica3c}.
 
 \section{The Flatland Rail Environment}\label{flatland_intro}
 The Flatland environment is a virtual simulation environment provided by the Swiss Federal Railway SBB and the crowdsourcing platform AICrowd.
