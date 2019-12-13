@@ -5,7 +5,7 @@ import tensorflow as tf
 from ctypes import c_bool
 import requests
 
-#from flatland.utils.rendertools import RenderTool, AgentRenderVariant
+from flatland.utils.rendertools import RenderTool, AgentRenderVariant
 import scipy.signal
 from tensorflow.keras.optimizers import RMSprop
 
@@ -14,7 +14,7 @@ from random import choice,uniform, random, getrandbits, seed, sample, shuffle
 from time import sleep
 from time import time
 import math
-#import msvcrt
+import msvcrt
 import os
 cwd = os.getcwd()
 
@@ -76,13 +76,13 @@ class Worker():
 
             time_start = time()
             
-            '''
+            
             env_renderer = RenderTool(self.env.env, gl="PILSVG",
                           agent_render_variant=AgentRenderVariant.AGENT_SHOWS_OPTIONS_AND_BOX,
                           show_debug=False,
                           screen_height=800,  # Adjust these parameters to fit your resolution
                           screen_width=800) 
-            '''
+            
 
 
             while not bool(self.should_stop.value):    
@@ -123,8 +123,8 @@ class Worker():
                 agent_pos = {}
                 cancel_episode = False
                 
-                # env_renderer.env = self.env.env
-                # env_renderer.reset()
+                env_renderer.env = self.env.env
+                env_renderer.reset()
                 agents = self.env.env.agents
                 max_steps = self.env.env._max_episode_steps - 5
 
@@ -153,7 +153,7 @@ class Worker():
                     #shuffle(keys)
                     
                     if is_communicating and len(keys) > 0:
-                        # print('Comm round')
+                        print('Comm round')
                         ready_for_action = True
                         for handle in keys:
                             agent_obs = {}
@@ -161,6 +161,8 @@ class Worker():
                             agent_obs[handle][0][:] = obs_builder.comm
                             agent_obs[handle] = (np.append(agent_obs[handle][0], 1), agent_obs[handle][1], agent_obs[handle][2])
                             agent_action, agent_value = self.local_model.get_actions_and_values(agent_obs ,self.env.env)
+                            
+                            print('Agent', handle,'says:', agent_action)
                             obs[handle] = agent_obs[handle]
                             actions[handle] = agent_action[handle]
                             values[handle] = agent_value[handle]
@@ -183,7 +185,7 @@ class Worker():
                             agent_obs[handle] = (np.append(agent_obs[handle][0], 0), agent_obs[handle][1], agent_obs[handle][2])
                             obs[handle] = agent_obs[handle]
                             agent_action, agent_value = self.local_model.get_actions_and_values(agent_obs ,self.env.env)
-                            
+                            print('Agent', handle,'does:', agent_action)
                             actions[handle] = agent_action[handle]
                             values[handle] = agent_value[handle]
 
@@ -206,7 +208,8 @@ class Worker():
                             
                         is_communicating = True
 
-                    # env_renderer.render_env(show=True, show_observations=False)
+                    env_renderer.render_env(show=True, show_observations=False)
+                    msvcrt.getch()
 
                     prep_steps = 0
                     obs_builder.prep_steps = prep_steps

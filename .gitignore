@@ -120,17 +120,9 @@ dist-env-runner/deliverables/input_params.pyx
 dist-model-server/deliverables/model/model_global.h5
 dist-model-server/deliverables/weights.h5
 dist-env-runner/.vscode/settings.json
-dist-model-server/deliverables/model/model_best_lvl_0.h5
-dist-model-server/deliverables/model/model_checkpoint_lvl_0.h5
-dist-model-server/deliverables/model/checkpoint.json
-dist-model-server/deliverables/model/model_global.h5
-dist-model-server/deliverables/weights.h5
-dist-model-server/deliverables/model/model_global.h5
-dist-model-server/deliverables/run_info.json
 dist-progress-evaluator/deliverables/network.pyx
 dist-progress-evaluator/deliverables/observation.pyx
 dist-progress-evaluator/deliverables/input_params.py
 dist-progress-evaluator/deliverables/model/*
-dist-model-server/deliverables/model/*
 dist-benchmark-runner/deliverables/*
 *.c
