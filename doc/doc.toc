@@ -2,7 +2,7 @@
 \contentsline {section}{\numberline {1.1}Baseline}{6}{section.1.1}% 
 \contentsline {section}{\numberline {1.2}Goal of this work}{7}{section.1.2}% 
 \contentsline {section}{\numberline {1.3}Iterative Work Approach}{7}{section.1.3}% 
-\contentsline {chapter}{\numberline {2}Foundation}{8}{chapter.2}% 
+\contentsline {chapter}{\numberline {2}Technical and Theoretical Foundation}{8}{chapter.2}% 
 \contentsline {section}{\numberline {2.1}Reinforcement Learning}{8}{section.2.1}% 
 \contentsline {section}{\numberline {2.2}The Flatland Rail Environment}{10}{section.2.2}% 
 \contentsline {chapter}{\numberline {3}Basic Implementation}{13}{chapter.3}% 
@@ -10,10 +10,10 @@
 \contentsline {section}{\numberline {3.2}Entropy Balancing and Hyperparameter Tuning}{13}{section.3.2}% 
 \contentsline {section}{\numberline {3.3}Observation Design}{13}{section.3.3}% 
 \contentsline {section}{\numberline {3.4}Technical Implementation Aspects}{15}{section.3.4}% 
-\contentsline {chapter}{\numberline {4}Experiments}{16}{chapter.4}% 
+\contentsline {chapter}{\numberline {4}Experiment Design and Analysis}{16}{chapter.4}% 
 \contentsline {section}{\numberline {4.1}Reproducibility}{16}{section.4.1}% 
 \contentsline {section}{\numberline {4.2}RL for Flatland}{16}{section.4.2}% 
-\contentsline {section}{\numberline {4.3}Distributed Training}{23}{section.4.3}% 
+\contentsline {section}{\numberline {4.3}Distributed Architecture and Parallelism}{23}{section.4.3}% 
 \contentsline {chapter}{\numberline {5}Results}{26}{chapter.5}% 
 \contentsline {section}{\numberline {5.1}Round 1}{26}{section.5.1}% 
 \contentsline {section}{\numberline {5.2}Round 2}{26}{section.5.2}% 

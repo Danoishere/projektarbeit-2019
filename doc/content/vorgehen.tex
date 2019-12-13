@@ -17,7 +17,7 @@
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\chapter{Basic Implementation}\label{chap.vorgehen}
+\chapter{Basic Implementation}\label{chap.basic_implementation}
 \section{A3C Implementation}\label{a3c_implementation}
 Originally, the asynchronous advantage actor critic algorithm (A3C) has been designed for use in a single agent environment \cite{a3c}.
 By applying it in a multi agent environment, we implicitly convert the environment into a non-stationary system.
@@ -76,7 +76,10 @@ In \autoref{table:used_technologies}, we list the most important used libraries 
 	\caption{The most important technologies used in this work.}
 	\label{table:used_technologies}
 \end{table}
-\chapter[Experiments]{Experiment Design and Analysis}\label{chap.experiment}
+\chapter{Experiment Design and Analysis}
+\label{chap.experiment}
+\chaptermark{Experiments}
+
 \section[Reproducibility]{Reproducibility and Experiment Setup}\label{reproducability}
 It is important to note, that the training process of reinforcement learning and especially multi agent reinforcement learning can be hard to reproduce. Depending on the initial weights of the neural networks and the layout of the environments, the performance may vary on each restart. Also in a distributed algorithm, the number of workers can significantly influence the training performance. If not differently specified, we execute all presented experiments on machines with the same specifications (see \autoref{infrastructure}).\\
 Another aspect that is hard to reproduce is training stability. In A3C, an important instrument to prevent the policy from converging too early is using an additional entropy term \cite{a3c}. Our way to maintain stability with changing environments is discussed in \autoref{entropy_balancing_hyperparameter}.\\
@@ -233,12 +236,7 @@ To verify the assumption that it is possible to learn a communication protocol t
 The agents only need to take an action on switches they encounter, otherwise they just drive forward. The agents can not observe the upcoming sections and only have access to the said buffer. Due to the symmetry of the environment, both agents need to take an action at the same time. On taking an action, we start a communication loop that allows the two agents to alternately read from the buffer, calculate an actin and write that action back onto the buffer. This loop continues until both agents output the action 5 (= we are done with communication). After finishing communication, both agents can select an action to take next in the environment. If both agents take the same action and collide, we cancel the episode and give a reward of -1. If the make it around each other and reach their targets, they receive a reward of +1. The agents have no way to know, if they are agent 1 or 2 (otherwise, agent 1 could just always make a loop and agent 2 could go straight).
 
 
-
-
-
-
-
-\section[Distributed Training]{Distributed Architecture and Parallelism}\label{dist_architecture}
+\section{Distributed Architecture and Parallelism}\label{dist_architecture}
 \subsection*{Distributed training}
 One of the main advantages of the A3C algorithm is its ability to be used in a distributed manner. This allows to run multiple versions of the environment asynchronously and collect the updates for both the actor and the critic network in a central place. To fully take advantage of this mechanism, we implemented a system that allows to run a large number of environements at the same time. All running training instances contribute to the same central network. Thanks to HTTP-based connections, we can use this mechanism even between computers or even networks. This approach is only limited by the capability of the central model server and the network throughput.\\
 Additionally, our central model server not only handles the update of the neural network but also distributes both the code for building observations and a file with all hyperparameter required for training on startup. The startup process of the worker node then converts the code for building observations into native C-code using Cython. This converted code then gets compiled and dynamically imported as a Python module.\\
