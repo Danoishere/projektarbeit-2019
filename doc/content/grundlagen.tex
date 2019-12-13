@@ -44,7 +44,7 @@ The second category of reinfocement learning algrithms are the so called policy 
 The progress in RL has led to algorithms that combine value based and policy gradient based methods , generally known as actor-critic algorithms. The \textit{asynchronous advantage actor critic algorithm} (A3C), developed by Mnih et al. \cite{a3c} fits into this category. It uses both a policy $\pi$ and a value function $\mathcal{V(s)}$.
 Both are usually seperate function approximators (neural networks in our case).
 \begin{itemize}
-	\item The \textbf{actor} can be seen as the policy $\pi$, that selects the action $\mathcal{u}$ from a given state $\mathcal{s}$.
+	\item The \textbf{actor} can be seen as the policy $\pi$, that selects the action $\mathcal{u}$ based on a state $\mathcal{s}$.
 	\item The \textbf{critic} is the value function $\mathcal{V(s)}$ that estimates, how much reward can be expected from a certain state on.
 \end{itemize}
 To enhance the process of learning policy $\pi$, the policy loss gets multiplied by the difference between actually received reward $\mathcal{R}$ and the estimated future reward $\mathcal{V(s)}$. This difference is called the advantage $\mathcal{A}$.

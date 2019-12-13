@@ -26,7 +26,7 @@ Gupta et al.finds in \cite{multiagent_comp_a3c_dqn_etc}, that RL methods like De
 An important implementation detail in our version is, that we do not perform updates during episodes but only at their end. The reason for this is, that the only possibility for an agent to receive reward is at the end of the episode. Therefore would any earlier update have a reward of 0 and not help the training process.
 
 \section{Entropy Balancing and Hyperparameter Tuning}\label{entropy_balancing_hyperparameter}
-In RL, it is of great importance to find the right combination of exploration and explotation \cite{explorationexploitation}. During exploration, the agent explores as much of the state space as possible. This enables the agent to later exploit the found states which are beneficial. Without this exploration phase, there is a chance that the agent settles on suboptimal policies too quickly and ignores parts of the state space the agent has never seen and therefore does not consider.\\
+In RL, it is of great importance to find the right combination of exploration and explotation \cite{explorationexploitation}. During exploration, the agent explores as much of the state space as possible. This enables the agent to later exploit the found states which are beneficial. Without this exploration phase, there is a chance that the agent settles on suboptimal policies too quickly and ignores parts of the state space the agent has never seen and therefore does not consider in his action selection. To avoid an early convergence in A3C, it is common to use an additional entropy term.\\
 The policy is characterized by a probability distribution of actions.
 
 \section{Observation Design}\label{enhanced_observations}
@@ -92,7 +92,9 @@ For better comparability, we try to keep our evaluation versions for the trainin
 \end{itemize}
 To analyze the performance of the solution, we run an analyzer that executes 20 rollouts of the environment using the same neural network parameters. After the these 20 rollouts, we update the neural network parameters. For each evaluation round, we use the same 20 environment layouts. 
 To compare the performance in a graph, we now take the mean number of agents arrived at their target and plot that in our graph.
-\section[RL for Flatland]{Reinforcement Learning for Flatland}\label{rl_flatland}
+\section{Reinforcement Learning for Flatland}
+\sectionmark{RL for Flatland}
+\label{rl_flatland}
 \subsection*{Action Space Reduction and Script Policy Actions}\label{reduced_action_space}
 The Flatland environment is designed in a way to resemble a classical RL environment. This means, on every timestep, we receive observations for each agent, calculate an action and hand this action to the environment, visible in pseudocode \autoref{alg:no_reduction}.\\\\
 \begin{algorithm}[H]
@@ -103,7 +105,7 @@ The Flatland environment is designed in a way to resemble a classical RL environ
 		create empty action array $\mathcal{A}$\\
 		\For{every agent $\mathcal{a}$}{
 			get current state $\mathcal{s\SPSB{a}{t}}$ of agent\\
-			// Fetch action for agent, based on current state\\
+			\textit{// Fetch action for agent, based on current state\\}
 			$\mathcal{A[a]} \leftarrow$ from policy $\pi (\mathcal{s\SPSB{a}{t}})$\\
 		}
 		
@@ -136,7 +138,7 @@ For training, we only use the experience collected near the switch.\\
 		\For{every agent $\mathcal{a}$}{
 			\eIf{agent is near to a switch}{
 				get current state $\mathcal{s\SPSB{a}{t}}$ of agent\\
-				// Fetch action for agent, based on current state\\
+				\textit{// Fetch action for agent, based on current state\\}
 				$\mathcal{A[a]} \leftarrow$ from policy $\pi (\mathcal{s\SPSB{a}{t}})$\\
 			}{
 				$\mathcal{A[a]} \leftarrow \mathcal{u_{forward})}$
@@ -149,8 +151,8 @@ For training, we only use the experience collected near the switch.\\
 		}
 		retrieve all new states $\mathcal{s_{t+1}}$\\		
 	}
-	use buffer $\mathcal{B}$ for training of policy $\pi$
-
+	use buffer $\mathcal{B}$ for training of policy $\pi$\\
+	
 	\caption{Improved learning algorithm for Flatland environment}
 	\label{alg:with_reduction}
 \end{algorithm}
