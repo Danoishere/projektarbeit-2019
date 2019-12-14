@@ -20,11 +20,11 @@
 \chapter*{Zusammenfassung}\label{chap.zusammenfassung}
 
 %1. Einleitung («Problemstellung»): Definiert die Problematik und begründet die Relevanz der Arbeit. Die Situation (eine problematische Situation oder technische Problematik) und die wissenschaftliche/fachliche Untersuchungs-Fragestellung (folgt logischer- weise aus der festgestellten Problematik) werden kurz beschrieben.
-Aufgrund der steigenden Anzahl an Pendlern in den letzen Jahren hat die Verdichtung des Schienenverkehrs auf dem bestehenden Schienennetz der SBB eine hohe Priorität.
+Aufgrund der steigenden Anzahl an Pendlern in den letzen Jahren hat die Verdichtung des Schienenverkehrs auf dem bestehenden Schienennetz der Schweizerischen Bundesbahn (SBB) eine hohe Priorität.
 Eine eben so hohe Relevanz hat die Verminderung der Verspätungen durch technische Störrungen an der Infrastruktur oder an Zügen.
-Daher befassen wir uns in dieser Arbeit mit der Steuerung komplexer Zugverkehrssysteme mittel Maschine Learning, genauer gesagt Reinforcement Learning.\\
+Daher befassen wir uns in dieser Arbeit mit der Steuerung komplexer Zugverkehrssysteme mittel Maschine Learning, genauer gesagt Reinforcement Learning (RL).\\
 %2. Methodische Einordnung der Arbeit: Art, Datenbasis und Ziel der Arbeit. Die Untersuchungsmethode (Umfrage, Analyse, Versuch, Test etc.), das untersuchte „Material“ und das dabei verfolgte Ziel wird thematisiert.
-Diese Projektarbeit findet indirekt mit der Schweizerischen Bundesbahn (SBB AG) statt, da sie eine Challenge zu diesem Thema auf AICrowd ausgeschrieben haben.
+Diese Projektarbeit findet indirekt mit der Schweizerischen Bundesbahn statt, da sie eine Challenge zu diesem Thema auf AICrowd ausgeschrieben haben.
 Die SBB stellt in Zusammenarbeit mit AICrowd die Simulationsumgebung Flatland zur Verfügung. Mittels Flatland kann ein komplexes Schienennetz simuliert werden, mit welchem die durch künstliche Intelligenz gesteuerten Züge interagieren können.
 Beim zu lösenden Problem handelt es sich um ein kollaboratives Multi-Agent Problem. Das Ziel ist, dass alle Züge so schnell wie möglich an ihrem Zielbahnhof ankommen und sich nicht gegenseitig blockieren. Wenn es zu einer Blockade kommt, zieht dies meist eine Kettenreaktion mit sich. Folglich kommen etliche Züge erst gar nicht an.
 %3. Vorgehen («Problembehandlung»): Informiert über das Vorgehen und über die Untersuchungsanlage.
@@ -34,15 +34,15 @@ Unsere Änderungen kontrollierten wir stetig mit Experimenten um Fortschritt zu 
 %4. Ergebnis («Problemlösung»): Beschreibt die wichtigsten Resultate, Erkenntnisse, offenen Fragen. Die Ergebnisse werden aufgeführt und dabei wird auf die unter 1. auf- geführte Fragestellung Bezug genommen (konnte sie beantwortet werden, gibt es of- fene Punkte?).
 Durch das Hinzufügen von unterschiedlichen Features konnten wir ein Resultat von 48.9\% in Runde 1 erzielen.
 In Runde 2 veränderten wir den Aktionsraum, was die Anzahl Abfragen vom neuronalen Netzwerk deutlich reduzierte. Dies verbesserte die Laufzeit sowie den Lernfortschritt stark.
-Durch den Einsatz von Regeln, welche spezielle Fälle verhindern, konnten wir eine Ankunftwahrscheinlichkeit von 29.1\% erreichen, was aktuell dem 4. Platz entspricht von insgesammt 24 Teilnehmern auf AICrowd.
+Durch den Einsatz von Regeln, welche spezielle Fälle verhindern, konnten wir eine Ankunftwahrscheinlichkeit von 29.1\% erreichen, was aktuell dem 4. Platz entspricht von insgesammt 24 teilnehmenden Teams auf AICrowd.
 %TODO: Aktionsraum okay?
 \newpage
 \thispagestyle{empty}
 \chapter*{Abstract}\label{abstract}
-Due to the increasing number of commuters in recent years, the consolidation of rail traffic on the swiss federal railways' existing rail network has a high priority.
+Due to the increasing number of commuters in recent years, the consolidation of rail traffic on the Swiss Federal Railways (SBB) existing rail network has a high priority.
 The reduction of delays caused by technical faults in the infrastructure or on trains is just as relevant.
-Therefore, in this thesis we deal with the control of complex train traffic systems by means of machine learning, or more precisely reinforcement learning.
-Swiss Federal Railways (SBB AG) is indirectly our project partner, as they have put out a challenge on this topic on AICrowd.
+Therefore, in this thesis we deal with the control of complex train traffic systems by means of machine learning, or more precisely reinforcement learning (RL).
+Swiss Federal Railways is indirectly our project partner, as they have put out a challenge on this topic on AICrowd.
 SBB provides the simulation environment Flatland in cooperation with AICrowd. Flatland can be used to simulate a complex rail network with which trains controlled by artificial intelligence can interact.
 The problem to be solved is a collaborative multi-agent problem. The goal is that all trains arrive at their destination station as quickly as possible and do not block each other. When a blockade occurs, it usually involves a chain reaction. As a result, many trains do not arrive at all.
 We implemented our solution with the Asynchronous Advantage Actor Critic Algorithm (A3C), one of the currently best RL algorithms, which enables distributed learning.
@@ -50,7 +50,7 @@ After the first executable version, we gradually expanded our stand with various
 We constantly controlled our changes with experiments to ensure progress.
 By adding different features we were able to achieve a result of 48.9\% in round 1.
 In round 2 we changed the action space, which significantly reduced the number of queries to the neural network. This greatly improved the runtime and learning progress.
-By using rules that prevent special cases, we were able to achieve an arrival probability of 29.1\%, which currently corresponds to 4th place out of 24 participants on AICrowd.
+By using rules that prevent special cases, we were able to achieve an arrival probability of 29.1\%, which currently corresponds to 4th place out of 24 participating teams on AICrowd.
 
 
 \chapter*{Preface}\label{preface}
