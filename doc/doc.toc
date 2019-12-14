@@ -12,7 +12,7 @@
 \contentsline {section}{\numberline {3.4}Technical Implementation Aspects}{15}{section.3.4}% 
 \contentsline {chapter}{\numberline {4}Experiment Design and Analysis}{16}{chapter.4}% 
 \contentsline {section}{\numberline {4.1}Reproducibility}{16}{section.4.1}% 
-\contentsline {section}{\numberline {4.2}RL for Flatland}{16}{section.4.2}% 
+\contentsline {section}{\numberline {4.2}Reinforcement Learning for Flatland}{16}{section.4.2}% 
 \contentsline {section}{\numberline {4.3}Distributed Architecture and Parallelism}{23}{section.4.3}% 
 \contentsline {chapter}{\numberline {5}Results}{26}{chapter.5}% 
 \contentsline {section}{\numberline {5.1}Round 1}{26}{section.5.1}% 
