@@ -19,8 +19,14 @@
 \chapter{Discussion and Outlook}
 \label{chap.diskussion}
 \chaptermark{Discussion}
+\section{Review of the Application of Reinforcement Learning}\label{discussion_rl}
+
+
+
 \section{Practicability in a Real World Scenario}\label{discussion_real_world}
-While we were able to heavily improve the performance of the presented solution compared to the given baseline, it is still nowhere near practical applicability. While the presented evaluation tasks probably do not represent the a real world density on a rail network, also with a lower volume of traffic, train traffic would require more robust solutions with the primary objective of finding a solution for every train to reach its destination instead of optimizing the performance of a single agent.
+While we were able to greatly improve the performance of the presented solution compared to the given baseline, it is still nowhere near practical applicability. While the presented evaluation tasks probably do not represent the real world density on a rail network, also with a lower volume of traffic, train traffic would require more robust solutions with the primary objective of finding a solution for every train to reach its destination instead of optimizing the performance of a single agent.
+
 \section{Ideas for Future Research}\label{discussion_research}
-We have various ideas for futher research to optimize the performance
-A promising approach could 
+We think that in order to further improve performance, the problem would need to be formulated in a different way. While the research presented in this work was mainly focused on treating the trains as agents in a multi-agent reinforcement learning problem, it might be an interresting approach to instead introduce a centrally planning agent that takes over all planning in advance. Especially in an simulated environment like Flatland with perfect information, we think that upfront planning would have potential to take full advantage of the available data and the possibility to iterativly plan the upcoming steps. With all planning done by a single agent, it would also remove the requirement for communication. While we could show in \autoref{agent_communication} that it is possible to learn communication protocols between agents, we think that in a less constructed example the convergence towards a usable communication protocol might be too slow to actually use it in real-world training with many agents.\\
+Combined with the possibilty of a centrally planning agent, we think that converting the rail network into a logical graph would enable any training algorithm to perform better without the need for respecting the tile-based architecture of the Flatland environment. In \autoref{reduced_action_space}, we already take a step in this direction by reducing the actions required for each agent. 
+

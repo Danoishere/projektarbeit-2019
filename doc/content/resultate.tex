@@ -14,7 +14,7 @@
 % Author      : Remo Ritzmann
 % Feedback bitte an Email: remo.ritzmann@pfunzle.ch
 %
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%29%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \chapter{Results}\label{chap.resultate}
 \section{Round 1}
@@ -49,13 +49,13 @@ To evaluate the performance of the final model, we create an experiment with an 
 \end{figure}
 In \autoref{chart:departing_arriving}, it can be observed that our model is performing very well for environments with 10 agents or less. For environments with more agents, the performance gradually gets worse. It is important to note that this change in performance is not only dependent on the absolut number of agents but also on the density of of agents relative to the size of the environment.\\
 The evaluation system for Flatland round 2 uses 250 different environments with sizes between 20x20 to 150x150 \cite{flatland_faq}. The number of agents varies from 50 to 200.
-Evaluated with the Flatland round 2 evaluator, we achieve a score of \textbf{29.1\%} of arriving agents.\\
+Evaluated with the Flatland round 2 evaluator, we achieve a score of \textbf{29.1\%} of arriving agents. At the time of submission, our submission performs the 4th best out of 24 contestants that have submitted a solution for round 2 at this point. Please note, that this is not the final ranking of the Flatland challenge.\\
 When analyzing our solution on selected example environments, it can be observed that agents especially struggle in two cases:
 \begin{enumerate}
 	\item Two agents have to take a decision at the same time.
 	\item Agents deadlock each other in ares with many switches.
 \end{enumerate}
-Possible solutions for case 1 have been discussed in \autoref{agent_communication}. We think, that case 2 requires upfront planning, especially in situations with many agents involved. Possiblities to solve situation of this kind are discussed in \autoref{chap.diskussion}.
+Possible solutions for the listed problems are discussed in both \autoref{agent_communication} and \autoref{chap.diskussion}.
 
 
 

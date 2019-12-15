@@ -18,6 +18,9 @@
 \contentsline {section}{\numberline {5.1}Round 1}{28}{section.5.1}% 
 \contentsline {section}{\numberline {5.2}Round 2}{28}{section.5.2}% 
 \contentsline {chapter}{\numberline {6}Discussion and Outlook}{30}{chapter.6}% 
+\contentsline {section}{\numberline {6.1}Review of the Application of Reinforcement Learning}{30}{section.6.1}% 
+\contentsline {section}{\numberline {6.2}Practicability in a Real World Scenario}{30}{section.6.2}% 
+\contentsline {section}{\numberline {6.3}Ideas for Future Research}{30}{section.6.3}% 
 \contentsline {chapter}{\numberline {7}Verzeichnisse}{31}{chapter.7}% 
 \contentsline {section}{Literaturverzeichnis}{31}{chapter.7}% 
 \contentsline {section}{(Abbildungsverzeichnis)}{33}{chapter*.40}% 
