@@ -13,7 +13,7 @@
 \contentsline {chapter}{\numberline {4}Experiment Design and Analysis}{17}{chapter.4}% 
 \contentsline {section}{\numberline {4.1}Reproducibility}{17}{section.4.1}% 
 \contentsline {section}{\numberline {4.2}Reinforcement Learning for Flatland}{17}{section.4.2}% 
-\contentsline {section}{\numberline {4.3}Distributed Architecture and Parallelism}{24}{section.4.3}% 
+\contentsline {section}{\numberline {4.3}Distributed Architecture and Parallelism}{25}{section.4.3}% 
 \contentsline {chapter}{\numberline {5}Results}{28}{chapter.5}% 
 \contentsline {section}{\numberline {5.1}Round 1}{28}{section.5.1}% 
 \contentsline {section}{\numberline {5.2}Round 2}{28}{section.5.2}% 
