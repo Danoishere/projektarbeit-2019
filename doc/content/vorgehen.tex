@@ -32,7 +32,7 @@ In RL, it is of great importance to find the right combination of exploration an
 \begin{gather*}
 H(p) = -\sum_{u=0}^{U}log(p_{u})*p_{u}
 \end{gather*}
-Where $\mathcal{p}$ is a possibility distribution over all available actions $\mathcal{U}$. The entropy is multiplied with a factor $\beta$ and added to the policy loss. This has an effect of preventing a convergence towards a single action, especially in the early phase of training. Without this entropy term, we often observe such an early convergence with grave consequences for the training perfromance. We also observe, that it is recommendable to reduce this factor $\beta$ to zero, once a stage of training is achieved, where it is not nescessary to explore anymore.
+Where $\mathcal{p}$ is a possibility distribution over all available actions $\mathcal{U}$. The entropy is multiplied with a factor $\beta$ and added to the policy loss. This has an effect of preventing a convergence towards a single action, especially in the early phase of training. Without this entropy term, we often observe such an early convergence with grave consequences for the training perfromance. We start training with $\beta=0.0025$. This value proved to offer a nice balance between exploration and exploitation in our case. We also observe, that it is recommendable to reduce this factor $\beta$ to zero once a stage of training is achieved, where the main objective of the training becomses not to find the fastest path but to evade collisions with other agents.
 \section{Observation Design}\label{enhanced_observations}
 The Flatland environment provides a base to build custom observation builders that can be used to create a state representation for the agents as explained in \autoref{observations}. In this work, we do not consider the usage of the grid-based observation builders.
 Both the Flatland development team as well as S. Huschauer find, that tree based observations work better in their experiments \cite{flatlandstephan}. The Flatland specification states \cite{flatland_spec}:
@@ -54,8 +54,8 @@ The provided TreeObsForRailEnv produce a graph with a node for each section of t
 	\caption{Illustration of the tree observation mapped onto the Flatland enviornment. Each colored bar represents information about a section.}
 	\label{fig:obs_descr}
 \end{figure}
-While this vector already contains all required information outside of the agent, we add another vector with information regarding the agent itself (train specific observation in \autoref{obs_descr}). This vector contains the speed of the agent, the max. speed of the agent, the type of the current tile, the direction the agent is heading and 
-
+While this vector already contains all required information outside of the agent, we add another vector with information regarding the agent itself (train specific observation in \autoref{obs_descr}). This vector contains the speed of the agent, the max. speed of the agent, the type of the current tile, the direction the agent is heading and the type of tile the agent is currently located on. The same idea is used by Bacchiani, Molinari and Patander in \cite{marltraffica3c} with the difference that in their work, the environment observation is has no tree structure.
+\newpage
 \section{Technical Implementation Aspects}\label{software}
 In this section, we discuss the most important implementation aspects of our work. 
 \subsection*{Used Frameworks and Libraries}\label{framework_and_libraries}
@@ -132,7 +132,8 @@ While this makes sense in an environment where agents need to take an action on 
 	\caption{Screenshot from Flatland environment. A train heading east. The only reasonable action is to ride forward.}
 	\label{fig:no_desicion}
 \end{figure}
-Every action that is produced by the neural network should be included for training, so the network can adapt to this type of situation. The problem arises now, that all these actions of riding forward are included into the training of the agent. The influence of the actions that actually matter (e.g. the ones around switches) is thereby not as big as it could be, because a large portion of the training data is actually situations that do not actually require decisions.\\
+Every action that is produced by the neural network should be included for training, so the network can adapt to this type of situation. The problem arises now, that all these actions of riding forward are included into the training of the agent. The influence of the actions that actually matter (e.g. the ones around switches) is thereby not as big as it could be, because a large portion of the training data is actually situations that do not actually require decisions.\\\\
+\textit{Experiment Setup}\\\\
 To solve this problem, we implement hard coded rules that the agents follow as long as they are not in a situation to make a decision. Only around switches, the neural network policy is activated. As a consequence, the data used for training has less samples but the samples available are of higher quality. The training with this mechanism is shown in \autoref{alg:with_reduction}.
 For training, we only use the experience collected near the switch.\\
 \begin{algorithm}[H]
@@ -157,12 +158,12 @@ For training, we only use the experience collected near the switch.\\
 		}
 		retrieve all new states $\mathcal{s_{t+1}}$\\		
 	}
-	use buffer $\mathcal{B}$ for training of policy $\pi$\\
-	
+	use buffer $\mathcal{B}$ for training of policy $\pi$
 	\caption{Improved learning algorithm for Flatland environment}
 	\label{alg:with_reduction}
 \end{algorithm}
-This drastically improves training performance as visible in \autoref{chart:action_reduction_comparison}. While both versions have the potential to perform well, based on the observation data, we observe that the version without the action reduction is not able to performe nearly as well as the improved version with reduced actions.
+\textit{Experiment Analysis}\\\\
+This drastically improves training performance as visible in \autoref{chart:action_reduction_comparison}. While both versions have the potential to perform well, based on the provided observation data, we observe that the version without the action reduction is not able to performe nearly as well as the improved version with reduced actions.
 \begin{figure}[H]
 	\begin{center}
 		\input{diagrams/comparison_action_reduction.pgf}
@@ -170,11 +171,11 @@ This drastically improves training performance as visible in \autoref{chart:acti
 	\caption{Comparison of training with and without action reduction}
 	\label{chart:action_reduction_comparison}
 \end{figure}
-As a consequence, we keep the reduced action mechanism as part of our final solution.
 \subsection*{Neural Network Architecture}\label{network_architecture}
 In RL, the architecture of neural networks is often rather simple \cite{mnih2013playing}\cite{a3c}. The already sample inefficient process of reinforcement learning should not be slowed down by a difficult architecture. Differently than S. Huschauer in \cite{flatlandstephan}, we do not use a convolutional neural network. The reason for this is the way our observation vector is composed (see \autoref{enhanced_observations}). In this vector, every element corresponds with an actual information in the mapped rail section. Convolutional layers would especially make sense if there were patterns to extract from the observation vector.\\
-Another more relevant aspect of neural networks is the topic of recurrent layers. Recurrent layers allow the agent to remember information from previous timesteps. The original A3C publication shows, that it is possible to achieve a significant performance improvement using long short-term memory layers (LSTM) \cite{a3c}. Also S. Huschauer uses an LSTM-block to improve training. To quantify this improvement, we run an experiment in \autoref{chart:lstm_comparison} to compare a version with recurrent layer to a version without.
-
+Another more relevant aspect of neural networks is the topic of recurrent layers. Recurrent layers allow the agent to remember information from previous timesteps. The original A3C publication shows, that it is possible to achieve a significant performance improvement using long short-term memory layers (LSTM) \cite{a3c}. Also S. Huschauer uses an LSTM-block to improve training.\\\\
+\textit{Experiment Setup}\\\\
+To quantify this improvement, we run an experiment in \autoref{chart:lstm_comparison} to compare a version with recurrent layer to a version without. Both versions use the default evaluation environment without curriculum.
 \begin{figure}[H]
 	\begin{center}
 		\input{diagrams/lstm_comparison.pgf}
@@ -182,12 +183,13 @@ Another more relevant aspect of neural networks is the topic of recurrent layers
 	\caption{Comparison of training performance between a version with an LSTM-layer and a version without. It is evident that the version with LSTM performs better than the version without.}
 	\label{chart:lstm_comparison}
 \end{figure}
-
-It is clearly visible that an LSTM-layer helps the training process and we therefore keep the LSTM-layer as part of our solution.
+\textit{Experiment Analysis}\\\\
+It is evident that an LSTM-layer helps the training process. While the initial training phase is slightly faster for the version without a recurrent layer, we observe a better overall performance and therefore keep the LSTM-layer as part of our solution.
 
 \subsection*{Curriculum Learning and Reward assignment}\label{curriculum_learning}
 The reward assignment in Flatland can be freely configured. But as long as there is not some distance-to-target dependent reward function, the probability, that an agent with an uninformed policy finds its target is small. This is especially the case for large environments with many trains on it. For example, most evaluation environments of Flatland round 2 have up to 200 individual agents and are up 100x100 tiles large (SOURCE!). The rollout of such an environment takes a lot more time than the rollout of a 20x20 environment with 5 trains. Also, the probability, that a train arrives in a small environment is larger and therefore, the experience is more valuable for training.
-To improve training times, it makes therefore sense to start with a small environment and move to larget ones, once the agents mastered pathfinding and basic collision avoidance.
+To improve training times, it makes therefore sense to start with a small environment and move to larget ones, once the agents mastered pathfinding and basic collision avoidance.\\\\
+\textit{Experiment Setup}\\\\
 In order to verify the meaningfulness of such a curriculum, we run an experiment with a large environment with dimensions 100x100 and 50 individual agents. One experiment tries to learn its policy directly using this environment. The other experiment uses a curriculum that gradually gets more difficult.
 As visible in \autoref{chart:curriculum_comparison}, the version without curriculum is not able to learn from the experience. We suspect that is is caused by too much variance in the environment and not enough successful experience to learn from. After all, an agent needs to reach its target to get reward, and in a large environment combined with an uninformed policy, this is potentially very difficult.
 \begin{figure}[H]
@@ -218,7 +220,8 @@ As visible in \autoref{chart:curriculum_comparison}, the version without curricu
 	\label{table:curriculum_data}
 	\caption{Curriculum level specifications for our experiment to compare a version with curriculum to a version without.}
 \end{table}
-While it is clearly visible in \autoref{chart:curriculum_comparison} that directly training on difficult levels is not feasible, it also appears that the learning speed is slowed down on higher curriculum levels. With increasingly more difficult levels and more agents, the frequency of available network updates is being slowed down due to the fact that a rollout of the environment takes longer. We therefore think, it is desirable to keep the curriculum levels small and primarily increase the number of agents instead of the size of the environment.
+\textit{Experiment Analysis}\\\\
+While it is clearly visible in \autoref{chart:curriculum_comparison} that directly training on difficult levels without curriculum is not feasible, it also appears that the learning speed is slowed down on higher curriculum levels for the version that uses a curriculum. With increasingly more difficult levels and more agents, the frequency of available network updates is being slowed down due to the fact that a rollout of the environment takes longer. We therefore think, it is desirable to keep the curriculum levels small and primarily increase the number of agents instead of the size of the environment.
 
 
 \subsection*{Agent Communication}\label{agent_communication}
@@ -301,9 +304,11 @@ To improve the performance of the system, we compress both the weights (server t
 	\caption{Illustration of distributed architectures with main node (node 1) and several additional nodes (2-w) connected over HTTP.}
 	\label{dist_architecture_img}
 \end{figure}
-To analyze the impact of training a policy with multiple workers a the same time, we run an experiment that compares having a single worker to training with 7 workers at the same time.
+\textit{Experiment Setup}\\\\
+To analyze the impact of training a policy with multiple workers a the same time, we run an experiment that compares having a single worker to training with 7 workers at the same time. We use the default analysis environment that includes reduced actions but no curriculum learning.\\\\
+\textit{Experiment Analysis}\\\\
 While it is appearant in \autoref{chart:singlemany_comparison} that having mulitple workers does speed up the training process, we do not observe any impact of the number of workers on the quality of the policy.
-\begin{figure}
+\begin{figure}[H]
 	\begin{center}
 		\input{diagrams/singlemany_comparison.pgf}
 	\end{center}
