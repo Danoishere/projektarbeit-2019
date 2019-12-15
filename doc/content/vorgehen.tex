@@ -72,6 +72,8 @@ In \autoref{table:used_technologies}, we list the most important used libraries 
 		\hline
 		Cython & 0.29.14 & Cython allows to compile Python code to natively running C code. We use Cython to speed up our observations on the rail environment.\\
 		\hline
+		Flask & 1.1.1 & We use Flask as our central model server (see \nameref{dist_architecture}). This Flask application collects gradient updates, distributes the current network weights and allows access to the latest versions of the observation and parameter files.\\
+		\hline
 		ZLib & (built-in) & ZLib allows to compress in Python. We use ZLib to reduce our payload-size while sending gradient- and weight updates.\\
 		\hline
 	\end{tabularx}
@@ -129,7 +131,7 @@ While this makes sense in an environment where agents need to take an action on 
 	\label{fig:no_desicion}
 \end{figure}
 Every action that is produced by the neural network should be included for training, so the network can adapt to this type of situation. The problem arises now, that all these actions of riding forward are included into the training of the agent. The influence of the actions that actually matter (e.g. the ones around switches) is thereby not as big as it could be, because a large portion of the training data is actually situations that do not actually require decisions.\\
-To solve this problem, we implement hard coded rules that the agents follow as long as they are not in a situation to make a decision. Only around switches, the neural network policy is activated. As a consequence, the data used for training has less samples but the samples available are of higher quality. The training with this mechanism implemented looks like \autoref{alg:with_reduction}.
+To solve this problem, we implement hard coded rules that the agents follow as long as they are not in a situation to make a decision. Only around switches, the neural network policy is activated. As a consequence, the data used for training has less samples but the samples available are of higher quality. The training with this mechanism is shown in \autoref{alg:with_reduction}.
 For training, we only use the experience collected near the switch.\\
 \begin{algorithm}[H]
 	\KwData{initialized Flatland environment $\mathcal{env}$, initial observation $\mathcal{s\SPSB{a}{t=0}}$ for all agents}
@@ -237,9 +239,48 @@ We assume that this is not the case. While classical traffic rules (e.g. right h
 We think that the two areas of prioritized planning and unconstrained communication would have the biggest potential to improve train behaviour in our Flatland solution. In this work, we do not consider to implement planning and therefore focus on the case of unconstrained communication. We argue, that a communication channel that does not provide a defined protocol could eventually also have the benefit of allowing the agents to plan ahead.\\\\
 \textit{Experiment Setup}\\\\
 To verify the assumption that it is possible to learn a communication protocol to plan ahead, we create an experiment that reduces the observation space to a shared communication buffer. For this experiment we defined a Flatland layout with two train stations and only one rail that connects them. We let a train start in each train station and assign the opposite station as its target. We also add two detour tracks that allow the agents to evade a collision with the agent (REF TO IMAGE).
-The agents only need to take an action on switches they encounter, otherwise they just drive forward. The agents can not observe the upcoming sections and only have access to the said buffer. Due to the symmetry of the environment, both agents need to take an action at the same time. On taking an action, we start a communication loop that allows the two agents to alternately read from the buffer, calculate an action and write that action back onto the buffer. This loop continues until both agents output the action 5 (= we are done with communication). After finishing communication, both agents can select an action to take next in the environment. If both agents take the same action and collide, we cancel the episode and give a reward of -1. If the make it around each other and reach their targets, they receive a reward of +1. The agents have no way to know, if they are agent 1 or 2 (otherwise, agent 1 could just always make a loop and agent 2 could go straight).
-
-
+The agents only need to take an action on switches they encounter, otherwise they just drive forward. The agents can not observe the upcoming sections and only have access to the said buffer. Due to the symmetry of the environment, both agents need to take an action at the same time. The agents can select an action between 0 and 5. On taking an action, we start a communication loop that allows the two agents to alternately read from the buffer, calculate an action and write that action back into the buffer. This loop continues until both agents output the action 5 (= we are done with communication). After finishing communication, both agents can select an action to take next in the environment. If both agents take the same action and collide, we cancel the episode and give a reward of -1. If they make it around each other and reach their targets, they receive a reward of +1. The agents have no way to know, if they are agent 1 or 2 (otherwise, agent 1 could just always make a loop and agent 2 could go straight).\\\\
+\textit{Experiment Analysis}\\\\
+We observe, that the agents are able to learn a protocol themselves. After 100'000 episodes of training, the succesrate to fulfil the task is as high as 95\%. Previously to the experiment, we assumed, that if the agents would learn a way of communication, it would probably look the same for every episode. This assumption has not been confirmed. In all observed cases, the agents need between 2 and 5 communication timesteps. In \autoref{table:communication_samples}, we list 6 examples of observed communications with their regarding outcomes.
+\begin{table}[H]
+	\centering
+	\begin{tabular}{ |c|c|c|c|c|c| } 
+		\hline
+		\textbf{Timestep} 
+		& \textbf{Actions agent 1|2} 
+		& \textbf{Outcome}\\
+		\hline
+		0 & 4 | 2 &\\
+		1 & 5 | 5 & Success\\
+		\hline
+		0 & 3 | 0 &\\
+		1 & 1 | 5 &\\
+		2 & 5 | 5 & Success\\
+		\hline
+		0 & 3 | 5 &\\
+		1 & 5 | 5 & Success\\
+		\hline
+		0 & 3 | 1 &\\
+		1 & 3 | 2 &\\
+		2 & 5 | 0 &\\
+		3 & 5 | 5 & Crash\\
+		\hline
+		0 & 3 | 2 &\\
+		1 & 5 | 3 &\\
+		2 & 5 | 4 &\\
+		3 & 2 | 5 &\\
+		4 & 5 | 5 & Success\\
+		\hline
+		0 & 4 | 3 &\\
+		1 & 3 | 1 &\\
+		2 & 5 | 5 & Success\\
+		\hline
+	\end{tabular}
+	\label{table:communication_samples}
+	\caption{Examples of communication in our agent communication experiment.}
+\end{table}
+While we are surprised that the communication does not look the same on every episode, we think it is remarkable how appearantly a language between the agents emerge. Due to reward discounting, it would make sense to have as few communication steps as possible. Still, the agents seem to decide, that it is more valueable to add more communication steps to reach an agreement, instead of going straight to the end of communication.\\
+It is also interresting, that agent 2 never seems to respond with the same action as agent 1. The question, if such a behaviour could be generalized in less constrained environment is discussed in \nameref{chap.diskussion}.
 \section{Distributed Architecture and Parallelism}\label{dist_architecture}
 \subsection*{Distributed training}
 One of the main advantages of the A3C algorithm is its ability to be used in a distributed manner. This allows to run multiple versions of the environment asynchronously and collect the updates for both the actor and the critic network in a central place. To fully take advantage of this mechanism, we implemented a system that allows to run a large number of environements at the same time. All running training instances contribute to the same central network. Thanks to HTTP-based connections, we can use this mechanism even between computers or even networks. This approach is only limited by the capability of the central model server and the network throughput.\\
