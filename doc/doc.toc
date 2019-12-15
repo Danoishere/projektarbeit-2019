@@ -21,11 +21,11 @@
 \contentsline {section}{\numberline {6.1}Review of the Application of Reinforcement Learning}{30}{section.6.1}% 
 \contentsline {section}{\numberline {6.2}Practicability in a Real World Scenario}{30}{section.6.2}% 
 \contentsline {section}{\numberline {6.3}Ideas for Future Research}{30}{section.6.3}% 
-\contentsline {chapter}{\numberline {7}Verzeichnisse}{31}{chapter.7}% 
-\contentsline {section}{Literaturverzeichnis}{31}{chapter.7}% 
-\contentsline {section}{(Abbildungsverzeichnis)}{33}{chapter*.40}% 
-\contentsline {section}{(Tabellenverzeichnis)}{34}{chapter*.42}% 
-\contentsline {section}{(Abkürzungsverzeichnis)}{35}{chapter*.44}% 
+\contentsline {chapter}{\numberline {7}Verzeichnisse}{32}{chapter.7}% 
+\contentsline {section}{Literaturverzeichnis}{32}{chapter.7}% 
+\contentsline {section}{(Abbildungsverzeichnis)}{34}{chapter*.40}% 
+\contentsline {section}{(Tabellenverzeichnis)}{35}{chapter*.42}% 
+\contentsline {section}{(Abkürzungsverzeichnis)}{36}{chapter*.44}% 
 \contentsline {section}{(Listingverzeichnis)}{I}{chapter*.46}% 
 \contentsline {chapter}{\numberline {A}Anhang}{II}{appendix.A}% 
 \contentsline {section}{\numberline {A.1}Projektmanagement}{II}{section.A.1}% 
