@@ -52,8 +52,8 @@ The provided TreeObsForRailEnv produce a graph with a node for each section of t
 	\caption{Illustration of the tree observation mapped onto the Flatland enviornment. Each colored bar represents information about a section.}
 	\label{obs_descr}
 \end{figure}
-While this vector already contains all required information outside of the agent, we add another vector with information regarding the agent itself (train specific observation in \autoref{obs_descr}). This vector contains the speed of the agent, the max. speed of the agent, the type of the current tile, the direction the agent is heading and 
-
+While this vector already contains all required information outside of the agent, we add another vector with information regarding the agent itself (train specific observation in \autoref{obs_descr}). This vector contains the speed of the agent, the max. speed of the agent, the type of the current tile, the direction the agent is heading and the type of tile the agent is currently located on. The same idea is used by Bacchiani, Molinari and Patander in \cite{marltraffica3c} with the difference that in their work, the environment observation is has no tree structure.
+\newpage
 \section{Technical Implementation Aspects}\label{software}
 In this section, we discuss the most important implementation aspects of our work. 
 \subsection*{Used Frameworks and Libraries}\label{framework_and_libraries}
@@ -130,7 +130,8 @@ While this makes sense in an environment where agents need to take an action on 
 	\caption{Screenshot from Flatland environment. A train heading east. The only reasonable action is to ride forward.}
 	\label{fig:no_desicion}
 \end{figure}
-Every action that is produced by the neural network should be included for training, so the network can adapt to this type of situation. The problem arises now, that all these actions of riding forward are included into the training of the agent. The influence of the actions that actually matter (e.g. the ones around switches) is thereby not as big as it could be, because a large portion of the training data is actually situations that do not actually require decisions.\\
+Every action that is produced by the neural network should be included for training, so the network can adapt to this type of situation. The problem arises now, that all these actions of riding forward are included into the training of the agent. The influence of the actions that actually matter (e.g. the ones around switches) is thereby not as big as it could be, because a large portion of the training data is actually situations that do not actually require decisions.\\\\
+\textit{Experiment Setup}\\\\
 To solve this problem, we implement hard coded rules that the agents follow as long as they are not in a situation to make a decision. Only around switches, the neural network policy is activated. As a consequence, the data used for training has less samples but the samples available are of higher quality. The training with this mechanism is shown in \autoref{alg:with_reduction}.
 For training, we only use the experience collected near the switch.\\
 \begin{algorithm}[H]
@@ -155,12 +156,12 @@ For training, we only use the experience collected near the switch.\\
 		}
 		retrieve all new states $\mathcal{s_{t+1}}$\\		
 	}
-	use buffer $\mathcal{B}$ for training of policy $\pi$\\
-	
+	use buffer $\mathcal{B}$ for training of policy $\pi$
 	\caption{Improved learning algorithm for Flatland environment}
 	\label{alg:with_reduction}
 \end{algorithm}
-This drastically improves training performance as visible in \autoref{chart:action_reduction_comparison}. While both versions have the potential to perform well, based on the observation data, we observe that the version without the action reduction is not able to performe nearly as well as the improved version with reduced actions.
+\textit{Experiment Analysis}\\\\
+This drastically improves training performance as visible in \autoref{chart:action_reduction_comparison}. While both versions have the potential to perform well, based on the provided observation data, we observe that the version without the action reduction is not able to performe nearly as well as the improved version with reduced actions.
 \begin{figure}[H]
 	\begin{center}
 		\input{diagrams/comparison_action_reduction.pgf}
@@ -168,7 +169,6 @@ This drastically improves training performance as visible in \autoref{chart:acti
 	\caption{Comparison of training with and without action reduction}
 	\label{chart:action_reduction_comparison}
 \end{figure}
-As a consequence, we keep the reduced action mechanism as part of our final solution.
 \subsection*{Neural Network Architecture}\label{network_architecture}
 In RL, the architecture of neural networks is often rather simple \cite{mnih2013playing}\cite{a3c}. The already sample inefficient process of reinforcement learning should not be slowed down by a difficult architecture. Differently than S. Huschauer in \cite{flatlandstephan}, we do not use a convolutional neural network. The reason for this is the way our observation vector is composed (see \autoref{enhanced_observations}). In this vector, every element corresponds with an actual information in the mapped rail section. Convolutional layers would especially make sense if there were patterns to extract from the observation vector.\\
 Another more relevant aspect of neural networks is the topic of recurrent layers. Recurrent layers allow the agent to remember information from previous timesteps. The original A3C publication shows, that it is possible to achieve a significant performance improvement using long short-term memory layers (LSTM) \cite{a3c}. Also S. Huschauer uses an LSTM-block to improve training.\\\\
