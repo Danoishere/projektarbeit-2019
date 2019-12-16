@@ -56,6 +56,8 @@
 \newlabel{reinforcementlearning}{{2.1}{8}{Reinforcement Learning}{section.2.1}{}}
 \newlabel{basic_rl_definitions}{{2.1}{8}{Basic Definitions}{section*.9}{}}
 \@writefile{lof}{\contentsline {figure}{\numberline {2.1}{\ignorespaces Reinforcement learning overview\relax }}{8}{figure.caption.10}\protected@file@percent }
+\providecommand*\caption@xref[2]{\@setref\relax\@undefined{#1}}
+\newlabel{fig:rl_overview}{{2.1}{8}{Reinforcement learning overview\relax }{figure.caption.10}{}}
 \newlabel{value_policy_based_methods}{{2.1}{8}{Value Based vs. Policy Gradient Based Methods}{section*.11}{}}
 \citation{mnih2013playing}
 \citation{a3c}
@@ -65,11 +67,12 @@
 \@writefile{toc}{\contentsline {section}{\numberline {2.2}The Flatland Rail Environment}{10}{section.2.2}\protected@file@percent }
 \newlabel{flatland_intro}{{2.2}{10}{The Flatland Rail Environment}{section.2.2}{}}
 \@writefile{lof}{\contentsline {figure}{\numberline {2.2}{\ignorespaces Screenshot from a running Flatland environment.\relax }}{10}{figure.caption.13}\protected@file@percent }
+\newlabel{fig:screenshot_flatland}{{2.2}{10}{Screenshot from a running Flatland environment.\relax }{figure.caption.13}{}}
 \@writefile{lof}{\contentsline {figure}{\numberline {2.3}{\ignorespaces Possible switches in the Flatland environment from \cite  {flatland_docu}.\relax }}{10}{figure.caption.14}\protected@file@percent }
+\newlabel{fig:switches_flatland}{{2.3}{10}{Possible switches in the Flatland environment from \cite {flatland_docu}.\relax }{figure.caption.14}{}}
 \citation{flatland_faq}
 \newlabel{observations}{{2.2}{11}{Observations}{section*.15}{}}
 \newlabel{rl_agent_eval}{{2.2}{12}{Agent Evaluation}{section*.16}{}}
-\providecommand*\caption@xref[2]{\@setref\relax\@undefined{#1}}
 \newlabel{fig:eval_round1}{{2.4a}{12}{Evaluation round 1.\relax }{figure.caption.17}{}}
 \newlabel{sub@fig:eval_round1}{{a}{12}{Evaluation round 1.\relax }{figure.caption.17}{}}
 \newlabel{fig:eval_round2}{{2.4b}{12}{Evaluation round 2.\relax }{figure.caption.17}{}}
@@ -94,8 +97,9 @@
 \newlabel{entropy_balancing_hyperparameter}{{3.2}{13}{Entropy Balancing}{section.3.2}{}}
 \@writefile{toc}{\contentsline {section}{\numberline {3.3}Observation Design}{14}{section.3.3}\protected@file@percent }
 \newlabel{enhanced_observations}{{3.3}{14}{Observation Design}{section.3.3}{}}
+\citation{marltraffica3c}
 \@writefile{lof}{\contentsline {figure}{\numberline {3.1}{\ignorespaces Illustration of the tree observation mapped onto the Flatland enviornment. Each colored bar represents information about a section.\relax }}{15}{figure.caption.18}\protected@file@percent }
-\newlabel{obs_descr}{{3.1}{15}{Illustration of the tree observation mapped onto the Flatland enviornment. Each colored bar represents information about a section.\relax }{figure.caption.18}{}}
+\newlabel{fig:obs_descr}{{3.1}{15}{Illustration of the tree observation mapped onto the Flatland enviornment. Each colored bar represents information about a section.\relax }{figure.caption.18}{}}
 \@writefile{toc}{\contentsline {section}{\numberline {3.4}Technical Implementation Aspects}{16}{section.3.4}\protected@file@percent }
 \newlabel{software}{{3.4}{16}{Technical Implementation Aspects}{section.3.4}{}}
 \newlabel{framework_and_libraries}{{3.4}{16}{Used Frameworks and Libraries}{section*.19}{}}
@@ -132,11 +136,11 @@
 \newlabel{curriculum_learning}{{4.2}{21}{Curriculum Learning and Reward assignment}{section*.26}{}}
 \@writefile{lof}{\contentsline {figure}{\numberline {4.4}{\ignorespaces Comparison of training performance between a version with and a version without curriculum learning. It appears, that the version without curriculum is not able to generalize well in larger environments.\relax }}{21}{figure.caption.27}\protected@file@percent }
 \newlabel{chart:curriculum_comparison}{{4.4}{21}{Comparison of training performance between a version with and a version without curriculum learning. It appears, that the version without curriculum is not able to generalize well in larger environments.\relax }{figure.caption.27}{}}
-\newlabel{table:curriculum_data}{{\caption@xref {table:curriculum_data}{ on input line 218}}{22}{Curriculum Learning and Reward assignment}{table.caption.28}{}}
+\newlabel{table:curriculum_data}{{\caption@xref {table:curriculum_data}{ on input line 220}}{22}{Curriculum Learning and Reward assignment}{table.caption.28}{}}
 \@writefile{lot}{\contentsline {table}{\numberline {4.1}{\ignorespaces Curriculum level specifications for our experiment to compare a version with curriculum to a version without.\relax }}{22}{table.caption.28}\protected@file@percent }
 \newlabel{agent_communication}{{4.2}{22}{Agent Communication}{section*.29}{}}
-\newlabel{table:communication_samples}{{\caption@xref {table:communication_samples}{ on input line 282}}{24}{Agent Communication}{table.caption.30}{}}
 \@writefile{lot}{\contentsline {table}{\numberline {4.2}{\ignorespaces Examples of communication in our agent communication experiment.\relax }}{24}{table.caption.30}\protected@file@percent }
+\newlabel{table:communication_samples}{{4.2}{24}{Examples of communication in our agent communication experiment.\relax }{table.caption.30}{}}
 \@writefile{toc}{\contentsline {section}{\numberline {4.3}Distributed Architecture and Parallelism}{25}{section.4.3}\protected@file@percent }
 \newlabel{dist_architecture}{{4.3}{25}{Distributed Architecture and Parallelism}{section.4.3}{}}
 \@writefile{lof}{\contentsline {figure}{\numberline {4.5}{\ignorespaces Simplified procedure of training of a single worker process. The communication between the worker and the model server works by using HTTP. The compilation of the observation.pyx file is only done once on each machine.\relax }}{26}{figure.caption.32}\protected@file@percent }
@@ -202,16 +206,24 @@
     {1}{98.15825pt}\LT@entry 
     {1}{325.3803pt}}
 \newlabel{chap.glossar}{{7}{37}{Glossary}{chapter*.44}{}}
-\@writefile{toc}{\contentsline {section}{(Abkürzungsverzeichnis)}{37}{chapter*.44}\protected@file@percent }
-\newlabel{cha:abkürzungsverzeichnis}{{7}{37}{Glossary}{chapter*.44}{}}
-\HyPL@Entry{38<</S/R>>}
-\@writefile{toc}{\contentsline {section}{(Listingverzeichnis)}{I}{chapter*.46}\protected@file@percent }
-\@writefile{toc}{\contentsline {chapter}{\numberline {A}Anhang}{II}{appendix.A}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{(Glossar)}{37}{chapter*.44}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {7.1}{\ignorespaces Glossary definitions\relax }}{37}{table.7.1}\protected@file@percent }
+\newlabel{tab:glossar}{{7.1}{37}{Glossary definitions\relax }{table.7.1}{}}
+\gdef \LT@ii {\LT@entry 
+    {1}{98.15825pt}\LT@entry 
+    {1}{325.3803pt}}
+\newlabel{cha:abkuerzungsverzeichnis}{{7}{38}{Abbreviations}{chapter*.46}{}}
+\@writefile{toc}{\contentsline {section}{(Abkuerzungsverzeichnis)}{38}{chapter*.46}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {7.2}{\ignorespaces Abbreviations\relax }}{38}{table.7.2}\protected@file@percent }
+\newlabel{tab:abkuerzungsverzeichnis}{{7.2}{38}{Abbreviations\relax }{table.7.2}{}}
+\HyPL@Entry{39<</S/R>>}
+\@writefile{toc}{\contentsline {section}{(Listingverzeichnis)}{I}{chapter*.48}\protected@file@percent }
+\@writefile{toc}{\contentsline {chapter}{\numberline {A}Appendix}{II}{appendix.A}\protected@file@percent }
 \@writefile{lof}{\addvspace {10\p@ }}
 \@writefile{lot}{\addvspace {10\p@ }}
 \@writefile{lol}{\addvspace {10\p@ }}
 \@writefile{loa}{\addvspace {10\p@ }}
-\newlabel{chap.anhang}{{A}{II}{Anhang}{appendix.A}{}}
+\newlabel{chap.anhang}{{A}{II}{Appendix}{appendix.A}{}}
 \@writefile{toc}{\contentsline {section}{\numberline {A.1}Projektmanagement}{II}{section.A.1}\protected@file@percent }
 \newlabel{projektmanagement}{{A.1}{II}{Projektmanagement}{section.A.1}{}}
 \@writefile{toc}{\contentsline {section}{\numberline {A.2}Weiteres}{II}{section.A.2}\protected@file@percent }
