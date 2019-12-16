@@ -318,8 +318,8 @@ While it is appearant in \autoref{chart:singlemany_comparison} that having mulit
 \subsection*{Infrastructure}\label{infrastructure}
 The infrastructure used for this project consists of 4 machines used in various combinations.
 \begin{itemize}
-	\item \textbf{Draft Animal (DRAN):} Server with 56 CPUS and 721 GB of RAM. This machine is mainly used to train the current submission model.
-	\item \textbf{Openstack machines:} 3 servers with 8 CPUS each. One machine has 16 GB of RAM, the other two have 64 GB each.
+	\item \textbf{Draft Animal (DRAN):} Server with 56 CPUs and 721 GB of RAM. This machine is mainly used to train the current submission model.
+	\item \textbf{Openstack machines:} 3 servers with 8 CPUs each. One machine has 16 GB of RAM, the other two have 64 GB each.
 \end{itemize}
 The A3C algorithm is not able to take advantage of GPUs. The reason for this is fragmented update process. Differently than with an experience replay buffer, the training data is only used once and gets then discarded.
 \newpage
