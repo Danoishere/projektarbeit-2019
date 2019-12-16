@@ -95,6 +95,7 @@ For better comparability, we try to keep our evaluation versions for the trainin
 	\item The map contains 20 cities
 	\item There is a maximum of 3 rails between cities and a maximum of 4 rails inside cities
 	\item Based on the Flatland specification, the maximum allowed number of timesteps is 1608 \cite{flatland_spec}.
+	\item For each experiment we use the training data of the first 12 hours.
 \end{itemize}
 To analyze the performance of the solution, we run an analyzer that executes 20 rollouts of the environment using the same neural network parameters. After the these 20 rollouts, we update the neural network parameters. For each evaluation round, we use the same 20 environment layouts. 
 To compare the performance in a graph, we now take the mean number of agents arrived at their target and plot that in our graph.

@@ -40,7 +40,7 @@ group_by_round(t2, 'Without action reduction', t2_start)
 plt.ylabel('Percentage of agents arriving')
 plt.xlabel('Hours of training')
 
-myFmt = matplotlib.dates.DateFormatter("%Hh")
+myFmt = matplotlib.dates.DateFormatter("%H:%Mh")
 plt.gca().xaxis.set_major_formatter(myFmt)
 plt.gcf().autofmt_xdate()
 
