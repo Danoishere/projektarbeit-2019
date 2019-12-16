@@ -31,25 +31,16 @@ Für die anspruchsvolleren Eisenbahnnetze der 2. Runde, für welche keine Ausgan
 \newpage
 \thispagestyle{empty}
 \chapter*{Abstract}\label{abstract}
-Due to the increasing number of commuters in recent years, the consolidation of rail traffic on the Swiss Federal Railways (SBB) existing rail network has a high priority.
-The reduction of delays caused by technical faults in the infrastructure or on trains is just as relevant.
-Therefore, in this thesis we deal with the control of complex train traffic systems by means of machine learning, or more precisely reinforcement learning (RL).
-Swiss Federal Railways is indirectly our project partner, as they have put out a challenge on this topic on AICrowd.
-SBB provides the simulation environment Flatland in cooperation with AICrowd. Flatland can be used to simulate a complex rail network with which trains controlled by artificial intelligence can interact.
-The problem to be solved is a collaborative multi-agent problem. The goal is that all trains arrive at their destination station as quickly as possible and do not block each other. When a blockade occurs, it usually involves a chain reaction. As a result, many trains do not arrive at all.
-We implemented our solution with the Asynchronous Advantage Actor Critic Algorithm (A3C), one of the currently best RL algorithms, which enables distributed learning.
-After the first executable version, we gradually expanded our stand with various features such as long short-term memory, curriculum learning or distributed learning.
-We constantly controlled our changes with experiments to ensure progress.
-By adding different features we were able to achieve a result of 48.9\% in round 1.
-In round 2 we changed the action space, which significantly reduced the number of queries to the neural network. This greatly improved the runtime and learning progress.
-By using rules that prevent special cases, we were able to achieve an arrival probability of 29.1\%, which currently corresponds to 4th place out of 24 participating teams on AICrowd.
-
+The increasing number of commuters is pushing the capacity of the Swiss Federal Railways (SBB) rail network to its limits. Since the expansion of the infrastructure cannot keep up with the increasing number of passengers, SBB is exploring new ways to bring more trains onto its network. To achieve this goal, SBB is also experimenting with machine learning technologies such as reinforcement learning (RL). 
+The goal for this type of algorithm is to independently learn strategies  in order to solve the problem at hand, in our case the challenge of guiding trains to their assigned destinations. Besides not colliding with other trains, it is also nescessary to avoid potential obstacles such as defective trains and to take different speed profiles into account. This work is a contribution the Flatland Challenge, a competition published by SBB and the crowdsourcing platform AICrowd, which aims to solve the problem described by using a provided simulation of the rail network. The competition is divided into in two rounds with increasing difficulty. This rail simulation allows to train and evaluate own solutions for the given problem. The main task is is to control the trains in cooperative way so they do not block each other even in complex situations. The approach presented uses the Asynchronous Advantage Actor Critic Algorithm (A3C), a state of the art RL algorithm which supports distributed learning. The approach presented is based on the baseline solution presented by Stephan Huschauer. After establishing the first running version, the approach was impoved with an array of new features such as a modified train control mechanism, curriculum learning or distributed learning over multiple computers. To quantify the progress, experiments were conducted for all applied changes. By adding these features, a significant improvement could be achieved. In round 1 it was possible to improve the train arrival rate from 16.6\% of the baseline solution to 48.9\%.
+For the more demanding 2nd, there is no baseline available. The solution presented was able to achieve a train arrival rate of 29.1\%, which corresponed at submission time to the 4th place of a total of 24 participating teams.
+However, the solution presented is not yet suitable for practical use and requires further reseach to achieve a useful performance in a real world scenario.
 
 \chapter*{Preface}\label{preface}
 We would like to give special thanks to:
 \begin{itemize}
     \item Andreas Weiler and Thilo Stadelmann for their great support during this work, for their helpful tips and for pushing us into the right direction.\\
     We are grateful for the opportunity to dive deep into the field of reinforcement learning as part of this project.
-    \item Remo Maurer for being very generous with providing computing infrastructure, especially the infrastructure test server.
+    \item Remo Maurer for being very generous with provided computing infrastructure, especially the infrastructure test server.
 \end{itemize}
 
