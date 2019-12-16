@@ -286,6 +286,7 @@ We observe, that the agents are able to learn a protocol themselves. After 100'0
 \end{table}
 While we are surprised that the communication does not look the same on every episode, we think it is remarkable how appearantly a language between the agents emerge. Due to reward discounting, it would make sense to have as few communication steps as possible. Still, the agents seem to decide, that it is more valueable to add more communication steps to reach an agreement, instead of going straight to the end of communication.\\
 It is also interresting, that agent 2 never seems to respond with the same action as agent 1. The question, if such a behaviour could be generalized in less constrained environment is discussed in \nameref{chap.diskussion}.
+\newpage
 \section{Distributed Architecture and Parallelism}\label{dist_architecture}
 \subsection*{Distributed training}
 One of the main advantages of the A3C algorithm is its ability to be used in a distributed manner. This allows to run multiple versions of the environment asynchronously and collect the updates for both the actor and the critic network in a central place. To fully take advantage of this mechanism, we implemented a system that allows to run a large number of environements at the same time. All running training instances contribute to the same central network. Thanks to HTTP-based connections, we can use this mechanism even between computers or even networks. This approach is only limited by the capability of the central model server and the network throughput.\\
