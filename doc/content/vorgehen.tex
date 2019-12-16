@@ -172,7 +172,7 @@ This drastically improves training performance as visible in \autoref{chart:acti
 	\label{chart:action_reduction_comparison}
 \end{figure}
 \subsection*{Neural Network Architecture}\label{network_architecture}
-In RL, the architecture of neural networks is often rather simple \cite{mnih2013playing}\cite{a3c}. The already sample inefficient process of reinforcement learning should not be slowed down by a difficult architecture. Differently than S. Huschauer in \cite{flatlandstephan}, we do not use a convolutional neural network. The reason for this is the way our observation vector is composed (see \autoref{enhanced_observations}). In this vector, every element corresponds with an actual information in the mapped rail section. Convolutional layers would especially make sense if there were patterns to extract from the observation vector.\\
+In RL, the architecture of neural networks is often rather simple \cite{mnih2013playing,a3c}. The already sample inefficient process of reinforcement learning should not be slowed down by a difficult architecture. Differently than S. Huschauer in \cite{flatlandstephan}, we do not use a convolutional neural network. The reason for this is the way our observation vector is composed (see \autoref{enhanced_observations}). In this vector, every element corresponds with an actual information in the mapped rail section. Convolutional layers would especially make sense if there were patterns to extract from the observation vector.\\
 Another more relevant aspect of neural networks is the topic of recurrent layers. Recurrent layers allow the agent to remember information from previous timesteps. The original A3C publication shows, that it is possible to achieve a significant performance improvement using long short-term memory layers (LSTM) \cite{a3c}. Also S. Huschauer uses an LSTM-block to improve training.\\\\
 \textit{Experiment Setup}\\\\
 To quantify this improvement, we run an experiment in \autoref{chart:lstm_comparison} to compare a version with recurrent layer to a version without. Both versions use the default evaluation environment without curriculum.
@@ -319,8 +319,8 @@ While it is appearant in \autoref{chart:singlemany_comparison} that having mulit
 \subsection*{Infrastructure}\label{infrastructure}
 The infrastructure used for this project consists of 4 machines used in various combinations.
 \begin{itemize}
-	\item \textbf{Draft Animal (DRAN):} Server with 56 CPUS and 721 GB of RAM. This machine is mainly used to train the current submission model.
-	\item \textbf{Openstack machines:} 3 servers with 8 CPUS each. One machine has 16 GB of RAM, the other two have 64 GB each.
+	\item \textbf{Draft Animal (DRAN):} Server with 56 CPUs and 721 GB of RAM. This machine is mainly used to train the current submission model.
+	\item \textbf{Openstack machines:} 3 servers with 8 CPUs each. One machine has 16 GB of RAM, the other two have 64 GB each.
 \end{itemize}
 The A3C algorithm is not able to take advantage of GPUs. The reason for this is fragmented update process. Differently than with an experience replay buffer, the training data is only used once and gets then discarded.
 \newpage
