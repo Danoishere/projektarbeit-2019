@@ -41,7 +41,7 @@ Value-based RL algorithms work by learning a value function $\mathcal{V(s)}$ thr
 loss_{value}=(\mathcal{R}-\mathcal{V(s)})^2
 \end{gather*}
 In some value-based algorithms such as Deep Q-Networks \cite{mnih2013playing}, a $\mathcal{Q(s,u)}$-function is used. This function tries to estimate the expected future reward on taking action $\mathcal{u}$ from the given state $\mathcal{s}$.\\
-The second category of reinfocement learning algrithms are the so called policy gradient based methods. These methods aim to aquire a stochastic policy $\pi$ that maximizes the expected future reward $\mathcal{R}$ by taking actions with certain probabilities. Taking actions based on probabilities solves an important issue of value based methods, which is, that by taking greedy actions with respect to state  $\mathcal{s}$, the agent might not explore the whole state space and misses out on better ways to act in the environment.
+The second category of reinforcement learning algorithms are the so called policy gradient based methods. These methods aim to acquire a stochastic policy $\pi$ that maximizes the expected future reward $\mathcal{R}$ by taking actions with certain probabilities. Taking actions based on probabilities solves an important issue of value based methods, which is, that by taking greedy actions with respect to state  $\mathcal{s}$, the agent might not explore the whole state space and misses out on better ways to act in the environment.
 
 \subsection*{Asynchronous Advantage Actor Critic Algorithm (A3C)}\label{a3c_intro}
 The progress in RL has led to algorithms that combine value based and policy gradient based methods, generally known as actor-critic algorithms. The \textit{asynchronous advantage actor critic algorithm} (A3C), developed by Mnih et al. \cite{a3c} fits into this category. It uses both a policy $\pi$ and a value function $\mathcal{V(s)}$.
@@ -70,7 +70,7 @@ The goal of this environment is to act as a simplified simulation of real train 
 	\caption{Screenshot from a running Flatland environment.}
 	\label{fig:screenshot_flatland}
 \end{figure}
-Using Flatland, we can train RL algorithms to control the actions of trains, based on observations on the grid. Flatland has a discrete structure in both its positions and its timesteps. The whole rail grid is composed out of squares that can have connections to neighbouring squares. In certain squares, the rails splits into two rails. On those switches, the agent has to make a decision which action it wants to take. Dependent on the type of switch, there are different actions available compare \autoref{fig:switches_flatland}.
+Using Flatland, we can train RL algorithms to control the actions of trains, based on observations on the grid. Flatland has a discrete structure in both its positions and its timesteps. The whole rail grid is composed out of squares that can have connections to neighboring squares. In certain squares, the rails splits into two rails. On those switches, the agent has to make a decision which action it wants to take. Dependent on the type of switch, there are different actions available as visible in \autoref{fig:switches_flatland}.
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=300pt]{images/transition_nips_proposal.png}
