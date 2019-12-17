@@ -11,7 +11,7 @@ The challenge consists of two parts \cite{aicrowd}.
 	\item Part 1 includes avoiding conflicts with multiple trains (agents) on a given environment. The difficulty thereby is, that the layout of the environment is not known upfront.
 	\item Part 2 aims to optimize train traffic which includes trains with different speed profiles, malfunctioning trains, less switchover facilities and in general more scheduled trains in a shorter time.
 \end{itemize}
-This work is based on the work of Stefan Huschauer \cite{flatlandstephan} and further investigates on the idea to use the asynchronous advantage actor critic algorithm (A3C) \cite{a3c}, a state of the art RL algorithm, to solve the task.
+This work is based on the work of Stephan Huschauer \cite{flatlandstephan} and further investigates on the idea to use the asynchronous advantage actor critic algorithm (A3C) \cite{a3c}, a state of the art RL algorithm, to solve the task.
 Besides the work of S. Huschauer, this work is also related to the work of Bacchiani, Molinari and Patander \cite{marltraffica3c}. Their work also aims to apply the A3C algorithm in a cooperative multi-agent environment and investigates communication free cooperation.
 Unlike the Flatland challenge, the goal of this work is to cooperate on a road traffic environment. By applying the A3C algorithm, the work shows that it is possible learn cooperation by treating the other agents as part of the environment. Both the works of Bacchiani, Molinari and Patander as well as the work of S. Huschauer use a shared policy for all acting agents.
 
