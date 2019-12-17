@@ -111,4 +111,16 @@ L.~Rusch, ``Exploration-exploitation trade-off in deep reinforcement
 E.~Ephrati and J.~S. Rosenschein, ``Multi-agent planning as the process of
   merging distributed sub-plans,'' 1993.
 
+\bibitem{aicrowd_startpage}
+\BIBentryALTinterwordspacing
+ [Online]. Available: \url{https://www.aicrowd.com/}
+\BIBentrySTDinterwordspacing
+
+\bibitem{entropy_shannon}
+\BIBentryALTinterwordspacing
+C.~E. Shannon, ``A mathematical theory of communication,'' \emph{The Bell
+  System Technical Journal}, vol.~27, no.~3, pp. 379--423, July 1948. [Online].
+  Available: \url{https://ieeexplore.ieee.org/document/6773024}
+\BIBentrySTDinterwordspacing
+
 \end{thebibliography}
