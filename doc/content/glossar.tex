@@ -18,6 +18,8 @@
 \clearpage
 \section{Glossary}\label{section.glossar}
 %\addcontentsline{toc}{section}{(Glossar)}
+Hint: For abbreviations, see \ref{section:abkuerzungsverzeichnis} \nameref{section:abkuerzungsverzeichnis}.
+
 
 \begin{longtable}{|m{3cm}|m{11cm}|}\hline
 \rowcolor{gray} \textbf{Term}&
@@ -43,19 +45,31 @@ Abbreviated as $\mathcal{H}$.\\
 \hline
 
 \textbf{Environment}&
-A system for reinforcement learning agents to learn. In this work, an environment is usually a Flatland rail simulation.
+A system for reinforcement learning agents to learn. In this work, an environment is usually a Flatland rail simulation.\\
+\hline
+
+\textbf{Hypertext Transfer Protocol}&
+Stateless protocol to transfer data between different applications on the application layer. \\ \hline
+
+\textbf{Observation}&
+The information extracted from the environment needed to make a decision. Abbreviated as $\mathcal{s}$.\\ 
 \hline
 
 \textbf{Policy}&
 The rules used to decide which action to take, based on a given state. Abbreviated as $\pi$.\\ 
 \hline
 
+\textbf{Reinforcement Learning}&
+See: \ref{reinforcementlearning} \nameref{reinforcementlearning}.\\
+\hline
+
 \textbf{Reward}&
 The scalar value an agent can receive in a reinforcement learning task. Positive for good actions, negative for bad ones.\\ 
 \hline
 
-\textbf{Hypertext Transfer Protocol}&
-Stateless protocol to transfer data between different applications on the application layer. \\ \hline
+\textbf{Worker}&
+A process that repeatedly rolls out Flatland environments to create training experience for the reinforcement learning algorithm.\\
+\hline
 
 \textbf{ZLib}&
 Python module to compress and decompress data. \\ \hline
@@ -81,10 +95,10 @@ Python module to compress and decompress data. \\ \hline
 	Abbreviation \\ \hline
 
 	\textbf{A3C}&
-	Asynchronous Advantage Actor Critic Algorithm \\ \hline
+	Asynchronous Advantage Actor Critic Algorithm. A state of the art algorithm for reinforcement learning \cite{a3c}.\\ \hline
 
 	\textbf{DQN}&
-	Deep Q-Network \\ \hline
+	Deep Q-Network. A reinforcment learning technique propose by Mnih et. al that uses recorded experience for training \cite{mnih2013playing}.\\ \hline
 
 	\textbf{HTTP}&
 	Hypertext Transfer Protocol \\ \hline

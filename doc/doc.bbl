@@ -107,6 +107,10 @@ L.~Rusch, ``Exploration-exploitation trade-off in deep reinforcement
   \url{http://flatland-rl-docs.s3-website.eu-central-1.amazonaws.com/04_specifications.html/}
 \BIBentrySTDinterwordspacing
 
+\bibitem{marlsurvey}
+P.~Hernandez-Leal, B.~Kartal, and M.~E. Taylor, ``A survey and critique of
+  multiagent deep reinforcement learning,'' 2018.
+
 \bibitem{Ephrati1993MultiAgentPA}
 E.~Ephrati and J.~S. Rosenschein, ``Multi-agent planning as the process of
   merging distributed sub-plans,'' 1993.
