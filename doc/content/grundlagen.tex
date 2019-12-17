@@ -45,7 +45,7 @@ The second category of reinforcement learning algorithms are the so called polic
 
 \subsection*{Asynchronous Advantage Actor Critic Algorithm (A3C)}\label{a3c_intro}
 The progress in RL has led to algorithms that combine value based and policy gradient based methods, generally known as actor-critic algorithms. The \textit{asynchronous advantage actor critic algorithm} (A3C), developed by Mnih et al. \cite{a3c} fits into this category. It uses both a policy $\pi$ and a value function $\mathcal{V(s)}$.
-Both are usually seperate function approximators (neural networks in our case).
+Both are usually separate function approximators (neural networks in our case).
 \begin{itemize}
 	\item The \textbf{actor} can be seen as the policy $\pi$, that selects the action $\mathcal{u}$ based on a state $\mathcal{s}$.
 	\item The \textbf{critic} is the value function $\mathcal{V(s)}$ that estimates, how much reward can be expected from a certain state on.
@@ -108,7 +108,7 @@ R_{t}=
 10,             & \text{otherwise}
 \end{cases}
 \end{gather*}
-The difficulty of the evaluation level does differ between round 1 and round 2. While round 1 offered many connecting rails between the starting position and the assigned target of an agent, round 2 has more sparse connections and usually only provides 2 to 4 rails between cities. The concept of cities has been added in round 2. Those differences can be clearly seen in \autoref{fig:eval_comp} with the densly connected environment for round 1 versus the sparsly connected environment for round 2. 
+The difficulty of the evaluation level does differ between round 1 and round 2. While round 1 offered many connecting rails between the starting position and the assigned target of an agent, round 2 has more sparse connections and usually only provides 2 to 4 rails between cities. The concept of cities has been added in round 2. Those differences can be clearly seen in \autoref{fig:eval_comp} with the densely connected environment for round 1 versus the sparsely connected environment for round 2. 
 \begin{figure}[H]
 	\centering
 	\begin{subfigure}{.5\textwidth}
