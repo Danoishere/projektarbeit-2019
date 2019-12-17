@@ -24,7 +24,7 @@
 Originally, the asynchronous advantage actor critic algorithm (A3C) has been designed for use in a single agent environment \cite{a3c}.
 By applying it in a multi agent environment, we implicitly convert the environment into a non-stationary system.
 While applying A3C in a multi agent setting, the other agents can be viewed as part of the environment. This means, the behavior of the environment changes while training, due to the fact that the behavior of the other agents changes.
-Gupta et al.finds in \cite{multiagent_comp_a3c_dqn_etc}, that RL methods like Deep Q-networks (DQN) and Trust region policy optimization (TRPO) are not performing well in a multi agent environment, due to the combination of experience replay and non-stationarity of the environment. We therefore suggest, that it is not recommendable to keep an experience replay buffer with older episodes. Otherwise the sampled experience might represent old agent behavior which is then learned to deal with.\\
+Gupta et al. finds in \cite{multiagent_comp_a3c_dqn_etc}, that RL methods like Deep Q-networks (DQN) and Trust region policy optimization (TRPO) are not performing well in a multi agent environment, due to the combination of experience replay and non-stationarity of the environment. We therefore suggest, that it is not recommendable to keep an experience replay buffer with older episodes. Otherwise the sampled experience might represent old agent behavior which is then learned to deal with.\\
 An important implementation detail in our version is, that we do not perform updates during episodes but only at their end. The reason for this is, that the only possibility for an agent to receive reward is at the end of the episode. Therefore would any earlier update have a reward of 0 and not help the training process.
 
 \section{Entropy Balancing}\label{entropy_balancing_hyperparameter}
@@ -87,9 +87,9 @@ In \autoref{table:used_technologies}, we list the most important used libraries 
 \chaptermark{Experiments}
 
 \section[Reproducibility]{Reproducibility and Experiment Setup}\label{reproducability}
-It is important to note, that the training process of reinforcement learning and especially multi agent reinforcement learning can be hard to reproduce. Depending on the initial weights of the neural networks and the layout of the environments, the performance may vary on each restart. Also in a distributed algorithm, the number of workers can significantly influence the training performance. If not differently specified, we execute all presented experiments on machines with the same specifications (see \autoref{infrastructure}).\\
+It is important to note, that the training process of reinforcement learning and especially multi agent reinforcement learning can be hard to reproduce. Depending on the initial weights of the neural networks and the layout of the environments, the performance may vary on each restart. Also in a distributed algorithm, the number of workers can significantly influence the training performance. If not differently specified, we executed all presented experiments on machines with the same specifications (see \autoref{infrastructure}).\\
 Another aspect that is hard to reproduce is training stability. In A3C, an important instrument to prevent the policy from converging too early is using an additional entropy term \cite{a3c}. Our way to maintain stability with changing environments is discussed in \autoref{entropy_balancing_hyperparameter}.\\
-For better comparability, we try to keep our evaluation versions for the training as similar to each other as possible. If not differently specified, we run evaluations with the following setup:
+For better comparability, we tried to keep our evaluation versions for the training as similar to each other as possible. If not differently specified, we run evaluations with the following setup:
 \begin{itemize}
 	\item We use an environment of the size 100x100 tiles with 14 individual agents.
 	\item The map contains 20 cities
@@ -98,7 +98,7 @@ For better comparability, we try to keep our evaluation versions for the trainin
 	\item For each experiment we use the training data of the first 12 hours.
 \end{itemize}
 To analyze the performance of the solution, we run an analyzer that executes 20 roll-outs of the environment using the same neural network parameters. After the these 20 roll-outs, we update the neural network parameters. For each evaluation round, we use the same 20 environment layouts. 
-To compare the performance in a graph, we now take the mean number of agents arrived at their target and plot that in our graph.
+To compare the performance in a graph, we take the mean number of agents which arrived at their target and plot that in our graph.
 \section{Reinforcement Learning for Flatland}
 \sectionmark{RL for Flatland}
 \label{rl_flatland}
@@ -239,7 +239,7 @@ We assume that this is not the case. While classical traffic rules (e.g. right h
 	\item \textbf{Unconstrained communication:} While negotiation would prevent an agent from taking an action, the goal of unconstrained actions would not be to constrain the action space but rather to convince the agent to choose an action \textit{stop} or \textit{do nothing} and wait for the next timestep if the situation is uncertain. Also for unconstrained actions, it would make sense to be an iterative process, similar to the negotiation approach. As long as not all agents mark their communication as completed, another communication round is added.\\
 	We suspect that a problem with this approach could be that it would have much slower convergence than the negotiation approach. The reason for this assumption is the fact, that such an unconstrained communication would not directly influence the actions of the agents. It would be necessary to learn both the "speaking" and the "interpretation", without a direct consequences. On the positive side, we think that this approach could enable more sophisticated strategies and maybe even improve planning.
 	
-	\item \textbf{Announcing communication:} Differently than unconstrained communication, under \textit{announcing} communication we mean agents that announce their next action over a shared communication channel. As a metaphor, one can imagine a bus on a narrow mountain street honking before each turn. A mechanism like this would, similar to \textit{prioritized planning} require to receive the agent actions in a sequential way, so that each following agent could react to the actions of the previous agents.
+	\item \textbf{Announcing communication:} Differently than unconstrained communication, under \textit{announcing} communication we mean agents that announce their next action over a shared communication channel. As a metaphor, one can imagine a bus on a narrow mountain street honking before each turn. A mechanism like this would, similar to \textit{prioritized planning}, require to receive the agent actions in a sequential way, so that each following agent could react to the actions of the previous agents.
 \end{itemize}
 
 We think that the two areas of prioritized planning and unconstrained communication would have the biggest potential to improve train behavior in our Flatland solution. In this work, we do not consider to implement planning and therefore focus on the case of unconstrained communication. We argue, that a communication channel that does not provide a defined protocol could eventually also have the benefit of allowing the agents to plan ahead.

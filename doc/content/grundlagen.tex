@@ -78,7 +78,7 @@ Using Flatland, we can train RL algorithms to control the actions of trains, bas
 	\label{fig:switches_flatland}
 \end{figure}
 An exception poses switches that are approached from a side that does not allow to take an action, e.g. approaching a \textit{case 2} switch from the north side.
-All rail parts, independent of if it is a switch also allow to take the actions to do nothing (remain halted, or keep riding), to go forward or to brake.
+All rail parts, independent of if it is a switch or not also allow to take the actions to do nothing (remain halted, or keep riding), to go forward or to brake.
 The action space is therefore defined by:
 \begin{gather*}
 U = \{ \text{do nothing, go left, go forward, go right, brake} \}
@@ -96,7 +96,7 @@ The nodes of the tree observation offer a number of fields that allow to select 
 	\item Distance until own target encountered: Cell distance to the own target railway station. Infinitiv if target railway station for agent is not in this section.
 	\item Distance to other agent encountered: Cell distance to the next other agent on this section.
 	\item Distance to next branch: The length of this section.
-	\item Min. distance to target: The minimal cell distance to the target after this section is finished.
+	\item Minimal distance to target: The minimal cell distance to the target after this section is finished.
 	\item Child nodes: The nodes the agent is able to take after this section ends. Each child node is associated with a direction (left, forward, right).
 \end{itemize}
 \subsection*{Agent Evaluation}\label{rl_agent_eval}
