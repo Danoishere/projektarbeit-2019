@@ -5,7 +5,7 @@
 \contentsline {figure}{\numberline {2.3}{\ignorespaces Possible switches in the Flatland environment from \cite {flatland_docu}.\relax }}{10}{figure.caption.14}% 
 \contentsline {figure}{\numberline {2.4}{\ignorespaces Comparison between two screenshots from evaluation environments from Flatland round 1 and round 2.\relax }}{12}{figure.caption.17}% 
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {3.1}{\ignorespaces Illustration of the tree observation mapped onto the Flatland enviornment. Each colored bar represents information about a section.\relax }}{15}{figure.caption.18}% 
+\contentsline {figure}{\numberline {3.1}{\ignorespaces Illustration of the tree observation mapped onto the Flatland environment. Each colored bar represents information about a section.\relax }}{15}{figure.caption.18}% 
 \addvspace {10\p@ }
 \contentsline {figure}{\numberline {4.1}{\ignorespaces Screenshot from Flatland environment. A train heading east. The only reasonable action is to ride forward.\relax }}{18}{figure.caption.22}% 
 \contentsline {figure}{\numberline {4.2}{\ignorespaces Comparison of training with and without action reduction\relax }}{19}{figure.caption.23}% 
