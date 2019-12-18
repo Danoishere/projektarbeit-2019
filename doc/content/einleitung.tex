@@ -1,7 +1,6 @@
 \chapter{Introduction}\label{chap.einleitung}
 \section{Baseline}\label{baseline}
-This work explores a real-world usage of multi-agent reinforcement learning (MARL) for controlling train traffic in a complex railway system.
-As part of the Flatland challenge, a contest created by the Swiss Federal Railways (SBB) and the crowdsourcing platform AICrowd \cite{aicrowd}, we try to improve the performance of RL based train guidance and rescheduling. The goal of the challenge is to successfully guide all trains to their assigned target stations in a simulated environment called Flatland environment.
+This work explores a real-world usage of multi-agent reinforcement learning (RL) for controlling train traffic in a complex railway system.As part of the Flatland challenge, a contest created by the Swiss Federal Railways SBB and the crowdsourcing platform AICrowd \cite{aicrowd}, we try to improve the performance of RL based train guidance and rescheduling. The goal of the challenge is to successfully guide all trains to their assigned target stations in a simulated environment called Flatland environment.
 This is challenging because a single wrong decision can cause a chain reaction that makes it impossible for many other trains to successfully reach their destinations. The endeavor is further complicated by trains with different speed profiles and the possibility of malfunctioning trains. In the words of SBB and AICrowd, the challenge is described as follows \cite{aicrowd}:
 \begin{quote}
 	The Flatland Challenge is a competition to foster progress in multi-agent reinforcement learning for any re-scheduling problem (RSP). The challenge addresses a real-world problem faced by many transportations and logistics companies around the world (such as the Swiss Federal Railways, SBB). Different tasks related to RSP on a simplified 2D multi-agent railway simulation must be solved. Your contribution may shape the way modern traffic management systems (TMS) are implemented not only in railway but also in other areas of transportation and logistics. This will be the first of a series of challenges related to re-scheduling and complex transportation systems.
@@ -18,17 +17,17 @@ Unlike the Flatland challenge, the goal of this work is to cooperate on a road t
 \section{Goal of this work}\label{zielsetzung}
 %Comment: Explore ths use of A3C RL Learning in am cooperative multi agent env.
 The aim of the work is to explore the use of the A3C algorithm in the Flatland multi-agent environment and to improve on the approach of S. Huschauer \cite{flatlandstephan}.\\
-While there are better ways to solve the given problem than reinforcement learning, we mainly focus on pure RL but give our intution in \autoref{chap.resultate} on how the explored approach could work together with other techniques to improve its success.
+While there may be better ways to solve the given problem than reinforcement learning, we mainly focus on pure RL but give our intuition in \autoref{chap.resultate} on how the explored approach could work together with other techniques to improve its success.
 This work is targeted towards an audience with a brief understanding of deep reinforcement learning. A basic introduction into the topic is given in \autoref{reinforcementlearning}. This introduction is focused on the techniques required to understand the applied A3C algorithm and does not cover the whole field of RL.
-Also, the details of the Flatland environment can be found in \autoref{flatland_intro}. For a deeper understanding of the complex Flatland environment, it is recommended to study the Flatland documentation and specification \cite{flatland_docu} as well as the official Flatland introduction \cite{aicrowd}.
+Also, an introduction into the Flatland environment can be found in \autoref{flatland_intro}. For a deeper understanding of the complex Flatland system, it is recommended to study the Flatland documentation and specification \cite{flatland_docu} as well as the official Flatland introduction \cite{aicrowd}.
 
 \section{Work Approach and Sectioning}\label{basic_cons}
 We divide this work into 4 main sections:
 \begin{itemize}
-	\item \textbf{\nameref{chap.basic_implementation}:} We have a look at our basic implementation to solve the Flatland challenge. Also, we shortly describe the technologies used.
+	\item \textbf{\nameref{chap.basic_implementation}:} An overview of our basic implementation to solve the Flatland challenge. Also, we shortly describe the technologies used.
 	\item \textbf{\nameref{chap.experiment}:} We identify parts of the implementation that offer room for improvement. To verify our work, we create experiments and analyse them afterwards.
-	\item \textbf{\nameref{chap.resultate}:} We discuss out final solution that we submit in the Flatland challenge for both round 1 and round 2.
-	\item \textbf{\nameref{chap.diskussion}:} We analyse parts of our solution that would need further improvement.
+	\item \textbf{\nameref{chap.resultate}:} A discussion of the final solutions that were submitted for evaluation in the Flatland challenge for both round 1 and round 2.
+	\item \textbf{\nameref{chap.diskussion}:} An analysis of components in the solution that would need further improvement.
 \end{itemize}
 We take the idea of using the A3C algorithm to solve the Flatland problem and try various modifications in an attempt to improve its performance. We proceed by giving an idea, what we want to achieve, followed by an experiment setup and an experiment analysis to either prove or disprove our hypothesis. We do this in an iterative manner, to gradually come closer to a well-performing solution for Flatland.\\
 In our experiments, we focus exclusively on Flatland round 2. While we compare our solution for round 1 with the baseline from S. Huschauer in \autoref{chap.resultate}, all technical improvements have also become part of our solution for round 2.

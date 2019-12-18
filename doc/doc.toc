@@ -1,7 +1,8 @@
+\select@language {english}
 \contentsline {chapter}{\numberline {1}Introduction}{6}{chapter.1}% 
 \contentsline {section}{\numberline {1.1}Baseline}{6}{section.1.1}% 
 \contentsline {section}{\numberline {1.2}Goal of this work}{7}{section.1.2}% 
-\contentsline {section}{\numberline {1.3}Iterative Work Approach}{7}{section.1.3}% 
+\contentsline {section}{\numberline {1.3}Work Approach and Sectioning}{7}{section.1.3}% 
 \contentsline {chapter}{\numberline {2}Technical and Theoretical Foundation}{8}{chapter.2}% 
 \contentsline {section}{\numberline {2.1}Reinforcement Learning}{8}{section.2.1}% 
 \contentsline {section}{\numberline {2.2}The Flatland Rail Environment}{10}{section.2.2}% 

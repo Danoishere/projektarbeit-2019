@@ -1,3 +1,4 @@
+\select@language {english}
 \addvspace {10\p@ }
 \addvspace {10\p@ }
 \contentsline {figure}{\numberline {2.1}{\ignorespaces Reinforcement learning overview\relax }}{8}{figure.caption.10}% 
@@ -7,7 +8,7 @@
 \addvspace {10\p@ }
 \contentsline {figure}{\numberline {3.1}{\ignorespaces Illustration of the tree observation mapped onto the Flatland environment. Each colored bar represents information about a section.\relax }}{15}{figure.caption.18}% 
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {4.1}{\ignorespaces Screenshot from Flatland environment. A train heading east. The only reasonable action is to ride forward.\relax }}{18}{figure.caption.22}% 
+\contentsline {figure}{\numberline {4.1}{\ignorespaces Screenshot from Flatland environment. A train heading to the right. The only reasonable action is to ride forward.\relax }}{18}{figure.caption.22}% 
 \contentsline {figure}{\numberline {4.2}{\ignorespaces Comparison of training with and without action reduction\relax }}{19}{figure.caption.23}% 
 \contentsline {figure}{\numberline {4.3}{\ignorespaces Comparison of training performance between a version with an LSTM-layer and a version without. It is evident that the version with LSTM performs better than the version without.\relax }}{20}{figure.caption.25}% 
 \contentsline {figure}{\numberline {4.4}{\ignorespaces Comparison of training performance between a version with and a version without curriculum learning. It appears, that the version without curriculum is not able to generalize well in larger environments.\relax }}{21}{figure.caption.27}% 

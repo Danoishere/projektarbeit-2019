@@ -17,18 +17,21 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \thispagestyle{empty}
-\chapter*{Zusammenfassung}\label{chap.zusammenfassung}
 
+\chapter*{Zusammenfassung}\label{chap.zusammenfassung}
+\begin{otherlanguage}{nswissgerman}
 %1. Einleitung («Problemstellung»): Definiert die Problematik und begründet die Relevanz der Arbeit. Die Situation (eine problematische Situation oder technische Problematik) und die wissenschaftliche/fachliche Untersuchungs-Fragestellung (folgt logischer- weise aus der festgestellten Problematik) werden kurz beschrieben.
 Die steigende Anzahl der Pendler bring die Kapazität des Schienennetzes der Schweizerischen Bundesbahnen SBB immer mehr an seine Grenzen. Da der Ausbau der Infrastruktur nicht mit den Passagierzahlen mithalten kann, bemüht sich die SBB, mehr Züge in dichteren Abständen auf ihr Netz zu bringen.
 Für die Planung des dichteren Zugverkehrs experimentiert die SBB auch mit Technologien des maschinellen Lernens, insbesondere mit Reinforcement Learning (RL). Dabei soll ein Algorithmus selbstständig Strategien erlernen, um das gegebene Problem zu lösen. In diesem Fall handelt es sich dabei um das Steuern von Zügen, welche möglichst zeitnah zu ihrem Ziel geführt werden sollen. Kollisionen gilt es dabei zu verhindern und potenzielle Hindernisse wie defekte Züge müssen umfahren werden. Auch können Züge mit verschiedenen Geschwindigkeiten unterwegs sein, was bei der Planung berücksichtigt werden soll.\\
 Diese Arbeit ist dabei ein Beitrag zur sogenannten Flatland Challenge, einem Wettbewerb der SBB und der Crowdsourcing-Plattform AICrowd, bei welchem das beschriebene Problem mittels einer zur Verfügung gestellten Simulation des Schienennetzes gelöst werden soll. Der Wettbewerb ist aufgeteilt in zwei Runden mit wachsendem Schwierigkeitslevel.
 Diese Schienensimulation erlaubt es, eigene Lösungen für das Problem zu trainieren und zu evaluieren. Die Schwierigkeit dabei ist, die Züge so zu steuern, dass sie sich auch in komplexen Situationen nicht blockieren. Dazu ist primär die Zusammenarbeit der Züge von grosser Bedeutung.\\
 %3. Vorgehen («Problembehandlung»): Informiert über das Vorgehen und über die Untersuchungsanlage.
-Der präsentierte Lösungsansatz verwendet den Asynchronous Advantage Actor Critic Algorithmus (A3C), einer der derzeit besten RL-Algorithmen, welcher verteiltes Lernen ermöglicht. Der präsentierte Ansatz orientiert sich dabei stark an der Ausgangslösung von Stephan Huschauer.
+Der präsentierte Lösungsansatz verwendet den Asynchronous Advantage Actor Critic Algorithmus (A3C), einen der derzeit besten RL-Algorithmen, welcher verteiltes Lernen ermöglicht. Der präsentierte Ansatz orientiert sich dabei stark an der Ausgangslösung von Stephan Huschauer.
 Nach der ersten lauffähigen Version wurde der Ansatz nach und nach mit unterschiedlichen Features erweitert, wie beispielsweise einem veränderten Kontrollmechanismus der Züge, Curriculum Learning oder verteiltem Lernen über mehrere Rechner.
 Um den Fortschritt zu quantifizieren wurden für sämtliche Änderungen Experimente durchgeführt. Durch das Hinzufügen unterschiedlicher Features konnte eine signifikante Verbesserung der Performanz verzeichnet werden. In Runde 1 war es dabei möglich, die Ankunftsrate von den 16.6\% der Ausgangslösung auf 48.9\% zu verbessern.
 Für die anspruchsvolleren Eisenbahnnetze der 2. Runde, für welche keine Ausgangslösung existiert, konnte dank weiteren Verbesserungen ebenfalls ein respektables Resultat erzielt werden. Die präsentierte Lösung konnte eine Ankunftsrate von 29.1\% erreichen, was zum Evaluierungszeitpunkt dem 4. Platz von insgesamt 24 teilnehmenden Teams entsprach. Für einen praktischen Einsatz ist die präsentierte Lösung jedoch noch nicht geeignet, dies bedarf weiterer Forschung.
+\end{otherlanguage}
+
 \NewPage
 \thispagestyle{empty}
 \chapter*{Abstract}\label{abstract}
