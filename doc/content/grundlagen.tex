@@ -84,19 +84,19 @@ The action space is therefore defined by:
 \begin{gather*}
 U = \{ \text{do nothing, go left, go forward, go right, brake} \}
 \end{gather*}
-It is important to note that trains do not have the ability to go backwards and therefore need to plan ahead to avoid getting stuck. Also, the agents have to learn to adapt to an unknown environment due to the fact that the environments are randomly generated and differ on each episode. Depending on the given parameters, the size and complexity of the grid can be adjusted. This allows for dynamically changing the difficulty for the agents.\\
+It is important to note that trains do not have the ability to go backwards and therefore need to plan ahead to avoid getting stuck. To learn which actions to take, the agents have to learn to adapt to an unknown environment due to the fact that the environments are randomly generated and differ on each episode. Depending on the given parameters, the size and complexity of the grid can be adjusted.\\
 The goal of each agent is to reach an assigned target train station as fast as possible. Agents that reach this destination are removed from the grid which means, they can no longer obstruct the path of other trains.
 
 \subsection*{Observations}\label{observations}
 The Flatland environment allows to create observation builders to observe the environment for each agent. While it is possible to observe the whole grid, this does usually not make sense due to the fact that many parts of the rail grid are not relevant to a single train. Flatland offers by default two different observation builders.\\\\
 \textbf{GlobalObsForRailEnv} creates three arrays with the dimensions of the rectangular rail grid. The first array contains the transition information of the rail grid. For each cell, there are 16 bit values, 4 bit for each possible direction a train is facing.\\\\
 \textbf{TreeObsForRailEnv} creates a graph with sections of the grid as nodes from the perspective of the train.
-This means, only the switches which the train is actually able to take define a single node. As an example, a train on a \textit{case 0} switch heading from the top to the bottom is not able to make a decision on this switch and therefore, the TreeObservation does not put the sections before and after the switch into two different nodes but just into a single node.\\
-The nodes of the tree observation offer a number of fields that allow to select specific features to create numeric input vectors for function approximator such as neural networks. The tree observation builder offers 14 distinct features for each rail section. These include:
+This means, only the switches which the train is actually able to take define a single node. As an example, a train on a \textit{case 0} switch heading from the top to the bottom is not able to make a decision on this switch and therefore, the TreeObsForRailEnv does not put the sections before and after the switch into two different nodes but just into a single node.\\
+The nodes of the tree observation offer a number of fields that allow to select specific features to create numeric input vectors for function approximators such as neural networks. The tree observation builder offers 14 distinct features for each rail section. These include:
 \begin{itemize}
-	\item Distance until own target encountered: Cell distance to the own target railway station. Infinitiv if target railway station for agent is not in this section.
+	\item Distance until own target encountered: Cell distance to the own target railway station. \textit{Infinity} if target railway station for agent is not in this section.
 	\item Distance to other agent encountered: Cell distance to the next other agent on this section.
-	\item Distance to next branch: The length of this section.
+	\item Distance to next branch: The length of this section in number of tiles.
 	\item Minimum distance to target: The minimal cell distance to the target after this section is finished.
 	\item Child nodes: The nodes the agent is able to take after this section ends. Each child node is associated with a direction (left, forward, right).
 \end{itemize}
