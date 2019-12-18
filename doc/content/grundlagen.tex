@@ -77,8 +77,8 @@ Using Flatland, we can train RL algorithms to control the actions of trains, bas
 	\caption{Possible switches in the Flatland environment from \cite{flatland_docu}.}
 	\label{fig:switches_flatland}
 \end{figure}
-An exception poses switches that are approached from a side that does not allow to take an action, e.g. approaching a \textit{case 2} switch from the north side.
-All rail parts, independent of if it is a switch or not also allow to take the actions to do nothing (remain halted, or keep riding), to go forward or to brake.
+An exception poses switches that are approached from a side that does not allow to take an action, e.g. approaching a \textit{case 2} switch from top.
+All rail parts, independent whether it is a switch or not also allow to take the actions to do nothing (remain halted, or keep riding), to go forward or to brake.
 The action space is therefore defined by:
 \begin{gather*}
 U = \{ \text{do nothing, go left, go forward, go right, brake} \}
@@ -88,15 +88,15 @@ The goal of each agent is to reach an assigned target train station as fast as p
 
 \subsection*{Observations}\label{observations}
 The Flatland environment allows to create observation builders to observe the environment for each agent. While it is possible to observe the whole grid, this does usually not make sense due to the fact that many parts of the rail grid are not relevant to a single train. Flatland offers by default two different observation builders.\\\\
-\textbf{GlobalObsForRailEnv} creates three arrays with the dimensions of the rectangular rail grid. The first array contains the transition information of the rail grid. For each cells, there are 16 bit values, 4 bit for each possible direction a train is facing.\\\\
+\textbf{GlobalObsForRailEnv} creates three arrays with the dimensions of the rectangular rail grid. The first array contains the transition information of the rail grid. For each cell, there are 16 bit values, 4 bit for each possible direction a train is facing.\\\\
 \textbf{TreeObsForRailEnv} creates a graph with sections of the grid as nodes from the perspective of the train.
-This means, only the switches which the train is actually able to take define a single node. As an example, a train on a \textit{case 0} switch heading from north to south is not able to make a decision on this switch and therefore, the TreeObservation does not put the sections before and after the switch into two different nodes but just into a single node.\\
-The nodes of the tree observation offer a number of fields that allow to select specific features to create numeric input vectors for function approximator such as neural networks. The tree observation builder offers 14 distinct features for each rail section. This includes:
+This means, only the switches which the train is actually able to take define a single node. As an example, a train on a \textit{case 0} switch heading from the top to the bottom is not able to make a decision on this switch and therefore, the TreeObservation does not put the sections before and after the switch into two different nodes but just into a single node.\\
+The nodes of the tree observation offer a number of fields that allow to select specific features to create numeric input vectors for function approximator such as neural networks. The tree observation builder offers 14 distinct features for each rail section. These include:
 \begin{itemize}
 	\item Distance until own target encountered: Cell distance to the own target railway station. Infinitiv if target railway station for agent is not in this section.
 	\item Distance to other agent encountered: Cell distance to the next other agent on this section.
 	\item Distance to next branch: The length of this section.
-	\item Minimal distance to target: The minimal cell distance to the target after this section is finished.
+	\item Minimum distance to target: The minimal cell distance to the target after this section is finished.
 	\item Child nodes: The nodes the agent is able to take after this section ends. Each child node is associated with a direction (left, forward, right).
 \end{itemize}
 \subsection*{Agent Evaluation}\label{rl_agent_eval}

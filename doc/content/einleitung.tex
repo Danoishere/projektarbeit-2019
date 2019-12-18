@@ -18,17 +18,17 @@ Unlike the Flatland challenge, the goal of this work is to cooperate on a road t
 \section{Goal of this work}\label{zielsetzung}
 %Comment: Explore ths use of A3C RL Learning in am cooperative multi agent env.
 The aim of the work is to explore the use of the A3C algorithm in the Flatland multi-agent environment and to improve on the approach of S. Huschauer \cite{flatlandstephan}.\\
-While it could be argued that there are better ways to solve the given problem than RL, we mainly focus on pure RL but give in the \autoref{chap.resultate} our intuition on how the explored approach could work together with other techniques to improve its success.
+While there are better ways to solve the given problem than reinforcement learning, we mainly focus on pure RL but give our intution in \autoref{chap.resultate} on how the explored approach could work together with other techniques to improve its success.
 This work is targeted towards an audience with a brief understanding of deep reinforcement learning. A basic introduction into the topic is given in \autoref{reinforcementlearning}. This introduction is focused on the techniques required to understand the applied A3C algorithm and does not cover the whole field of RL.
 Also, the details of the Flatland environment can be found in \autoref{flatland_intro}. For a deeper understanding of the complex Flatland environment, it is recommended to study the Flatland documentation and specification \cite{flatland_docu} as well as the official Flatland introduction \cite{aicrowd}.
 
 \section{Iterative Work Approach}\label{basic_cons}
 We divide this work into 4 main sections:
 \begin{itemize}
-	\item \textbf{\nameref{chap.basic_implementation}:} In this section, we have a look at our basic implementation to solve the Flatland challenge. Also, we shortly describe the technologies used.
+	\item \textbf{\nameref{chap.basic_implementation}:} We have a look at our basic implementation to solve the Flatland challenge. Also, we shortly describe the technologies used.
 	\item \textbf{\nameref{chap.experiment}:} We identify parts of the implementation that offer room for improvement. To verify our work, we create experiments and analyse them afterwards.
-	\item \textbf{\nameref{chap.resultate}:} We discuss ouf final solution that we submit in the Flatland challenge for both round 1 and round 2.
-	\item \textbf{\nameref{chap.diskussion}:} Here we discuss parts of our solution that would need further improvement.
+	\item \textbf{\nameref{chap.resultate}:} We discuss out final solution that we submit in the Flatland challenge for both round 1 and round 2.
+	\item \textbf{\nameref{chap.diskussion}:} We analyse parts of our solution that would need further improvement.
 \end{itemize}
 We take the idea of using the A3C algorithm to solve the Flatland problem and try various modifications in an attempt to improve its performance. We proceed by giving an idea, what we want to achieve, followed by an experiment setup and an experiment analysis to either prove or disprove our hypothesis. We do this in an iterative manner, to gradually come closer to a well-performing solution for Flatland.\\
-In our experiments, we focus exclusively on Flatland round 2. While we compare our solution for round 1 in \autoref{chap.resultate}, all technical improvements have also become part of our solution for round 2.
+In our experiments, we focus exclusively on Flatland round 2. While we compare our solution for round 1 with the baseline from S. Huschauer in \autoref{chap.resultate}, all technical improvements have also become part of our solution for round 2.
