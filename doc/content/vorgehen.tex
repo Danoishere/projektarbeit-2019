@@ -96,7 +96,7 @@ Another aspect that is hard to reproduce is training stability. In A3C, an impor
 For better comparability, we keep our evaluation versions for the training as similar to each other as possible. If not differently specified, we run evaluations with the following setup:
 \begin{itemize}
 	\item For all evaluations, a Flatland round 2 environment is used.
-	\item We use an environment of the size 100x100 tiles with 14 individual agents.
+	\item We use an environment with the size 100x100 tiles with 14 individual agents.
 	\item The map contains 20 cities
 	\item There is a maximum of 3 rails between cities and a maximum of 4 rails inside cities
 	\item Based on the Flatland specification, the maximum allowed number of timesteps is 1608 \cite{flatland_spec}.
@@ -302,7 +302,7 @@ It is also interesting that agent 2 never seems to respond with the same action 
 \newpage
 \section{Distributed Architecture and Parallelism}\label{dist_architecture}
 \subsection*{Distributed training}
-One of the main advantages of the A3C algorithm is its ability to be used in a distributed manner. This allows running multiple versions of the environment asynchronously and collect the updates for both the actor and the critic network in a central place. To fully take advantage of this mechanism, we implemented a system that allows to run a large number of environments at the same time. All running training-instances contribute to the same central network. Thanks to HTTP-based connections, we can use this mechanism even in between computers or across networks. This approach is only limited by the capability of the central model server and the network throughput.\\
+One of the main advantages of the A3C algorithm is its ability to be used in a distributed manner. This allows running multiple versions of the environment asynchronously and collect the updates for both the actor and the critic network in a central place. To fully take advantage of this mechanism, we implemented a system that allows to run a large number of environments at the same time. All running training-instances contribute to the same central network. Thanks to HTTP-based connections, we can use this mechanism even between computers or across networks. This approach is only limited by the capability of the central model server and the network throughput.\\
 Additionally, our central model server not only handles the update of the neural network but also distributes both the code for building observations and a file with all hyperparameter required for training on startup. The startup process of the worker node then converts the code for building observations into native C-code using Cython. This converted code then gets compiled and dynamically imported as a Python module.\\
 Using native C-code speeds up the roll-out of the environment and therefore the training process by a factor of 2 to 5.
 \begin{figure}[H]
