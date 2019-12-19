@@ -103,7 +103,7 @@ The nodes of the tree observation offer a number of fields that allow to select 
 \subsection*{Agent Evaluation}\label{rl_agent_eval}
 AICrowd and SBB also provide a system for agent evaluation. This system evaluates the policy on a number of unknown environments and outputs the percentage of agents that reached their assigned destination as well as the received reward while doing so. The evaluation reward scheme is thereby as follows \cite{flatland_faq}:
 \begin{gather*}
-R_{t}= 
+\mathcal{R}_{t}= 
 \begin{cases}
 -1,				& \text{if } s_{t} \text{ is not terminal}\\
 10,             & \text{otherwise}

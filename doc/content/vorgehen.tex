@@ -24,11 +24,11 @@
 Originally, the asynchronous advantage actor critic algorithm (A3C) has been designed for use in a single agent environment \cite{a3c}.
 By applying it in a multi-agent environment, we implicitly convert the environment into a non-stationary system.
 While applying A3C in a multi-agent setting, the other agents can be viewed as part of the environment. This means, the behavior of the environment changes while training, due to the fact that the behavior of the other agents changes.
-Gupta et al. find in \cite{multiagent_comp_a3c_dqn_etc}, that RL methods like Deep Q-networks (DQN) and Trust Region Policy Optimization (TRPO) are not performing well in a multi-agent environment, due to the combination of experience replay and non-stationarity of the environment. We therefore suggest, that it is not recommendable to keep an experience replay buffer with older episodes. Otherwise the sampled experience might represent old agent behavior which is then learned to deal with.\\
+Gupta et al. find in \cite{multiagent_comp_a3c_dqn_etc}, that RL methods like Deep Q-networks (DQN) and Trust Region Policy Optimization (TRPO) are not performing well in a multi-agent environment, due to the combination of experience replay and non-stationarity of the environment. Unlike the baseline version from \cite{flatlandstephan}, we do not use an experience replay buffer with older episodes. Otherwise the sampled experience might represent old agent behavior which is then learned. Instead, we directly perform updates of the neural network using the latest episodes, as proposed in \cite{a3c}.\\
 An important implementation detail in our version is, that we do not perform updates during episodes but only at their end. The reason for this is, that the only possibility for an agent to receive reward is at the end of the episode. Therefore any previous update would have a reward of 0 and would not help the training process.
 
 \section{Entropy Balancing}\label{entropy_balancing_hyperparameter}
-In RL, it is of great importance to find the right combination of exploration and exploitation \cite{explorationexploitation}. During exploration, the agent explores as much of the state space as possible. This enables the agent to later exploit the found states which are beneficial. Without this exploration phase, there is a chance that the agent settles on sub-optimal policies too quickly and ignores parts of the state space the agent has never seen and therefore does not consider in his action selection. To avoid an early convergence in A3C, it is common to use an additional entropy term. This entropy term is defined as \cite{a3c}:
+In RL, it is of great importance to find the right combination of exploration and exploitation \cite{explorationexploitation}. During exploration, the agent explores as much of the state space as possible. This enables the agent to later exploit the found states that are beneficial. Without this exploration phase, there is a chance that the agent settles on sub-optimal policies too quickly and ignores parts of the state space the agent has never seen and therefore does not consider in his action selection. To avoid an early convergence in A3C, it is common to use an additional entropy term. This entropy term is defined as \cite{a3c}:
 \begin{gather*}
 H(p) = -\sum_{u=0}^{U}log(p_{u})*p_{u}
 \end{gather*}
@@ -47,7 +47,7 @@ Based on the provided TreeObsForRailEnv (see \autoref{observations}), we impleme
 	\item On switches, the agent should be able to see if a turn does lead to his target, even if it is not the fastest way. If this is the case, taking this turn might even be a good option to evade possibly blocking situations.
 	\item For the next grid tile, the agent should be able to detect if it is a switch and if so, if it is one the agent can make a decision on. (see \autoref{flatland_intro} for non-usable switches).
 \end{itemize}
-The provided TreeObsForRailEnv produce a graph with a node for each section of the rail. We extend these nodes with additional information about train traffic coming the other direction than the one the agent is heading. We take the information from these nodes and convert them into a numeric vector. In case that there is a dead end, we fill the observation with zeros (this could only happen in Flatland round 1, round 2 does not have dead ends). After the conversion, we concatenate all section observations into one large vector with information for all upcoming sections as illustrated in \autoref{fig:obs_descr}.\\
+The provided TreeObsForRailEnv produces a graph with a node for each section of the rail. We extend these nodes with additional information about train traffic coming the other direction than the one the agent is heading. We take the information from these nodes and convert them into a numeric vector. In case that there is a dead end, we fill the observation with zeros (this could only happen in Flatland round 1, round 2 does not have dead ends). After the conversion, we concatenate all section observations into one large vector with information for all upcoming sections as illustrated in \autoref{fig:obs_descr}.\\
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=300pt]{diagrams/tree_obs_mapping.pdf}
@@ -59,29 +59,33 @@ While this vector already contains all required information outside of the agent
 \section{Technical Implementation Aspects}\label{software}
 In this section, we discuss the most important implementation aspects of our work. 
 \subsection*{Used Frameworks and Libraries}\label{framework_and_libraries}
-In \autoref{table:used_technologies}, we list the most important used libraries and frameworks in this work.
+In \autoref{table:used_technologies}, the most important libraries and frameworks of this work are listed.
 \begin{table}[H]
 	\centering
 	\begin{tabularx}{\textwidth}{ |l|c|X| } 
 		\hline
 		\textbf{Technology}	& \textbf{Version} & \textbf{Description}\\
 		\hline
-		Python & 3.6 & The whole code for our project is written in Python.\\
-		\hline
-		Tensorflow & 2.0.0 & Tensorflow provides a framework for both deep learning as well as monitoring the learning process of RL using Tensorboard.\\
-		\hline
-		MessagePack & 0.6.2 & MessagePack allows very fast serialization. The resulting binary data is also considerably smaller than serialization with formats like JSON. We use MessagePack to serialize both weights- and gradient-update before sending between worker and model server.\\
-		\hline
 		Cython & 0.29.14 & Cython allows to compile Python code to natively running C code. We use Cython to speed up our observations on the rail environment.\\
 		\hline
 		Flask & 1.1.1 & We use Flask as our central model server (see \nameref{dist_architecture}). This Flask application collects gradient updates, distributes the current network weights and allows access to the latest versions of the observation and parameter files.\\
 		\hline
-		ZLib & (built-in) & ZLib allows to compress in Python. We use ZLib to reduce our payload-size while sending gradient- and weight updates.\\
+		MessagePack & 0.6.2 & MessagePack allows very fast serialization. The resulting binary data is also considerably smaller than serialization with formats like JSON. We use MessagePack to serialize both weights- and gradient-update before sending between worker and model server.\\
+		\hline
+		Python & 3.6 & The whole code for our project is written in Python.\\
+		\hline
+		Tensorflow & 2.0.0 & Tensorflow provides a framework for both deep learning as well as monitoring the learning process of RL using Tensorboard.\\
+		\hline
+		ZLib & (built-in) & ZLib allows to compress data in Python. We use ZLib to reduce our payload-size while sending gradient- and weight updates.\\
 		\hline
 	\end{tabularx}
 	\caption{The most important technologies used in this work.}
 	\label{table:used_technologies}
 \end{table}
+\subsection*{Usage of Multiprocessing}\label{multiprocessing}
+Due to performance limitations of multithreading in Python, we use the multiprocessing library for parallel execution instead. While multiprocessing is harder to manage than multithreading, the performance limitations of the global interpreter lock \cite{python_gil} do not apply.\\
+The worker processes that are used for training are started by a single master process. This master process handles all required initialization routines as well as restarting the worker processes in case of an error. The usage of parallel processing is described in \ref{dist_architecture} \nameref{dist_architecture}.
+
 \chapter{Experiment Design and Analysis}
 \label{chap.experiment}
 \chaptermark{Experiments}
@@ -89,8 +93,9 @@ In \autoref{table:used_technologies}, we list the most important used libraries 
 \section[Reproducibility]{Reproducibility and Experiment Setup}\label{reproducability}
 It is important to note, that the training process of reinforcement learning and especially multi-agent reinforcement learning can be hard to reproduce. Depending on the initial weights of the neural networks and the layout of the environments, the performance may vary on each restart. Also in a distributed algorithm, the number of workers can significantly influence the training performance. If not differently specified, we executed all presented experiments on machines with the same specifications (see \autoref{infrastructure}).\\
 Another aspect that is hard to reproduce is training stability. In A3C, an important instrument to prevent the policy from converging too early is using an additional entropy term \cite{a3c}. Our way to maintain stability with changing environments is discussed in \autoref{entropy_balancing_hyperparameter}.\\
-For better comparability, we tried to keep our evaluation versions for the training as similar to each other as possible. If not differently specified, we run evaluations with the following setup:
+For better comparability, we keep our evaluation versions for the training as similar to each other as possible. If not differently specified, we run evaluations with the following setup:
 \begin{itemize}
+	\item For all evaluations, a Flatland round 2 environment is used.
 	\item We use an environment of the size 100x100 tiles with 14 individual agents.
 	\item The map contains 20 cities
 	\item There is a maximum of 3 rails between cities and a maximum of 4 rails inside cities
@@ -98,7 +103,7 @@ For better comparability, we tried to keep our evaluation versions for the train
 	\item For each experiment we use the training data of the first 12 hours.
 \end{itemize}
 To analyze the performance of the solution, we run an analyzer that executes 20 roll-outs of the environment using the same neural network parameters. After these 20 roll-outs, we update the neural network parameters. For each evaluation round, we use the same 20 environment layouts.
-To compare the performance in a graph, we take the mean number of agents which arrived at their target and plot that in our graph.
+To compare the performance in a graph, we take the mean number of agents that arrived at their target and plot that in our graph.
 \section{Reinforcement Learning for Flatland}
 \sectionmark{RL for Flatland}
 \label{rl_flatland}
@@ -130,10 +135,10 @@ While this makes sense in an environment where agents need to take an action on 
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=300pt]{images/screenshot_no_decision.png}
-	\caption{Screenshot from Flatland environment. A train heading to the right. The only reasonable action is to ride forward.}
+	\caption{Screenshot from Flatland environment. A train heading to the left. The only reasonable action is to ride forward.}
 	\label{fig:no_desicion}
 \end{figure}
-Every action that is produced by the neural network should be included for training, so the network can adapt to this type of situation. The problem arises now, that all these actions of riding forward are included into the training of the agent. The influence of the actions that actually matter (e.g. the ones around switches) is thereby not as big as it could be, because a large portion of the training data are actually situations that do not actually require decisions.\\\\
+Every action that is produced by the neural network should be included for training, so the network can adapt to this type of situation. The problem arises now, that all these actions of riding forward are included into the training of the agent. The influence of the actions that actually matter (e.g. the ones around switches) is thereby not as big as it could be, because large portions of the training data are situations that do not actually require decisions.\\\\
 \textit{Experiment Setup}\\\\
 To solve this problem, we implement hard coded rules that the agents follow as long as they are not in a situation to make a decision. Only around switches, the neural network policy is activated. As a consequence, the data used for training has less samples but the samples available are of higher quality. The training with this mechanism is shown in \autoref{alg:with_reduction}.
 For training, we only use the experience collected near the switch.\\
@@ -173,10 +178,10 @@ This drastically improves training performance as visible in \autoref{chart:acti
 	\label{chart:action_reduction_comparison}
 \end{figure}
 \subsection*{Neural Network Architecture}\label{network_architecture}
-In RL, the architecture of neural networks is often rather simple \cite{mnih2013playing,a3c}. The already sample inefficient process of reinforcement learning should not be slowed down by a difficult architecture. Differently than S. Huschauer in \cite{flatlandstephan}, we do not use a convolutional neural network. The reason for this is the way our observation vector is composed (see \autoref{enhanced_observations}). In this vector, every element corresponds with an actual information in the mapped rail section. Convolutional layers would especially make sense if there were patterns to extract from the observation vector.\\
-Another more relevant aspect of neural networks is the topic of recurrent layers. Recurrent layers allow the agent to remember information from previous timesteps. The original A3C publication shows, that it is possible to achieve a significant performance improvement using long short-term memory layers (LSTM) \cite{a3c}. Also S. Huschauer uses an LSTM-block to improve training.\\\\
+In RL, the architecture of neural networks is often rather simple \cite{mnih2013playing,a3c}. The already often sample inefficient process of reinforcement learning should not be slowed down by a difficult architecture. We observe a stable training performance by using 3 fully connected layers of size 128, 64 and 64 with ReLU activation for both the actor and the critic network. Differently than S. Huschauer in \cite{flatlandstephan}, we do not use convolutional layers. The reason for this is the way our observation vector is composed (see \autoref{enhanced_observations}). In this vector, every element corresponds with an actual information in the mapped rail section. Convolutional layers would especially make sense if there were patterns to extract from the observation vector.\\
+Another relevant aspect of neural networks is the topic of recurrent layers. Recurrent layers allow the agent to remember information from previous timesteps. The original A3C publication shows, that it is possible to achieve a significant performance improvement using long short-term memory layers (LSTM) \cite{a3c}. Also S. Huschauer uses an LSTM-block to improve training \cite{flatlandstephan}.\\\\
 \textit{Experiment Setup}\\\\
-To quantify this improvement, we run an experiment to compare a version with recurrent layer to a version without. Both versions use the default evaluation environment without curriculum.
+To quantify this improvement, we run an experiment to compare a version with LSTM layer to a version without. Both versions use the default evaluation environment without curriculum.
 \begin{figure}[H]
 	\begin{center}
 		\input{diagrams/lstm_comparison.pgf}
@@ -188,19 +193,11 @@ To quantify this improvement, we run an experiment to compare a version with rec
 In \autoref{chart:lstm_comparison} it can be observed that an LSTM-layer helps the training process. While the initial training phase is slightly faster for the version without a recurrent layer, we observe a better overall performance and therefore keep the LSTM-layer as part of our solution.
 
 \subsection*{Curriculum Learning and Reward assignment}\label{curriculum_learning}
-The reward assignment in Flatland can be freely configured. But as long as there is not some distance-to-target dependent reward function, the probability, that an agent with an uninformed policy finds its target is small. This is especially the case for large environments with many trains on it. For example, most evaluation environments of Flatland round 2 have up to 200 individual agents and are up 100x100 tiles large \cite{flatland_faq}. The roll-out of such an environment takes a lot more time than the roll-out of a 20x20 environment with 5 trains. Also, the probability, that a train arrives in a small environment is larger and therefore, the experience is more valuable for training.
+The reward assignment in Flatland can be freely configured. But as long as there is not some distance-to-target dependent reward function, the probability that an agent with an uninformed policy finds its target station is small. This is especially the case for large environments with many trains on it. For example, most evaluation environments of Flatland round 2 have up to 200 individual agents and are up 100x100 tiles large \cite{flatland_faq}. The roll-out of such an environment takes a lot more time than the roll-out of a 20x20 environment with 5 trains. Also, the probability, that a train arrives in a small environment is larger and therefore, the experience is more valuable for training.
 To improve training times, it makes therefore sense to start with a small environment and move to larger ones, once the agents mastered pathfinding and basic collision avoidance.\\\\
 \textit{Experiment Setup}\\\\
-In order to verify the meaningfulness of such a curriculum, we run an experiment with a large environment with dimensions 100x100 and 50 individual agents. One experiment tries to learn its policy directly using this environment. The other experiment uses a curriculum that gradually gets more difficult.
-As visible in \autoref{chart:curriculum_comparison}, the version without curriculum is not able to learn from the experience. We suspect that is caused by too much variance in the environment and not enough successful experience to learn from. After all, an agent needs to reach its target to get reward, and in a large environment combined with an uninformed policy, this is potentially very difficult.
-\begin{figure}[H]
-	\begin{center}
-		\input{diagrams/curriculum_comparison.pgf}
-	\end{center}
-	\caption{Comparison of training performance between a version with and a version without curriculum learning. It appears, that the version without curriculum is not able to generalize well in larger environments.}
-	\label{chart:curriculum_comparison}
-\end{figure}
-\begin{table}
+In order to verify the meaningfulness of such a curriculum, we run an experiment with a large environment with dimensions 100x100 and 50 individual agents. One experiment tries to learn its policy directly using this environment. The other experiment uses a curriculum that gradually gets more difficult. All parameters of the used curriculum are listed in \autoref{table:curriculum_data}.
+\begin{table}[H]
 	\centering
 	\begin{tabular}{ |l|c|c|c|c|c| } 
 		\hline
@@ -218,17 +215,23 @@ As visible in \autoref{chart:curriculum_comparison}, the version without curricu
 		\textbf{Max. rails in city} & 2 & 2 & 3 & 3 & 3  \\ 
 		\hline
 	\end{tabular}
-	\label{table:curriculum_data}
 	\caption{Curriculum level specifications for our experiment to compare a version with curriculum to a version without.}
+	\label{table:curriculum_data}
 \end{table}
 \textit{Experiment Analysis}\\\\
-While it is clearly visible in \autoref{chart:curriculum_comparison} that directly training on difficult levels without curriculum is not feasible, it also appears that the learning speed is slowed down on higher curriculum levels for the version that uses a curriculum. With increasingly more difficult levels and more agents, the frequency of available network updates is being slowed down due to the fact that a roll-out of the environment takes longer. We therefore think, it is desirable to keep the curriculum levels small and primarily increase the number of agents instead of the size of the environment.
-
-
+As visible in \autoref{chart:curriculum_comparison}, the version without curriculum is not able to notably learn from the experience. We suspect that is caused by too much variance in the environment and not enough successful experience to learn from. After all, an agent needs to reach its target to get reward, and in a large environment combined with an uninformed policy, this is potentially very difficult.\\
+For the version that uses a curriculum, it appears that the learning speed is slowed down on higher curriculum levels. With increasingly more difficult levels and more agents, the frequency of available network updates is being slowed down due to the fact that a roll-out of the environment takes longer. We therefore think, it is desirable to keep the curriculum levels small and primarily increase the number of agents instead of the size of the environment.
+\begin{figure}[H]
+	\begin{center}
+		\input{diagrams/curriculum_comparison.pgf}
+	\end{center}
+	\caption{Comparison of training performance between a version with and a version without curriculum learning.\\}
+	\label{chart:curriculum_comparison}
+\end{figure}
 \subsection*{Agent Communication}\label{agent_communication}
-Communication in multi-agent reinforcement learning is a topic of active research \cite{marlsurvey}. While we do not use communication in the final submission, in this section we discuss a number of ideas regarding possible the use of communication in the Flatland environment. As a starting point for this work we asked the question how blocking is avoided in the real world. On the SBB rail environment railroad signals are used to prevent collisions between trains. These signals are controlled by a central control instance that directs the flow of traffic for all trains on the network.
+Communication in multi-agent reinforcement learning is a topic of active research \cite{marlsurvey}. While we do not use communication in the final submission, in this section we discuss a number of ideas regarding possible the use of communication in the Flatland environment. As a starting point for this work, we asked the question how blocking is avoided in the real world. On the SBB rail environment railroad signals are used to prevent collisions between trains. These signals are controlled by a central control instance that directs the flow of traffic for all trains on the network.
 The Flatland environment does not provide a communication channel nor a rail road signal system, but participants of the challenge are allowed to implement one themselves. In the following discussion, we summarize available options to implement such a communication channel. An initial intuition for the problem gives the question, if it was a human guiding the train, would she/he be able to successfully steer the train to its assigned target without communication?
-We assume that this is not the case. While classical traffic rules (e.g. right has priority over left) can help to avoid collisions, we do think that in the case of railroad traffic this does not suffice. In the real world, rail traffic is controlled by a control center that gives the trains permission to go or tells them to wait. Having one central control instance solves one of the big problems of such a system which is, that there is a chance that two agents take an action at the same moment which does bring both of them into a non-resolvable situation. An example for such a situation would be two agents that enter a rail section at the same timestep. Both of them would have had the possibility to choose a different path, but both perceived the section as empty and decided to enter. Combined with the fact that trains cannot drive backwards (at least in Flatland), both trains will not be able to arrive at their assigned targets. As a solution to this dilemma, we discuss four ideas that could potentially improve the situation.
+We assume that this is not the case. While classical traffic rules (e.g. right has priority over left) can help to avoid collisions, we do think that in the case of railroad traffic this does not suffice. In the real world, rail traffic is controlled by a control center that gives the trains permission to go or tells them to wait. Having one central control instance solves one of the big problems of such a system which is, that there is a chance that two agents take an action at the same moment which brings both of them into a non-resolvable situation. An example for such a situation would be two agents that enter a rail section at the same timestep. Both of them would have had the possibility to choose a different path, but both perceived the section as empty and decided to enter. Combined with the fact that trains cannot drive backwards (at least in Flatland), both trains will not be able to arrive at their assigned target stations. As a solution to this dilemma, we discuss four ideas that could potentially improve the situation.
 \begin{itemize}
 	\item \textbf{Negotiation:} To solve the problem of conflicting actions at the same timestep, it would be possible to introduce a iterative communication channel, on which the agents can negotiate, what agent is allowed to take an action next and who has to wait another timestep. The number of iterations could be determined by the outcome of the process. As long as there is no resolution about who is allowed to take an action and who is not, another negotiation round is added.\\
 	While this procedure might help to avoid blocking situations, it could certainly not completely remove them. Especially complex situations with many agents in a small area could still prove to be difficult, even with a negotiation mechanism in place.
@@ -239,7 +242,7 @@ We assume that this is not the case. While classical traffic rules (e.g. right h
 	\item \textbf{Unconstrained communication:} While negotiation would prevent an agent from taking an action, the goal of unconstrained actions would not be to constrain the action space but rather to convince the agent to choose an action \textit{stop} or \textit{do nothing} and wait for the next timestep if the situation is uncertain. Also for unconstrained actions, it would make sense to be an iterative process, similar to the negotiation approach. As long as not all agents mark their communication as completed, another communication round is added.\\
 	We suspect that a problem with this approach could be that it would have much slower convergence than the negotiation approach. The reason for this assumption is the fact, that such an unconstrained communication would not directly influence the actions of the agents. It would be necessary to learn both the "speaking" and the "interpretation", without direct consequences. On the positive side, we think that this approach could enable more sophisticated strategies and maybe even improve planning.
 	
-	\item \textbf{Announcing communication:} Differently than unconstrained communication, under \textit{announcing} communication we mean agents that announce their next action over a shared communication channel. As a metaphor, one can imagine a bus on a narrow mountain street honking before each turn. A mechanism like this would, similar to \textit{prioritized planning}, require to receive the agent actions in a sequential way, so that each following agent could react to the actions of the previous agents.
+	\item \textbf{Announcing communication:} Different from unconstrained communication, under \textit{announcing} communication we mean agents that announce their next action over a shared communication channel. As a metaphor, one can imagine a bus on a narrow mountain street honking before each turn. A mechanism like this would, similar to \textit{prioritized planning}, require to receive the agent actions in a sequential way, so that each following agent could react to the actions of the previous agents.
 \end{itemize}
 
 We think that the two areas of prioritized planning and unconstrained communication would have the biggest potential to improve train behavior in our Flatland solution. In this work, we do not consider to implement planning and therefore focus on the case of unconstrained communication. We argue, that a communication channel that does not provide a defined protocol could eventually also have the benefit of allowing the agents to plan ahead.
@@ -294,7 +297,7 @@ We observe, that the agents are able to learn a protocol themselves. After 100'0
 	\caption{Examples of communication in our agent communication experiment.}
 	\label{table:communication_samples}
 \end{table}
-While we are surprised that the communication does not look the same on every episode, we think it is remarkable how apparently a language between the agents emerge. Due to reward discounting, it would make sense to have as few communication steps as possible. Still, the agents seem to decide, that it is more valuable to add more communication steps to reach an agreement, instead of going straight to the end of communication.\\
+While we are surprised that the communication does not look the same on every episode, we think it is remarkable how apparently a language between the agents emerges. Due to reward discounting, it would make sense to have as few communication steps as possible. Still, the agents seem to decide, that it is more valuable to add more communication steps to reach an agreement, instead of going straight to the end of communication.\\
 It is also interesting that agent 2 never seems to respond with the same action as agent\,1. The question, if such a behavior could be generalized in less constrained environment is discussed in \nameref{chap.diskussion}.
 \newpage
 \section{Distributed Architecture and Parallelism}\label{dist_architecture}

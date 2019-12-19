@@ -84,6 +84,8 @@
 \newlabel{fig:eval_comp}{{2.4}{12}{Comparison between two screenshots from evaluation environments from Flatland round 1 and round 2.\relax }{figure.caption.17}{}}
 \citation{a3c}
 \citation{multiagent_comp_a3c_dqn_etc}
+\citation{flatlandstephan}
+\citation{a3c}
 \citation{explorationexploitation}
 \citation{a3c}
 \citation{flatlandstephan}
@@ -103,11 +105,13 @@
 \citation{marltraffica3c}
 \@writefile{lof}{\contentsline {figure}{\numberline {3.1}{\ignorespaces Illustration of the tree observation mapped onto the Flatland environment. Each colored bar represents information about a section.\relax }}{15}{figure.caption.18}\protected@file@percent }
 \newlabel{fig:obs_descr}{{3.1}{15}{Illustration of the tree observation mapped onto the Flatland environment. Each colored bar represents information about a section.\relax }{figure.caption.18}{}}
+\citation{python_gil}
 \@writefile{toc}{\contentsline {section}{\numberline {3.4}Technical Implementation Aspects}{16}{section.3.4}\protected@file@percent }
 \newlabel{software}{{3.4}{16}{Technical Implementation Aspects}{section.3.4}{}}
 \newlabel{framework_and_libraries}{{3.4}{16}{Used Frameworks and Libraries}{section*.19}{}}
 \@writefile{lot}{\contentsline {table}{\numberline {3.1}{\ignorespaces The most important technologies used in this work.\relax }}{16}{table.caption.20}\protected@file@percent }
 \newlabel{table:used_technologies}{{3.1}{16}{The most important technologies used in this work.\relax }{table.caption.20}{}}
+\newlabel{multiprocessing}{{3.4}{16}{Usage of Multiprocessing}{section*.21}{}}
 \citation{a3c}
 \citation{flatland_spec}
 \@writefile{toc}{\contentsline {chapter}{\numberline {4}Experiment Design and Analysis}{17}{chapter.4}\protected@file@percent }
@@ -120,42 +124,43 @@
 \newlabel{reproducability}{{4.1}{17}{Reproducibility}{section.4.1}{}}
 \@writefile{toc}{\contentsline {section}{\numberline {4.2}Reinforcement Learning for Flatland}{17}{section.4.2}\protected@file@percent }
 \newlabel{rl_flatland}{{4.2}{17}{Reinforcement Learning for Flatland}{section.4.2}{}}
-\newlabel{reduced_action_space}{{4.2}{17}{Action Space Reduction and Script Policy Actions}{section*.21}{}}
+\newlabel{reduced_action_space}{{4.2}{17}{Action Space Reduction and Script Policy Actions}{section*.22}{}}
 \@writefile{loa}{\contentsline {algocf}{\numberline {1}{\ignorespaces Default episode for Flatland environment\relax }}{18}{algocf.1}\protected@file@percent }
 \newlabel{alg:no_reduction}{{1}{18}{Action Space Reduction and Script Policy Actions}{algocf.1}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {4.1}{\ignorespaces Screenshot from Flatland environment. A train heading to the right. The only reasonable action is to ride forward.\relax }}{18}{figure.caption.22}\protected@file@percent }
-\newlabel{fig:no_desicion}{{4.1}{18}{Screenshot from Flatland environment. A train heading to the right. The only reasonable action is to ride forward.\relax }{figure.caption.22}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4.1}{\ignorespaces Screenshot from Flatland environment. A train heading to the left. The only reasonable action is to ride forward.\relax }}{18}{figure.caption.23}\protected@file@percent }
+\newlabel{fig:no_desicion}{{4.1}{18}{Screenshot from Flatland environment. A train heading to the left. The only reasonable action is to ride forward.\relax }{figure.caption.23}{}}
 \citation{mnih2013playing,a3c}
 \citation{flatlandstephan}
 \citation{a3c}
+\citation{flatlandstephan}
 \@writefile{loa}{\contentsline {algocf}{\numberline {2}{\ignorespaces Improved learning algorithm for Flatland environment\relax }}{19}{algocf.2}\protected@file@percent }
 \newlabel{alg:with_reduction}{{2}{19}{Action Space Reduction and Script Policy Actions}{algocf.2}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {4.2}{\ignorespaces Comparison of training with and without action reduction\relax }}{19}{figure.caption.23}\protected@file@percent }
-\newlabel{chart:action_reduction_comparison}{{4.2}{19}{Comparison of training with and without action reduction\relax }{figure.caption.23}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4.2}{\ignorespaces Comparison of training with and without action reduction\relax }}{19}{figure.caption.24}\protected@file@percent }
+\newlabel{chart:action_reduction_comparison}{{4.2}{19}{Comparison of training with and without action reduction\relax }{figure.caption.24}{}}
 \citation{flatland_faq}
-\newlabel{network_architecture}{{4.2}{20}{Neural Network Architecture}{section*.24}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {4.3}{\ignorespaces Comparison of training performance between a version with an LSTM-layer and a version without. It is evident that the version with LSTM performs better than the version without.\relax }}{20}{figure.caption.25}\protected@file@percent }
-\newlabel{chart:lstm_comparison}{{4.3}{20}{Comparison of training performance between a version with an LSTM-layer and a version without. It is evident that the version with LSTM performs better than the version without.\relax }{figure.caption.25}{}}
-\newlabel{curriculum_learning}{{4.2}{21}{Curriculum Learning and Reward assignment}{section*.26}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {4.4}{\ignorespaces Comparison of training performance between a version with and a version without curriculum learning. It appears, that the version without curriculum is not able to generalize well in larger environments.\relax }}{21}{figure.caption.27}\protected@file@percent }
-\newlabel{chart:curriculum_comparison}{{4.4}{21}{Comparison of training performance between a version with and a version without curriculum learning. It appears, that the version without curriculum is not able to generalize well in larger environments.\relax }{figure.caption.27}{}}
+\newlabel{network_architecture}{{4.2}{20}{Neural Network Architecture}{section*.25}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4.3}{\ignorespaces Comparison of training performance between a version with an LSTM-layer and a version without. It is evident that the version with LSTM performs better than the version without.\relax }}{20}{figure.caption.26}\protected@file@percent }
+\newlabel{chart:lstm_comparison}{{4.3}{20}{Comparison of training performance between a version with an LSTM-layer and a version without. It is evident that the version with LSTM performs better than the version without.\relax }{figure.caption.26}{}}
+\newlabel{curriculum_learning}{{4.2}{21}{Curriculum Learning and Reward assignment}{section*.27}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {4.1}{\ignorespaces Curriculum level specifications for our experiment to compare a version with curriculum to a version without.\relax }}{21}{table.caption.28}\protected@file@percent }
+\newlabel{table:curriculum_data}{{4.1}{21}{Curriculum level specifications for our experiment to compare a version with curriculum to a version without.\relax }{table.caption.28}{}}
 \citation{marlsurvey}
-\newlabel{table:curriculum_data}{{\caption@xref {table:curriculum_data}{ on input line 221}}{22}{Curriculum Learning and Reward assignment}{table.caption.28}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {4.1}{\ignorespaces Curriculum level specifications for our experiment to compare a version with curriculum to a version without.\relax }}{22}{table.caption.28}\protected@file@percent }
-\newlabel{agent_communication}{{4.2}{22}{Agent Communication}{section*.29}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {4.5}{\ignorespaces Screenshot of the communication experiment setup.\relax }}{24}{figure.caption.30}\protected@file@percent }
-\newlabel{fig:comm_setup}{{4.5}{24}{Screenshot of the communication experiment setup.\relax }{figure.caption.30}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {4.2}{\ignorespaces Examples of communication in our agent communication experiment.\relax }}{25}{table.caption.31}\protected@file@percent }
-\newlabel{table:communication_samples}{{4.2}{25}{Examples of communication in our agent communication experiment.\relax }{table.caption.31}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4.4}{\ignorespaces Comparison of training performance between a version with and a version without curriculum learning. \relax }}{22}{figure.caption.29}\protected@file@percent }
+\newlabel{chart:curriculum_comparison}{{4.4}{22}{Comparison of training performance between a version with and a version without curriculum learning.\\\relax }{figure.caption.29}{}}
+\newlabel{agent_communication}{{4.2}{22}{Agent Communication}{section*.30}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4.5}{\ignorespaces Screenshot of the communication experiment setup.\relax }}{24}{figure.caption.31}\protected@file@percent }
+\newlabel{fig:comm_setup}{{4.5}{24}{Screenshot of the communication experiment setup.\relax }{figure.caption.31}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {4.2}{\ignorespaces Examples of communication in our agent communication experiment.\relax }}{25}{table.caption.32}\protected@file@percent }
+\newlabel{table:communication_samples}{{4.2}{25}{Examples of communication in our agent communication experiment.\relax }{table.caption.32}{}}
 \@writefile{toc}{\contentsline {section}{\numberline {4.3}Distributed Architecture and Parallelism}{26}{section.4.3}\protected@file@percent }
 \newlabel{dist_architecture}{{4.3}{26}{Distributed Architecture and Parallelism}{section.4.3}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {4.6}{\ignorespaces Simplified procedure of training of a single worker process. The communication between the worker and the model server works by using HTTP. The compilation of the observation.pyx file is only done once on each machine.\relax }}{26}{figure.caption.33}\protected@file@percent }
-\newlabel{obs_descr}{{4.6}{26}{Simplified procedure of training of a single worker process. The communication between the worker and the model server works by using HTTP. The compilation of the observation.pyx file is only done once on each machine.\relax }{figure.caption.33}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {4.7}{\ignorespaces Illustration of distributed architectures with main node (node 1) and several additional nodes (2-w) connected over HTTP.\relax }}{27}{figure.caption.34}\protected@file@percent }
-\newlabel{dist_architecture_img}{{4.7}{27}{Illustration of distributed architectures with main node (node 1) and several additional nodes (2-w) connected over HTTP.\relax }{figure.caption.34}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {4.8}{\ignorespaces Comparison of training with 1 worker and with 7 workers\relax }}{27}{figure.caption.35}\protected@file@percent }
-\newlabel{chart:singlemany_comparison}{{4.8}{27}{Comparison of training with 1 worker and with 7 workers\relax }{figure.caption.35}{}}
-\newlabel{infrastructure}{{4.3}{28}{Infrastructure}{section*.36}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4.6}{\ignorespaces Simplified procedure of training of a single worker process. The communication between the worker and the model server works by using HTTP. The compilation of the observation.pyx file is only done once on each machine.\relax }}{26}{figure.caption.34}\protected@file@percent }
+\newlabel{obs_descr}{{4.6}{26}{Simplified procedure of training of a single worker process. The communication between the worker and the model server works by using HTTP. The compilation of the observation.pyx file is only done once on each machine.\relax }{figure.caption.34}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4.7}{\ignorespaces Illustration of distributed architectures with main node (node 1) and several additional nodes (2-w) connected over HTTP.\relax }}{27}{figure.caption.35}\protected@file@percent }
+\newlabel{dist_architecture_img}{{4.7}{27}{Illustration of distributed architectures with main node (node 1) and several additional nodes (2-w) connected over HTTP.\relax }{figure.caption.35}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4.8}{\ignorespaces Comparison of training with 1 worker and with 7 workers\relax }}{27}{figure.caption.36}\protected@file@percent }
+\newlabel{chart:singlemany_comparison}{{4.8}{27}{Comparison of training with 1 worker and with 7 workers\relax }{figure.caption.36}{}}
+\newlabel{infrastructure}{{4.3}{28}{Infrastructure}{section*.37}{}}
 \citation{flatlandstephan}
 \@writefile{toc}{\contentsline {chapter}{\numberline {5}Results}{29}{chapter.5}\protected@file@percent }
 \@writefile{lof}{\addvspace {10\p@ }}
@@ -166,8 +171,8 @@
 \@writefile{toc}{\contentsline {section}{\numberline {5.1}Round 1}{29}{section.5.1}\protected@file@percent }
 \@writefile{toc}{\contentsline {section}{\numberline {5.2}Round 2}{29}{section.5.2}\protected@file@percent }
 \citation{flatland_faq}
-\@writefile{lof}{\contentsline {figure}{\numberline {5.1}{\ignorespaces Agents departing vs. agents arriving on a 30x30 environment.\relax }}{30}{figure.caption.37}\protected@file@percent }
-\newlabel{chart:departing_arriving}{{5.1}{30}{Agents departing vs. agents arriving on a 30x30 environment.\relax }{figure.caption.37}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5.1}{\ignorespaces Agents departing vs. agents arriving on a 30x30 environment.\relax }}{30}{figure.caption.38}\protected@file@percent }
+\newlabel{chart:departing_arriving}{{5.1}{30}{Agents departing vs. agents arriving on a 30x30 environment.\relax }{figure.caption.38}{}}
 \citation{Ephrati1993MultiAgentPA}
 \@writefile{toc}{\contentsline {chapter}{\numberline {6}Discussion and Outlook}{31}{chapter.6}\protected@file@percent }
 \@writefile{lof}{\addvspace {10\p@ }}
@@ -203,10 +208,11 @@
 \@writefile{loa}{\addvspace {10\p@ }}
 \newlabel{chap.verzeichnisse}{{7}{33}{Listings}{chapter.7}{}}
 \@writefile{toc}{\contentsline {section}{\numberline {7.1}Bibliography}{33}{section.7.1}\protected@file@percent }
-\bibcite{marlsurvey}{{15}{}{{}}{{}}}
-\bibcite{Ephrati1993MultiAgentPA}{{16}{}{{}}{{}}}
-\bibcite{aicrowd_startpage}{{17}{}{{}}{{}}}
-\bibcite{entropy_shannon}{{18}{}{{}}{{}}}
+\bibcite{python_gil}{{15}{}{{}}{{}}}
+\bibcite{marlsurvey}{{16}{}{{}}{{}}}
+\bibcite{Ephrati1993MultiAgentPA}{{17}{}{{}}{{}}}
+\bibcite{aicrowd_startpage}{{18}{}{{}}{{}}}
+\bibcite{entropy_shannon}{{19}{}{{}}{{}}}
 \citation{flatland_docu}
 \@writefile{toc}{\contentsline {section}{\numberline {7.2}List of Figures}{35}{section.7.2}\protected@file@percent }
 \@writefile{toc}{\contentsline {section}{\numberline {7.3}List of Tables}{36}{section.7.3}\protected@file@percent }
