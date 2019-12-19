@@ -44,7 +44,7 @@ In some value-based algorithms such as Deep Q-Networks \cite{mnih2013playing}, a
 The second category of reinforcement learning algorithms is the so-called policy gradient-based methods. These methods aim to acquire a stochastic policy $\pi(s)$ that maximizes the expected future reward $\mathcal{R}$ by taking actions with certain probabilities. Taking actions based on probabilities solves an important issue of value-based methods, which is, that by taking greedy actions with respect to state  $\mathcal{s}$, the agent might not explore the whole state space and misses out on better ways to act in the environment.
 
 \subsection*{Asynchronous Advantage Actor-Critic Algorithm (A3C)}\label{a3c_intro}
-The progress in RL has led to algorithms that combine value-based and policy gradient-based methods, generally known as actor-critic algorithms. The \textit{asynchronous advantage actor-critic algorithm} (A3C), developed by Mnih et al. \cite{a3c} fits into this category. It uses both a policy $\pi(s)$ and a value function $\mathcal{V(s)}$.
+The progress in RL has led to algorithms that combine value-based and policy gradient-based methods, generally known as actor-critic algorithms. The \textit{Asynchronous Advantage Actor-Critic Algorithm} (A3C), developed by Mnih et al. \cite{a3c} fits into this category. It uses both a policy $\pi(s)$ and a value function $\mathcal{V(s)}$.
 Both are usually separate function approximators (neural networks in our case).
 \begin{itemize}
 	\item The \textbf{actor} can be seen as the policy $\pi(s)$, that selects the action $\mathcal{u}$ based on state $\mathcal{s}$.
