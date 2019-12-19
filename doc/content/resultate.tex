@@ -27,18 +27,22 @@ Our submission for round 1 contains the following components:
 	\item Distributed training over multiple processes on the same machine (no cross-machine distribution possible yet).
 \end{itemize}
 Using the performance evaluation system provided together with the Flatland environment, we reach the following performance metrics:
-
-\begin{tabular}{ |c|c|c|c| } 
-	\hline
-	\textbf{Author} & \textbf{Observation type} & \textbf{Local Evaluation Score} & \textbf{Submission Score} \\
-	\hline
-	S. Huschauer & reduced grid observation & 19.4\% & 16.6\% \\
-	& tree observation & 24.7\% & - \\
-	Meier/Roost & tree observation & 69.3\% & 48.9\% \\
-	\hline
-\end{tabular}
+\begin{table}[H]
+	\centering
+	\begin{tabular}{ |c|c|c|c| } 
+		\hline
+		\textbf{Author} & \textbf{Observation type} & \textbf{Local Evaluation Score} & \textbf{Submission Score} \\
+		\hline
+		S. Huschauer & reduced grid observation & 19.4\% & 16.6\% \\
+		& tree observation & 24.7\% & - \\
+		Meier/Roost & tree observation & 69.3\% & 48.9\% \\
+		\hline
+	\end{tabular}
+	\caption{Comparison of submission performance for Flatland challenge round 1.}
+	\label{table:results_round1}
+\end{table}
 \section{Round 2}
-Our submission for Flatland round 2 contains all in this work discussed improvements of the algorithm except communication. While a direct comparison is difficult due to a lack of a baseline version for round 2, we could still show in our experiments how our adjustments to the implementation improved the performance of our algorithm.\\
+Our submission for Flatland round 2 contains all in this work discussed improvements of the algorithm except communication. While a direct comparison is difficult due to a lack of a baseline version for round 2, we could still show in our experiments how our adjustments to the implementation improved the performance of our solution.\\
 To evaluate the performance of the final model, we create an experiment with an increasing number of agents. We use an environment of the dimensions 30x30 tiles and keep all other environment parameters to a fixed value. Only the number of agents gets increased. For each number of agents, we run 20 episodes and evaluate the median, the 0.25-quantile and the 0.75-quantile.
 \begin{figure}[H]
 	\begin{center}
