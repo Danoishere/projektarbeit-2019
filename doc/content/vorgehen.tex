@@ -21,16 +21,16 @@
 
 \chapter{Basic Implementation}\label{chap.basic_implementation}
 \section{A3C Implementation}\label{a3c_implementation}
-Originally, the Asynchronous Advantage Actor-Critic Algorithm (A3C) has been designed for use in a single agent environment \cite{a3c}.
+Originally, the Asynchronous Advantage Actor-Critic Algorithm has been designed for use in a single agent environment \cite{a3c}.
 By applying it in a multi-agent environment, we implicitly convert the environment into a non-stationary system.
 While applying A3C in a multi-agent setting, the other agents can be viewed as part of the environment. This means, the behavior of the environment changes while training, due to the fact that the behavior of the other agents changes.
-Gupta et al. find in \cite{multiagent_comp_a3c_dqn_etc}, that RL methods like Deep Q-networks (DQN) and Trust Region Policy Optimization (TRPO) are not performing well in a multi-agent environment, due to the combination of experience replay and non-stationarity of the environment. Unlike the baseline version from \cite{flatlandstephan}, we do not use an experience replay buffer with older episodes. Otherwise the sampled experience might represent old agent behavior which is then learned. Instead, we directly perform updates of the neural network using the latest episodes, as proposed in \cite{a3c}.\\
+Gupta et al. find in \cite{multiagent_comp_a3c_dqn_etc}, that RL methods like Deep Q-networks and Trust Region Policy Optimization (TRPO) are not performing well in a multi-agent environment, due to the combination of experience replay and non-stationarity of the environment. Unlike the baseline version from \cite{flatlandstephan}, we do not use an experience replay buffer with older episodes. Otherwise the sampled experience might represent old agent behavior which is then learned. Instead, we directly perform updates of the neural network using the latest episodes, as proposed in \cite{a3c}.\\
 An important implementation detail in our version is, that we do not perform updates during episodes but only at their end. The reason for this is, that the only possibility for an agent to receive reward is at the end of the episode. Therefore any previous update would have a reward of 0 and would not help the training process.
 
 \section{Entropy Balancing}\label{entropy_balancing_hyperparameter}
 In RL, it is of great importance to find the right combination of exploration and exploitation \cite{explorationexploitation}. During exploration, the agent explores as much of the state space as possible. This enables the agent to later exploit the found states that are beneficial. Without this exploration phase, there is a chance that the agent settles on sub-optimal policies too quickly and ignores parts of the state space the agent has never seen and therefore does not consider in his action selection. To avoid an early convergence in A3C, it is common to use an additional entropy term. This entropy term is defined as \cite{a3c}:
 \begin{gather*}
-H(p) = -\sum_{u=0}^{U}log(p_{u})*p_{u}
+H(p) = -\sum_{u=0}^{U}\log(p_{u})\cdot p_{u}
 \end{gather*}
 Where $\mathcal{p}$ is a possibility distribution over all available actions $\mathcal{U}$. The entropy is multiplied with a factor $\beta$ and added to the policy loss. This has an effect of preventing a convergence towards a single action, especially in the early phase of training. Without this entropy term, we often observe such an early convergence with grave consequences for the training performance. We start training with $\beta=0.0025$. This value proved to offer a nice balance between exploration and exploitation in our case. We also observe, that it is recommendable to reduce this factor $\beta$ to zero once a stage of training is achieved, in which the main objective of the training is not to find the fastest path but to evade collisions with other agents.
 \section{Observation Design}\label{enhanced_observations}
@@ -192,7 +192,7 @@ To quantify this improvement, we run an experiment to compare a version with LST
 \textit{Experiment Analysis}\\\\
 In \autoref{chart:lstm_comparison} it can be observed that an LSTM-layer helps the training process. While the initial training phase is slightly faster for the version without a recurrent layer, we observe a better overall performance and therefore keep the LSTM-layer as part of our solution.
 
-\subsection*{Curriculum Learning and Reward assignment}\label{curriculum_learning}
+\subsection*{Curriculum Learning and Reward Assignment}\label{curriculum_learning}
 The reward assignment in Flatland can be freely configured. But as long as there is not some distance-to-target dependent reward function, the probability that an agent with an uninformed policy finds its target station is small. This is especially the case for large environments with many trains on it. For example, most evaluation environments of Flatland round 2 have up to 200 individual agents and are up 100x100 tiles large \cite{flatland_faq}. The roll-out of such an environment takes a lot more time than the roll-out of a 20x20 environment with 5 trains. Also, the probability, that a train arrives in a small environment is larger and therefore, the experience is more valuable for training.
 To improve training times, it makes therefore sense to start with a small environment and move to larger ones, once the agents mastered pathfinding and basic collision avoidance.\\\\
 \textit{Experiment Setup}\\\\
@@ -207,7 +207,7 @@ In order to verify the meaningfulness of such a curriculum, we run an experiment
 		& \textbf{Level 3}
 		& \textbf{Level 4}\\
 		\hline
-		\textbf{Next level on successrate} & 70\% & 70\% & 75\% & 70\% & 60\% \\
+		\textbf{Next level on success rate} & 70\% & 70\% & 75\% & 70\% & 60\% \\
 		\textbf{Nr. of agent} & 4 & 8 & 12 & 16 & 20 \\
 		\textbf{Env. size} & 25x25 & 30x30  & 40x40 & 50x50 & 50x50 \\
 		\textbf{Num. cities} & 5 & 8 & 10  & 12 & 16 \\
@@ -301,7 +301,7 @@ While we are surprised that the communication does not look the same on every ep
 It is also interesting that agent 2 never seems to respond with the same action as agent\,1. The question, if such a behavior could be learned in a less constrained environment is discussed in \ref{chap.diskussion} \nameref{chap.diskussion}.
 \newpage
 \section{Distributed Architecture and Parallelism}\label{dist_architecture}
-\subsection*{Distributed training}
+\subsection*{Distributed Training}
 One of the main advantages of the A3C algorithm is its ability to be used in a distributed manner. This allows running multiple versions of the environment asynchronously and collect the updates for both the actor and the critic network in a central place. To fully take advantage of this mechanism, we implemented a system that allows to run a large number of environments at the same time. All running training-instances contribute to the same central network. Thanks to HTTP-based connections, we can use this mechanism even between computers or across networks. This approach is only limited by the capability of the central model server and the network throughput.\\
 Additionally, our central model server not only handles the update of the neural network but also distributes the code for building observations, predictions and a file with all hyperparameter required for training on startup. The startup process of the worker node then converts the code for building observations and predictions into native C-code using Cython. This converted code then gets compiled and dynamically imported as a Python module.\\
 Using native C-code speeds up the roll-out of the environment and therefore the training process by a factor of 2 to 5.

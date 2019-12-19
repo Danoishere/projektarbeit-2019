@@ -23,7 +23,7 @@
 \chaptermark{Foundations}
 \section{Reinforcement Learning}\label{reinforcementlearning}
 \subsection*{Basic Definitions}\label{basic_rl_definitions}
-In recent years, major progress has been achieved in the field of reinforcement learning (RL) \cite{mnih2013playing,alphazero,hideandseek}.
+In recent years, major progress has been achieved in the field of reinforcement learning \cite{mnih2013playing,alphazero,hideandseek}.
 In RL, an agent learns to perform a task by interacting with an environment $\mathcal{E}$ as displayed in \autoref{fig:rl_overview}. On every timestep $\mathcal{t}$ the agent $\mathcal{a}$ needs to take an action $\mathcal{u}$. The selection of this action $\mathcal{u}$ is based on the current observation $\mathcal{s}$. The success of the agent is measured by reward $\mathcal{R}$ received. If the agent does well, it receives a positive reward from the environment, if it does something bad, there is no or negative reward.
 \begin{figure}[H]
 	\centering
@@ -40,23 +40,24 @@ Value-based RL algorithms work by learning a value function $\mathcal{V(s)}$ thr
 \begin{gather*}
 loss_{value}=(\mathcal{R}-\mathcal{V(s)})^2
 \end{gather*}
-In some value-based algorithms such as Deep Q-Networks \cite{mnih2013playing}, a $\mathcal{Q(s,u)}$-function is used. This function tries to estimate the expected future reward on taking action $\mathcal{u}$ from the given state $\mathcal{s}$. We do not consider algorithms that use a $\mathcal{Q}$-function in this work.\\
+In some value-based algorithms such as Deep Q-Networks (DQN) \cite{mnih2013playing}, a $\mathcal{Q(s,u)}$-function is used. This function tries to estimate the expected future reward on taking action $\mathcal{u}$ from the given state $\mathcal{s}$. We do not consider algorithms that use a $\mathcal{Q}$-function in this work.\\
 The second category of reinforcement learning algorithms is the so-called policy gradient-based methods. These methods aim to acquire a stochastic policy $\pi(s)$ that maximizes the expected future reward $\mathcal{R}$ by taking actions with certain probabilities. Taking actions based on probabilities solves an important issue of value-based methods, which is, that by taking greedy actions with respect to state  $\mathcal{s}$, the agent might not explore the whole state space and misses out on better ways to act in the environment.
 
-\subsection*{Asynchronous Advantage Actor-Critic Algorithm (A3C)}\label{a3c_intro}
-The progress in RL has led to algorithms that combine value-based and policy gradient-based methods, generally known as actor-critic algorithms. The \textit{Asynchronous Advantage Actor-Critic Algorithm} (A3C), developed by Mnih et al. \cite{a3c} fits into this category. It uses both a policy $\pi(s)$ and a value function $\mathcal{V(s)}$.
+\subsection*{Asynchronous Advantage Actor-Critic Algorithm}\label{a3c_intro}
+The progress in RL has led to algorithms that combine value-based and policy gradient-based methods, generally known as actor-critic algorithms. The Asynchronous Advantage Actor-Critic Algorithm, developed by Mnih et al. \cite{a3c} fits into this category. It uses both a policy $\pi(s)$ and a value function $\mathcal{V(s)}$.
 Both are usually separate function approximators (neural networks in our case).
 \begin{itemize}
 	\item The \textbf{actor} can be seen as the policy $\pi(s)$, that selects the action $\mathcal{u}$ based on state $\mathcal{s}$.
 	\item The \textbf{critic} is the value function $\mathcal{V(s)}$ that estimates, how much reward can be expected from a certain state  $\mathcal{s}$ on.
 \end{itemize}
-To enhance the process of learning policy $\pi(s)$, the policy loss gets multiplied by the difference between actually received reward $\mathcal{R}$ and the estimated future reward $\mathcal{V(s)}$. This difference is called the advantage $\mathcal{A}$.
+To enhance the process of learning policy $\pi(s)$, the policy loss gets multiplied by the difference between actually received reward $\mathcal{R}$ and the estimated future reward $\mathcal{V(s)}$.\\
+This difference is called the advantage $\mathcal{A}$.
 \begin{gather*}
 \mathcal{A}=\mathcal{R}-\mathcal{V(s)}
 \end{gather*}
 This advantage is then used to update the policy.
 \begin{gather*}
-loss_{policy}=-log(\pi(s_{t}))*\mathcal{A}
+loss_{policy}=-\log(\pi(s_{t}))\cdot\mathcal{A}
 \end{gather*}
 For actions where the received reward $\mathcal{R}$ exceeds the expected reward $\mathcal{V(s)}$ the policy update gets multiplied by a positive advantage. Therefore, the update of the neural network gets adjusted into a direction that favors experienced actions.\\
 What makes A3C different from other actor-critic algorithms is, that it can be used in a distributed way. Many workers work at the same time on a centralized model. How we take advantage of these features is discussed in
@@ -91,9 +92,11 @@ The goal of each agent is to reach an assigned target train station as fast as p
 The Flatland environment allows creating observation builders to observe the environment for each agent. While it is possible to observe the whole grid, this does usually not make sense due to the fact that many parts of the rail grid are not relevant to a single train. Flatland offers by default two different observation builders.\\\\
 \textbf{GlobalObsForRailEnv} creates three arrays with the dimensions of the rectangular rail grid. The first array contains the transition information of the rail grid. For each cell, there are 16 bit values, 4 bit for each possible direction a train is facing.\\\\
 \textbf{TreeObsForRailEnv} creates a graph with sections of the grid as nodes from the perspective of the train.
-This means, only the switches which the train is actually able to take define a single node. As an example, a train on a \textit{case 0} switch heading from the top to the bottom is not able to make a decision on this switch and therefore, the TreeObsForRailEnv does not put the sections before and after the switch into two different nodes but just into a single node.\\
-The nodes of the tree observation offer a number of fields that allow selecting specific features to create numeric input vectors for function approximators such as neural networks. The tree observation builder offers 14 distinct features for each rail section. These include:\begin{itemize}
-	\item Distance until own target encountered: Cell distance to the own target railway station. \textit{Infinity} if the target railway station for the agent is not in this section.	\item Distance to other agent encountered: Cell distance to the next other agent on this section.
+This means, only the switches which the train is actually able to take define a single node. As an example, a train on a \textit{case 2} switch heading from the top to the bottom is not able to make a decision on this switch and therefore, the TreeObsForRailEnv does not put the sections before and after the switch into two different nodes but just into a single node.\\
+The nodes of the tree observation offer a number of fields that allow selecting specific features to create numeric input vectors for function approximators such as neural networks. The tree observation builder offers 14 distinct features for each rail section. These include:
+\begin{itemize}
+	\item Distance until own target encountered: Cell distance to the own target railway station. \textit{Infinity} if the target railway station for the agent is not in this section.
+	\item Distance to other agent encountered: Cell distance to the next other agent on this section.
 	\item Distance to next branch: The length of this section in number of tiles.
 	\item Minimum distance to target: The minimal cell distance to the target after this section is finished.
 	\item Child nodes: The nodes the agent is able to take after this section ends. Each child node is associated with a direction (left, forward, right).
