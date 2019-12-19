@@ -1,4 +1,6 @@
 \select@language {english}
+\select@language {german}
+\select@language {english}
 \addvspace {10\p@ }
 \addvspace {10\p@ }
 \contentsline {figure}{\numberline {2.1}{\ignorespaces Reinforcement learning overview\relax }}{8}{figure.caption.10}% 
@@ -13,7 +15,7 @@
 \contentsline {figure}{\numberline {4.3}{\ignorespaces Comparison of training performance between a version with an LSTM-layer and a version without. It is evident that the version with LSTM performs better than the version without.\relax }}{20}{figure.caption.26}% 
 \contentsline {figure}{\numberline {4.4}{\ignorespaces Comparison of training performance between a version with and a version without curriculum learning. \relax }}{22}{figure.caption.29}% 
 \contentsline {figure}{\numberline {4.5}{\ignorespaces Screenshot of the communication experiment setup.\relax }}{24}{figure.caption.31}% 
-\contentsline {figure}{\numberline {4.6}{\ignorespaces Simplified procedure of training of a single worker process. The communication between the worker and the model server works by using HTTP. The compilation of the observation.pyx file is only done once on each machine.\relax }}{26}{figure.caption.34}% 
+\contentsline {figure}{\numberline {4.6}{\ignorespaces Simplified procedure of training of a single worker process. The communication between the worker and the model server works by using HTTP. The compilation of the .pyx-files is only done once on each machine.\relax }}{26}{figure.caption.34}% 
 \contentsline {figure}{\numberline {4.7}{\ignorespaces Illustration of distributed architectures with the main node (node 1) and several additional nodes (2-w) connected over HTTP.\relax }}{27}{figure.caption.35}% 
 \contentsline {figure}{\numberline {4.8}{\ignorespaces Comparison of training with 1 worker and with 7 workers\relax }}{27}{figure.caption.36}% 
 \addvspace {10\p@ }

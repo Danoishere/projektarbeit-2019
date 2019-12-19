@@ -1,4 +1,6 @@
 \select@language {english}
+\select@language {german}
+\select@language {english}
 \contentsline {chapter}{\numberline {1}Introduction}{6}{chapter.1}% 
 \contentsline {section}{\numberline {1.1}Baseline}{6}{section.1.1}% 
 \contentsline {section}{\numberline {1.2}Goal of this work}{7}{section.1.2}% 
@@ -29,4 +31,5 @@
 \contentsline {section}{\numberline {7.4}Glossary}{37}{section.7.4}% 
 \contentsline {section}{\numberline {7.5}Abbreviations}{38}{section.7.5}% 
 \contentsline {chapter}{\numberline {8}Appendix}{39}{chapter.8}% 
-\contentsline {section}{\numberline {8.1}Official assignment}{39}{section.8.1}% 
+\contentsline {section}{\numberline {8.1}USB Flash Drive Content}{39}{section.8.1}% 
+\contentsline {section}{\numberline {8.2}Official assignment}{39}{section.8.2}% 
