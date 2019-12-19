@@ -66,7 +66,7 @@ In \autoref{table:used_technologies}, the most important libraries and framework
 		\hline
 		\textbf{Technology}	& \textbf{Version} & \textbf{Description}\\
 		\hline
-		Cython & 0.29.14 & Cython allows to compile Python code to natively running C code. We use Cython to speed up our observations on the rail environment.\\
+		Cython & 0.29.14 & Cython allows to compile Python code to natively running C code. We use Cython to speed up our predictions and observations of the rail environment.\\
 		\hline
 		Flask & 1.1.1 & We use Flask as our central model server (see \nameref{dist_architecture}). This Flask application collects gradient updates, distributes the current network weights and allows access to the latest versions of the observation and parameter files.\\
 		\hline
@@ -303,12 +303,12 @@ It is also interesting that agent 2 never seems to respond with the same action 
 \section{Distributed Architecture and Parallelism}\label{dist_architecture}
 \subsection*{Distributed training}
 One of the main advantages of the A3C algorithm is its ability to be used in a distributed manner. This allows running multiple versions of the environment asynchronously and collect the updates for both the actor and the critic network in a central place. To fully take advantage of this mechanism, we implemented a system that allows to run a large number of environments at the same time. All running training-instances contribute to the same central network. Thanks to HTTP-based connections, we can use this mechanism even between computers or across networks. This approach is only limited by the capability of the central model server and the network throughput.\\
-Additionally, our central model server not only handles the update of the neural network but also distributes both the code for building observations and a file with all hyperparameter required for training on startup. The startup process of the worker node then converts the code for building observations into native C-code using Cython. This converted code then gets compiled and dynamically imported as a Python module.\\
+Additionally, our central model server not only handles the update of the neural network but also distributes the code for building observations, predictions and a file with all hyperparameter required for training on startup. The startup process of the worker node then converts the code for building observations and predictions into native C-code using Cython. This converted code then gets compiled and dynamically imported as a Python module.\\
 Using native C-code speeds up the roll-out of the environment and therefore the training process by a factor of 2 to 5.
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=300pt]{diagrams/distributed_training_update.pdf}
-	\caption{Simplified procedure of training of a single worker process. The communication between the worker and the model server works by using HTTP. The compilation of the observation.pyx file is only done once on each machine.}
+	\includegraphics[width=300pt]{diagrams/distributed_training_update_2.pdf}
+	\caption{Simplified procedure of training of a single worker process. The communication between the worker and the model server works by using HTTP. The compilation of the .pyx-files is only done once on each machine.}
 	\label{obs_descr} %TODO: change
 \end{figure}
 To improve the performance of the system, we compress both the weights (server to the worker) and the gradient update (worker to the server) using ZLIB. This reduces the size of the transmitted data between 10\% to 80\%.
