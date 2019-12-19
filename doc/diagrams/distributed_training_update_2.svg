@@ -1,0 +1,289 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generiert durch Microsoft Visio, SVG Export distributed_training_update_2.svg Page-1 -->
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:ev="http://www.w3.org/2001/xml-events"
+		xmlns:v="http://schemas.microsoft.com/visio/2003/SVGExtensions/" width="11.6929in" height="8.26772in"
+		viewBox="0 0 841.89 595.276" xml:space="preserve" color-interpolation-filters="sRGB" class="st12">
+	<v:documentProperties v:langID="1031" v:metric="true" v:viewMarkup="false">
+		<v:userDefs>
+			<v:ud v:nameU="msvNoAutoConnect" v:prompt="" v:val="VT0(1):26"/>
+		</v:userDefs>
+	</v:documentProperties>
+
+	<style type="text/css">
+	<![CDATA[
+		.st1 {fill:#ffffff;stroke:#000000;stroke-linecap:round;stroke-linejoin:round;stroke-width:0.75}
+		.st2 {stroke:#000000;stroke-dasharray:1.66346,1.18819;stroke-linecap:round;stroke-linejoin:round;stroke-width:0.237638}
+		.st3 {fill:#000000;font-family:TeXGyrePagella;font-size:1.00001em;font-weight:bold}
+		.st4 {marker-end:url(#mrkr4-32);stroke:#000000;stroke-linecap:round;stroke-linejoin:round;stroke-width:0.237638}
+		.st5 {fill:#000000;fill-opacity:1;stroke:#000000;stroke-opacity:1;stroke-width:0.068333106914821}
+		.st6 {fill:#ffffff;stroke:none;stroke-linecap:butt;stroke-width:7.2}
+		.st7 {fill:#000000;font-family:TeXGyrePagella;font-size:0.666664em}
+		.st8 {marker-end:url(#mrkr3-40);stroke:#000000;stroke-dasharray:1.66346,1.18819;stroke-linecap:round;stroke-linejoin:round;stroke-width:0.237638}
+		.st9 {font-size:1em}
+		.st10 {marker-start:url(#mrkr3-87);stroke:#000000;stroke-dasharray:1.68,1.2;stroke-linecap:round;stroke-linejoin:round;stroke-width:0.24}
+		.st11 {fill:#000000;fill-opacity:1;stroke:#000000;stroke-opacity:1;stroke-width:0.057142857142857}
+		.st12 {fill:none;fill-rule:evenodd;font-size:12px;overflow:visible;stroke-linecap:square;stroke-miterlimit:3}
+	]]>
+	</style>
+
+	<defs id="Markers">
+		<g id="lend4">
+			<path d="M 2 1 L 0 0 L 2 -1 L 2 1 " style="stroke:none"/>
+		</g>
+		<marker id="mrkr4-32" class="st5" v:arrowType="4" v:arrowSize="3" v:setback="29.2684" refX="-29.268389662028" orient="auto"
+				markerUnits="strokeWidth" overflow="visible">
+			<use xlink:href="#lend4" transform="scale(-14.634194831014,-14.634194831014) "/>
+		</marker>
+		<g id="lend3">
+			<path d="M 2 1 L 0 0 L 2 -1 " style="stroke-linecap:round;stroke-linejoin:round;fill:none"/>
+		</g>
+		<marker id="mrkr3-40" class="st5" v:arrowType="3" v:arrowSize="3" orient="auto" markerUnits="strokeWidth"
+				overflow="visible">
+			<use xlink:href="#lend3" transform="scale(-14.634194831014,-14.634194831014) "/>
+		</marker>
+		<marker id="mrkr3-87" class="st11" v:arrowType="3" v:arrowSize="4" orient="auto" markerUnits="strokeWidth"
+				overflow="visible">
+			<use xlink:href="#lend3" transform="scale(17.5) "/>
+		</marker>
+	</defs>
+	<g v:mID="6" v:index="1" v:groupContext="foregroundPage">
+		<v:userDefs>
+			<v:ud v:nameU="visNavType" v:val="VT0(1):26"/>
+			<v:ud v:nameU="msvThemeOrder" v:val="VT0(0):26"/>
+		</v:userDefs>
+		<title>Zeichenblatt-1</title>
+		<v:pageProperties v:drawingScale="0.0393701" v:pageScale="0.0393701" v:drawingUnits="24" v:shadowOffsetX="8.50394"
+				v:shadowOffsetY="-8.50394"/>
+		<v:layer v:name="Verbinder" v:index="0"/>
+		<g id="group1-1" transform="translate(117.921,-392.598)" v:mID="1" v:groupContext="group">
+			<v:userDefs>
+				<v:ud v:nameU="visVersion" v:prompt="" v:val="VT0(15):26"/>
+				<v:ud v:nameU="ShowActor" v:prompt="" v:val="VT0(0):5"/>
+				<v:ud v:nameU="ShowDestruction" v:prompt="" v:val="VT0(0):5"/>
+				<v:ud v:nameU="visNavOrder" v:val="VT0(1000):26"/>
+			</v:userDefs>
+			<title>Objektlebenslinie.26</title>
+			<desc>Worker n</desc>
+			<g id="shape2-2" v:mID="2" v:groupContext="shape" transform="translate(27.4961,0)">
+				<title>Tabelle.2</title>
+				<rect x="0" y="569.764" width="51.0236" height="25.5118" class="st1"/>
+			</g>
+			<g id="shape3-4" v:mID="3" v:groupContext="shape" transform="translate(44.5039,-29.0551)">
+				<title>Tabelle.3</title>
+				<path d="M8.5 595.28 a0 0 0 1 1 0 0 a0 0 0 1 1 0 0 Z" class="st1"/>
+			</g>
+			<g id="shape4-6" v:mID="4" v:groupContext="shape" transform="translate(35.3386,228.796)">
+				<title>Tabelle.4</title>
+			</g>
+			<g id="shape5-8" v:mID="5" v:groupContext="shape" transform="translate(648.283,595.276) rotate(90)">
+				<title>Tabelle.5</title>
+				<path d="M0 595.28 L211.18 595.28" class="st2"/>
+			</g>
+			<g id="shape1-11" v:mID="1" v:groupContext="groupContent">
+				<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
+				<v:textRect cx="53.0079" cy="582.52" width="106.02" height="25.5118"/>
+				<rect x="0" y="569.764" width="106.016" height="25.5118" class="st1"/>
+				<text x="27.17" y="586.12" class="st3" v:langID="2055"><v:paragraph v:horizAlign="1"/><v:tabList/>Worker n</text>			</g>
+		</g>
+		<g id="group6-14" transform="translate(286.299,-392.598)" v:mID="6" v:groupContext="group">
+			<v:userDefs>
+				<v:ud v:nameU="visVersion" v:prompt="" v:val="VT0(15):26"/>
+				<v:ud v:nameU="ShowActor" v:prompt="" v:val="VT0(0):5"/>
+				<v:ud v:nameU="ShowDestruction" v:prompt="" v:val="VT0(0):5"/>
+				<v:ud v:nameU="visNavOrder" v:val="VT0(2000):26"/>
+			</v:userDefs>
+			<title>Objektlebenslinie.26.6</title>
+			<desc>Model Server</desc>
+			<g id="shape7-15" v:mID="7" v:groupContext="shape" transform="translate(22.6772,0)">
+				<title>Tabelle.7</title>
+				<rect x="0" y="569.764" width="51.0236" height="25.5118" class="st1"/>
+			</g>
+			<g id="shape8-17" v:mID="8" v:groupContext="shape" transform="translate(39.685,-29.0551)">
+				<title>Tabelle.8</title>
+				<path d="M8.5 595.28 a0 0 0 1 1 0 0 a0 0 0 1 1 0 0 Z" class="st1"/>
+			</g>
+			<g id="shape9-19" v:mID="9" v:groupContext="shape" transform="translate(32.126,217.458)">
+				<title>Tabelle.9</title>
+			</g>
+			<g id="shape10-21" v:mID="10" v:groupContext="shape" transform="translate(643.465,595.276) rotate(90)">
+				<title>Tabelle.10</title>
+				<path d="M0 595.28 L199.84 595.28" class="st2"/>
+			</g>
+			<g id="shape6-24" v:mID="6" v:groupContext="groupContent">
+				<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
+				<v:textRect cx="48.189" cy="582.52" width="96.38" height="25.5118"/>
+				<rect x="0" y="569.764" width="96.378" height="25.5118" class="st1"/>
+				<text x="11.02" y="586.12" class="st3" v:langID="2055"><v:paragraph v:horizAlign="1"/><v:tabList/>Model Server</text>			</g>
+		</g>
+		<g id="shape11-27" v:mID="11" v:groupContext="shape" v:layerMember="0" transform="translate(170.929,-375.591)">
+			<title>Nachricht</title>
+			<desc>get training files</desc>
+			<v:userDefs>
+				<v:ud v:nameU="IsReturn" v:prompt="" v:val="VT0(0):5"/>
+				<v:ud v:nameU="IsAsync" v:prompt="" v:val="VT0(0):26"/>
+				<v:ud v:nameU="IsSelfMessage" v:prompt="" v:val="VT0(0):5"/>
+				<v:ud v:nameU="visVersion" v:prompt="" v:val="VT0(15):26"/>
+				<v:ud v:nameU="visNavOrder" v:val="VT0(3000):26"/>
+			</v:userDefs>
+			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
+			<v:textRect cx="81.7795" cy="588.189" width="67.62" height="17.6036"/>
+			<path d="M0 588.19 L156.6 588.19" class="st4"/>
+			<rect v:rectContext="textBkgnd" x="52.9714" y="583.389" width="57.6161" height="9.59985" class="st6"/>
+			<text x="52.97" y="590.59" class="st7" v:langID="2055"><v:paragraph v:horizAlign="1"/><v:tabList/>get training files</text>		</g>
+		<g id="shape13-35" v:mID="13" v:groupContext="shape" v:layerMember="0" transform="translate(334.488,-358.583)">
+			<title>Antwortnachricht</title>
+			<desc>observations.pyx, network.pyx params.py</desc>
+			<v:userDefs>
+				<v:ud v:nameU="IsReturn" v:prompt="" v:val="VT0(1):5"/>
+				<v:ud v:nameU="IsAsync" v:prompt="" v:val="VT0(0):26"/>
+				<v:ud v:nameU="IsSelfMessage" v:prompt="" v:val="VT0(0):5"/>
+				<v:ud v:nameU="visVersion" v:prompt="" v:val="VT0(15):26"/>
+				<v:ud v:nameU="visNavOrder" v:val="VT0(4000):26"/>
+			</v:userDefs>
+			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
+			<v:textRect cx="-81.7795" cy="588.189" width="119.57" height="27.2035"/>
+			<path d="M0 588.19 L-163.56 588.19" class="st8"/>
+			<rect v:rectContext="textBkgnd" x="-136.56" y="578.589" width="109.56" height="19.1997" class="st6"/>
+			<text x="-136.56" y="585.79" class="st7" v:langID="2055"><v:paragraph v:horizAlign="1"/><v:tabList/>observations.pyx, network.pyx<v:lf/><tspan
+						x="-100.62" dy="1.2em" class="st9">params.py</tspan></text>		</g>
+		<g id="shape21-44" v:mID="21" v:groupContext="shape" transform="translate(110.551,-326.126)">
+			<title>Tabelle.21</title>
+			<desc>Compile observations.pyx, network.pyx</desc>
+			<v:userDefs>
+				<v:ud v:nameU="visNavOrder" v:val="VT0(6000):26"/>
+			</v:userDefs>
+			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
+			<v:textRect cx="62.3622" cy="582.52" width="124.73" height="25.5118"/>
+			<rect x="0" y="569.764" width="124.724" height="25.5118" class="st1"/>
+			<text x="14.95" y="580.12" class="st7" v:langID="2055"><v:paragraph v:horizAlign="1"/><v:tabList/>Compile observations.pyx,<v:lf/><tspan
+						x="39.8" dy="1.2em" class="st9">network.pyx</tspan></text>		</g>
+		<g id="shape22-48" v:mID="22" v:groupContext="shape" transform="translate(110.551,-248.032)">
+			<title>Tabelle.22</title>
+			<desc>Episode rollout</desc>
+			<v:userDefs>
+				<v:ud v:nameU="visNavOrder" v:val="VT0(7000):26"/>
+			</v:userDefs>
+			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
+			<v:textRect cx="62.3622" cy="588.189" width="124.73" height="14.1732"/>
+			<rect x="0" y="581.102" width="124.724" height="14.1732" class="st1"/>
+			<text x="35.12" y="590.59" class="st7" v:langID="2055"><v:paragraph v:horizAlign="1"/><v:tabList/>Episode rollout</text>		</g>
+		<g id="shape23-51" v:mID="23" v:groupContext="shape" v:layerMember="0" transform="translate(170.929,-295.512)">
+			<title>Nachricht.23</title>
+			<desc>get current network weights</desc>
+			<v:userDefs>
+				<v:ud v:nameU="IsReturn" v:prompt="" v:val="VT0(0):5"/>
+				<v:ud v:nameU="IsAsync" v:prompt="" v:val="VT0(0):26"/>
+				<v:ud v:nameU="IsSelfMessage" v:prompt="" v:val="VT0(0):5"/>
+				<v:ud v:nameU="visVersion" v:prompt="" v:val="VT0(15):26"/>
+				<v:ud v:nameU="visNavOrder" v:val="VT0(8000):26"/>
+			</v:userDefs>
+			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
+			<v:textRect cx="81.7795" cy="588.189" width="110.37" height="17.6036"/>
+			<path d="M0 588.19 L156.6 588.19" class="st4"/>
+			<rect v:rectContext="textBkgnd" x="31.5996" y="583.389" width="100.36" height="9.59985" class="st6"/>
+			<text x="31.6" y="590.59" class="st7" v:langID="2055"><v:paragraph v:horizAlign="1"/><v:tabList/>get current network weights</text>		</g>
+		<g id="shape24-58" v:mID="24" v:groupContext="shape" v:layerMember="0" transform="translate(334.488,-277.512)">
+			<title>Antwortnachricht.24</title>
+			<desc>weights of the neural network</desc>
+			<v:userDefs>
+				<v:ud v:nameU="IsReturn" v:prompt="" v:val="VT0(1):5"/>
+				<v:ud v:nameU="IsAsync" v:prompt="" v:val="VT0(0):26"/>
+				<v:ud v:nameU="IsSelfMessage" v:prompt="" v:val="VT0(0):5"/>
+				<v:ud v:nameU="visVersion" v:prompt="" v:val="VT0(15):26"/>
+				<v:ud v:nameU="visNavOrder" v:val="VT0(9000):26"/>
+			</v:userDefs>
+			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
+			<v:textRect cx="-81.7795" cy="588.189" width="116.62" height="17.6036"/>
+			<path d="M0 588.19 L-163.56 588.19" class="st8"/>
+			<rect v:rectContext="textBkgnd" x="-135.084" y="583.389" width="106.608" height="9.59985" class="st6"/>
+			<text x="-135.08" y="590.59" class="st7" v:langID="2055"><v:paragraph v:horizAlign="1"/><v:tabList/>weights of the neural network</text>		</g>
+		<g id="shape26-65" v:mID="26" v:groupContext="shape" transform="translate(110.551,-229.606)">
+			<title>Tabelle.26</title>
+			<desc>Calculate gradient update</desc>
+			<v:userDefs>
+				<v:ud v:nameU="visNavOrder" v:val="VT0(10000):26"/>
+			</v:userDefs>
+			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
+			<v:textRect cx="62.3622" cy="588.189" width="124.73" height="14.1732"/>
+			<rect x="0" y="581.102" width="124.724" height="14.1732" class="st1"/>
+			<text x="16.35" y="590.59" class="st7" v:langID="2055"><v:paragraph v:horizAlign="1"/><v:tabList/>Calculate gradient update</text>		</g>
+		<g id="shape27-68" v:mID="27" v:groupContext="shape" v:layerMember="0" transform="translate(170.929,-205.512)">
+			<title>Nachricht.27</title>
+			<desc>post gradient update</desc>
+			<v:userDefs>
+				<v:ud v:nameU="IsReturn" v:prompt="" v:val="VT0(0):5"/>
+				<v:ud v:nameU="IsAsync" v:prompt="" v:val="VT0(0):26"/>
+				<v:ud v:nameU="IsSelfMessage" v:prompt="" v:val="VT0(0):5"/>
+				<v:ud v:nameU="visVersion" v:prompt="" v:val="VT0(15):26"/>
+				<v:ud v:nameU="visNavOrder" v:val="VT0(11000):26"/>
+			</v:userDefs>
+			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
+			<v:textRect cx="81.7795" cy="588.189" width="84.06" height="17.6036"/>
+			<path d="M0 588.19 L156.6 588.19" class="st4"/>
+			<rect v:rectContext="textBkgnd" x="44.7515" y="583.389" width="74.0561" height="9.59985" class="st6"/>
+			<text x="44.75" y="590.59" class="st7" v:langID="2055"><v:paragraph v:horizAlign="1"/><v:tabList/>post gradient update</text>		</g>
+		<g id="shape29-75" v:mID="29" v:groupContext="shape" v:layerMember="0" transform="translate(334.488,-187.512)">
+			<title>Antwortnachricht.29</title>
+			<desc>confirm gradient update</desc>
+			<v:userDefs>
+				<v:ud v:nameU="IsReturn" v:prompt="" v:val="VT0(1):5"/>
+				<v:ud v:nameU="IsAsync" v:prompt="" v:val="VT0(0):26"/>
+				<v:ud v:nameU="IsSelfMessage" v:prompt="" v:val="VT0(0):5"/>
+				<v:ud v:nameU="visVersion" v:prompt="" v:val="VT0(15):26"/>
+				<v:ud v:nameU="visNavOrder" v:val="VT0(12000):26"/>
+			</v:userDefs>
+			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
+			<v:textRect cx="-81.7795" cy="588.189" width="96.68" height="17.6036"/>
+			<path d="M0 588.19 L-163.56 588.19" class="st8"/>
+			<rect v:rectContext="textBkgnd" x="-125.116" y="583.389" width="86.672" height="9.59985" class="st6"/>
+			<text x="-125.12" y="590.59" class="st7" v:langID="2055"><v:paragraph v:horizAlign="1"/><v:tabList/>confirm gradient update</text>		</g>
+		<g id="shape37-82" v:mID="37" v:groupContext="shape" transform="translate(766.205,274.677) rotate(90)">
+			<title>Mehrzeilig</title>
+			<v:userDefs>
+				<v:ud v:nameU="VertexCount" v:prompt="" v:val="VT0(4):26"/>
+				<v:ud v:nameU="SegmentType" v:prompt="" v:val="VT0(1):26"/>
+				<v:ud v:nameU="DrawType" v:prompt="" v:val="VT0(1):26"/>
+				<v:ud v:nameU="StartWidth" v:prompt="" v:val="VT0(0.15748031496063):24"/>
+				<v:ud v:nameU="EndWidth" v:prompt="" v:val="VT0(0.098425196850394):24"/>
+				<v:ud v:nameU="LastAngle" v:prompt="" v:val="VT0(0.30740473958158):32"/>
+				<v:ud v:nameU="CtrlAngle" v:prompt="" v:val="VT0(-1.6848418692298):32"/>
+				<v:ud v:nameU="ArrowFeatherAngle" v:prompt="" v:val="VT0(8.5828366555725):32"/>
+				<v:ud v:nameU="ArrowFeatherDist" v:prompt="" v:val="VT0(0.19813752425262):24"/>
+				<v:ud v:nameU="Joint1_2Pcnt" v:prompt="" v:val="VT0(0.3618647311596):26"/>
+				<v:ud v:nameU="Joint1_2Angle" v:prompt="" v:val="VT0(1.4614082470262):32"/>
+				<v:ud v:nameU="Joint2_3Pcnt" v:prompt="" v:val="VT0(0.73909384961246):26"/>
+				<v:ud v:nameU="Joint2_3Angle" v:prompt="" v:val="VT0(1.436823758849):32"/>
+				<v:ud v:nameU="Joint3_4Pcnt" v:prompt="" v:val="VT0(1):26"/>
+				<v:ud v:nameU="Joint3_4Angle" v:prompt="" v:val="VT0(1.8782010663765):32"/>
+				<v:ud v:nameU="Joint4_5Pcnt" v:prompt="" v:val="VT0(1):26"/>
+				<v:ud v:nameU="Joint4_5Angle" v:prompt="" v:val="VT0(1.8782010663765):32"/>
+				<v:ud v:nameU="Joint5_6Pcnt" v:prompt="" v:val="VT0(1):26"/>
+				<v:ud v:nameU="Joint5_6Angle" v:prompt="" v:val="VT0(1.8782010663765):32"/>
+				<v:ud v:nameU="Joint6_7Pcnt" v:prompt="" v:val="VT0(1):26"/>
+				<v:ud v:nameU="Joint6_7Angle" v:prompt="" v:val="VT0(1.8782010663765):32"/>
+				<v:ud v:nameU="Joint7_8Pcnt" v:prompt="" v:val="VT0(1):26"/>
+				<v:ud v:nameU="Joint7_8Angle" v:prompt="" v:val="VT0(1.8782010663765):32"/>
+				<v:ud v:nameU="Joint8_9Pcnt" v:prompt="" v:val="VT0(1):26"/>
+				<v:ud v:nameU="Joint8_9Angle" v:prompt="" v:val="VT0(1.8782010663765):32"/>
+				<v:ud v:nameU="visVersion" v:prompt="" v:val="VT0(15):26"/>
+				<v:ud v:nameU="LastAngle" v:prompt="" v:val="VT0(1.5707963246926):32"/>
+				<v:ud v:nameU="CtrlAngle" v:prompt="" v:val="VT0(-1.7647279721312):32"/>
+				<v:ud v:nameU="ArrowFeatherAngle" v:prompt="" v:val="VT0(11.189505928696):32"/>
+				<v:ud v:nameU="ArrowFeatherDist" v:prompt="" v:val="VT0(0.2006110236733):24"/>
+				<v:ud v:nameU="Joint1_2Pcnt" v:prompt="" v:val="VT0(0.24794399947034):26"/>
+				<v:ud v:nameU="Joint1_2Angle" v:prompt="" v:val="VT0(0.78747285270625):32"/>
+				<v:ud v:nameU="Joint2_3Pcnt" v:prompt="" v:val="VT0(0.75205813499503):26"/>
+				<v:ud v:nameU="Joint2_3Angle" v:prompt="" v:val="VT0(2.3561944891412):32"/>
+				<v:ud v:nameU="Joint3_4Angle" v:prompt="" v:val="VT0(3.1415926514875):32"/>
+				<v:ud v:nameU="Joint4_5Angle" v:prompt="" v:val="VT0(3.1415926514875):32"/>
+				<v:ud v:nameU="Joint5_6Angle" v:prompt="" v:val="VT0(3.1415926514875):32"/>
+				<v:ud v:nameU="Joint6_7Angle" v:prompt="" v:val="VT0(3.1415926514875):32"/>
+				<v:ud v:nameU="Joint7_8Angle" v:prompt="" v:val="VT0(3.1415926514875):32"/>
+				<v:ud v:nameU="Joint8_9Angle" v:prompt="" v:val="VT0(3.1415926514875):32"/>
+				<v:ud v:nameU="visNavOrder" v:val="VT0(13000):26"/>
+			</v:userDefs>
+			<path d="M0 595.28 L0.28 663.59 L139.18 663.59 L139.18 595.28" class="st10"/>
+		</g>
+	</g>
+</svg>
