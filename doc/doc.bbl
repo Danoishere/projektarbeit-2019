@@ -23,8 +23,8 @@
 
 \bibitem{aicrowd}
 \BIBentryALTinterwordspacing
- [Online]. Available:
-  \url{https://www.aicrowd.com/challenges/flatland-challenge}
+{E. Nygren, S. Mohanty}. Flatland challenge. [Accessed: 2019-11-13]. [Online].
+  Available: \url{https://www.aicrowd.com/challenges/flatland-challenge}
 \BIBentrySTDinterwordspacing
 
 \bibitem{flatlandstephan}
@@ -41,7 +41,9 @@ G.~Bacchiani, D.~Molinari, and M.~Patander, ``Microscopic traffic simulation by
 
 \bibitem{flatland_docu}
 \BIBentryALTinterwordspacing
- [Online]. Available:
+{E. Nygren, S. Mohanty, C. Baumberger, C. Eichenberger, A. Egli, M.
+  Ljungström, G. Mollard, G. Spigler, J. Watson}. Flatland documentation.
+  [Accessed: 2019-12-01]. [Online]. Available:
   \url{http://flatland-rl-docs.s3-website.eu-central-1.amazonaws.com/}
 \BIBentrySTDinterwordspacing
 
@@ -86,7 +88,7 @@ R.~S. Sutton, D.~McAllester, S.~Singh, and Y.~Mansour, ``Policy gradient
 
 \bibitem{flatland_faq}
 \BIBentryALTinterwordspacing
- [Online]. Available:
+{E. Nygren}. Flatland faq. [Accessed: 2019-12-09]. [Online]. Available:
   \url{https://gitlab.aicrowd.com/flatland/flatland/blob/master/FAQ_Challenge.md/}
 \BIBentrySTDinterwordspacing
 
@@ -103,13 +105,16 @@ L.~Rusch, ``Exploration-exploitation trade-off in deep reinforcement
 
 \bibitem{flatland_spec}
 \BIBentryALTinterwordspacing
- [Online]. Available:
+{E. Nygren, S. Mohanty, C. Baumberger, C. Eichenberger, A. Egli, M.
+  Ljungström, G. Mollard, G. Spigler, J. Watson}. Flatland specification.
+  [Accessed: 2019-12-07]. [Online]. Available:
   \url{http://flatland-rl-docs.s3-website.eu-central-1.amazonaws.com/04_specifications.html/}
 \BIBentrySTDinterwordspacing
 
 \bibitem{python_gil}
 \BIBentryALTinterwordspacing
- [Online]. Available: \url{https://wiki.python.org/moin/GlobalInterpreterLock}
+Python - global interpreter lock. [Accessed: 2019-12-19]. [Online]. Available:
+  \url{https://wiki.python.org/moin/GlobalInterpreterLock}
 \BIBentrySTDinterwordspacing
 
 \bibitem{marlsurvey}
@@ -122,7 +127,8 @@ E.~Ephrati and J.~S. Rosenschein, ``Multi-agent planning as the process of
 
 \bibitem{aicrowd_startpage}
 \BIBentryALTinterwordspacing
- [Online]. Available: \url{https://www.aicrowd.com/}
+Aicrowd: Crowdsourcing ai to solve real-world problems. [Accessed: 2019-12-17].
+  [Online]. Available: \url{https://www.aicrowd.com/}
 \BIBentrySTDinterwordspacing
 
 \bibitem{entropy_shannon}
