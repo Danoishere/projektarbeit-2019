@@ -319,7 +319,7 @@ To improve the performance of the system, we compress both the weights (server t
 	\label{dist_architecture_img}
 \end{figure}
 \textit{Experiment Setup}\\\\
-To analyze the impact of training a policy with multiple workers at the same time, we run an experiment that compares having a single worker to training with 7 workers at the same time. We use the default analysis environment that includes reduced actions but no curriculum learning.\\\\
+To analyze the impact of training a policy with multiple workers at the same time, we run an experiment that compares training with a single worker to training with 7 workers at the same time. We use the default analysis environment that includes reduced actions but no curriculum learning.\\\\
 \textit{Experiment Analysis}\\\\
 While it is apparent in \autoref{chart:singlemany_comparison} that having multiple workers does speed up the training process, we do not observe any impact of the number of workers on the quality of the policy. These results are consistent with the observation that training with even more than 7 workers speeds up training, but has no noticeable effect on the quality of the policy.
 \begin{figure}[H]
