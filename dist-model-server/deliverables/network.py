@@ -49,7 +49,7 @@ class AC_Network():
 
 
     def build_network(self):
-        input_vec = layers.Input(shape=7,dtype=tf.float32)
+        input_vec = layers.Input(shape=6,dtype=tf.float32)
 
         input_actor_rec = layers.Input(shape=(2,params.recurrent_size),dtype=tf.float32)
         input_critic_rec = layers.Input(shape=(2,params.recurrent_size),dtype=tf.float32)
@@ -204,7 +204,7 @@ class AC_Network():
             obs_builder.critic_rec_state[handle] = [c_rec_h[idx], c_rec_c[idx]]
 
             env.agents[handle].last_action = actions[handle]
-            obs_builder.comm = a_dist
+            #obs_builder.comm = a_dist
 
         return actions, values_dict
 

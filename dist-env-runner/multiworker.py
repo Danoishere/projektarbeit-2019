@@ -135,7 +135,7 @@ class Worker():
 
                 agent_pos = {}
                 is_communicating = True
-
+                next_obs = np.zeros(6)
                 obs_builder.comm = np.zeros(6)
                 while not episode_done and not cancel_episode and episode_step_count < max_steps:
                     rail = self.env.env.rail
@@ -150,66 +150,38 @@ class Worker():
                     actions = {}
 
                     keys = list(active_agents.keys())
-                    #shuffle(keys)
-                    
-                    if is_communicating and len(keys) > 0:
-                        print('Comm round')
-                        ready_for_action = True
-                        for handle in keys:
-                            agent_obs = {}
-                            agent_obs[handle] = obs[handle]
-                            agent_obs[handle][0][:] = obs_builder.comm
-                            agent_obs[handle] = (np.append(agent_obs[handle][0], 1), agent_obs[handle][1], agent_obs[handle][2])
-                            agent_action, agent_value = self.local_model.get_actions_and_values(agent_obs ,self.env.env)
-                            
-                            print('Agent', handle,'says:', agent_action)
-                            obs[handle] = agent_obs[handle]
-                            actions[handle] = agent_action[handle]
-                            values[handle] = agent_value[handle]
+   
+                    for handle in keys:
+                        agent_obs = {}
+                        agent_obs[handle] = obs[handle]
+                        agent_obs[handle][0][:] = np.zeros(6) # obs_builder.comm
+                        agent_obs[handle] = (np.zeros(6), agent_obs[handle][1], agent_obs[handle][2])
+                        obs[handle] = agent_obs[handle]
+                        agent_action, agent_value = self.local_model.get_actions_and_values(agent_obs ,self.env.env)
+                        print('Agent', handle,'does:', agent_action)
+                        actions[handle] = agent_action[handle]
+                        values[handle] = agent_value[handle]
 
-                            # We need action 5 to continue
-                            if actions[handle] != 5:
-                                ready_for_action = False
+                    for agent in agents:
+                        if agent.handle not in actions and agent.status == RailAgentStatus.ACTIVE:
+                            actions[agent.handle] = RailEnvActions.MOVE_FORWARD
 
-                        if ready_for_action:
-                            is_communicating = False
+                    next_obs, rewards, done, info = self.env.step(actions)
+                    for agent in agents:
+                        if agent.status == RailAgentStatus.ACTIVE:
+                            key = (agent.handle, *agent.position)
+                            if key not in agent_pos:
+                                agent_pos[key] = 1
+                            else:
+                                agent_pos[key] += 1
 
-                        next_obs = obs_builder.get_many()
-                    else:
-                        obs_builder.comm = np.zeros(6)
-                        # print('Action round')
-                        for handle in keys:
-                            agent_obs = {}
-                            agent_obs[handle] = obs[handle]
-                            agent_obs[handle][0][:] = obs_builder.comm
-                            agent_obs[handle] = (np.append(agent_obs[handle][0], 0), agent_obs[handle][1], agent_obs[handle][2])
-                            obs[handle] = agent_obs[handle]
-                            agent_action, agent_value = self.local_model.get_actions_and_values(agent_obs ,self.env.env)
-                            print('Agent', handle,'does:', agent_action)
-                            actions[handle] = agent_action[handle]
-                            values[handle] = agent_value[handle]
+                            if agent_pos[key] > 5:
+                                cancel_episode = True
+                                break
 
-                        for agent in agents:
-                            if agent.handle not in actions and agent.status == RailAgentStatus.ACTIVE:
-                                actions[agent.handle] = RailEnvActions.MOVE_FORWARD
-
-                        next_obs, rewards, done, info = self.env.step(actions)
-                        for agent in agents:
-                            if agent.status == RailAgentStatus.ACTIVE:
-                                key = (agent.handle, *agent.position)
-                                if key not in agent_pos:
-                                    agent_pos[key] = 1
-                                else:
-                                    agent_pos[key] += 1
-
-                                if agent_pos[key] > 5:
-                                    cancel_episode = True
-                                    break
-                            
-                        is_communicating = True
 
                     env_renderer.render_env(show=True, show_observations=False)
-                    msvcrt.getch()
+                    #msvcrt.getch()
 
                     prep_steps = 0
                     obs_builder.prep_steps = prep_steps
@@ -234,8 +206,7 @@ class Worker():
                             
                             episode_values.append(values[i])
                             episode_reward += agent_reward
-                
-                    obs = next_obs              
+                        
                     steps_on_level += 1
                     done_last_step = dict(done)
 
@@ -294,6 +265,7 @@ class Worker():
                 episode_buffer = episode_buffer_success + episode_buffer_fail
                 shuffle(episode_buffer)
 
+                #if len(episode_buffer) > 0:
                 v_l, p_l, e_l, g_n, v_n = self.train(episode_buffer, num_agents_done)
                 self.stats.append([v_l, p_l, e_l, g_n, v_n])
 
@@ -357,6 +329,10 @@ class Worker():
             mean_entropy_loss = np.mean([l[2] for l in self.stats[-1:]])
             mean_gradient_norm = np.mean([l[3] for l in self.stats[-1:]])
             mean_variable_norm = np.mean([l[4] for l in self.stats[-1:]])
+
+            print('Episode:', np.int32(self.episode_count), 'Successrate:', mean_success_rate)
+
+
 
             with self.summary_writer.as_default():
                 episode_count = np.int32(self.episode_count)

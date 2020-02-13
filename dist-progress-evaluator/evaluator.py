@@ -23,7 +23,7 @@ import constant as const
 import urllib
 import requests
 
-#from flatland.utils.rendertools import RenderTool, AgentRenderVariant
+from flatland.utils.rendertools import RenderTool, AgentRenderVariant
 
 mp.set_start_method('spawn', True)
 
@@ -86,7 +86,7 @@ def start_train(resume):
             episode_step_count = 0
             
             obs, info = env.reset()
-            # env_renderer.set_new_rail()
+            env_renderer.set_new_rail()
             obs_builder = env.env.obs_builder
 
             prep_steps = 0
@@ -181,11 +181,11 @@ def is_agent_on_unusable_switch(env, position, dir):
         return False
 
     possible_transitions = np.sum(env.env.rail.get_transitions(*position, dir))
-    #print(env.rail.get_transitions(*position, dir))
+    print(env.rail.get_transitions(*position, dir))
     for d in range(4):
         dir_transitions = np.sum(env.env.rail.get_transitions(*position, d))
         if dir_transitions > possible_transitions >= 1:
-            #print(env.rail.get_transitions(*position, d))
+            print(env.rail.get_transitions(*position, d))
             return True
 
     return False
